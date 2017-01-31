@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TehPers.FishingOverhaul {
-    public class Objects {
+namespace TehPers.Stardew.Framework {
+    internal class Objects {
 
         public const int BAIT = 685;
         public const int DRESSED_SPINNER = 687;

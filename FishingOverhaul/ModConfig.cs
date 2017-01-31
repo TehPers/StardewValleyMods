@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TehPers.Stardew.Framework;
 
-namespace TehPers.FishingOverhaul {
+namespace TehPers.Stardew.FishingOverhaul {
     public class ModConfig {
         public float CatchSpeed { get; set; } = 1f;
         public float TreasureCatchSpeed { get; set; } = 1.25f;

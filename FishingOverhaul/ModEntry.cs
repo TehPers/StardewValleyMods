@@ -5,13 +5,12 @@ using StardewValley;
 using StardewValley.Tools;
 using System;
 
-namespace TehPers.FishingOverhaul {
+namespace TehPers.Stardew.FishingOverhaul {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod {
         public static ModEntry INSTANCE;
 
         public ModConfig config;
-        private bool postEntryDone = false;
 
         public ModEntry() {
             ModEntry.INSTANCE = this;
@@ -23,36 +22,14 @@ namespace TehPers.FishingOverhaul {
             this.config = helper.ReadConfig<ModConfig>();
 
             GameEvents.UpdateTick += this.UpdateTick;
-            ControlEvents.KeyPressed += this.KeyPressed;
-        }
-
-        private void postEntry() {
-            this.addObjects();
+            //ControlEvents.KeyPressed += this.KeyPressed;
         }
 
         #region "Events"
         private void UpdateTick(object sender, EventArgs e) {
-            if (!postEntryDone) {
-                this.postEntry();
-                postEntryDone = true;
-            }
             tryChangeFishingTreasure();
         }
-
-        private void KeyPressed(object sender, EventArgsKeyPressed e) {
-            if (e.KeyPressed == Microsoft.Xna.Framework.Input.Keys.T)
-                Game1.player.addItemToInventory(new StardewValley.Object(Vector2.Zero, 8001, 1));
-        }
         #endregion
-
-        private void addObjects() {
-            // TODO: No clue how to do this yet...
-
-            //this.Monitor.Log(Game1.objectInformation[Objects.STONE]);
-            //Game1.objectInformation[8001] = "Custom Object/9999/-300/Basic -16/A custom item.";
-            this.registerObjectInformation(8001, "Custom Object", "A custom item", "Basic", -16, 9999, -300);
-            //Game1.objec
-        }
 
         private void tryChangeFishingTreasure() {
             if (Game1.player.CurrentTool is FishingRod) {

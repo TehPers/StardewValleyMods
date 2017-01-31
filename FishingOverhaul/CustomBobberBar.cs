@@ -6,7 +6,7 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 
-namespace TehPers.FishingOverhaul {
+namespace TehPers.Stardew.FishingOverhaul {
     public class CustomBobberBar : BobberBar {
 
         private IPrivateField<bool> treasureField;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TehPers.CombatOverhaul {
+namespace TehPers.Stardew.CombatOverhaul {
     public class ModEntry : Mod {
 
     }

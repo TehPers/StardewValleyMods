@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TehPers.FishingOverhaul {
+namespace TehPers.Stardew.FishingOverhaul {
     public class FishingRodOverrides {
         // Difficulty affects quality
         // Fish-specific lures (tackle)
