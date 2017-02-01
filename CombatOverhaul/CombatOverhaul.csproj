@@ -52,6 +52,7 @@
     <Compile Include="..\Framework\Objects.cs">
       <Link>Objects.cs</Link>
     </Compile>
+    <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

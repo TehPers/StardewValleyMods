@@ -29,6 +29,7 @@ namespace TehPers.Stardew.FishingOverhaul {
         private float lastTreasureCatchLevel;
         private bool perfectChanged = false;
         private bool treasureChanged = false;
+        private bool notifiedFailOrSucceed = false;
         private int origStreak;
         private int origQuality;
 
@@ -60,11 +61,10 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             /* Actual code */
             ModConfig config = ModEntry.INSTANCE.config;
-            int streak = getStreak(user);
 
             // Applies difficulty modifier, including if fish isn't paying attention
             float difficulty = difficultyField.GetValue() * config.BaseDifficultyMult;
-            difficulty += config.DifficultyStreakEffect * streak;
+            difficulty += config.DifficultyStreakEffect * this.origStreak;
             double difficultyChance = config.UnawareChance + user.LuckLevel * config.UnawareLuckLevelEffect + Game1.dailyLuck * config.UnawareDailyLuckEffect;
             if (Game1.random.NextDouble() < difficultyChance) {
                 Game1.showGlobalMessage("The fish is unaware of your presence. (" + ((1f - config.UnawareMult) * 100) + "% easier catch)");
@@ -76,15 +76,15 @@ namespace TehPers.Stardew.FishingOverhaul {
             int fishQuality = fishQualityField.GetValue();
             this.origQuality = fishQuality;
             fishQuality = Math.Min(fishQuality + 1, 2);
-            int qualityBonus = (int) Math.Floor((double) streak / config.StreakForIncreasedQuality);
+            int qualityBonus = (int) Math.Floor((double) this.origStreak / config.StreakForIncreasedQuality);
             fishQuality = Math.Min(fishQuality + qualityBonus, 3);
             if (fishQuality == 3) fishQuality++; // Iridium-quality fish. Only possible through your perfect streak
             fishQualityField.SetValue(fishQuality);
 
             // Increase the user's perfect streak (this will be dropped to 0 if they don't get a perfect catch)
-            if (streak >= config.StreakForIncreasedQuality)
-                sparkleTextField.SetValue(new SparklingText(Game1.dialogueFont, "Streak: " + streak, Color.Yellow, Color.White, false, 0.1, 2500, -1, 500));
-            setStreak(user, streak + 1);
+            if (this.origStreak >= config.StreakForIncreasedQuality)
+                sparkleTextField.SetValue(new SparklingText(Game1.dialogueFont, "Streak: " + this.origStreak, Color.Yellow, Color.White, false, 0.1, 2500, -1, 500));
+            setStreak(user, this.origStreak + 1);
         }
 
         public override void update(GameTime time) {
@@ -114,25 +114,41 @@ namespace TehPers.Stardew.FishingOverhaul {
                 setStreak(this.user, 0);
                 if (this.origStreak >= ModEntry.INSTANCE.config.StreakForIncreasedQuality) {
                     if (!treasure)
-                        Game1.showGlobalMessage("You lost your perfect fishing streak of " + (this.origStreak) + "!");
+                        Game1.showGlobalMessage("You lost your perfect fishing streak of " + (this.origStreak) + ".");
                     else
-                        Game1.showGlobalMessage("Catch the treasure to keep your streak of " + (this.origStreak) + "!");
+                        Game1.showGlobalMessage("Catch the treasure and the fish to keep your streak of " + (this.origStreak) + "!");
                 }
             }
 
             if (!treasureChanged && !perfect && treasure && treasureCaught) {
                 treasureChanged = true;
-                setStreak(this.user, this.origStreak);
                 int qualityBonus = (int) Math.Floor((double) this.origStreak / ModEntry.INSTANCE.config.StreakForIncreasedQuality);
                 int quality = this.origQuality;
                 quality = Math.Min(quality + qualityBonus, 3);
                 if (quality == 3) quality++;
                 fishQualityField.SetValue(quality);
-                if (this.origStreak >= ModEntry.INSTANCE.config.StreakForIncreasedQuality)
-                    Game1.showGlobalMessage("You kept your streak of " + (this.origStreak) + ".");
             }
 
             base.update(time);
+
+            distanceFromCatching = distanceFromCatchingField.GetValue();
+
+            if (distanceFromCatching <= 0.0) {
+                // Failed to catch fish
+                if (!notifiedFailOrSucceed && treasure) {
+                    notifiedFailOrSucceed = true;
+                    if (this.origStreak >= ModEntry.INSTANCE.config.StreakForIncreasedQuality)
+                        Game1.showGlobalMessage("You lost your perfect fishing streak.");
+                }
+            } else if (distanceFromCatching >= 1.0) {
+                // Succeeded in catching the fish
+                if (!notifiedFailOrSucceed && treasureChanged && treasure && treasureCaught) {
+                    notifiedFailOrSucceed = true;
+                    if (this.origStreak >= ModEntry.INSTANCE.config.StreakForIncreasedQuality)
+                        Game1.showGlobalMessage("You kept your perfect fishing streak!");
+                    setStreak(this.user, this.origStreak);
+                }
+            }
         }
 
         public static int getStreak(Farmer who) {
