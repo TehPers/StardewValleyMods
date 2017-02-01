@@ -49,11 +49,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Framework\Helpers.cs">
+      <Link>Helpers.cs</Link>
+    </Compile>
     <Compile Include="..\Framework\Objects.cs">
       <Link>Objects.cs</Link>
     </Compile>
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
+    <Compile Include="ModWeapon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

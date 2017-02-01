@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TehPers.Stardew.Framework {
+﻿namespace TehPers.Stardew.Framework {
     internal class Objects {
 
         public const int BAIT = 685;

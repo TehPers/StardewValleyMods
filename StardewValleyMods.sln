@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CombatOverhaul", "CombatOve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework", "Framework\Framework.csproj", "{5879FA77-D1DC-47C2-BE91-7B2FB7A474DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventInjector", "EventInjector\EventInjector.csproj", "{781F603A-6CDA-4532-9F53-766DCDAC20B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5879FA77-D1DC-47C2-BE91-7B2FB7A474DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5879FA77-D1DC-47C2-BE91-7B2FB7A474DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5879FA77-D1DC-47C2-BE91-7B2FB7A474DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{781F603A-6CDA-4532-9F53-766DCDAC20B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{781F603A-6CDA-4532-9F53-766DCDAC20B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{781F603A-6CDA-4532-9F53-766DCDAC20B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{781F603A-6CDA-4532-9F53-766DCDAC20B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

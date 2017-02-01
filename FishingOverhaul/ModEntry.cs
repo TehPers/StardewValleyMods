@@ -26,7 +26,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             //ControlEvents.KeyPressed += this.KeyPressed;
         }
 
-        #region "Events"
+        #region Events
         private void UpdateTick(object sender, EventArgs e) {
             tryChangeFishingTreasure();
         }
