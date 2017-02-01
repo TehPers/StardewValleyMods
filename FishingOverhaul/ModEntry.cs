@@ -20,6 +20,7 @@ namespace TehPers.Stardew.FishingOverhaul {
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
         public override void Entry(IModHelper helper) {
             this.config = helper.ReadConfig<ModConfig>();
+            if (!config.ModEnabled) return;
 
             GameEvents.UpdateTick += this.UpdateTick;
             //ControlEvents.KeyPressed += this.KeyPressed;

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 
 namespace TehPers.Stardew.FishingOverhaul {
-    public class ModObject : StardewValley.Object {
+    internal class ModObject : StardewValley.Object {
 
         public ModObject(Vector2 location, int id, int initialStack) : base(location, id, initialStack) {
 

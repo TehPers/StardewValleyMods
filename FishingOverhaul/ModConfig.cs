@@ -8,6 +8,8 @@ using TehPers.Stardew.Framework;
 
 namespace TehPers.Stardew.FishingOverhaul {
     public class ModConfig {
+        public bool ModEnabled { get; set; } = true;
+
         public float CatchSpeed { get; set; } = 1f;
         public float TreasureCatchSpeed { get; set; } = 1.25f;
 
@@ -37,8 +39,8 @@ namespace TehPers.Stardew.FishingOverhaul {
 
         public TreasureData[] PossibleLoot { get; set; } = new TreasureData[] {
             new TreasureData(Objects.DRESSED_SPINNER, 0.025, 1, 1, 4, 6),
-            new TreasureData(Objects.BAIT, 0.25, 3, 5),
-            new TreasureData(Objects.BAIT, 0.25, 10),
+            new TreasureData(Objects.BAIT, 0.25, 2, 4),
+            new TreasureData(Objects.BAIT, 0.05, 10),
 
             // Archaeology
             new TreasureData(Objects.LOST_BOOK, 0.025),
