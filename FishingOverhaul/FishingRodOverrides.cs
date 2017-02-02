@@ -7,6 +7,7 @@ using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TehPers.Stardew.FishingOverhaul.Configs;
 using TehPers.Stardew.Framework;
 
 namespace TehPers.Stardew.FishingOverhaul {
@@ -21,7 +22,7 @@ namespace TehPers.Stardew.FishingOverhaul {
         // - Treasure is more likely to appear as your streak increases
 
         public static void startMinigameEndFunction(FishingRod rod, int extra) {
-            ModConfig config = ModEntry.INSTANCE.config;
+            ConfigMain config = ModEntry.INSTANCE.config;
             Farmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Farmer>(rod, "lastUser");
             int clearWaterDistance = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "clearWaterDistance");
             Vector2 bobber = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Vector2>(rod, "bobber");
@@ -53,7 +54,7 @@ namespace TehPers.Stardew.FishingOverhaul {
         public static void openTreasureMenuEndFunction(FishingRod rod, int extra) {
             ModEntry.INSTANCE.Monitor.Log("Successfully replaced treasure", LogLevel.Trace);
 
-            ModConfig config = ModEntry.INSTANCE.config;
+            ConfigMain config = ModEntry.INSTANCE.config;
             Farmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Farmer>(rod, "lastUser");
             int clearWaterDistance = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "clearWaterDistance");
             int whichFish = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "whichFish");
@@ -70,8 +71,8 @@ namespace TehPers.Stardew.FishingOverhaul {
             // Select rewards
             float chance = 1f;
             while (config.PossibleLoot.Length > 0 && Game1.random.NextDouble() <= chance) {
-                List<ModConfig.TreasureData> possibleLoot = new List<ModConfig.TreasureData>();
-                foreach (ModConfig.TreasureData treasure in config.PossibleLoot)
+                List<ConfigTreasure.TreasureData> possibleLoot = new List<ConfigTreasure.TreasureData>();
+                foreach (ConfigTreasure.TreasureData treasure in config.PossibleLoot)
                     possibleLoot.Add(treasure);
 
                 // Sort from lowest chance to highest chance so the more common rewards don't overshadow the uncommon/rare ones
@@ -79,7 +80,7 @@ namespace TehPers.Stardew.FishingOverhaul {
 
                 // Choose reward
                 bool rewarded = false;
-                foreach (ModConfig.TreasureData treasure in possibleLoot) {
+                foreach (ConfigTreasure.TreasureData treasure in possibleLoot) {
                     if (lastUser.FishingLevel >= treasure.minLevel && lastUser.FishingLevel <= treasure.maxLevel && clearWaterDistance >= treasure.minCastDistance) {
                         if (Game1.random.NextDouble() < treasure.chance * (CustomBobberBar.getStreak(lastUser) > 0 ? config.PerfectTreasureQualityMult : 1f)) {
                             int id = treasure.id + Game1.random.Next(treasure.idRange - 1);

@@ -1,51 +1,23 @@
-﻿using Microsoft.Xna.Framework.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TehPers.Stardew.Framework;
 
-namespace TehPers.Stardew.FishingOverhaul {
-    public class ModConfig {
-        public bool ModEnabled { get; set; } = true;
-
-        public float CatchSpeed { get; set; } = 1f;
-        public float TreasureCatchSpeed { get; set; } = 1.25f;
-
-        /* Chance for treasure to appear */
-        public float TreasureChance { get; set; } = 0.15f;
-        public float TreasureBaitEffect { get; set; } = 0.15f;
-        public float TreasureBobberEffect { get; set; } = 0.05f;
-        public double TreasureLuckLevelEffect { get; set; } = 0.005;
-        public double TreasureDailyLuckEffect { get; set; } = 0.5d;
-        public float TreasureStreakEffect { get; set; } = 0.02f;
-
-        public float BaseDifficultyMult { get; set; } = 0.85f;
-        public float DifficultyStreakEffect { get; set; } = 0.05f;
-
-        /* Chance for fish difficulty to be reduced */
-        public float UnawareMult { get; set; } = 0.5f;
-        public float UnawareChance { get; set; } = 0.01f;
-        public double UnawareLuckLevelEffect { get; set; } = 0.01d;
-        public double UnawareDailyLuckEffect { get; set; } = 0.5d;
-
-        /* Perfect streak rewards */
-        public int StreakForIncreasedQuality { get; set; } = 3;
-        public float PerfectTreasureQualityMult { get; set; } = 5;
-
-        /* Possible treasure from fishing */
-        public float AdditionalLootChance { get; set; } = 0.5f;
-
+namespace TehPers.Stardew.FishingOverhaul.Configs {
+    public class ConfigTreasure {
         public TreasureData[] PossibleLoot { get; set; } = new TreasureData[] {
             new TreasureData(Objects.DRESSED_SPINNER, 0.025, 1, 1, 4, 6),
             new TreasureData(Objects.BAIT, 0.25, 2, 4),
-            new TreasureData(Objects.BAIT, 0.05, 10),
+            //new TreasureData(Objects.BAIT, 0.05, 10), // No need for this I guess
 
             // Archaeology
             new TreasureData(Objects.LOST_BOOK, 0.025),
             new TreasureData(585, 0.0625, idRange: 4), // Archaeology, part 1
-            new TreasureData(103, 0.125, idRange: 18), // Archaeology, part 2
+            new TreasureData(96, 0.125, idRange: 32), // Archaeology, part 2
+            //new TreasureData(Objects.STRANGE_DOLL1, 0.0025),
+            //new TreasureData(Objects.STRANGE_DOLL2, 0.0025),
 
             new TreasureData(Objects.GEODE, 0.2, 1, 3),
             new TreasureData(Objects.FROZEN_GEODE, 0.125, 1, 3),
@@ -55,6 +27,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             new TreasureData(Objects.IRIDIUM_ORE, 0.0075, 1, 3, 5),
             new TreasureData(Objects.GOLD_ORE, 0.15, 3, 10, 4),
             new TreasureData(Objects.IRON_ORE, 0.15, 3, 10, 3),
+            new TreasureData(Objects.COPPER_ORE, 0.15, 3, 10),
             new TreasureData(Objects.COAL, 0.3, 3, 10),
 
             // Junk
@@ -64,8 +37,6 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             new TreasureData(Objects.TREASURE_CHEST, 0.005),
             new TreasureData(Objects.PRISMATIC_SHARD, 0.00025),
-            new TreasureData(Objects.STRANGE_DOLL1, 0.0025),
-            new TreasureData(Objects.STRANGE_DOLL2, 0.0025),
 
             // Gems
             new TreasureData(Objects.DIAMOND, 0.01),
@@ -86,7 +57,8 @@ namespace TehPers.Stardew.FishingOverhaul {
             // Equippables
             new TreasureData(Objects.IRIDIUM_BAND, 0.0025),
             new TreasureData(504, 0.005, idRange: 10), // Boots
-            new TreasureData(516, 0.005, idRange: 20) // Rings
+            new TreasureData(516, 0.005, idRange: 4), // Rings
+            new TreasureData(529, 0.005, idRange: 6) // Rings, part 2
         };
 
         public class TreasureData {

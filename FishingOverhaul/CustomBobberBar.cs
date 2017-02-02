@@ -5,6 +5,7 @@ using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using TehPers.Stardew.FishingOverhaul.Configs;
 
 namespace TehPers.Stardew.FishingOverhaul {
     public class CustomBobberBar : BobberBar {
@@ -22,6 +23,8 @@ namespace TehPers.Stardew.FishingOverhaul {
         private IPrivateField<float> difficultyField;
         private IPrivateField<int> fishQualityField;
         private IPrivateField<bool> perfectField;
+
+        private IPrivateField<int> whichFishField;
 
         private IPrivateField<SparklingText> sparkleTextField;
 
@@ -54,13 +57,19 @@ namespace TehPers.Stardew.FishingOverhaul {
             fishQualityField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<int>(this, "fishQuality");
             perfectField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "perfect");
 
+            whichFishField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<int>(this, "whichFish");
+
             sparkleTextField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<SparklingText>(this, "sparkleText");
 
             lastDistanceFromCatching = distanceFromCatchingField.GetValue();
             lastTreasureCatchLevel = treasureCatchLevelField.GetValue();
 
             /* Actual code */
-            ModConfig config = ModEntry.INSTANCE.config;
+            ConfigMain config = ModEntry.INSTANCE.config;
+
+            // Choose a random fish, this time using the custom fish selector
+            /*whichFish = getRandomFish();
+            whichFishField.SetValue(whichFish);*/
 
             // Applies difficulty modifier, including if fish isn't paying attention
             float difficulty = difficultyField.GetValue() * config.BaseDifficultyMult;
@@ -149,6 +158,14 @@ namespace TehPers.Stardew.FishingOverhaul {
                     setStreak(this.user, this.origStreak);
                 }
             }
+        }
+
+        public static int getRandomFish() {
+            Dictionary<string, string> locations = Game1.content.Load<Dictionary<string, string>>("Data\\Locations");
+            string name = Game1.currentLocation.name;
+
+
+            return 0;
         }
 
         public static int getStreak(Farmer who) {

@@ -4,13 +4,19 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Tools;
 using System;
+using System.Collections.Generic;
+using TehPers.Stardew.FishingOverhaul.Configs;
+using TehPers.Stardew.Framework;
+using static TehPers.Stardew.FishingOverhaul.Configs.ConfigFish;
 
 namespace TehPers.Stardew.FishingOverhaul {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod {
         public static ModEntry INSTANCE;
 
-        public ModConfig config;
+        public ConfigMain config;
+        public ConfigTreasure treasureConfig;
+        public ConfigFish fishConfig;
 
         public ModEntry() {
             ModEntry.INSTANCE = this;
@@ -19,15 +25,33 @@ namespace TehPers.Stardew.FishingOverhaul {
         /// <summary>Initialise the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
         public override void Entry(IModHelper helper) {
-            this.config = helper.ReadConfig<ModConfig>();
+            // Load configs
+            this.config = helper.ReadConfig<ConfigMain>();
+            this.treasureConfig = helper.ReadJsonFile<ConfigTreasure>("treasure.json") ?? new ConfigTreasure();
+            this.fishConfig = helper.ReadJsonFile<ConfigFish>("fish.json") ?? new ConfigFish();
+
+            // Make sure the extra configs are generated
+            helper.WriteJsonFile<ConfigTreasure>("treasure.json", this.treasureConfig);
+            helper.WriteJsonFile<ConfigFish>("fish.json", this.fishConfig);
+
+            // Stop here if the mod is disabled
             if (!config.ModEnabled) return;
 
+            // Events
             GameEvents.UpdateTick += this.UpdateTick;
             //ControlEvents.KeyPressed += this.KeyPressed;
+
+            // DEBUG: Populate global fish data in config
         }
 
         #region Events
         private void UpdateTick(object sender, EventArgs e) {
+            if (this.fishConfig.PossibleFish == null) {
+                // Auto-populate the fish config file if it's empty
+                this.fishConfig.populateData();
+                this.Helper.WriteJsonFile<ConfigFish>("fish.json", this.fishConfig);
+            }
+
             tryChangeFishingTreasure();
         }
         #endregion

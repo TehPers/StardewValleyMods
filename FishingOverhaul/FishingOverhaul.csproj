@@ -43,12 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Framework\Enums.cs">
+      <Link>Enums.cs</Link>
+    </Compile>
     <Compile Include="..\Framework\Objects.cs">
       <Link>Objects.cs</Link>
     </Compile>
+    <Compile Include="Configs\ConfigFish.cs" />
+    <Compile Include="Configs\ConfigTreasure.cs" />
     <Compile Include="CustomBobberBar.cs" />
     <Compile Include="FishingRodOverrides.cs" />
-    <Compile Include="ModConfig.cs" />
+    <Compile Include="Configs\ConfigMain.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
