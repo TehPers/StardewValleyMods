@@ -68,17 +68,12 @@ namespace TehPers.Stardew.FishingOverhaul {
             List<Item> rewards = new List<Item>();
             if (extra == 1) rewards.Add(new StardewValley.Object(whichFish, 1, false, -1, fishQuality));
 
+            List<ConfigTreasure.TreasureData> possibleLoot = new List<ConfigTreasure.TreasureData>(config.PossibleLoot);
+            possibleLoot.Sort((a, b) => a.chance.CompareTo(b.chance));
+
             // Select rewards
             float chance = 1f;
             while (config.PossibleLoot.Length > 0 && Game1.random.NextDouble() <= chance) {
-                List<ConfigTreasure.TreasureData> possibleLoot = new List<ConfigTreasure.TreasureData>();
-                foreach (ConfigTreasure.TreasureData treasure in config.PossibleLoot)
-                    possibleLoot.Add(treasure);
-
-                // Sort from lowest chance to highest chance so the more common rewards don't overshadow the uncommon/rare ones
-                possibleLoot.OrderBy(e => e.chance);
-
-                // Choose reward
                 bool rewarded = false;
                 foreach (ConfigTreasure.TreasureData treasure in possibleLoot) {
                     if (lastUser.FishingLevel >= treasure.minLevel && lastUser.FishingLevel <= treasure.maxLevel && clearWaterDistance >= treasure.minCastDistance) {
