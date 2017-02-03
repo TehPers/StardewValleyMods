@@ -25,5 +25,12 @@ namespace EventInjector {
             this.Data = data;
             this.Repeatable = true;
         }
+
+        public int? getID() {
+            string[] d = this.Condition.Split('/');
+            if (d.Length > 0)
+                return Convert.ToInt32(d[0]);
+            return null;
+        }
     }
 }

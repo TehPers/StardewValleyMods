@@ -22,7 +22,10 @@ namespace EventInjector {
             GameLocation loc = e.NewLocation;
             if (!Game1.killScreen && Game1.farmEvent == null && loc.currentEvent == null) {
                 foreach (ModEvent ev in config.Events) {
+                    int? id = ev.getID();
+                    if (id == null) continue;
                     if (ev.Location == loc.name) {
+                        if (ev.Repeatable) Game1.player.eventsSeen.Remove((int) id);
                         int eventID = this.Helper.Reflection.GetPrivateMethod(loc, "checkEventPrecondition").Invoke<int>(ev.Condition);
                         if (eventID != -1) {
                             loc.currentEvent = new Event(ev.Data, eventID);
