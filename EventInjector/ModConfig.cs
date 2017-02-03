@@ -17,13 +17,13 @@ namespace EventInjector {
         public string Location { get; set; }
         public string Condition { get; set; }
         public string Data { get; set; }
-        public bool Repeatable { get; set; } // TODO: This (repeatable events vs non-repeatable events)
+        public bool Repeatable { get; set; }
 
         public ModEvent(string location, string condition, string data, bool repeatable = true) {
             this.Location = location;
             this.Condition = condition;
             this.Data = data;
-            this.Repeatable = true;
+            this.Repeatable = repeatable;
         }
 
         public int? getID() {
