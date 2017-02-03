@@ -50,7 +50,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
             { "Temp", new FishData[] {} }
         };*/
 
-        private Dictionary<int, FishData> globalFishData { get; set; } = new Dictionary<int, FishData>();
+        //private Dictionary<int, FishData> globalFishData { get; set; } = new Dictionary<int, FishData>();
         internal List<int> RandomJunk = new List<int>();
 
         public void populateData() {
@@ -67,7 +67,26 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                 string[] locData = locationKV.Value.Split('/');
                 const int offset = 4;
 
+                Dictionary<int, FishData> possibleFish = this.PossibleFish.ContainsKey(location) ? this.PossibleFish[location] : new Dictionary<int, FishData> { };
+                this.PossibleFish[location] = possibleFish;
+
                 for (int i = 0; i <= 3; i++) {
+                    Season s = Season.SPRINGSUMMERFALLWINTER;
+                    switch (i) {
+                        case 0:
+                            s = Season.SPRING;
+                            break;
+                        case 1:
+                            s = Season.SUMMER;
+                            break;
+                        case 2:
+                            s = Season.FALL;
+                            break;
+                        case 3:
+                            s = Season.WINTER;
+                            break;
+                    }
+
                     string[] seasonData = locData[offset + i].Split(' ');
                     for (int j = 0; j < seasonData.Length; j += 2) {
                         if (seasonData.Length <= j + 1)
@@ -76,37 +95,11 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                         int id = Convert.ToInt32(seasonData[j]);
 
                         // From location data
-                        WaterType water = WaterType.BOTH;
-                        switch (Convert.ToInt32(seasonData[j + 1])) {
-                            case 0:
-                                water = WaterType.RIVER;
-                                break;
-                            case 1:
-                                water = WaterType.LAKE;
-                                break;
-                        }
-
-                        Season s = Season.SPRINGSUMMERFALLWINTER;
-                        switch (i) {
-                            case 0:
-                                s = Season.SPRING;
-                                break;
-                            case 1:
-                                s = Season.SUMMER;
-                                break;
-                            case 2:
-                                s = Season.FALL;
-                                break;
-                            case 3:
-                                s = Season.WINTER;
-                                break;
-                        }
-
+                        WaterType water = Helpers.convertWaterType(Convert.ToInt32(seasonData[j + 1])) ?? WaterType.BOTH;
+                        
                         // From fish data
-
                         FishData f;
-                        if (this.globalFishData.ContainsKey(id)) {
-                            f = this.globalFishData[id];
+                        if (possibleFish.TryGetValue(id, out f)) {
                             f.WaterType |= water;
                             f.Season |= s;
                         } else {
@@ -132,12 +125,10 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                             }
 
                             f = new FishData(chance, water, s, Convert.ToInt32(times[0]), Convert.ToInt32(times[1]), minDepth, minLevel, w);
-                            this.globalFishData[id] = f;
+                            possibleFish[id] = f;
                         }
-
-                        Dictionary<int, FishData> possibleFish = this.PossibleFish.ContainsKey(location) ? this.PossibleFish[location] : new Dictionary<int, FishData> { };
-                        possibleFish[id] = f;
-                        this.PossibleFish[location] = possibleFish;
+                        
+                        //possibleFish[id] = f;
                     }
                 }
             }
