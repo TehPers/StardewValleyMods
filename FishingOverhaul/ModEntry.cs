@@ -12,7 +12,7 @@ using static TehPers.Stardew.FishingOverhaul.Configs.ConfigFish;
 namespace TehPers.Stardew.FishingOverhaul {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod {
-        public const bool DEBUG = true;
+        public const bool DEBUG = false;
         public static ModEntry INSTANCE;
 
         public ConfigMain config;

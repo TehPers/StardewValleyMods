@@ -45,7 +45,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             float fishSize = Math.Max(0.0f, Math.Min(1f, num * (float) (1.0 + Game1.random.Next(-10, 10) / 100.0)));
             bool treasure = false;
 
-            double treasureChance = config.TreasureChance + lastUser.LuckLevel * config.TreasureLuckLevelEffect + (rod.getBaitAttachmentIndex() == 703 ? config.TreasureBaitEffect : 0.0) + (rod.getBobberAttachmentIndex() == 693 ? config.TreasureBobberEffect : 0.0) + Game1.dailyLuck * config.TreasureDailyLuckEffect + (lastUser.professions.Contains(9) ? config.TreasureChance : 0.0) + config.TreasureStreakEffect * CustomBobberBar.getStreak(lastUser);
+            double treasureChance = config.TreasureChance + lastUser.LuckLevel * config.TreasureLuckLevelEffect + (rod.getBaitAttachmentIndex() == 703 ? config.TreasureBaitEffect : 0.0) + (rod.getBobberAttachmentIndex() == 693 ? config.TreasureBobberEffect : 0.0) + Game1.dailyLuck * config.TreasureDailyLuckEffect + (lastUser.professions.Contains(9) ? config.TreasureChance : 0.0) + config.TreasureStreakEffect * FishHelper.getStreak(lastUser);
             if (!Game1.isFestival() && lastUser.fishCaught != null && lastUser.fishCaught.Count > 1 && Game1.random.NextDouble() < treasureChance)
                 treasure = true;
             Game1.activeClickableMenu = new CustomBobberBar(lastUser, extra, fishSize, treasure, rod.attachments[1] != null ? rod.attachments[1].ParentSheetIndex : -1, clearWaterDistance);
@@ -77,7 +77,7 @@ namespace TehPers.Stardew.FishingOverhaul {
                 bool rewarded = false;
                 foreach (ConfigTreasure.TreasureData treasure in possibleLoot) {
                     if (lastUser.FishingLevel >= treasure.minLevel && lastUser.FishingLevel <= treasure.maxLevel && clearWaterDistance >= treasure.minCastDistance) {
-                        if (Game1.random.NextDouble() < treasure.chance * (CustomBobberBar.getStreak(lastUser) > 0 ? config.PerfectTreasureQualityMult : 1f)) {
+                        if (Game1.random.NextDouble() < treasure.chance * (FishHelper.getStreak(lastUser) > 0 ? config.PerfectTreasureQualityMult : 1f)) {
                             int id = treasure.id + Game1.random.Next(treasure.idRange - 1);
 
                             if (id == Objects.LOST_BOOK) {

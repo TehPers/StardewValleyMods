@@ -6,52 +6,7 @@ using TehPers.Stardew.Framework;
 namespace TehPers.Stardew.FishingOverhaul.Configs {
     public class ConfigFish {
 
-        public Dictionary<string, Dictionary<int, FishData>> PossibleFish { get; set; } /*= new Dictionary<string, FishData[]>() {
-            { "Farm", new FishData[] {
-
-            } }, { "UndergroundMine", new FishData[] {
-
-            } }, { "Desert", new FishData[] {
-
-            } }, { "BusStop", new FishData[] {
-
-            } }, { "Forest", new FishData[] {
-                new FishData(145, .45, WaterType.RIVER, Season.SPRINGSUMMER, maxTime: 1900, weather: Weather.SUNNY),
-                new FishData(144, .4, WaterType.BOTH, Season.SUMMERWINTER, minDepth: 3),
-                new FishData(138, .35, WaterType.RIVER, Season.SUMMER, maxTime: 1900, minDepth: 2, weather: Weather.SUNNY),
-                new FishData(132, .45, WaterType.RIVER, Season.SPRINGSUMMERFALLWINTER, minTime: 1800),
-                new FishData(706, .35, WaterType.RIVER, Season.SPRINGSUMMERFALL, minTime: 900, minDepth: 2, weather: Weather.RAINY),
-                new FishData(704, .15, WaterType.RIVER, Season.SUMMER, maxTime: 1900, minDepth: 3),
-                new FishData(702, .45, WaterType.RIVER, Season.SPRINGSUMMERFALLWINTER),
-
-                new FishData(143, .4, WaterType.RIVER, Season.SPRINGFALLWINTER, maxTime: 2400, weather: Weather.RAINY, minDepth: 4),
-                new FishData(137, .45, WaterType.LAKE, Season.SPRINGFALL),
-
-                new FishData(140, .4, WaterType.BOTH, Season.FALL, minTime: 1200, weather: Weather.RAINY, minDepth: 2),
-                new FishData(139, .4, WaterType.RIVER, Season.FALL, maxTime: 1900, minDepth: 3),
-                new FishData(699, .2, WaterType.RIVER, Season.FALL, maxTime: 1900, minDepth: 3),
-
-                // 699 0 143 0 153 -1 144 -1 141 -1 140 -1 132 0 707 0 702 0
-                new FishData(699, .4, WaterType.RIVER, Season.FALL, maxTime: 1900, minDepth: 3),
-                new FishData(699, .4, WaterType.RIVER, Season.FALL, maxTime: 1900, minDepth: 3),
-                new FishData(699, .4, WaterType.RIVER, Season.FALL, maxTime: 1900, minDepth: 3),
-                new FishData(699, .4, WaterType.RIVER, Season.FALL, maxTime: 1900, minDepth: 3),
-                new FishData(699, .4, WaterType.RIVER, Season.FALL, maxTime: 1900, minDepth: 3)
-            } }, { "Town", new FishData[] {} },
-            { "Mountain", new FishData[] {} },
-            { "Backwoods", new FishData[] {} },
-            { "Railroad", new FishData[] {} },
-            { "Beach", new FishData[] {} },
-            { "Woods", new FishData[] {} },
-            { "Sewer", new FishData[] {} },
-            { "BugLand", new FishData[] {} },
-            { "WitchSwamp", new FishData[] {} },
-            { "fishingGame", new FishData[] {} },
-            { "Temp", new FishData[] {} }
-        };*/
-
-        //private Dictionary<int, FishData> globalFishData { get; set; } = new Dictionary<int, FishData>();
-        internal List<int> RandomJunk = new List<int>();
+        public Dictionary<string, Dictionary<int, FishData>> PossibleFish { get; set; }
 
         public void populateData() {
             ModEntry.INSTANCE.Monitor.Log("Automatically populating fish.json with data from Fish.xnb and Locations.xnb", StardewModdingAPI.LogLevel.Info);
@@ -96,7 +51,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
 
                         // From location data
                         WaterType water = Helpers.convertWaterType(Convert.ToInt32(seasonData[j + 1])) ?? WaterType.BOTH;
-                        
+
                         // From fish data
                         FishData f;
                         if (possibleFish.TryGetValue(id, out f)) {
@@ -104,10 +59,9 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                             f.Season |= s;
                         } else {
                             string[] fishInfo = fish[id].Split('/');
-                            if (fishInfo[1] == "5") { // Junk item
-                                this.RandomJunk.Add(id);
+                            if (fishInfo[1] == "5") // Junk item
                                 continue;
-                            }
+
                             string[] times = fishInfo[5].Split(' ');
                             string weather = fishInfo[7].ToLower();
                             int minDepth = Convert.ToInt32(fishInfo[9]);
@@ -127,7 +81,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                             f = new FishData(chance, water, s, Convert.ToInt32(times[0]), Convert.ToInt32(times[1]), minDepth, minLevel, w);
                             possibleFish[id] = f;
                         }
-                        
+
                         //possibleFish[id] = f;
                     }
                 }
@@ -151,38 +105,47 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
             this.PossibleFish["Sewer"][682] = new FishData(.02, WaterType.BOTH, Season.FALL, minDepth: 5);
 
             // UndergroundMine
-            // TODO: Fill this in (look at Locations.MineShaft.GetFish)
+            this.PossibleFish["UndergroundMine"][158] = new FishData(0.02, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 0);
+            this.PossibleFish["UndergroundMine"][158] = new FishData(0.02, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 20);
+            this.PossibleFish["UndergroundMine"][161] = new FishData(0.015, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 40);
+            this.PossibleFish["UndergroundMine"][162] = new FishData(0.01, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 80);
         }
 
         public class FishData {
             //public string Name { get; set; }
             public double Chance { get; set; }
-            public int MinDepth { get; set; }
+            public int MinCastDistance { get; set; }
             public WaterType WaterType { get; set; }
             public int MinTime { get; set; }
             public int MaxTime { get; set; }
             public Season Season { get; set; }
             public int MinLevel { get; set; }
             public Weather Weather { get; set; }
+            public int MineLevel { get; set; }
 
-            public FishData(double chance, WaterType waterType, Season season, int minTime = 600, int maxTime = 2600, int minDepth = 0, int minLevel = 0, Weather weather = Weather.BOTH) {
+            public FishData(double chance, WaterType waterType, Season season, int minTime = 600, int maxTime = 2600, int minDepth = 0, int minLevel = 0, Weather weather = Weather.BOTH, int mineLevel = -1) {
                 this.Chance = chance;
                 this.WaterType = waterType;
                 this.Season = season;
                 this.MinTime = minTime;
                 this.MaxTime = maxTime;
-                this.MinDepth = minDepth;
+                this.MinCastDistance = minDepth;
                 this.MinLevel = minLevel;
                 this.Weather = weather;
+                this.MineLevel = mineLevel;
             }
 
-            public bool meetsCriteria(WaterType waterType, Season season, Weather weather, int time, int depth) {
-                return (this.WaterType & waterType) > 0 && (this.Season & season) > 0 && (this.Weather & weather) > 0 && this.MinTime <= time && this.MaxTime >= time && depth >= this.MinDepth;
+            public virtual bool meetsCriteria(WaterType waterType, Season season, Weather weather, int time, int depth, int level) {
+                return (this.WaterType & waterType) > 0 && (this.Season & season) > 0 && (this.Weather & weather) > 0 && this.MinTime <= time && this.MaxTime >= time && depth >= this.MinCastDistance && level >= this.MinLevel;
             }
 
-            public float getWeightedChance(int depth, int level) {
-                if (this.MinDepth >= 5) return (float) this.Chance + level / 50f;
-                return (float) (5 - depth) / (5 - this.MinDepth) * (float) this.Chance + level / 50f;
+            public bool meetsCriteria(WaterType waterType, Season season, Weather weather, int time, int depth, int level, int mineLevel) {
+                return this.meetsCriteria(waterType, season, weather, time, depth, level) && (this.MineLevel == -1 || mineLevel == this.MineLevel);
+            }
+
+            public virtual float getWeightedChance(int depth, int level) {
+                if (this.MinCastDistance >= 5) return (float) this.Chance + level / 50f;
+                return (float) (5 - depth) / (5 - this.MinCastDistance) * (float) this.Chance + level / 50f;
             }
 
             public override string ToString() {
