@@ -19,8 +19,6 @@
         public const int STONE = 390;
         public const int MIXED_SEEDS = 770;
 
-        public const int TRASH = 168;
-
         public const int PRISMATIC_SHARD = 74;
         public const int STRANGE_DOLL1 = 126;
         public const int STRANGE_DOLL2 = 127;

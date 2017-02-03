@@ -51,6 +51,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         };*/
 
         private Dictionary<int, FishData> globalFishData { get; set; } = new Dictionary<int, FishData>();
+        internal List<int> RandomJunk = new List<int>();
 
         public void populateData() {
             ModEntry.INSTANCE.Monitor.Log("Automatically populating fish.json with data from Fish.xnb and Locations.xnb", StardewModdingAPI.LogLevel.Info);
@@ -110,7 +111,10 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                             f.Season |= s;
                         } else {
                             string[] fishInfo = fish[id].Split('/');
-                            if (fishInfo[1] == "5") continue; // Junk item
+                            if (fishInfo[1] == "5") { // Junk item
+                                this.RandomJunk.Add(id);
+                                continue;
+                            }
                             string[] times = fishInfo[5].Split(' ');
                             string weather = fishInfo[7].ToLower();
                             int minDepth = Convert.ToInt32(fishInfo[9]);
@@ -170,7 +174,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
             public int MinLevel { get; set; }
             public Weather Weather { get; set; }
 
-            public FishData(double chance, WaterType waterType, Season season, int minTime = 600, int maxTime = 2600, int minDepth = 1, int minLevel = 0, Weather weather = Weather.BOTH) {
+            public FishData(double chance, WaterType waterType, Season season, int minTime = 600, int maxTime = 2600, int minDepth = 0, int minLevel = 0, Weather weather = Weather.BOTH) {
                 this.Chance = chance;
                 this.WaterType = waterType;
                 this.Season = season;
@@ -188,6 +192,10 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
             public float getWeightedChance(int depth, int level) {
                 if (this.MinDepth >= 5) return (float) this.Chance + level / 50f;
                 return (float) (5 - depth) / (5 - this.MinDepth) * (float) this.Chance + level / 50f;
+            }
+
+            public override string ToString() {
+                return string.Format("Chance: {1}, Weather: {2}, Season: {3}", Chance.ToString(), Weather.ToString(), Season.ToString());
             }
         }
     }

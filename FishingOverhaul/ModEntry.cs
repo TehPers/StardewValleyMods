@@ -39,7 +39,7 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             // Events
             GameEvents.UpdateTick += this.UpdateTick;
-            //ControlEvents.KeyPressed += this.KeyPressed;
+            ControlEvents.KeyPressed += KeyPressed;
 
             // DEBUG: Populate global fish data in config
         }
@@ -53,6 +53,12 @@ namespace TehPers.Stardew.FishingOverhaul {
             }
 
             tryChangeFishingTreasure();
+        }
+
+        private void KeyPressed(object sender, EventArgsKeyPressed e) {
+            if (e.KeyPressed == Microsoft.Xna.Framework.Input.Keys.R && Game1.player.CurrentTool is FishingRod) {
+                FishingRodOverrides.startMinigameEndFunction(Game1.player.CurrentTool as FishingRod, 702);
+            }
         }
         #endregion
 

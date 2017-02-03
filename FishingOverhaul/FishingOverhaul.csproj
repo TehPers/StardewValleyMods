@@ -43,12 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Framework\Enums.cs">
-      <Link>Enums.cs</Link>
-    </Compile>
-    <Compile Include="..\Framework\Objects.cs">
-      <Link>Objects.cs</Link>
-    </Compile>
     <Compile Include="Configs\ConfigFish.cs" />
     <Compile Include="Configs\ConfigTreasure.cs" />
     <Compile Include="CustomBobberBar.cs" />
@@ -61,6 +55,7 @@
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="..\Framework\Framework.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -26,30 +26,13 @@ namespace TehPers.Stardew.Framework {
                     return Season.FALL;
                 case "winter":
                     return Season.WINTER;
-                default:
-                    return null;
             }
+
+            return null;
         }
 
-        public static Weather toWeather(bool raining) {
+        public static Weather? toWeather(bool raining) {
             return raining ? Weather.RAINY : Weather.SUNNY;
-        }
-
-        public static WaterType? convertWaterType(int type) {
-            switch (type) {
-                case -1:
-                    return WaterType.BOTH;
-                case 0:
-                    return WaterType.RIVER;
-                case 1:
-                    return WaterType.LAKE;
-                default:
-                    return null;
-            }
-        }
-
-        public static int convertWaterType(WaterType type) {
-            return type == WaterType.BOTH ? -1 : (type == WaterType.RIVER ? 0 : 1);
         }
     }
 }

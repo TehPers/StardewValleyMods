@@ -6,6 +6,10 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using TehPers.Stardew.FishingOverhaul.Configs;
+using static TehPers.Stardew.FishingOverhaul.Configs.ConfigFish;
+using System.Linq;
+using TehPers.Stardew.Framework;
+using StardewValley.Tools;
 
 namespace TehPers.Stardew.FishingOverhaul {
     public class CustomBobberBar : BobberBar {
@@ -36,9 +40,11 @@ namespace TehPers.Stardew.FishingOverhaul {
         private int origStreak;
         private int origQuality;
 
+        private bool exitImmediately;
+
         public Farmer user;
 
-        public CustomBobberBar(Farmer user, int whichFish, float fishSize, bool treasure, int bobber) : base(whichFish, fishSize, treasure, bobber) {
+        public CustomBobberBar(Farmer user, int whichFish, float fishSize, bool treasure, int bobber, int waterDepth) : base(whichFish, fishSize, treasure, bobber) {
             this.user = user;
             this.origStreak = getStreak(user);
 
@@ -70,8 +76,19 @@ namespace TehPers.Stardew.FishingOverhaul {
             ConfigMain config = ModEntry.INSTANCE.config;
 
             // Choose a random fish, this time using the custom fish selector
-            /*whichFish = getRandomFish();
-            whichFishField.SetValue(whichFish);*/
+            FishingRod rod = Game1.player.CurrentTool as FishingRod;
+            //int waterDepth = rod != null ? ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "clearWaterDistance") : 0;
+            whichFish = getRandomFish(waterDepth);
+
+            if (whichFish >= 167 && whichFish < 173) {
+                Game1.showGlobalMessage("No valid fish to catch! Giving junk instead.");
+                StardewValley.Object o = new StardewValley.Object(whichFish, 1, false, -1, 0);
+                rod.pullFishFromWater(whichFish, -1, 0, 0, false, false);
+                exitImmediately = true;
+                return;
+            }
+
+            whichFishField.SetValue(whichFish);
 
             // Applies difficulty modifier, including if fish isn't paying attention
             float difficulty = difficultyField.GetValue() * config.BaseDifficultyMult;
@@ -99,6 +116,11 @@ namespace TehPers.Stardew.FishingOverhaul {
         }
 
         public override void update(GameTime time) {
+            if (exitImmediately) {
+                Game1.exitActiveMenu();
+                return;
+            }
+
             // Speed warp on normal catching
             float distanceFromCatching = distanceFromCatchingField.GetValue();
             float delta = distanceFromCatching - this.lastDistanceFromCatching;
@@ -162,12 +184,33 @@ namespace TehPers.Stardew.FishingOverhaul {
             }
         }
 
-        public static int getRandomFish() {
-            Dictionary<string, string> locations = Game1.content.Load<Dictionary<string, string>>("Data\\Locations");
-            string name = Game1.currentLocation.name;
+        public static int getRandomFish(int depth) {
+            Season s = Helpers.toSeason(Game1.currentSeason) ?? Season.SPRINGSUMMERFALLWINTER;
+            WaterType w = Helpers.convertWaterType(Game1.currentLocation.getFishingLocation(Game1.player.getTileLocation())) ?? WaterType.BOTH;
+            return getRandomFish(w, s, Game1.isRaining ? Weather.RAINY : Weather.SUNNY, Game1.timeOfDay, depth, Game1.player.FishingLevel);
+        }
 
+        public static int getRandomFish(WaterType water, Season s, Weather w, int time, int depth, int fishLevel) {
+            string loc = Game1.currentLocation.name;
+            Dictionary<int, FishData> locFish = ModEntry.INSTANCE.config.PossibleFish[loc];
 
-            return 0;
+            List<KeyValuePair<int, FishData>> locFishList = locFish.Where(e => e.Value.meetsCriteria(water, s, w, time, depth)).ToList();
+            locFishList.Sort((a, b) => a.Value.Chance.CompareTo(b.Value.Chance));
+
+            if (locFishList.Count == 0)
+                return Game1.random.Next(167, 173);
+
+            int selectedFish;
+            for (int i = 0; ; i = ++i % locFishList.Count) {
+                KeyValuePair<int, FishData> kv = locFishList[i];
+                FishData data = kv.Value;
+                if (Game1.random.NextDouble() < data.getWeightedChance(depth, fishLevel)) {
+                    selectedFish = kv.Key;
+                    break;
+                }
+            }
+
+            return selectedFish;
         }
 
         public static int getStreak(Farmer who) {
