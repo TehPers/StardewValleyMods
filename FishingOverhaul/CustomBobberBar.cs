@@ -55,8 +55,6 @@ namespace TehPers.Stardew.FishingOverhaul {
             treasureAppearTimerField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasureAppearTimer");
             treasureScaleField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasureScale");
 
-            //treasureField.SetValue(true);
-
             distanceFromCatchingField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "distanceFromCatching");
             treasureCatchLevelField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasureCatchLevel");
 
@@ -66,7 +64,6 @@ namespace TehPers.Stardew.FishingOverhaul {
             perfectField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "perfect");
 
             whichFishField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<int>(this, "whichFish");
-
             sparkleTextField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<SparklingText>(this, "sparkleText");
 
             lastDistanceFromCatching = distanceFromCatchingField.GetValue();

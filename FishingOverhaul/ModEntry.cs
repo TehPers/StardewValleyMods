@@ -12,6 +12,7 @@ using static TehPers.Stardew.FishingOverhaul.Configs.ConfigFish;
 namespace TehPers.Stardew.FishingOverhaul {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod {
+        public const bool DEBUG = true;
         public static ModEntry INSTANCE;
 
         public ConfigMain config;
@@ -39,7 +40,7 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             // Events
             GameEvents.UpdateTick += this.UpdateTick;
-            ControlEvents.KeyPressed += KeyPressed;
+            if (DEBUG) ControlEvents.KeyPressed += KeyPressed;
 
             // DEBUG: Populate global fish data in config
         }
