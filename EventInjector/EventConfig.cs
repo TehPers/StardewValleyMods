@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EventInjector {
-    public class ModConfig {
+namespace TehPers.Stardew.EventInjector {
+    public class EventConfig {
+        public bool Enabled { get; set; } = true;
+
         public ModEvent[] Events { get; set; } = new ModEvent[] {
             new ModEvent("Location1", "Condition1", "Data1"),
             new ModEvent("Location2", "Condition2", "Data2"),

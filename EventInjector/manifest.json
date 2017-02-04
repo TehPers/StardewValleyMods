@@ -1,14 +1,14 @@
 ﻿
 {
   "Author": "TehPers",
-  "Description": "Event injector mod created for Thommy",
+  "Description": "Injects custom events into the game",
   "EntryDll": "EventInjector.dll",
   "Name": "Event Injector",
   "UniqueID": "EventInjector",
   "Version": {
     "MajorVersion": 1,
-    "MinorVersion": 1,
-    "PatchVersion": 1,
+    "MinorVersion": 0,
+    "PatchVersion": 0,
     "Build": ""
   }
 }

@@ -7,7 +7,7 @@
     <ProjectGuid>{781F603A-6CDA-4532-9F53-766DCDAC20B9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventInjector</RootNamespace>
+    <RootNamespace>TehPers.Stardew.EventInjector</RootNamespace>
     <AssemblyName>EventInjector</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ModConfig.cs" />
+    <Compile Include="EventConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
