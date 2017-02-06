@@ -102,10 +102,9 @@ namespace TehPers.Stardew.FishingOverhaul {
             }
             difficultyField.SetValue(difficulty);
 
-            // Adjusts quality to be increased by streak, then adds 1 (if you lose perfect, it subtracts the 1). Also makes it impossible to get gold without a perfect catch
+            // Adjusts quality to be increased by streak
             int fishQuality = fishQualityField.GetValue();
             this.origQuality = fishQuality;
-            fishQuality = Math.Min(fishQuality + 1, 2);
             int qualityBonus = (int) Math.Floor((double) this.origStreak / config.StreakForIncreasedQuality);
             fishQuality = Math.Min(fishQuality + qualityBonus, 3);
             if (fishQuality == 3) fishQuality++; // Iridium-quality fish. Only possible through your perfect streak

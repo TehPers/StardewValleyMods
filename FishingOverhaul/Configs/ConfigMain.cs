@@ -16,6 +16,8 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
 
         public bool RecatchableLegendaries { get; set; } = false;
 
+        public string GetFishInWaterKey { get; set; } = "NumPad9";
+
         /* Chance for treasure to appear */
         public float TreasureChance { get; set; } = 0.15f;
         public float TreasureBaitEffect { get; set; } = 0.15f;

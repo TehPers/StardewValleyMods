@@ -102,13 +102,13 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
             this.PossibleFish["Town"][160] = new FishData(.02, WaterType.BOTH, Season.FALL, minDepth: 4, minLevel: 3);
 
             // Mutant Carp
-            this.PossibleFish["Sewer"][682] = new FishData(.02, WaterType.BOTH, Season.FALL, minDepth: 5);
+            this.PossibleFish["Sewer"][682] = new FishData(.02, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, minDepth: 5);
 
             // UndergroundMine
             this.PossibleFish["UndergroundMine"][158] = new FishData(0.02, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 0);
             this.PossibleFish["UndergroundMine"][158] = new FishData(0.02, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 20);
-            this.PossibleFish["UndergroundMine"][161] = new FishData(0.015, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 40);
-            this.PossibleFish["UndergroundMine"][162] = new FishData(0.01, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 80);
+            this.PossibleFish["UndergroundMine"][161] = new FishData(0.015, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 60);
+            this.PossibleFish["UndergroundMine"][162] = new FishData(0.01, WaterType.BOTH, Season.SPRINGSUMMERFALLWINTER, mineLevel: 100);
         }
 
         public class FishData {
@@ -135,7 +135,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                 this.MineLevel = mineLevel;
             }
 
-            public virtual bool meetsCriteria(WaterType waterType, Season season, Weather weather, int time, int depth, int level) {
+            public bool meetsCriteria(WaterType waterType, Season season, Weather weather, int time, int depth, int level) {
                 return (this.WaterType & waterType) > 0 && (this.Season & season) > 0 && (this.Weather & weather) > 0 && this.MinTime <= time && this.MaxTime >= time && depth >= this.MinCastDistance && level >= this.MinLevel;
             }
 

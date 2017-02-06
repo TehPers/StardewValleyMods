@@ -1,10 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TehPers.Stardew.FishingOverhaul.Configs;
 using TehPers.Stardew.Framework;
 using static TehPers.Stardew.FishingOverhaul.Configs.ConfigFish;
@@ -32,15 +35,18 @@ namespace TehPers.Stardew.FishingOverhaul {
             this.fishConfig = helper.ReadJsonFile<ConfigFish>("fish.json") ?? new ConfigFish();
 
             // Make sure the extra configs are generated
-            helper.WriteJsonFile<ConfigTreasure>("treasure.json", this.treasureConfig);
-            helper.WriteJsonFile<ConfigFish>("fish.json", this.fishConfig);
+            helper.WriteJsonFile("treasure.json", this.treasureConfig);
+            helper.WriteJsonFile("fish.json", this.fishConfig);
+
+            this.config.AdditionalLootChance = (float) Math.Min(this.config.AdditionalLootChance, 0.99);
+            helper.WriteConfig(this.config);
 
             // Stop here if the mod is disabled
             if (!config.ModEnabled) return;
 
             // Events
             GameEvents.UpdateTick += this.UpdateTick;
-            if (DEBUG) ControlEvents.KeyPressed += KeyPressed;
+            ControlEvents.KeyPressed += KeyPressed;
 
             // DEBUG: Populate global fish data in config
         }
@@ -50,15 +56,36 @@ namespace TehPers.Stardew.FishingOverhaul {
             if (this.fishConfig.PossibleFish == null) {
                 // Auto-populate the fish config file if it's empty
                 this.fishConfig.populateData();
-                this.Helper.WriteJsonFile<ConfigFish>("fish.json", this.fishConfig);
+                this.Helper.WriteJsonFile("fish.json", this.fishConfig);
             }
 
             tryChangeFishingTreasure();
         }
 
         private void KeyPressed(object sender, EventArgsKeyPressed e) {
-            if (e.KeyPressed == Microsoft.Xna.Framework.Input.Keys.R && Game1.player.CurrentTool is FishingRod) {
-                FishingRodOverrides.startMinigameEndFunction(Game1.player.CurrentTool as FishingRod, 702);
+            Keys getFishKey;
+            if (Enum.TryParse(config.GetFishInWaterKey, out getFishKey) && e.KeyPressed == getFishKey) {
+                if (Game1.currentLocation != null) {
+                    WaterType w = Helpers.convertWaterType(Game1.currentLocation.getFishingLocation(Game1.player.getTileLocation())) ?? WaterType.BOTH;
+                    Season s = Helpers.toSeason(Game1.currentSeason) ?? Season.SPRINGSUMMERFALLWINTER;
+                    int[] possibleFish = new int[] { };
+                    if (config.PossibleFish.ContainsKey(Game1.currentLocation.name)) {
+                        if (Game1.currentLocation is MineShaft)
+                            possibleFish = config.PossibleFish[Game1.currentLocation.name].Where(data => data.Value.meetsCriteria(w, s, Game1.isRaining ? Weather.RAINY : Weather.SUNNY, Game1.timeOfDay, 5, Game1.player.fishingLevel, (Game1.currentLocation as MineShaft).mineLevel)).Select(data => data.Key).ToArray();
+                        else
+                            possibleFish = config.PossibleFish[Game1.currentLocation.name].Where(data => data.Value.meetsCriteria(w, s, Game1.isRaining ? Weather.RAINY : Weather.SUNNY, Game1.timeOfDay, 5, Game1.player.fishingLevel)).Select(data => data.Key).ToArray();
+                    }
+                    Dictionary<int, string> fish = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
+                    string[] fishByName = possibleFish.Select(id => fish[id].Split('/')[0]).ToArray();
+                    if (fishByName.Length > 0)
+                        Game1.showGlobalMessage("Fish you can catch right now: " + string.Join<string>(", ", fishByName));
+                    else
+                        Game1.showGlobalMessage("You can't catch any fish there right now!");
+                }
+            } else if (DEBUG) {
+                if (e.KeyPressed == Keys.R && Game1.player.CurrentTool is FishingRod) {
+                    FishingRodOverrides.startMinigameEndFunction(Game1.player.CurrentTool as FishingRod, 702);
+                }
             }
         }
         #endregion
