@@ -15,6 +15,9 @@ namespace TehPers.Stardew.EventInjector {
         public List<ModEvent> Events = new List<ModEvent>();
 
         public override void Entry(IModHelper helper) {
+            // Disable the mod for now
+            if (true) return;
+
             string path = Path.Combine(helper.DirectoryPath, "Events");
 
             if (!Directory.Exists(path)) {
