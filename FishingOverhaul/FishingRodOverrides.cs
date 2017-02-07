@@ -85,42 +85,43 @@ namespace TehPers.Stardew.FishingOverhaul {
             List<Item> rewards = new List<Item>();
             if (extra == 1) rewards.Add(new StardewValley.Object(whichFish, 1, false, -1, fishQuality));
 
-            List<ConfigTreasure.TreasureData> possibleLoot = new List<ConfigTreasure.TreasureData>(config.PossibleLoot);
+            List<ConfigTreasure.TreasureData> possibleLoot = new List<ConfigTreasure.TreasureData>(config.PossibleLoot)
+                .Where(treasure => lastUser.FishingLevel >= treasure.minLevel && lastUser.FishingLevel <= treasure.maxLevel && clearWaterDistance >= treasure.minCastDistance).ToList();
             //possibleLoot.Sort((a, b) => a.chance.CompareTo(b.chance));
             possibleLoot.Shuffle();
 
             // Select rewards
             float chance = 1f;
-            while (config.PossibleLoot.Length > 0 && Game1.random.NextDouble() <= chance) {
+            while (possibleLoot.Count > 0 && Game1.random.NextDouble() <= chance) {
                 bool rewarded = false;
                 ConfigTreasure.TreasureData selected = null;
                 foreach (ConfigTreasure.TreasureData treasure in possibleLoot) {
-                    if (lastUser.FishingLevel >= treasure.minLevel && lastUser.FishingLevel <= treasure.maxLevel && clearWaterDistance >= treasure.minCastDistance) {
-                        if (Game1.random.NextDouble() < treasure.chance * (FishHelper.getStreak(lastUser) > 0 ? config.PerfectTreasureQualityMult : 1f)) {
-                            int id = treasure.id + Game1.random.Next(treasure.idRange - 1);
+                    if (Game1.random.NextDouble() < treasure.chance * (FishHelper.getStreak(lastUser) > 0 ? config.PerfectTreasureQualityMult : 1f)) {
+                        int id = treasure.id + Game1.random.Next(treasure.idRange - 1);
 
-                            if (id == Objects.LOST_BOOK) {
-                                if (lastUser.archaeologyFound == null || !lastUser.archaeologyFound.ContainsKey(102) || lastUser.archaeologyFound[102][0] >= 21)
-                                    continue;
-                                Game1.showGlobalMessage("You found a lost book. The library has been expanded.");
-                            }
-
-                            int count = Game1.random.Next(treasure.minAmount, treasure.maxAmount);
-
-                            Item reward;
-                            if (id >= Ring.ringLowerIndexRange && id <= Ring.ringUpperIndexRange) {
-                                reward = new Ring(id);
-                            } else if (id >= 504 && id <= 513) {
-                                reward = new Boots(id);
-                            } else {
-                                reward = new StardewValley.Object(Vector2.Zero, id, count);
-                            }
-
-                            rewards.Add(reward);
-                            selected = treasure;
-                            rewarded = true;
-                            break;
+                        if (id == Objects.LOST_BOOK) {
+                            if (lastUser.archaeologyFound == null || !lastUser.archaeologyFound.ContainsKey(102) || lastUser.archaeologyFound[102][0] >= 21)
+                                continue;
+                            Game1.showGlobalMessage("You found a lost book. The library has been expanded.");
                         }
+
+                        int count = Game1.random.Next(treasure.minAmount, treasure.maxAmount);
+
+                        Item reward;
+                        if (treasure.meleeWeapon) {
+                            reward = new MeleeWeapon(id);
+                        } else if (id >= Ring.ringLowerIndexRange && id <= Ring.ringUpperIndexRange) {
+                            reward = new Ring(id);
+                        } else if (id >= 504 && id <= 513) {
+                            reward = new Boots(id);
+                        } else {
+                            reward = new StardewValley.Object(Vector2.Zero, id, count);
+                        }
+
+                        rewards.Add(reward);
+                        selected = treasure;
+                        rewarded = true;
+                        break;
                     }
                 }
 
@@ -133,7 +134,10 @@ namespace TehPers.Stardew.FishingOverhaul {
             }
 
             // Add bait if no rewards were selected. NOTE: This should never happen
-            if (rewards.Count == 0) rewards.Add(new StardewValley.Object(685, Game1.random.Next(2, 5) * 5, false, -1, 0));
+            if (rewards.Count == 0) {
+                ModEntry.INSTANCE.Monitor.Log("Could not find any valid loot for the treasure chest. Check your treasure.json?", LogLevel.Warn);
+                rewards.Add(new StardewValley.Object(685, Game1.random.Next(2, 5) * 5, false, -1, 0));
+            }
 
             // Show rewards GUI
             Game1.activeClickableMenu = new ItemGrabMenu(rewards);
