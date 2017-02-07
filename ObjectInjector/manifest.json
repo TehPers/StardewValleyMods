@@ -1,0 +1,14 @@
+﻿
+{
+  "Author": "TehPers",
+  "Description": "Injects object information into the game",
+  "EntryDll": "ObjectInjector.dll",
+  "Name": "Object Injector",
+  "UniqueID": "ObjectInjector",
+  "Version": {
+    "MajorVersion": 1,
+    "MinorVersion": 0,
+    "PatchVersion": 0,
+    "Build": ""
+  }
+}

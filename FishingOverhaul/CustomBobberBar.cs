@@ -28,8 +28,6 @@ namespace TehPers.Stardew.FishingOverhaul {
         private IPrivateField<int> fishQualityField;
         private IPrivateField<bool> perfectField;
 
-        private IPrivateField<int> whichFishField;
-
         private IPrivateField<SparklingText> sparkleTextField;
 
         private float lastDistanceFromCatching;
@@ -62,8 +60,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             difficultyField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "difficulty");
             fishQualityField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<int>(this, "fishQuality");
             perfectField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "perfect");
-
-            whichFishField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<int>(this, "whichFish");
+            
             sparkleTextField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<SparklingText>(this, "sparkleText");
 
             lastDistanceFromCatching = distanceFromCatchingField.GetValue();
@@ -75,22 +72,6 @@ namespace TehPers.Stardew.FishingOverhaul {
             // Choose a random fish, this time using the custom fish selector
             FishingRod rod = Game1.player.CurrentTool as FishingRod;
             //int waterDepth = rod != null ? ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "clearWaterDistance") : 0;
-            whichFish = FishHelper.getRandomFish(waterDepth);
-
-            if (whichFish >= 167 && whichFish < 173) {
-                if (false) {
-                    Game1.showGlobalMessage("No valid fish to catch! Giving junk instead.");
-                    StardewValley.Object o = new StardewValley.Object(whichFish, 1, false, -1, 0);
-                    rod.pullFishFromWater(whichFish, -1, 0, 0, false, false);
-                    exitImmediately = true;
-                    return;
-                } else {
-                    ModEntry.INSTANCE.Monitor.Log("No valid fish to catch! Using original fish instead.", LogLevel.Warn);
-                    whichFish = whichFishField.GetValue();
-                }
-            }
-
-            whichFishField.SetValue(whichFish);
 
             // Applies difficulty modifier, including if fish isn't paying attention
             float difficulty = difficultyField.GetValue() * config.BaseDifficultyMult;

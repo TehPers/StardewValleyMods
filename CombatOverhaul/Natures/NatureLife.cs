@@ -26,7 +26,7 @@ namespace TehPers.Stardew.CombatOverhaul.Natures {
         }
 
         public override string getDescription() {
-            return "";
+            return "You feel tingly when you touch this";
         }
 
         public override string getName() {

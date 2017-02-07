@@ -77,7 +77,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                 this.chance = chance;
                 this.minAmount = Math.Max(1, minAmount);
                 this.maxAmount = Math.Max(this.minAmount, maxAmount);
-                this.minCastDistance = Math.Max(0, minDistance);
+                this.minCastDistance = Math.Min(5, Math.Max(0, minDistance));
                 this.minLevel = minLevel;
                 this.maxLevel = maxLevel;
                 this.idRange = Math.Max(1, idRange);

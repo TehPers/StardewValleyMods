@@ -41,6 +41,8 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
 
         /* Possible treasure from fishing */
         public float AdditionalLootChance { get; set; } = 0.5f;
+        public float StreakAdditionalLootChance { get; set; } = 0.01f;
+        public bool AllowDuplicateLoot { get; set; } = true;
 
         // Getters for simplicity
         internal ConfigTreasure.TreasureData[] PossibleLoot {

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using StardewValley;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace TehPers.Stardew.Framework {
 
-    internal class Helpers {
+    internal static class Helpers {
         public static T copyFields<T>(T original, T target) {
             Type typ = original.GetType();
             while (typ != null) {
@@ -14,6 +16,17 @@ namespace TehPers.Stardew.Framework {
             }
 
             return target;
+        }
+
+        public static void Shuffle<T>(this IList<T> list) {
+            int n = list.Count;
+            while (n > 1) {
+                n--;
+                int k = Game1.random.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
         }
 
         public static Season? toSeason(string s) {

@@ -48,6 +48,23 @@ namespace TehPers.Stardew.FishingOverhaul {
             double treasureChance = config.TreasureChance + lastUser.LuckLevel * config.TreasureLuckLevelEffect + (rod.getBaitAttachmentIndex() == 703 ? config.TreasureBaitEffect : 0.0) + (rod.getBobberAttachmentIndex() == 693 ? config.TreasureBobberEffect : 0.0) + Game1.dailyLuck * config.TreasureDailyLuckEffect + (lastUser.professions.Contains(9) ? config.TreasureChance : 0.0) + config.TreasureStreakEffect * FishHelper.getStreak(lastUser);
             if (!Game1.isFestival() && lastUser.fishCaught != null && lastUser.fishCaught.Count > 1 && Game1.random.NextDouble() < treasureChance)
                 treasure = true;
+
+            // Override caught fish
+            int origExtra = extra;
+            extra = FishHelper.getRandomFish(clearWaterDistance);
+            if (extra >= 167 && extra < 173) {
+                if (false) {
+                    Game1.showGlobalMessage("No valid fish to catch! Giving junk instead.");
+                    StardewValley.Object o = new StardewValley.Object(extra, 1, false, -1, 0);
+                    rod.pullFishFromWater(extra, -1, 0, 0, false, false);
+                    return;
+                } else {
+                    ModEntry.INSTANCE.Monitor.Log("No valid fish to catch! Using original fish instead.", LogLevel.Warn);
+                    extra = origExtra;
+                }
+            }
+
+            // Show custom bobber bar
             Game1.activeClickableMenu = new CustomBobberBar(lastUser, extra, fishSize, treasure, rod.attachments[1] != null ? rod.attachments[1].ParentSheetIndex : -1, clearWaterDistance);
         }
 
@@ -69,12 +86,14 @@ namespace TehPers.Stardew.FishingOverhaul {
             if (extra == 1) rewards.Add(new StardewValley.Object(whichFish, 1, false, -1, fishQuality));
 
             List<ConfigTreasure.TreasureData> possibleLoot = new List<ConfigTreasure.TreasureData>(config.PossibleLoot);
-            possibleLoot.Sort((a, b) => a.chance.CompareTo(b.chance));
+            //possibleLoot.Sort((a, b) => a.chance.CompareTo(b.chance));
+            possibleLoot.Shuffle();
 
             // Select rewards
             float chance = 1f;
             while (config.PossibleLoot.Length > 0 && Game1.random.NextDouble() <= chance) {
                 bool rewarded = false;
+                ConfigTreasure.TreasureData selected = null;
                 foreach (ConfigTreasure.TreasureData treasure in possibleLoot) {
                     if (lastUser.FishingLevel >= treasure.minLevel && lastUser.FishingLevel <= treasure.maxLevel && clearWaterDistance >= treasure.minCastDistance) {
                         if (Game1.random.NextDouble() < treasure.chance * (FishHelper.getStreak(lastUser) > 0 ? config.PerfectTreasureQualityMult : 1f)) {
@@ -98,14 +117,18 @@ namespace TehPers.Stardew.FishingOverhaul {
                             }
 
                             rewards.Add(reward);
+                            selected = treasure;
                             rewarded = true;
                             break;
                         }
                     }
                 }
 
-                if (rewarded)
-                    chance *= config.AdditionalLootChance;
+                if (rewarded) {
+                    chance *= Math.Min(config.AdditionalLootChance + config.StreakAdditionalLootChance * FishHelper.getStreak(lastUser), 0.99f);
+                    if (!config.AllowDuplicateLoot)
+                        possibleLoot.Remove(selected);
+                }
                 //rewards.Add(new StardewValley.Object(Vector2.Zero, Objects.BAIT, Game1.random.Next(10, 25)));
             }
 
