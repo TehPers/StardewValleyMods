@@ -16,10 +16,13 @@ namespace TehPers.Stardew.DataInjector {
 
         public List<ModEvent> Events = new List<ModEvent>();
         public ContentManager modContent;
+        public ModConfig config;
 
         private bool loaded = false;
 
         public override void Entry(IModHelper helper) {
+            config = helper.ReadConfig<ModConfig>();
+
             GameEvents.UpdateTick += UpdateTick;
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
         }
@@ -133,7 +136,14 @@ namespace TehPers.Stardew.DataInjector {
             Uri modUri = new Uri(path);
             Dictionary<int, string> original = Game1.objectInformation;
             Dictionary<int, string> diffs = new Dictionary<int, string>();
+            Dictionary<int, string> diffMods = new Dictionary<int, string>();
             string[] fileList = Directory.GetFiles(path, "*.xnb", SearchOption.TopDirectoryOnly);
+
+            // Load order
+            config.ObjectInformationLoadOrder.AddRange(fileList.Where(file => !config.ObjectInformationLoadOrder.Contains(Path.GetFileName(file))).Select(file => Path.GetFileName(file)));
+            fileList = fileList.OrderBy(f => config.ObjectInformationLoadOrder.IndexOf(Path.GetFileName(f))).ToArray();
+            this.Helper.WriteConfig(config);
+
             foreach (string filePath in fileList) {
                 Uri fileUri = new Uri(filePath);
                 Uri localUri = modUri.MakeRelativeUri(fileUri);
@@ -150,16 +160,16 @@ namespace TehPers.Stardew.DataInjector {
                     foreach (KeyValuePair<int, string> injection in injections) {
                         if (!(original.ContainsKey(injection.Key) && original[injection.Key].Equals(injection.Value))) {
                             changes++;
-                            if (diffs.ContainsKey(injection.Key)) {
-                                if (!collision) {
-                                    this.Monitor.Log("Collision detected in object information! This injection might not work as intended.");
-                                    collision = true;
-                                }
-                            } else diffs[injection.Key] = injection.Value;
+                            if (!collision && diffs.ContainsKey(injection.Key)) {
+                                this.Monitor.Log("Collision detected with " + diffMods[injection.Key] + "! Overwriting...");
+                                collision = true;
+                            }
+                            diffs[injection.Key] = injection.Value;
+                            diffMods[injection.Key] = Path.GetFileName(filePath);
                         }
                     }
 
-                    this.Monitor.Log(changes + " changes were detected", LogLevel.Info);
+                    this.Monitor.Log(changes + " changes were injected", LogLevel.Info);
                 } catch (Exception ex) {
                     this.Monitor.Log("Failed to load " + localConfigPath + ".", LogLevel.Error);
                     this.Monitor.Log(ex.Message, LogLevel.Error);
