@@ -150,6 +150,7 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             if (distanceFromCatching <= 0.0) {
                 // Failed to catch fish
+                //FishHelper.setStreak(this.user, 0);
                 if (!notifiedFailOrSucceed && treasure) {
                     notifiedFailOrSucceed = true;
                     if (this.origStreak >= ModEntry.INSTANCE.config.StreakForIncreasedQuality)
@@ -157,7 +158,7 @@ namespace TehPers.Stardew.FishingOverhaul {
                 }
             } else if (distanceFromCatching >= 1.0) {
                 // Succeeded in catching the fish
-                if (!notifiedFailOrSucceed && treasureChanged && treasure && treasureCaught) {
+                if (!notifiedFailOrSucceed && !perfect && treasure && treasureCaught) {
                     notifiedFailOrSucceed = true;
                     if (this.origStreak >= ModEntry.INSTANCE.config.StreakForIncreasedQuality)
                         Game1.showGlobalMessage("You kept your perfect fishing streak!");

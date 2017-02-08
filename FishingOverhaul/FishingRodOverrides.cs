@@ -21,6 +21,8 @@ namespace TehPers.Stardew.FishingOverhaul {
         // - Treasure quality is increased as your streak increases, but still obviously random
         // - Treasure is more likely to appear as your streak increases
 
+        private static Dictionary<Farmer, int> clearWaterDistances = new Dictionary<Farmer, int>();
+
         public static void startMinigameEndFunction(FishingRod rod, int extra) {
             ConfigMain config = ModEntry.INSTANCE.config;
             Farmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Farmer>(rod, "lastUser");
@@ -39,6 +41,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             }
             lastUser.FarmerSprite.pauseForSingleAnimation = true;
             clearWaterDistance = FishingRod.distanceToLand((int) (bobber.X / (double) Game1.tileSize - 1.0), (int) (bobber.Y / (double) Game1.tileSize - 1.0), lastUser.currentLocation);
+            clearWaterDistances.Add(lastUser, clearWaterDistance);
             float num = 1f * (clearWaterDistance / 5f) * (Game1.random.Next(1 + Math.Min(10, lastUser.FishingLevel) / 2, 6) / 5f);
             if (rod.favBait)
                 num *= 1.2f;
@@ -73,7 +76,7 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             ConfigMain config = ModEntry.INSTANCE.config;
             Farmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Farmer>(rod, "lastUser");
-            int clearWaterDistance = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "clearWaterDistance");
+            int clearWaterDistance = clearWaterDistances[lastUser];
             int whichFish = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "whichFish");
             int fishQuality = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "fishQuality");
 
