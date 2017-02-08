@@ -33,9 +33,11 @@ namespace TehPers.Stardew.ShroomSpotter {
             Keys getShroomLevels;
             if (Enum.TryParse(config.GetShroomLevels, out getShroomLevels) && e.KeyPressed == getShroomLevels) {
                 // Find all shroom levels
+                int daysTilShroom = -1;
                 List<int> shroomLevels = new List<int>();
+                while (shroomLevels.Count == 0 && ++daysTilShroom < 50)
                 for (int mineLevel = 1; mineLevel < 120; mineLevel++) {
-                    Random random = new Random((int) Game1.stats.DaysPlayed + 1 + mineLevel + (int) Game1.uniqueIDForThisGame / 2);
+                    Random random = new Random((int) Game1.stats.DaysPlayed + daysTilShroom + mineLevel + (int) Game1.uniqueIDForThisGame / 2);
 
                     // Simulate all the random values grabbed before the shrooms
                     if (random.NextDouble() < 0.3 && mineLevel > 2) random.NextDouble();
@@ -44,10 +46,12 @@ namespace TehPers.Stardew.ShroomSpotter {
                         shroomLevels.Add(mineLevel);
                 }
 
-                if (shroomLevels.Count > 0)
-                    Game1.showGlobalMessage("Shroom layers will spawn on these mine levels: " + string.Join<int>(", ", shroomLevels));
-                else
-                    Game1.showGlobalMessage("No shroom layers will spawn today!");
+                if (shroomLevels.Count > 0) {
+                    if (daysTilShroom == 0)
+                        Game1.showGlobalMessage("Shroom layers will spawn on these mine levels: " + string.Join<int>(", ", shroomLevels));
+                    else
+                        Game1.showGlobalMessage("Shrooms will spawn in " + daysTilShroom + " day(s) on these mine levels: " + string.Join<int>(", ", shroomLevels));
+                } else Game1.showGlobalMessage("No shroom layers will spawn in the next 50 days!");
             }
         }
         #endregion
