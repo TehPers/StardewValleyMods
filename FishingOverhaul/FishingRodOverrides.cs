@@ -41,7 +41,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             }
             lastUser.FarmerSprite.pauseForSingleAnimation = true;
             clearWaterDistance = FishingRod.distanceToLand((int) (bobber.X / (double) Game1.tileSize - 1.0), (int) (bobber.Y / (double) Game1.tileSize - 1.0), lastUser.currentLocation);
-            clearWaterDistances.Add(lastUser, clearWaterDistance);
+            clearWaterDistances[lastUser] = clearWaterDistance;
             float num = 1f * (clearWaterDistance / 5f) * (Game1.random.Next(1 + Math.Min(10, lastUser.FishingLevel) / 2, 6) / 5f);
             if (rod.favBait)
                 num *= 1.2f;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace TehPers.Stardew.DataInjector {
     public class ModConfig {
 
-        public List<string> ObjectInformationLoadOrder = new List<string>();
+        public List<string> LoadOrder = new List<string>();
 
     }
 }

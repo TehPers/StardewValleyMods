@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DiffContentManager.cs" />
     <Compile Include="EventConfig.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
