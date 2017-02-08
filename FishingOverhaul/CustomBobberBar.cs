@@ -75,7 +75,7 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             // Applies difficulty modifier, including if fish isn't paying attention
             float difficulty = difficultyField.GetValue() * config.BaseDifficultyMult;
-            difficulty += config.DifficultyStreakEffect * this.origStreak;
+            difficulty *= 1f + config.DifficultyStreakEffect * this.origStreak;
             double difficultyChance = config.UnawareChance + user.LuckLevel * config.UnawareLuckLevelEffect + Game1.dailyLuck * config.UnawareDailyLuckEffect;
             if (Game1.random.NextDouble() < difficultyChance) {
                 Game1.showGlobalMessage("The fish is unaware of your presence. (" + ((1f - config.UnawareMult) * 100) + "% easier catch)");

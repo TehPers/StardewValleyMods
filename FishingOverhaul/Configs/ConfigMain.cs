@@ -27,7 +27,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         public float TreasureStreakEffect { get; set; } = 0.02f;
 
         public float BaseDifficultyMult { get; set; } = 0.85f;
-        public float DifficultyStreakEffect { get; set; } = 0.05f;
+        public float DifficultyStreakEffect { get; set; } = 0.02f;
 
         /* Chance for fish difficulty to be reduced */
         public float UnawareMult { get; set; } = 0.5f;
