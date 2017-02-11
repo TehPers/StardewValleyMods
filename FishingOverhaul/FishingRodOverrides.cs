@@ -95,11 +95,14 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             // Select rewards
             float chance = 1f;
+            int streak = FishHelper.getStreak(lastUser);
             while (possibleLoot.Count > 0 && Game1.random.NextDouble() <= chance) {
                 bool rewarded = false;
                 ConfigTreasure.TreasureData selected = null;
                 foreach (ConfigTreasure.TreasureData treasure in possibleLoot) {
-                    if (Game1.random.NextDouble() < treasure.chance * (FishHelper.getStreak(lastUser) > 0 ? config.PerfectTreasureQualityMult : 1f)) {
+                    double lootChance = treasure.chance + streak * config.StreakLootQuality + Game1.dailyLuck * config.DailyLuckLootQuality;
+                    lootChance *= streak > 0 ? config.PerfectTreasureQualityMult : 1f;
+                    if (Game1.random.NextDouble() < lootChance) {
                         int id = treasure.id + Game1.random.Next(treasure.idRange - 1);
 
                         if (id == Objects.LOST_BOOK) {

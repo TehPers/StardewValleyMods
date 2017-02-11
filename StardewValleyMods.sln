@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataInjector", "DataInjecto
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShroomSpotter", "ShroomSpotter\ShroomSpotter.csproj", "{A1609132-D5DB-4ABA-A2ED-EFA814FB2A48}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntoaroxFramework", "..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Decompiled\EntoraxFramework\EntoaroxFramework\EntoaroxFramework.csproj", "{658DBEA7-1010-4E1E-8228-232F7394D2D1}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Framework\Framework.projitems*{34ab28b0-dc3c-45c2-ac0d-5585169154a5}*SharedItemsImports = 4
@@ -40,6 +42,10 @@ Global
 		{A1609132-D5DB-4ABA-A2ED-EFA814FB2A48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1609132-D5DB-4ABA-A2ED-EFA814FB2A48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1609132-D5DB-4ABA-A2ED-EFA814FB2A48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{658DBEA7-1010-4E1E-8228-232F7394D2D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{658DBEA7-1010-4E1E-8228-232F7394D2D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{658DBEA7-1010-4E1E-8228-232F7394D2D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{658DBEA7-1010-4E1E-8228-232F7394D2D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

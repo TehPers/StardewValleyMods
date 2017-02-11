@@ -1,21 +1,20 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Entoarox.Framework;
+using Microsoft.Xna.Framework.Content;
 using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace TehPers.Stardew.DataInjector {
-    public class DiffContentManager : LocalizedContentManager {
+    public class DiffContentManager /*: IContentInjector*/ {
         private string path;
         public ContentManager modContent;
+        public ContentManager entoContent = null;
 
-        private Dictionary<string, object> cache = new Dictionary<string, object>();
-
-        public DiffContentManager(IServiceProvider service, string rootDirectory, string path) : base(service, rootDirectory) {
+        public DiffContentManager(string path) {
             if (!Directory.Exists(path)) {
                 try {
                     ModEntry.INSTANCE.Monitor.Log("Creating directory " + path);
@@ -31,22 +30,12 @@ namespace TehPers.Stardew.DataInjector {
             this.path = path;
         }
 
-        public override T Load<T>(string assetName) {
-            if (cache.ContainsKey(assetName))
-                return (T) cache[assetName];
-
-            T orig = base.Load<T>(assetName);
-
-            if (orig is Dictionary<int, string>) {
-                orig = (T) (object) this.MergeMods(orig as Dictionary<int, string>, assetName);
+        public void InjectContent<T>(string assetName, ref T asset) {
+            if (asset is Dictionary<int, string>) {
+                asset = (T) (object) this.MergeMods(asset as Dictionary<int, string>, assetName);
             } else {
-                //T tmp = orig;
-                //orig = default(T);
-                orig = this.LoadModded(orig, assetName);
+                asset = this.LoadModded(asset, assetName);
             }
-
-            cache[assetName] = orig;
-            return orig;
         }
 
         public Dictionary<K, V> MergeMods<K, V>(Dictionary<K, V> orig, string assetName) {
@@ -67,6 +56,7 @@ namespace TehPers.Stardew.DataInjector {
                 Uri fileUri = new Uri(Path.Combine(filePath, assetName));
                 Uri localUri = modUri.MakeRelativeUri(fileUri);
                 string localConfigPath = localUri.ToString().Replace('/', '\\');
+                localConfigPath = WebUtility.UrlDecode(localConfigPath);
 
                 try {
                     // TODO: Load the xnb file, then calculate diffs with the original and merge the changes
@@ -116,6 +106,7 @@ namespace TehPers.Stardew.DataInjector {
                 Uri fileUri = new Uri(Path.Combine(filePath, assetName));
                 Uri localUri = modUri.MakeRelativeUri(fileUri);
                 string localConfigPath = localUri.ToString().Replace('/', '\\');
+                localConfigPath = WebUtility.UrlDecode(localConfigPath);
 
                 try {
                     // TODO: Load the xnb file, then calculate diffs with the original and merge the changes

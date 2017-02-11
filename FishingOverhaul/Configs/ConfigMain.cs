@@ -10,7 +10,9 @@ using TehPers.Stardew.Framework;
 namespace TehPers.Stardew.FishingOverhaul.Configs {
     public class ConfigMain {
         public bool ModEnabled { get; set; } = true;
-
+        public bool OverrideFishing { get; set; } = true;
+        public bool OverrideTreasureLoot { get; set; } = true;
+        
         public float CatchSpeed { get; set; } = 1f;
         public float TreasureCatchSpeed { get; set; } = 1.25f;
 
@@ -43,6 +45,9 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         public float AdditionalLootChance { get; set; } = 0.5f;
         public float StreakAdditionalLootChance { get; set; } = 0.01f;
         public bool AllowDuplicateLoot { get; set; } = true;
+
+        public float StreakLootQuality { get; set; } = 0.015f;
+        public float DailyLuckLootQuality { get; set; } = 1f;
 
         // Getters for simplicity
         internal ConfigTreasure.TreasureData[] PossibleLoot {
