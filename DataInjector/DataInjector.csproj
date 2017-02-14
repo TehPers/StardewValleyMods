@@ -34,7 +34,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntoaroxFramework">
+    <Reference Include="EntoaroxFramework, Version=1.6.5.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Mods\!EntoaroxFramework\EntoaroxFramework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -47,10 +48,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DiffContentManager.cs" />
+    <Compile Include="ContentMerger.cs" />
+    <Compile Include="CustomContentManager.cs" />
     <Compile Include="EventConfig.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
+    <Compile Include="NBT\NBTBase.cs" />
+    <Compile Include="NBT\NBTByte.cs" />
+    <Compile Include="NBT\NBTTagList.cs" />
+    <Compile Include="NBT\NBTIntArray.cs" />
+    <Compile Include="NBT\NBTByteArray.cs" />
+    <Compile Include="NBT\NBTTagCompound.cs" />
+    <Compile Include="NBT\NBTEnd.cs" />
+    <Compile Include="NBT\NBTDouble.cs" />
+    <Compile Include="NBT\NBTFloat.cs" />
+    <Compile Include="NBT\NBTLong.cs" />
+    <Compile Include="NBT\NBTInt.cs" />
+    <Compile Include="NBT\NBTShort.cs" />
+    <Compile Include="NBT\NBTString.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -91,4 +106,9 @@
     <Copy SourceFiles="$(TargetDir)$(TargetName).dll.mdb" DestinationFolder="$(ModPath)" Condition="Exists('$(TargetDir)$(TargetName).dll.mdb')" />
     <Copy SourceFiles="$(ProjectDir)manifest.json" DestinationFolder="$(ModPath)" />
   </Target>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
 </Project>

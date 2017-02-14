@@ -38,8 +38,6 @@ namespace TehPers.Stardew.FishingOverhaul {
         private int origStreak;
         private int origQuality;
 
-        private bool exitImmediately;
-
         public Farmer user;
 
         public CustomBobberBar(Farmer user, int whichFish, float fishSize, bool treasure, int bobber, int waterDepth) : base(whichFish, fishSize, treasure, bobber) {
@@ -60,7 +58,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             difficultyField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "difficulty");
             fishQualityField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<int>(this, "fishQuality");
             perfectField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "perfect");
-            
+
             sparkleTextField = ModEntry.INSTANCE.Helper.Reflection.GetPrivateField<SparklingText>(this, "sparkleText");
 
             lastDistanceFromCatching = distanceFromCatchingField.GetValue();
@@ -98,11 +96,6 @@ namespace TehPers.Stardew.FishingOverhaul {
         }
 
         public override void update(GameTime time) {
-            if (exitImmediately) {
-                Game1.exitActiveMenu();
-                return;
-            }
-
             // Speed warp on normal catching
             float distanceFromCatching = distanceFromCatchingField.GetValue();
             float delta = distanceFromCatching - this.lastDistanceFromCatching;

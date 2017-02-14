@@ -68,6 +68,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
             public int maxAmount { get; set; }
             public int minCastDistance { get; set; }
             public int minLevel { get; set; }
+            /**<remarks>This is ignored when level >= 10</remarks>**/
             public int maxLevel { get; set; }
             public int idRange { get; set; }
             public bool meleeWeapon { get; set; }
@@ -79,9 +80,14 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                 this.maxAmount = Math.Max(this.minAmount, maxAmount);
                 this.minCastDistance = Math.Min(5, Math.Max(0, minDistance));
                 this.minLevel = minLevel;
-                this.maxLevel = maxLevel;
+                this.maxLevel = Math.Max(minLevel, maxLevel);
                 this.idRange = Math.Max(1, idRange);
                 this.meleeWeapon = meleeWeapon;
+            }
+
+            public bool isValid(int level, int distance) {
+                return level >= this.minLevel && (this.maxLevel >= 10 || level <= this.maxLevel) &&
+                    distance >= this.minCastDistance;
             }
         }
     }

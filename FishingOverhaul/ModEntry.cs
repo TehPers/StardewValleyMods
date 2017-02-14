@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -10,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TehPers.Stardew.FishingOverhaul.Configs;
 using TehPers.Stardew.Framework;
-using static TehPers.Stardew.FishingOverhaul.Configs.ConfigFish;
 
 namespace TehPers.Stardew.FishingOverhaul {
     /// <summary>The mod entry point.</summary>
@@ -53,13 +51,20 @@ namespace TehPers.Stardew.FishingOverhaul {
 
         #region Events
         private void UpdateTick(object sender, EventArgs e) {
+            // Auto-populate the fish config file if it's empty
             if (this.fishConfig.PossibleFish == null) {
-                // Auto-populate the fish config file if it's empty
                 this.fishConfig.populateData();
                 this.Helper.WriteJsonFile("fish.json", this.fishConfig);
             }
 
             tryChangeFishingTreasure();
+
+            if (config.IndestructibleTackle && Game1.player.CurrentTool is FishingRod) {
+                FishingRod rod = Game1.player.CurrentTool as FishingRod;
+                StardewValley.Object bobber = rod.attachments[1];
+                if (bobber != null)
+                    bobber.scale.Y = 1.0f;
+            }
         }
 
         private void KeyPressed(object sender, EventArgsKeyPressed e) {

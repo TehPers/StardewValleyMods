@@ -58,7 +58,7 @@ namespace TehPers.Stardew.ShroomSpotter {
                 List<ClickableTextureComponent> calendarDays = this.Helper.Reflection.GetPrivateValue<List<ClickableTextureComponent>>(menu, "calendarDays");
                 IPrivateField<string> hoverField = this.Helper.Reflection.GetPrivateField<string>(menu, "hoverText");
                 string hoverText = hoverField.GetValue();
-                if (!(hoverText.Contains("Shrooms") || hoverText.Contains("shrooms"))) {
+                if (calendarDays != null && !(hoverText.Contains("Shrooms") || hoverText.Contains("shrooms"))) {
                     for (int day = 1; day <= 28; day++) {
                         ClickableTextureComponent component = calendarDays[day - 1];
                         if (component.bounds.Contains(Game1.getMouseX(), Game1.getMouseY())) {
@@ -85,6 +85,7 @@ namespace TehPers.Stardew.ShroomSpotter {
             if (Game1.activeClickableMenu is Billboard) {
                 Billboard menu = (Billboard) Game1.activeClickableMenu;
                 List<ClickableTextureComponent> calendarDays = this.Helper.Reflection.GetPrivateValue<List<ClickableTextureComponent>>(menu, "calendarDays");
+                if (calendarDays == null) return;
                 string hoverText = this.Helper.Reflection.GetPrivateValue<string>(menu, "hoverText");
                 SpriteBatch b = Game1.spriteBatch;
 

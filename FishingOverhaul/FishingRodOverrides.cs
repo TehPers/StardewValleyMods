@@ -53,17 +53,19 @@ namespace TehPers.Stardew.FishingOverhaul {
                 treasure = true;
 
             // Override caught fish
-            int origExtra = extra;
-            extra = FishHelper.getRandomFish(clearWaterDistance);
-            if (extra >= 167 && extra < 173) {
-                if (false) {
-                    Game1.showGlobalMessage("No valid fish to catch! Giving junk instead.");
-                    StardewValley.Object o = new StardewValley.Object(extra, 1, false, -1, 0);
-                    rod.pullFishFromWater(extra, -1, 0, 0, false, false);
-                    return;
-                } else {
-                    ModEntry.INSTANCE.Monitor.Log("No valid fish to catch! Using original fish instead.", LogLevel.Warn);
-                    extra = origExtra;
+            if (!FishHelper.isLegendary(extra) || config.OverrideLegendaries) {
+                int origExtra = extra;
+                extra = FishHelper.getRandomFish(clearWaterDistance);
+                if (extra >= 167 && extra < 173) {
+                    if (false) {
+                        Game1.showGlobalMessage("No valid fish to catch! Giving junk instead.");
+                        StardewValley.Object o = new StardewValley.Object(extra, 1, false, -1, 0);
+                        rod.pullFishFromWater(extra, -1, 0, 0, false, false);
+                        return;
+                    } else {
+                        ModEntry.INSTANCE.Monitor.Log("No valid fish to catch! Using original fish instead.", LogLevel.Warn);
+                        extra = origExtra;
+                    }
                 }
             }
 
@@ -89,7 +91,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             if (extra == 1) rewards.Add(new StardewValley.Object(whichFish, 1, false, -1, fishQuality));
 
             List<ConfigTreasure.TreasureData> possibleLoot = new List<ConfigTreasure.TreasureData>(config.PossibleLoot)
-                .Where(treasure => lastUser.FishingLevel >= treasure.minLevel && lastUser.FishingLevel <= treasure.maxLevel && clearWaterDistance >= treasure.minCastDistance).ToList();
+                .Where(treasure => treasure.isValid(lastUser.FishingLevel, clearWaterDistance)).ToList();
             //possibleLoot.Sort((a, b) => a.chance.CompareTo(b.chance));
             possibleLoot.Shuffle();
 

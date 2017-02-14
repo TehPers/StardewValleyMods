@@ -12,13 +12,16 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         public bool ModEnabled { get; set; } = true;
         public bool OverrideFishing { get; set; } = true;
         public bool OverrideTreasureLoot { get; set; } = true;
-        
+        public bool OverrideLegendaries { get; set; } = true;
+
         public float CatchSpeed { get; set; } = 1f;
         public float TreasureCatchSpeed { get; set; } = 1.25f;
-
+        
         public bool RecatchableLegendaries { get; set; } = false;
 
         public string GetFishInWaterKey { get; set; } = "NumPad9";
+
+        public bool IndestructibleTackle { get; set; } = false;
 
         /* Chance for treasure to appear */
         public float TreasureChance { get; set; } = 0.15f;
