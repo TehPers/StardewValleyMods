@@ -1,6 +1,7 @@
 ﻿using Entoarox.Framework;
 using Entoarox.Framework.ContentManager;
 using Entoarox.Framework.Extensions;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -9,7 +10,10 @@ using StardewValley.BellsAndWhistles;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using TehPers.Stardew.DataInjector.NBT;
+using TehPers.Stardew.Framework;
 
 namespace TehPers.Stardew.DataInjector {
     public class ModEntry : Mod {
@@ -39,7 +43,7 @@ namespace TehPers.Stardew.DataInjector {
             // Testing NBT
 
             // Writing
-            NBTTagCompound tag = new NBTTagCompound();
+            /*NBTTagCompound tag = new NBTTagCompound();
             tag.Set("Name", "Test");
             tag.Set("Success", (byte) 1);
 
@@ -50,14 +54,63 @@ namespace TehPers.Stardew.DataInjector {
             // Reading
             using (FileStream stream = new FileStream(Path.Combine(Helper.DirectoryPath, "test.dat"), FileMode.Open, FileAccess.Read)) {
                 tag = (NBTBase.ReadStream(stream) as NBTTagCompound) ?? null;
-            }
-            
+            }*/
         }
 
         private void onContentInit() {
             this.Monitor.Log("Loading content injector");
             this.merger = this.merger ?? new ContentMerger(Path.Combine(this.Helper.DirectoryPath, "Content"));
-            SmartContentManager.ContentHandlers.Add(this.merger);
+            //SmartContentManager.ContentHandlers.Add(this.merger);
+
+            // Get all xnbs that need delegates
+            Dictionary<string, Type> xnbsFound = new Dictionary<string, Type>();
+
+            foreach (string mod in Directory.GetDirectories(Path.Combine(Helper.DirectoryPath, "Content"))) {
+                List<string> checkDirs = Directory.GetDirectories(mod).ToList();
+                while (checkDirs.Count > 0) {
+                    string dir = checkDirs[0];
+                    checkDirs.RemoveAt(0);
+                    checkDirs.AddRange(Directory.GetDirectories(dir));
+
+                    // Go through each xnb file
+                    string[] curList = Directory.GetFiles(dir, "*.xnb");
+                    foreach (string xnb in curList) {
+                        try {
+                            string localModPath = merger.getModLocalPath(mod, xnb);
+                            localModPath = localModPath.Substring(0, localModPath.Length - 4);
+                            object o = merger.modContent.Load<object>(localModPath);
+
+                            if (o != null) {
+                                localModPath = localModPath.Substring(localModPath.IndexOf('\\') + 1);
+                                xnbsFound[localModPath] = o.GetType();
+                            }
+                        } catch (Exception ex) {
+                            this.Monitor.LogOnce("Unable to get type of " + xnb, LogLevel.Warn, ex);
+                        }
+                    }
+                }
+            }
+
+            // Create delegates
+            IContentRegistry registry = EntoFramework.GetContentRegistry();
+            MethodInfo registerHandler = typeof(IContentRegistry).GetMethod("RegisterHandler");
+            MethodInfo injector = merger.GetType().GetMethod("Inject", BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo delegateCreator = typeof(ModEntry).GetMethod("CreateDelegate", BindingFlags.Instance | BindingFlags.Public);
+            foreach (KeyValuePair<string, Type> xnb in xnbsFound) {
+                try {
+                    Delegate d = (Delegate) delegateCreator.MakeGenericMethod(xnb.Value)
+                        .Invoke(this, new object[] { injector.MakeGenericMethod(xnb.Value) });
+                    registerHandler.MakeGenericMethod(xnb.Value).Invoke(registry, new object[] { xnb.Key, d });
+                } catch (Exception ex) {
+                    this.Monitor.LogOnce("Derp", LogLevel.Debug, ex);
+                }
+            }
+        }
+
+        public FileLoadMethod<T> CreateDelegate<T>(MethodInfo method) {
+            return (loader, asset) => {
+                return (T) method.Invoke(merger, new object[] { loader, asset });
+            };
         }
 
         #region Event Handlers
@@ -72,6 +125,17 @@ namespace TehPers.Stardew.DataInjector {
 
                 this.Monitor.Log("Loading event injections");
                 this.loadEvents();
+
+                object o = null;
+
+                try {
+                    o = ((ContentManager) Game1.content).Load<object>("Data\\Bundles");
+                } catch (ContentLoadException ex) {
+                    this.Monitor.Log(ex.GetType().Name);
+                    this.Monitor.LogOnce("Here's your error:", LogLevel.Debug, ex);
+                }
+
+                this.Monitor.Log(o.ToString());
             }
         }
 

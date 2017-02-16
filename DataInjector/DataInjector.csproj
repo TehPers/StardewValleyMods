@@ -114,4 +114,5 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  <Import Project="..\Framework\Framework.projitems" Label="Shared" />
 </Project>

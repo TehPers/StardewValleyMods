@@ -1,6 +1,7 @@
 ﻿using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection;
 
 namespace TehPers.Stardew.Framework {
@@ -27,6 +28,12 @@ namespace TehPers.Stardew.Framework {
                 list[k] = list[n];
                 list[n] = value;
             }
+        }
+
+        public static string LocalizePath(string baseDir, string otherDir) {
+            Uri baseUri = new Uri(baseDir);
+            Uri otherUri = new Uri(otherDir);
+            return WebUtility.UrlDecode(baseUri.MakeRelativeUri(otherUri).ToString());
         }
 
         public static Season? toSeason(string s) {

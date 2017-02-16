@@ -1,4 +1,5 @@
-﻿using Entoarox.Framework.ContentManager;
+﻿using Entoarox.Framework;
+using Entoarox.Framework.ContentManager;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,15 +14,11 @@ using System.Reflection;
 using xTile.Dimensions;
 
 namespace TehPers.Stardew.DataInjector {
-    public class ContentMerger : ContentHandler {
+    public class ContentMerger {
         private string path;
         public ContentManager modContent;
-        public ContentManager entoContent = null;
         internal Dictionary<string, object> cache = new Dictionary<string, object>();
-
         private static List<Type> unmergables = new List<Type>();
-
-        public override bool Injector { get; } = true;
 
         public ContentMerger(string path) {
             if (!Directory.Exists(path)) {
@@ -39,18 +36,12 @@ namespace TehPers.Stardew.DataInjector {
             this.path = path;
         }
 
-        public override bool CanInject<T>(string assetName) {
-            return cache.ContainsKey(assetName) || this.getModDirs(assetName).Length > 0;
-        }
-
-        public override T Load<T>(string assetName, Func<string, T> loadBase) {
-            throw new NotImplementedException();
-        }
-
-        public override void Inject<T>(string assetName, ref T asset) {
+        public T Inject<T>(LoadBase<T> loader, string assetName) {
+            T asset = loader(assetName);
             if (cache.ContainsKey(assetName))
                 asset = (T) cache[assetName];
             else {
+                bool shouldCache = true;
                 if (this.getModDirs(assetName).Length > 0) {
                     Type t = typeof(T);
                     if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
@@ -60,9 +51,10 @@ namespace TehPers.Stardew.DataInjector {
                         //asset = (T) (object) this.MergeMods(asset as Dictionary<int, string>, assetName);
                     } else if (t == typeof(Texture2D)) {
                         Texture2D texture = asset as Texture2D;
-                        if (texture == null || texture.Format == SurfaceFormat.Color)
+                        if (texture == null || texture.Format == SurfaceFormat.Color) {
                             asset = (T) (object) this.MergeTextures<Color>(asset as Texture2D, assetName);
-                        else {
+                            shouldCache = false;
+                        } else {
                             ModEntry.INSTANCE.Monitor.Log("Cannot merge this texture format, overriding instead: " + Enum.GetName(typeof(SurfaceFormat), texture.Format), LogLevel.Info);
                             asset = this.ReplaceIfExists(asset, assetName);
                         }
@@ -74,8 +66,10 @@ namespace TehPers.Stardew.DataInjector {
                         asset = this.ReplaceIfExists(asset, assetName);
                     }
                 }
-                cache[assetName] = asset;
+                if (shouldCache)
+                    cache[assetName] = asset;
             }
+            return asset;
         }
 
         public string[] getModDirs(string assetName) {
