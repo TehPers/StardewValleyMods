@@ -215,24 +215,9 @@ namespace TehPers.Stardew.DataInjector {
             return true;
         }
 
-        public static bool MergeTexture(string assetName, Texture tex) {
-            /*ModEntry mod = ModEntry.INSTANCE;
-
-            try {
-                T r = Game1.content.Load<T>(assetName);
-                if (!mod.merger.cache.ContainsKey(assetName))
-                    mod.merger.cache[assetName] = r;
-            } catch (Exception ex) {
-                // Asset didn't exist
-            }
-
-            if (!mod.merger.cache.ContainsKey(assetName) || mod.merger.cache[assetName].GetType().IsAssignableFrom(typeof(T)))
-                mod.merger.cache[assetName] = obj;
-            else
-                return false;*/
-
-            return true;
-        }
+        /*public static bool MergeTexture(string assetName, Texture tex) {
+            I'll make this later I guess
+        }*/
 
         /**
          * <summary>Attempts to inject object as the specified asset. Returns false if an asset with that name exists and they are not compatible types</summary>

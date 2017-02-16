@@ -68,6 +68,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Credits.txt" />
     <Content Include="resources\EntoScepter.png" />
     <Content Include="resources\FaytheScepter.png" />
     <Content Include="resources\FireScepter.png" />

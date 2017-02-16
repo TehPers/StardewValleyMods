@@ -53,8 +53,11 @@
     <Compile Include="EventConfig.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
+    <Compile Include="ModObject.cs" />
     <Compile Include="NBT\NBTBase.cs" />
     <Compile Include="NBT\NBTByte.cs" />
+    <Compile Include="NBT\NBTTrue.cs" />
+    <Compile Include="NBT\NBTFalse.cs" />
     <Compile Include="NBT\NBTTagList.cs" />
     <Compile Include="NBT\NBTIntArray.cs" />
     <Compile Include="NBT\NBTByteArray.cs" />
