@@ -38,36 +38,38 @@ namespace TehPers.Stardew.DataInjector {
 
         public T Inject<T>(LoadBase<T> loader, string assetName) {
             T asset = loader(assetName);
-            if (cache.ContainsKey(assetName))
-                asset = (T) cache[assetName];
-            else {
-                bool shouldCache = true;
-                if (this.getModDirs(assetName).Length > 0) {
-                    Type t = typeof(T);
-                    if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
-                        asset = (T) this.GetType().GetMethod("MergeDictionary", BindingFlags.Public | BindingFlags.Instance)
-                            .MakeGenericMethod(t.GetGenericArguments())
-                            .Invoke(this, new object[] { asset, assetName });
-                        //asset = (T) (object) this.MergeMods(asset as Dictionary<int, string>, assetName);
-                    } else if (t == typeof(Texture2D)) {
-                        Texture2D texture = asset as Texture2D;
-                        if (texture == null || texture.Format == SurfaceFormat.Color) {
-                            asset = (T) (object) this.MergeTextures<Color>(asset as Texture2D, assetName);
-                            shouldCache = false;
+            try {
+                if (false || cache.ContainsKey(assetName))
+                    return (T) cache[assetName];
+                else {
+                    if (this.getModDirs(assetName).Length > 0) {
+                        Type t = typeof(T);
+                        if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
+                            asset = (T) this.GetType().GetMethod("MergeDictionary", BindingFlags.Public | BindingFlags.Instance)
+                                .MakeGenericMethod(t.GetGenericArguments())
+                                .Invoke(this, new object[] { asset, assetName });
+                            //asset = (T) (object) this.MergeMods(asset as Dictionary<int, string>, assetName);
+                        } else if (t == typeof(Texture2D)) {
+                            Texture2D texture = asset as Texture2D;
+                            if (texture == null || texture.Format == SurfaceFormat.Color)
+                                asset = (T) (object) this.MergeTextures<Color>(texture, assetName);
+                            else {
+                                ModEntry.INSTANCE.Monitor.Log("Cannot merge this texture format, overriding instead: " + Enum.GetName(typeof(SurfaceFormat), texture.Format), LogLevel.Info);
+                                asset = this.ReplaceIfExists(asset, assetName);
+                            }
                         } else {
-                            ModEntry.INSTANCE.Monitor.Log("Cannot merge this texture format, overriding instead: " + Enum.GetName(typeof(SurfaceFormat), texture.Format), LogLevel.Info);
+                            if (!unmergables.Contains(typeof(T))) {
+                                ModEntry.INSTANCE.Monitor.Log("Cannot merge this type, overriding instead: " + typeof(T).ToString(), LogLevel.Trace);
+                                unmergables.Add(typeof(T));
+                            }
                             asset = this.ReplaceIfExists(asset, assetName);
                         }
-                    } else {
-                        if (!unmergables.Contains(typeof(T))) {
-                            ModEntry.INSTANCE.Monitor.Log("Cannot merge this type, overriding instead: " + typeof(T).ToString(), LogLevel.Trace);
-                            unmergables.Add(typeof(T));
-                        }
-                        asset = this.ReplaceIfExists(asset, assetName);
                     }
-                }
-                if (shouldCache)
+
                     cache[assetName] = asset;
+                }
+            } catch (Exception ex) {
+                ModEntry.INSTANCE.Monitor.Log(LogLevel.Error, "Derp");
             }
             return asset;
         }
@@ -184,8 +186,6 @@ namespace TehPers.Stardew.DataInjector {
                     ModEntry.INSTANCE.Monitor.Log(ex.Message, LogLevel.Error);
                     ModEntry.INSTANCE.Monitor.Log(ex.StackTrace, LogLevel.Trace);
                 }
-
-                if (modTexture != null) modTexture.Dispose();
             }
 
             HashSet<int> relevantMods = new HashSet<int>(diffMods.Values);

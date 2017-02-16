@@ -115,10 +115,20 @@ namespace TehPers.Stardew.DataInjector {
 
         #region Event Handlers
         private void UpdateTick(object sender, EventArgs e) {
+            if (this.merger != null) {
+                string[] disposedTextures = this.merger.cache.Where(kv => kv.Value is Texture2D)
+                    .Where(kv => (kv.Value as Texture2D).IsDisposed)
+                    .Select(kv => kv.Key)
+                    .ToArray();
+
+                foreach (string tex in disposedTextures)
+                    this.merger.cache.Remove(tex);
+            }
+
             if (!loaded && Game1.content != null && Game1.content.GetType() == typeof(LocalizedContentManager)) {
-                this.merger = this.merger ?? new ContentMerger(Path.Combine(this.Helper.DirectoryPath, "Content"));
+                /*this.merger = this.merger ?? new ContentMerger(Path.Combine(this.Helper.DirectoryPath, "Content"));
                 tmpManager = tmpManager ?? new CustomContentManager(Game1.content.RootDirectory, Game1.content.ServiceProvider);
-                Game1.content = tmpManager;
+                Game1.content = tmpManager;*/
             } else if (!loaded && Game1.content is SmartContentManager) {
                 this.loaded = true;
                 this.reloadContent();
