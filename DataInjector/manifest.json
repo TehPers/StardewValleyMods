@@ -1,14 +1,14 @@
 ﻿
 {
   "Author": "TehPers",
-  "Description": "Injects various information into the game",
-  "EntryDll": "DataInjector.dll",
-  "Name": "Data Injector",
-  "UniqueID": "DataInjector",
+  "Description": "Allows mods to merge content into the game",
+  "EntryDll": "SMCL.dll",
+  "Name": "Stardew Modding Compatibility Layer",
+  "UniqueID": "SMCL",
   "Version": {
-    "MajorVersion": 1,
+    "MajorVersion": 0,
     "MinorVersion": 1,
-    "PatchVersion": 1,
+    "PatchVersion": 0,
     "Build": ""
   }
 }

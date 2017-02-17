@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TehPers.Stardew.DataInjector {
+namespace TehPers.Stardew.SCCL {
     public class ModConfig {
 
         public bool ModEnabled { get; set; } = true;

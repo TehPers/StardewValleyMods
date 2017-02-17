@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TehPers.Stardew.DataInjector.NBT {
+namespace TehPers.Stardew.SCCL.NBT {
     public class NBTTrue : NBTBase {
         protected override void ReadData(BinaryReader stream) {
             // Nothing to read

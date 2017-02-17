@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TehPers.Stardew.DataInjector.NBT {
+namespace TehPers.Stardew.SCCL.NBT {
     public class NBTTagCompound : NBTBase {
         public Dictionary<string, NBTBase> Value { get; set; } = new Dictionary<string, NBTBase>();
         public NBTBase this[string key] {

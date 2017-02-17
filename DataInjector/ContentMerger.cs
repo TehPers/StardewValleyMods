@@ -1,5 +1,4 @@
 ﻿using Entoarox.Framework;
-using Entoarox.Framework.ContentManager;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,7 +12,7 @@ using System.Net;
 using System.Reflection;
 using xTile.Dimensions;
 
-namespace TehPers.Stardew.DataInjector {
+namespace TehPers.Stardew.SCCL {
     public class ContentMerger {
         private string path;
         public ContentManager modContent;
@@ -31,7 +30,6 @@ namespace TehPers.Stardew.DataInjector {
                     return;
                 }
             }
-
             this.modContent = new ContentManager(Game1.content.ServiceProvider, path);
             this.path = path;
         }

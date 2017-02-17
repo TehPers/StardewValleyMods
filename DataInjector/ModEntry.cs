@@ -1,7 +1,5 @@
 ﻿using Entoarox.Framework;
-using Entoarox.Framework.ContentManager;
 using Entoarox.Framework.Extensions;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -12,10 +10,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using TehPers.Stardew.DataInjector.NBT;
-using TehPers.Stardew.Framework;
 
-namespace TehPers.Stardew.DataInjector {
+namespace TehPers.Stardew.SCCL {
     public class ModEntry : Mod {
         internal static ModEntry INSTANCE;
 
@@ -38,7 +34,6 @@ namespace TehPers.Stardew.DataInjector {
 
             GameEvents.UpdateTick += UpdateTick;
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
-            EntoFramework.onContentInit += onContentInit;
 
             // Testing NBT
 
@@ -57,10 +52,9 @@ namespace TehPers.Stardew.DataInjector {
             }*/
         }
 
-        private void onContentInit() {
-            this.Monitor.Log("Loading content injector");
+        private void registerHandlers() {
+            this.Monitor.Log("Loading delegates");
             this.merger = this.merger ?? new ContentMerger(Path.Combine(this.Helper.DirectoryPath, "Content"));
-            //SmartContentManager.ContentHandlers.Add(this.merger);
 
             // Get all xnbs that need delegates
             Dictionary<string, Type> xnbsFound = new Dictionary<string, Type>();
@@ -102,9 +96,11 @@ namespace TehPers.Stardew.DataInjector {
                         .Invoke(this, new object[] { injector.MakeGenericMethod(xnb.Value) });
                     registerHandler.MakeGenericMethod(xnb.Value).Invoke(registry, new object[] { xnb.Key, d });
                 } catch (Exception ex) {
-                    this.Monitor.LogOnce("Derp", LogLevel.Debug, ex);
+                    this.Monitor.LogOnce("Failed to create delegate: " + xnb.Value.ToString(), LogLevel.Error, ex);
                 }
             }
+
+            this.Monitor.Log(xnbsFound.Count + " delegates registered.", LogLevel.Info);
         }
 
         public FileLoadMethod<T> CreateDelegate<T>(MethodInfo method) {
@@ -126,26 +122,17 @@ namespace TehPers.Stardew.DataInjector {
             }
 
             if (!loaded && Game1.content != null && Game1.content.GetType() == typeof(LocalizedContentManager)) {
-                /*this.merger = this.merger ?? new ContentMerger(Path.Combine(this.Helper.DirectoryPath, "Content"));
+                this.merger = this.merger ?? new ContentMerger(Path.Combine(this.Helper.DirectoryPath, "Content"));
                 tmpManager = tmpManager ?? new CustomContentManager(Game1.content.RootDirectory, Game1.content.ServiceProvider);
-                Game1.content = tmpManager;*/
-            } else if (!loaded && Game1.content is SmartContentManager) {
+                Game1.content = tmpManager;
+            } else if (!loaded && !(Game1.content.GetType() == typeof(LocalizedContentManager))) {
                 this.loaded = true;
-                this.reloadContent();
+                this.registerHandlers();
+                EntoFramework.GetContentRegistry().ReloadStaticReferences();
+                this.reloadContent(); // Reloading twice is fine since I cache any changed files
 
                 this.Monitor.Log("Loading event injections");
                 this.loadEvents();
-
-                object o = null;
-
-                try {
-                    o = ((ContentManager) Game1.content).Load<object>("Data\\Bundles");
-                } catch (ContentLoadException ex) {
-                    this.Monitor.Log(ex.GetType().Name);
-                    this.Monitor.LogOnce("Here's your error:", LogLevel.Debug, ex);
-                }
-
-                this.Monitor.Log(o.ToString());
             }
         }
 
@@ -258,6 +245,7 @@ namespace TehPers.Stardew.DataInjector {
             Game1.buffsIcons = Game1.content.Load<Texture2D>("TileSheets\\BuffsIcons");
             Game1.objectInformation = Game1.content.Load<Dictionary<int, string>>("Data\\ObjectInformation");
             Game1.bigCraftablesInformation = Game1.content.Load<Dictionary<int, string>>("Data\\BigCraftablesInformation");
+            Tool.weaponsTexture = Game1.content.Load<Texture2D>("TileSheets\\weapons");
         }
         #endregion
 
@@ -269,7 +257,7 @@ namespace TehPers.Stardew.DataInjector {
          * <param name="value">The data to inject into the key</param>
          **/
         public static bool MergeData<TKey, TVal>(string assetName, TKey key, TVal value) {
-            ModEntry mod = ModEntry.INSTANCE;
+            ModEntry mod = INSTANCE;
 
             try {
                 Dictionary<TKey, TVal> r = Game1.content.Load<Dictionary<TKey, TVal>>(assetName);

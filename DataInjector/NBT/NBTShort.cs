@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TehPers.Stardew.DataInjector.NBT {
+namespace TehPers.Stardew.SCCL.NBT {
     public class NBTShort : NBTBase {
         public short Value { get; set; }
 

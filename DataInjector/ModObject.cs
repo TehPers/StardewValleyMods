@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace TehPers.Stardew.DataInjector {
+namespace TehPers.Stardew.SCCL {
     public class ModObject : StardewValley.Object {
 
         public virtual Texture2D Texture { get; set; }

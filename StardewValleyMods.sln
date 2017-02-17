@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CombatOverhaul", "CombatOve
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Framework", "Framework\Framework.shproj", "{527F9A5A-1E96-448D-BA89-BAAB98615B7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataInjector", "DataInjector\DataInjector.csproj", "{45E35EE3-8D19-4E0F-B7EE-2C29F7E5C3E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCCL", "DataInjector\SCCL.csproj", "{45E35EE3-8D19-4E0F-B7EE-2C29F7E5C3E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShroomSpotter", "ShroomSpotter\ShroomSpotter.csproj", "{A1609132-D5DB-4ABA-A2ED-EFA814FB2A48}"
 EndProject

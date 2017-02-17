@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TehPers.Stardew.DataInjector.NBT {
+namespace TehPers.Stardew.SCCL.NBT {
     /**<summary>Custom implementation of NBT which is (hopefully) backwards compatible and won't take too much extra space</summary>**/
     public abstract class NBTBase {
 

@@ -1,7 +1,7 @@
 ﻿using StardewValley;
 using System;
 
-namespace TehPers.Stardew.DataInjector {
+namespace TehPers.Stardew.SCCL {
     /**<summary>Wrapper class for the ContentMerger class. Only used until Ento's SmartContentManager loads in.</summary>**/
     public class CustomContentManager : LocalizedContentManager {
 

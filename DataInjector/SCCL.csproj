@@ -7,8 +7,8 @@
     <ProjectGuid>{45E35EE3-8D19-4E0F-B7EE-2C29F7E5C3E3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TehPers.Stardew.DataInjector</RootNamespace>
-    <AssemblyName>DataInjector</AssemblyName>
+    <RootNamespace>TehPers.Stardew.SCCL</RootNamespace>
+    <AssemblyName>SCCL</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
