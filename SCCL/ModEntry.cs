@@ -134,8 +134,7 @@ namespace TehPers.Stardew.SCCL {
             } else if (!loaded && !(Game1.content.GetType() == typeof(LocalizedContentManager))) {
                 this.loaded = true;
                 this.registerHandlers();
-                EntoFramework.GetContentRegistry().ReloadStaticReferences();
-                this.reloadContent(); // Reloading twice is fine since I cache any changed files
+                this.reloadContent();
 
                 this.Monitor.Log("Loading event injections");
                 this.loadEvents();
@@ -220,7 +219,8 @@ namespace TehPers.Stardew.SCCL {
             }
         }
 
-        private void reloadContent() {
+        public void reloadContent() {
+            EntoFramework.GetContentRegistry().ReloadStaticReferences(); // Reloading twice is fine since I cache any modded files
             Game1.daybg = Game1.content.Load<Texture2D>("LooseSprites\\daybg");
             Game1.nightbg = Game1.content.Load<Texture2D>("LooseSprites\\nightbg");
             Game1.menuTexture = Game1.content.Load<Texture2D>("Maps\\MenuTiles");

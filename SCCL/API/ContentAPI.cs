@@ -29,6 +29,10 @@ namespace TehPers.Stardew.SCCL.API {
             return mods[name];
         }
 
+        public static string[] GetAllInjectors() {
+            return mods.Keys.ToList();
+        }
+
         internal static bool TryCreateDelegate<T>(string assetName) {
             Type assetType = typeof(T);
 

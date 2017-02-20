@@ -15,6 +15,20 @@ namespace TehPers.Stardew.SCCL.API {
         private string _name;
         public string Name => _name;
 
+        private bool _enabled;
+        public bool Enabled {
+            get {
+                return _enabled;
+            }
+            set {
+                if (_enabled != value) {
+                    foreach (string asset in ModContent.Keys)
+                        this.RefreshAsset(asset);
+                }
+                _enabled = value;
+            }
+        }
+
         internal ContentInjector(string name) {
             this._name = name;
         }
@@ -36,13 +50,13 @@ namespace TehPers.Stardew.SCCL.API {
                 ModContent[assetName] = new HashSet<object>();
 
             ModContent[assetName].Add(asset);
-            this.MarkDirty(assetName);
+            this.RefreshAsset(assetName);
 
             ModEntry.INSTANCE.Monitor.Log(string.Format("[{2}] Registered {0} ({1})", assetName, typeof(T).ToString(), Name));
 
             return true;
         }
-        
+
         /**
          * <summary>Registers the given asset with the given asset name</summary>
          * <param name="assetName">The name of the asset to merge</param>
@@ -52,7 +66,7 @@ namespace TehPers.Stardew.SCCL.API {
         public bool RegisterAsset(string assetName, object asset) {
             return (bool) registerAssetMethod.MakeGenericMethod(asset.GetType()).Invoke(this, new object[] { assetName, asset });
         }
-        
+
 
         /**
          * <summary>Removes the given asset with the given asset name</summary>
@@ -64,7 +78,7 @@ namespace TehPers.Stardew.SCCL.API {
             assetName = assetName.Replace('/', '\\');
 
             if (ModContent.ContainsKey(assetName) && ModContent[assetName].Remove(asset)) {
-                this.MarkDirty(assetName);
+                this.RefreshAsset(assetName);
                 ModEntry.INSTANCE.Monitor.Log(string.Format("[{2}] Unregistered {0} ({1})", assetName, asset.GetType().ToString(), Name));
                 return true;
             }
@@ -74,10 +88,12 @@ namespace TehPers.Stardew.SCCL.API {
         /**
          * <summary>Mark the given asset to be regenerated</summary>
          * <param name="assetName">The name of the asset to regenerate</param>
-         * <returns>Whether the asset could be marked dirty</returns>
+         * <returns>Whether the asset needs to be marked</returns>
          **/
-        public bool MarkDirty(string assetName) {
-            return ModEntry.INSTANCE.merger.Cache.Remove(assetName);
+        public bool RefreshAsset(string assetName) {
+            bool b = ModEntry.INSTANCE.merger.Cache.Remove(assetName);
+            if (b) ModEntry.INSTANCE.reloadContent();
+            return b;
         }
     }
 }
