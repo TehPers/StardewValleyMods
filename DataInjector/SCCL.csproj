@@ -37,6 +37,7 @@
     <Reference Include="EntoaroxFramework, Version=1.6.5.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Mods\!EntoaroxFramework\EntoaroxFramework.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,6 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="API\ContentAPI.cs" />
+    <Compile Include="API\ContentInjector.cs" />
     <Compile Include="ContentMerger.cs" />
     <Compile Include="CustomContentManager.cs" />
     <Compile Include="EventConfig.cs" />
@@ -114,5 +117,6 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Framework\Framework.projitems" Label="Shared" />
 </Project>

@@ -1,5 +1,6 @@
 ﻿using Entoarox.Framework;
 using Entoarox.Framework.Extensions;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -9,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using TehPers.Stardew.SCCL.API;
 
 namespace TehPers.Stardew.SCCL {
     public class ModEntry : Mod {
@@ -19,9 +22,14 @@ namespace TehPers.Stardew.SCCL {
         public ContentMerger merger;
         public ModConfig config;
 
+        internal ContentInjector injector;
+
+        // SCCL Content folder loading
+        public string contentPath;
+        public ContentManager modContent;
+
         private List<Type> injectedTypes = new List<Type>();
         private CustomContentManager tmpManager;
-
         private bool loaded = false;
 
         public ModEntry() {
@@ -31,6 +39,18 @@ namespace TehPers.Stardew.SCCL {
         public override void Entry(IModHelper helper) {
             config = helper.ReadConfig<ModConfig>();
             if (!config.ModEnabled) return;
+
+            this.contentPath = Path.Combine(this.Helper.DirectoryPath, "Content");
+            if (!Directory.Exists(this.contentPath)) {
+                try {
+                    this.Monitor.Log("Creating directory " + this.contentPath);
+                    Directory.CreateDirectory(this.contentPath);
+                } catch (Exception ex) {
+                    this.Monitor.Log("Could not create directory " + this.contentPath + "! Please create it yourself.", LogLevel.Error);
+                    this.Monitor.Log(ex.Message, LogLevel.Error);
+                    return;
+                }
+            }
 
             GameEvents.UpdateTick += UpdateTick;
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
@@ -52,14 +72,16 @@ namespace TehPers.Stardew.SCCL {
             }*/
         }
 
+        #region XNB Content Registering
         private void registerHandlers() {
             this.Monitor.Log("Loading delegates");
-            this.merger = this.merger ?? new ContentMerger(Path.Combine(this.Helper.DirectoryPath, "Content"));
+            this.merger = this.merger ?? new ContentMerger();
+            this.modContent = this.modContent ?? new ContentManager(Game1.content.ServiceProvider, this.contentPath);
 
             // Get all xnbs that need delegates
-            Dictionary<string, Type> xnbsFound = new Dictionary<string, Type>();
-
             foreach (string mod in Directory.GetDirectories(Path.Combine(Helper.DirectoryPath, "Content"))) {
+                ContentInjector injector = ContentAPI.GetInjector(Path.GetFileName(mod));
+
                 List<string> checkDirs = Directory.GetDirectories(mod).ToList();
                 while (checkDirs.Count > 0) {
                     string dir = checkDirs[0];
@@ -70,59 +92,43 @@ namespace TehPers.Stardew.SCCL {
                     string[] curList = Directory.GetFiles(dir, "*.xnb");
                     foreach (string xnb in curList) {
                         try {
-                            string localModPath = merger.getModLocalPath(mod, xnb);
+                            string localModPath = getModRelativePath(mod, xnb);
                             localModPath = localModPath.Substring(0, localModPath.Length - 4);
-                            object o = merger.modContent.Load<object>(localModPath);
+                            object modAsset = this.modContent.Load<object>(localModPath);
 
-                            if (o != null) {
-                                localModPath = localModPath.Substring(localModPath.IndexOf('\\') + 1);
-                                xnbsFound[localModPath] = o.GetType();
-                            }
+                            if (modAsset != null)
+                                injector.RegisterAsset(localModPath.Substring(localModPath.IndexOf('\\') + 1), modAsset);
                         } catch (Exception ex) {
-                            this.Monitor.LogOnce("Unable to get type of " + xnb, LogLevel.Warn, ex);
+                            this.Monitor.LogOnce("Unable to load " + xnb, LogLevel.Warn, ex);
                         }
                     }
                 }
             }
 
-            // Create delegates
-            IContentRegistry registry = EntoFramework.GetContentRegistry();
-            MethodInfo registerHandler = typeof(IContentRegistry).GetMethod("RegisterHandler");
-            MethodInfo injector = merger.GetType().GetMethod("Inject", BindingFlags.Public | BindingFlags.Instance);
-            MethodInfo delegateCreator = typeof(ModEntry).GetMethod("CreateDelegate", BindingFlags.Instance | BindingFlags.Public);
-            foreach (KeyValuePair<string, Type> xnb in xnbsFound) {
-                try {
-                    Delegate d = (Delegate) delegateCreator.MakeGenericMethod(xnb.Value)
-                        .Invoke(this, new object[] { injector.MakeGenericMethod(xnb.Value) });
-                    registerHandler.MakeGenericMethod(xnb.Value).Invoke(registry, new object[] { xnb.Key, d });
-                } catch (Exception ex) {
-                    this.Monitor.LogOnce("Failed to create delegate: " + xnb.Value.ToString(), LogLevel.Error, ex);
-                }
-            }
-
-            this.Monitor.Log(xnbsFound.Count + " delegates registered.", LogLevel.Info);
         }
 
-        public FileLoadMethod<T> CreateDelegate<T>(MethodInfo method) {
-            return (loader, asset) => {
-                return (T) method.Invoke(merger, new object[] { loader, asset });
-            };
+        public string getModRelativePath(string modPath, string assetName) {
+            Uri modUri = new Uri(Path.Combine(this.contentPath, modPath));
+            Uri fileUri = new Uri(Path.Combine(modPath, assetName));
+            Uri localUri = modUri.MakeRelativeUri(fileUri);
+            return WebUtility.UrlDecode(localUri.ToString().Replace('/', '\\'));
         }
+        #endregion
 
         #region Event Handlers
         private void UpdateTick(object sender, EventArgs e) {
             if (this.merger != null) {
-                string[] disposedTextures = this.merger.cache.Where(kv => kv.Value is Texture2D)
+                string[] disposedTextures = this.merger.Cache.Where(kv => kv.Value is Texture2D)
                     .Where(kv => (kv.Value as Texture2D).IsDisposed)
                     .Select(kv => kv.Key)
                     .ToArray();
 
                 foreach (string tex in disposedTextures)
-                    this.merger.cache.Remove(tex);
+                    this.merger.Cache.Remove(tex);
             }
 
             if (!loaded && Game1.content != null && Game1.content.GetType() == typeof(LocalizedContentManager)) {
-                this.merger = this.merger ?? new ContentMerger(Path.Combine(this.Helper.DirectoryPath, "Content"));
+                this.merger = this.merger ?? new ContentMerger();
                 tmpManager = tmpManager ?? new CustomContentManager(Game1.content.RootDirectory, Game1.content.ServiceProvider);
                 Game1.content = tmpManager;
             } else if (!loaded && !(Game1.content.GetType() == typeof(LocalizedContentManager))) {
@@ -246,63 +252,6 @@ namespace TehPers.Stardew.SCCL {
             Game1.objectInformation = Game1.content.Load<Dictionary<int, string>>("Data\\ObjectInformation");
             Game1.bigCraftablesInformation = Game1.content.Load<Dictionary<int, string>>("Data\\BigCraftablesInformation");
             Tool.weaponsTexture = Game1.content.Load<Texture2D>("TileSheets\\weapons");
-        }
-        #endregion
-
-        #region API
-        /**
-         * <summary>Attempts to inject data into the specified dictionary asset. Returns false if the asset is not a dictionary of the correct types</summary>
-         * <param name="assetName">The asset to inject the data into</param>
-         * <param name="key">The key to inject into the dictionary</param>
-         * <param name="value">The data to inject into the key</param>
-         **/
-        public static bool MergeData<TKey, TVal>(string assetName, TKey key, TVal value) {
-            ModEntry mod = INSTANCE;
-
-            try {
-                Dictionary<TKey, TVal> r = Game1.content.Load<Dictionary<TKey, TVal>>(assetName);
-                if (!mod.merger.cache.ContainsKey(assetName))
-                    mod.merger.cache[assetName] = r;
-            } catch (Exception) {
-                // Asset didn't exist
-            }
-
-            if (!mod.merger.cache.ContainsKey(assetName))
-                mod.merger.cache.Add(assetName, new Dictionary<TKey, TVal>());
-
-            Dictionary<TKey, TVal> dict = mod.merger.cache[assetName] as Dictionary<TKey, TVal>;
-            if (dict == null) return false;
-            dict[key] = value;
-
-            return true;
-        }
-
-        /*public static bool MergeTexture(string assetName, Texture tex) {
-            I'll make this later I guess
-        }*/
-
-        /**
-         * <summary>Attempts to inject object as the specified asset. Returns false if an asset with that name exists and they are not compatible types</summary>
-         * <param name="assetName">The asset to inject or override</param>
-         * <param name="obj">The object to inject</param>
-         **/
-        public static bool Override<T>(string assetName, T obj) {
-            ModEntry mod = INSTANCE;
-
-            try {
-                T r = Game1.content.Load<T>(assetName);
-                if (!mod.merger.cache.ContainsKey(assetName))
-                    mod.merger.cache[assetName] = r;
-            } catch (Exception) {
-                // Asset didn't exist
-            }
-
-            if (!mod.merger.cache.ContainsKey(assetName) || mod.merger.cache[assetName].GetType().IsAssignableFrom(typeof(T)))
-                mod.merger.cache[assetName] = obj;
-            else
-                return false;
-
-            return true;
         }
         #endregion
     }

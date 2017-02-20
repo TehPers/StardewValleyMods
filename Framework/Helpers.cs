@@ -30,6 +30,8 @@ namespace TehPers.Stardew.Framework {
             }
         }
 
+        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source) => new HashSet<T>(source);
+
         public static string LocalizePath(string baseDir, string otherDir) {
             Uri baseUri = new Uri(baseDir);
             Uri otherUri = new Uri(otherDir);

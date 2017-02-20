@@ -24,6 +24,7 @@ namespace TehPers.Stardew.FishingOverhaul {
         private static Dictionary<Farmer, int> clearWaterDistances = new Dictionary<Farmer, int>();
 
         public static void startMinigameEndFunction(FishingRod rod, int extra) {
+            ModEntry.INSTANCE.Monitor.Log("Overriding fishing minigame", LogLevel.Trace);
             ConfigMain config = ModEntry.INSTANCE.config;
             Farmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Farmer>(rod, "lastUser");
             int clearWaterDistance = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "clearWaterDistance");
@@ -78,7 +79,11 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             ConfigMain config = ModEntry.INSTANCE.config;
             Farmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Farmer>(rod, "lastUser");
-            int clearWaterDistance = clearWaterDistances[lastUser];
+            int clearWaterDistance = 0;
+            if (clearWaterDistances.ContainsKey(lastUser))
+                clearWaterDistance = clearWaterDistances[lastUser];
+            else
+                ModEntry.INSTANCE.Monitor.Log("The bobber bar was not replaced. Fishing might not be overridden by this mod", LogLevel.Warn);
             int whichFish = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "whichFish");
             int fishQuality = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "fishQuality");
 

@@ -1,4 +1,5 @@
-﻿using StardewValley;
+﻿using StardewModdingAPI;
+using StardewValley;
 using System;
 using System.Collections.Generic;
 using TehPers.Stardew.Framework;
@@ -57,7 +58,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                         if (possibleFish.TryGetValue(id, out f)) {
                             f.WaterType |= water;
                             f.Season |= s;
-                        } else {
+                        } else if (fish.ContainsKey(id)) {
                             string[] fishInfo = fish[id].Split('/');
                             if (fishInfo[1] == "5") // Junk item
                                 continue;
@@ -80,9 +81,9 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
 
                             f = new FishData(chance, water, s, Convert.ToInt32(times[0]), Convert.ToInt32(times[1]), minDepth, minLevel, w);
                             possibleFish[id] = f;
+                        } else {
+                            ModEntry.INSTANCE.Monitor.Log("A fish listed in Locations.xnb cannot be found in Fish.xnb! Make sure those files aren't corrupt. ID: " + id, LogLevel.Warn);
                         }
-
-                        //possibleFish[id] = f;
                     }
                 }
             }
