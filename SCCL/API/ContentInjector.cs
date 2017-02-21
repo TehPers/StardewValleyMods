@@ -13,19 +13,26 @@ namespace TehPers.Stardew.SCCL.API {
         internal Dictionary<string, HashSet<object>> ModContent { get; } = new Dictionary<string, HashSet<object>>();
 
         private string _name;
-        public string Name => _name;
+        public virtual string Name => _name;
 
-        private bool _enabled;
-        public bool Enabled {
+        public virtual bool Enabled {
             get {
-                return _enabled;
+                return !ModEntry.INSTANCE.config.DisabledMods.Contains(this.Name);
             }
             set {
-                if (_enabled != value) {
+                ModConfig config = ModEntry.INSTANCE.config;
+                bool changed = value != this.Enabled;
+
+                if (value)
+                    config.DisabledMods.Remove(this.Name);
+                else
+                    config.DisabledMods.Add(this.Name);
+
+                if (changed) {
+                    ModEntry.INSTANCE.Helper.WriteConfig(config);
                     foreach (string asset in ModContent.Keys)
                         this.RefreshAsset(asset);
                 }
-                _enabled = value;
             }
         }
 
@@ -52,7 +59,7 @@ namespace TehPers.Stardew.SCCL.API {
             ModContent[assetName].Add(asset);
             this.RefreshAsset(assetName);
 
-            ModEntry.INSTANCE.Monitor.Log(string.Format("[{2}] Registered {0} ({1})", assetName, typeof(T).ToString(), Name));
+            ModEntry.INSTANCE.Monitor.Log(string.Format("[{2}] Registered {0} ({1})", assetName, typeof(T).ToString(), Name), LogLevel.Trace);
 
             return true;
         }
@@ -78,8 +85,8 @@ namespace TehPers.Stardew.SCCL.API {
             assetName = assetName.Replace('/', '\\');
 
             if (ModContent.ContainsKey(assetName) && ModContent[assetName].Remove(asset)) {
+                ModEntry.INSTANCE.Monitor.Log(string.Format("[{2}] Unregistered {0} ({1})", assetName, asset.GetType().ToString(), Name), LogLevel.Trace);
                 this.RefreshAsset(assetName);
-                ModEntry.INSTANCE.Monitor.Log(string.Format("[{2}] Unregistered {0} ({1})", assetName, asset.GetType().ToString(), Name));
                 return true;
             }
             return false;
@@ -91,9 +98,7 @@ namespace TehPers.Stardew.SCCL.API {
          * <returns>Whether the asset needs to be marked</returns>
          **/
         public bool RefreshAsset(string assetName) {
-            bool b = ModEntry.INSTANCE.merger.Cache.Remove(assetName);
-            if (b) ModEntry.INSTANCE.reloadContent();
-            return b;
+            return ModEntry.INSTANCE.merger.Dirty.Add(assetName);
         }
     }
 }

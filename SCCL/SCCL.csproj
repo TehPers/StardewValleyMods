@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="API\ContentAPI.cs" />
     <Compile Include="API\ContentInjector.cs" />
+    <Compile Include="API\OriginalInjector.cs" />
     <Compile Include="ContentMerger.cs" />
     <Compile Include="CustomContentManager.cs" />
     <Compile Include="EventConfig.cs" />

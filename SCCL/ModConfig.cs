@@ -13,5 +13,6 @@ namespace TehPers.Stardew.SCCL {
 
         public List<string> LoadOrder = new List<string>();
 
+        public HashSet<string> DisabledMods = new HashSet<string>();
     }
 }

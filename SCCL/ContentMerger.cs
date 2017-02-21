@@ -17,12 +17,15 @@ using xTile.Dimensions;
 namespace TehPers.Stardew.SCCL {
     public class ContentMerger {
         internal Dictionary<string, object> Cache { get; } = new Dictionary<string, object>();
+        internal HashSet<string> Dirty { get; } = new HashSet<string>();
         private static HashSet<Type> Unmergables { get; } = new HashSet<Type>();
+        internal bool Passthrough { get; set; } = false;
 
         public T Inject<T>(LoadBase<T> loader, string assetName) {
             ModConfig config = ModEntry.INSTANCE.config;
 
             T asset = loader(assetName);
+            if (Passthrough) return asset;
             try {
                 if (false || Cache.ContainsKey(assetName))
                     return (T) Cache[assetName];
@@ -30,11 +33,11 @@ namespace TehPers.Stardew.SCCL {
                     if (this.getModAssets<T>(assetName).Count > 0) {
                         Type t = typeof(T);
                         if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
-                            asset = (T) this.GetType().GetMethod("MergeDictionary", BindingFlags.Public | BindingFlags.Instance)
+                            asset = (T) this.GetType().GetMethod("MergeDictionary", BindingFlags.NonPublic | BindingFlags.Instance)
                                 .MakeGenericMethod(t.GetGenericArguments())
                                 .Invoke(this, new object[] { asset, assetName });
                             //asset = (T) (object) this.MergeMods(asset as Dictionary<int, string>, assetName);
-                        } else if (t == typeof(Texture2D) && config.OverwriteAllTextures) {
+                        } else if (!config.OverwriteAllTextures && t == typeof(Texture2D)) {
                             Texture2D texture = asset as Texture2D;
                             if (texture == null || texture.Format == SurfaceFormat.Color)
                                 asset = (T) (object) this.MergeTextures<Color>(texture, assetName);
@@ -54,25 +57,25 @@ namespace TehPers.Stardew.SCCL {
                     Cache[assetName] = asset;
                 }
             } catch (Exception ex) {
-                ModEntry.INSTANCE.Monitor.Log(LogLevel.Error, "Derp");
+                ModEntry.INSTANCE.Monitor.Log(LogLevel.Error, "An error occured while merging " + assetName, ex);
             }
             return asset;
         }
 
         public List<KeyValuePair<string, T>> getModAssets<T>(string assetName) {
             ModConfig config = ModEntry.INSTANCE.config;
-            config.LoadOrder.AddRange(
+            config.LoadOrder.AddRange( // Update load order with any missing mods
                 from modKV in ContentAPI.mods
                 let mod = modKV.Key
                 where !config.LoadOrder.Contains(mod)
                 select mod
-            );
+                );
             ModEntry.INSTANCE.Helper.WriteConfig(config);
 
             return (
-                from mod in ContentAPI.mods
-                orderby config.LoadOrder.IndexOf(mod.Key)
-                let injector = mod.Value
+                from injector in ContentAPI.mods.Values.Concat(new ContentInjector[] { ContentAPI.originalInjector })
+                where injector.Enabled
+                orderby config.LoadOrder.IndexOf(injector.Name)
                 where injector.ModContent.ContainsKey(assetName)
                 from asset in injector.ModContent[assetName]
                 where asset is T
@@ -80,7 +83,7 @@ namespace TehPers.Stardew.SCCL {
                 ).ToList();
         }
 
-        public Dictionary<TKey, TVal> MergeDictionary<TKey, TVal>(Dictionary<TKey, TVal> orig, string assetName) {
+        private Dictionary<TKey, TVal> MergeDictionary<TKey, TVal>(Dictionary<TKey, TVal> orig, string assetName) {
             Dictionary<TKey, TVal> diffs = new Dictionary<TKey, TVal>();
             Dictionary<TKey, string> diffMods = new Dictionary<TKey, string>();
             List<KeyValuePair<string, Dictionary<TKey, TVal>>> mods = getModAssets<Dictionary<TKey, TVal>>(assetName);
@@ -104,12 +107,13 @@ namespace TehPers.Stardew.SCCL {
                 orig[diff.Key] = diff.Value;
 
             if (diffs.Count > 0)
-                ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected {1} changes into {2}.xnb", string.Join(", ", diffMods.Values), diffs.Count, assetName), LogLevel.Info);
+                ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected {1} changes into {2}.xnb", string.Join(", ", diffMods.Values.ToHashSet()), diffs.Count, assetName), LogLevel.Info);
 
             return orig;
         }
 
-        public Texture2D MergeTextures<TFormat>(Texture2D orig, string assetName) where TFormat : struct {
+        /// TODO: Needs to have texture injection offsets, so mods can inject a texture at (u, v) in the original
+        private Texture2D MergeTextures<TFormat>(Texture2D orig, string assetName) where TFormat : struct {
             Dictionary<int, string> diffMods = new Dictionary<int, string>();
             TFormat[] origData = new TFormat[orig.Width * orig.Height];
             Size origSize = new Size(orig.Width, orig.Height);
@@ -153,15 +157,15 @@ namespace TehPers.Stardew.SCCL {
                 }
             }
 
-            ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected changes into {1}.xnb", string.Join(", ", diffMods.Values), assetName), LogLevel.Info);
+            ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected changes into {1}.xnb", string.Join(", ", diffMods.Values.ToHashSet()), assetName), LogLevel.Info);
 
             Texture2D result = new Texture2D(orig.GraphicsDevice, origSize.Width, (int) Math.Ceiling((double) diffData.Count / origSize.Width));
             result.SetData(diffData.ToArray());
-            orig.Dispose();
+            //orig.Dispose(); // This causes problems because the original is cached, but the game will not reload content even if it's been disposed of
             return result;
         }
 
-        public T ReplaceIfExists<T>(T orig, string assetName) {
+        private T ReplaceIfExists<T>(T orig, string assetName) {
             T diff = orig;
             string diffMod = null;
 
