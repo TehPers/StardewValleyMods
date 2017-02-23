@@ -1,17 +1,14 @@
 ﻿using Entoarox.Framework;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
-using StardewValley;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using TehPers.Stardew.Framework;
 using TehPers.Stardew.SCCL.API;
+using TehPers.Stardew.SCCL.Configs;
 using xTile.Dimensions;
 
 namespace TehPers.Stardew.SCCL {
@@ -24,7 +21,11 @@ namespace TehPers.Stardew.SCCL {
         public T Inject<T>(LoadBase<T> loader, string assetName) {
             ModConfig config = ModEntry.INSTANCE.config;
 
-            T asset = loader(assetName);
+            T asset;
+            if (ModEntry.SI_COMPAT && ContentAPI.originalInjector.ModContent.ContainsKey(assetName) && ContentAPI.originalInjector.ModContent[assetName] is T) {
+                asset = (T) ContentAPI.originalInjector.ModContent[assetName].First();
+            } else asset = loader(assetName);
+
             if (Passthrough) return asset;
             try {
                 if (false || Cache.ContainsKey(assetName))
@@ -73,7 +74,7 @@ namespace TehPers.Stardew.SCCL {
             ModEntry.INSTANCE.Helper.WriteConfig(config);
 
             return (
-                from injector in ContentAPI.mods.Values.Concat(new ContentInjector[] { ContentAPI.originalInjector })
+                from injector in ContentAPI.mods.Values//.Concat(new ContentInjector[] { ContentAPI.originalInjector })
                 where injector.Enabled
                 orderby config.LoadOrder.IndexOf(injector.Name)
                 where injector.ModContent.ContainsKey(assetName)
@@ -122,42 +123,47 @@ namespace TehPers.Stardew.SCCL {
 
             List<KeyValuePair<string, Texture2D>> mods = getModAssets<Texture2D>(assetName);
 
-            foreach (KeyValuePair<string, Texture2D> modKV in mods) {
-                string mod = modKV.Key;
-                Texture2D modTexture = modKV.Value;
-                bool collision = false;
-                TFormat[] modData = new TFormat[modTexture.Width * modTexture.Height];
-                Size modSize = new Size(modTexture.Width, modTexture.Height);
-                modTexture.GetData(modData);
+            if (mods.Count > 1) {
+                foreach (KeyValuePair<string, Texture2D> modKV in mods) {
+                    string mod = modKV.Key;
+                    Texture2D modTexture = modKV.Value;
+                    bool collision = false;
+                    TFormat[] modData = new TFormat[modTexture.Width * modTexture.Height];
+                    Size modSize = new Size(modTexture.Width, modTexture.Height);
+                    modTexture.GetData(modData);
 
-                if (modSize.Width != origSize.Width)
-                    ModEntry.INSTANCE.Monitor.Log("Mod's texture is too wide for the game, so it's being trimmed: " + mod, LogLevel.Warn);
+                    if (modSize.Width != origSize.Width)
+                        ModEntry.INSTANCE.Monitor.Log("Mod's texture is too wide for the game, so it's being trimmed: " + mod, LogLevel.Warn);
 
-                for (int y = 0; y < modSize.Height; y++) { // Use mod's height
-                    for (int x = 0; x < origSize.Width; x++) { // Use original's width
-                        int i = y * origSize.Width + x; // Use the original's index because we're keeping that width for the final
-                        TFormat pixel;
-                        if (modSize.Width < origSize.Width) // If the mod's texture does not contain this pixel coordinate
-                            pixel = origData[i];
-                        else // Otherwise if it contains this pixel
-                            pixel = modData[y * modSize.Width + x];
+                    for (int y = 0; y < modSize.Height; y++) { // Use mod's height
+                        for (int x = 0; x < origSize.Width; x++) { // Use original's width
+                            int i = y * origSize.Width + x; // Use the original's index because we're keeping that width for the final
+                            TFormat pixel;
+                            if (modSize.Width < origSize.Width) // If the mod's texture does not contain this pixel coordinate
+                                pixel = origData[i];
+                            else // Otherwise if it contains this pixel
+                                pixel = modData[y * modSize.Width + x];
 
-                        if (i >= origData.Length || !origData[i].Equals(pixel)) {
-                            if (!collision && diffMods.ContainsKey(i)) {
-                                ModEntry.INSTANCE.Monitor.Log(string.Format("Collision detected between {0} and {1}! Overwriting...", mod, diffMods[i]), LogLevel.Warn);
-                                collision = true;
+                            if (i >= origData.Length || !origData[i].Equals(pixel)) {
+                                if (!collision && diffMods.ContainsKey(i)) {
+                                    ModEntry.INSTANCE.Monitor.Log(string.Format("Collision detected between {0} and {1}! Overwriting...", mod, diffMods[i]), LogLevel.Warn);
+                                    collision = true;
+                                }
+
+                                while (i >= diffData.Count) diffData.Add(default(TFormat));
+
+                                diffData[i] = pixel;
+                                diffMods[i] = mod;
                             }
-
-                            while (i >= diffData.Count) diffData.Add(default(TFormat));
-
-                            diffData[i] = pixel;
-                            diffMods[i] = mod;
                         }
                     }
                 }
+            } else {
+                diffMods[0] = mods.First().Key;
             }
 
             ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected changes into {1}.xnb", string.Join(", ", diffMods.Values.ToHashSet()), assetName), LogLevel.Info);
+            if (mods.Count == 1) return mods.First().Value;
 
             Texture2D result = new Texture2D(orig.GraphicsDevice, origSize.Width, (int) Math.Ceiling((double) diffData.Count / origSize.Width));
             result.SetData(diffData.ToArray());

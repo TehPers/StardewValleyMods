@@ -73,5 +73,13 @@ namespace TehPers.Stardew.Framework {
         public static int convertWaterType(WaterType type) {
             return type == WaterType.BOTH ? -1 : (type == WaterType.RIVER ? 0 : 1);
         }
+
+        public static T As<T>(this object o, T fallback = default(T)) {
+            return (o is T) ? (T) o : fallback;
+        }
+
+        public static TVal GetDefault<TKey, TVal>(this Dictionary<TKey, TVal> dict, TKey key, TVal fallback = default(TVal)) {
+            return dict.ContainsKey(key) ? dict[key] : fallback;
+        }
     }
 }

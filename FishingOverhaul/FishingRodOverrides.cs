@@ -50,6 +50,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             bool treasure = false;
 
             double treasureChance = config.TreasureChance + lastUser.LuckLevel * config.TreasureLuckLevelEffect + (rod.getBaitAttachmentIndex() == 703 ? config.TreasureBaitEffect : 0.0) + (rod.getBobberAttachmentIndex() == 693 ? config.TreasureBobberEffect : 0.0) + Game1.dailyLuck * config.TreasureDailyLuckEffect + (lastUser.professions.Contains(9) ? config.TreasureChance : 0.0) + config.TreasureStreakEffect * FishHelper.getStreak(lastUser);
+            treasureChance = Math.Min(treasureChance, config.MaxTreasureChance);
             if (!Game1.isFestival() && lastUser.fishCaught != null && lastUser.fishCaught.Count > 1 && Game1.random.NextDouble() < treasureChance)
                 treasure = true;
 
@@ -105,12 +106,13 @@ namespace TehPers.Stardew.FishingOverhaul {
             // Select rewards
             float chance = 1f;
             int streak = FishHelper.getStreak(lastUser);
-            while (possibleLoot.Count > 0 && Game1.random.NextDouble() <= chance) {
+            while (possibleLoot.Count > 0 && rewards.Count < config.MaxTreasureQuantity && Game1.random.NextDouble() <= chance) {
                 bool rewarded = false;
                 ConfigTreasure.TreasureData selected = null;
                 foreach (ConfigTreasure.TreasureData treasure in possibleLoot) {
                     double lootChance = treasure.chance + streak * config.StreakLootQuality + Game1.dailyLuck * config.DailyLuckLootQuality;
                     lootChance *= streak > 0 ? config.PerfectTreasureQualityMult : 1f;
+                    lootChance = Math.Min(lootChance, config.MaxTreasureQualityMult);
                     if (Game1.random.NextDouble() < lootChance) {
                         int id = treasure.id + Game1.random.Next(treasure.idRange - 1);
 

@@ -54,8 +54,8 @@
     <Compile Include="API\OriginalInjector.cs" />
     <Compile Include="ContentMerger.cs" />
     <Compile Include="CustomContentManager.cs" />
-    <Compile Include="EventConfig.cs" />
-    <Compile Include="ModConfig.cs" />
+    <Compile Include="Configs\EventConfig.cs" />
+    <Compile Include="Configs\ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="ModObject.cs" />
     <Compile Include="NBT\NBTBase.cs" />

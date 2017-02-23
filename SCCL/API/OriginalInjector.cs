@@ -12,11 +12,15 @@ namespace TehPers.Stardew.SCCL.API {
             }
             set { }
         }
-        
+
         public OriginalInjector() : base("[ORIGINAL]") { }
 
-        public void registerOriginal(ref object original, string assetName) {
+        public override bool RefreshAsset(string assetName) {
+            return false;
+        }
 
+        public bool ForceRefreshAsset(string assetName) {
+            return base.RefreshAsset(assetName);
         }
     }
 }

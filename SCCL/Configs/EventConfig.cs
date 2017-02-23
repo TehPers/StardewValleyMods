@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TehPers.Stardew.SCCL {
+namespace TehPers.Stardew.SCCL.Configs {
     public class EventConfig {
         public bool Enabled { get; set; } = true;
 

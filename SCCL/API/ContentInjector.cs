@@ -1,10 +1,8 @@
 ﻿using StardewModdingAPI;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using TehPers.Stardew.SCCL.Configs;
 
 namespace TehPers.Stardew.SCCL.API {
     public class ContentInjector {
@@ -47,7 +45,7 @@ namespace TehPers.Stardew.SCCL.API {
          * <typeparam name="T">The type of the asset to merge. If unknown, use non-generic <seealso cref="RegisterAsset(string, object)"/> instead</typeparam>
          * <returns>Whether the asset was registered successfully. If false, then T was probably incompatible with the asset</returns>
          **/
-        public bool RegisterAsset<T>(string assetName, T asset) {
+        public virtual bool RegisterAsset<T>(string assetName, T asset) {
             assetName = assetName.Replace('/', '\\');
 
             if (!ContentAPI.TryCreateDelegate<T>(assetName))
@@ -70,7 +68,7 @@ namespace TehPers.Stardew.SCCL.API {
          * <param name="asset">The asset to merge</param>
          * <returns>Whether the asset was registered successfully. If false, then the asset was probably the wrong type</returns>
          **/
-        public bool RegisterAsset(string assetName, object asset) {
+        public virtual bool RegisterAsset(string assetName, object asset) {
             return (bool) registerAssetMethod.MakeGenericMethod(asset.GetType()).Invoke(this, new object[] { assetName, asset });
         }
 
@@ -81,7 +79,7 @@ namespace TehPers.Stardew.SCCL.API {
          * <param name="asset">The asset to remove</param>
          * <returns>Whether the asset was removed successfully</returns>
          **/
-        public bool UnregisterAsset(string assetName, object asset) {
+        public virtual bool UnregisterAsset(string assetName, object asset) {
             assetName = assetName.Replace('/', '\\');
 
             if (ModContent.ContainsKey(assetName) && ModContent[assetName].Remove(asset)) {
@@ -97,7 +95,7 @@ namespace TehPers.Stardew.SCCL.API {
          * <param name="assetName">The name of the asset to regenerate</param>
          * <returns>Whether the asset needs to be marked</returns>
          **/
-        public bool RefreshAsset(string assetName) {
+        public virtual bool RefreshAsset(string assetName) {
             return ModEntry.INSTANCE.merger.Dirty.Add(assetName);
         }
     }
