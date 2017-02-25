@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using TehPers.Stardew.Framework;
 using TehPers.Stardew.SCCL.API;
 using TehPers.Stardew.SCCL.Configs;
@@ -21,6 +22,7 @@ namespace TehPers.Stardew.SCCL {
         internal static ModEntry INSTANCE;
 
         public const bool SI_COMPAT = false; // Experimental compatibility with SeasonalImmersion
+        public const int MOD_INDEX = 10000;
 
         public List<ModEvent> Events = new List<ModEvent>();
         public ContentMerger merger;
@@ -56,29 +58,7 @@ namespace TehPers.Stardew.SCCL {
             GameEvents.UpdateTick += UpdateTick;
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
             GraphicsEvents.OnPreRenderEvent += OnPreRenderEvent;
-
-            Dictionary<string, object> data = helper.ReadJsonFile<Dictionary<string, object>>("obj_data.json") ?? new Dictionary<string, object>();
-
-            Dictionary<string, object> lol = data["Lol"].As(new Dictionary<string, object>());
-            lol["yee"] = true;
-
-            helper.WriteJsonFile("obj_data.json", data);
-
-            // Testing NBT
-
-            // Writing
-            /*NBTTagCompound tag = new NBTTagCompound();
-            tag.Set("Name", "Test");
-            tag.Set("Success", (byte) 1);
-
-            using (FileStream stream = new FileStream(Path.Combine(Helper.DirectoryPath, "test.dat"), FileMode.OpenOrCreate, FileAccess.Write)) {
-                NBTBase.WriteStream(stream, tag);
-            }
-
-            // Reading
-            using (FileStream stream = new FileStream(Path.Combine(Helper.DirectoryPath, "test.dat"), FileMode.Open, FileAccess.Read)) {
-                tag = (NBTBase.ReadStream(stream) as NBTTagCompound) ?? null;
-            }*/
+            MenuEvents.MenuChanged += MenuChanged;
         }
 
         #region XNB Content Registering
@@ -208,8 +188,14 @@ namespace TehPers.Stardew.SCCL {
             if (merger.Dirty.Count > 0) {
                 foreach (string asset in merger.Dirty) merger.Cache.Remove(asset);
                 merger.Dirty.Clear();
+
+                // TODO: to make assets change without needing to be reassigned (wait until SMAPI has content events)
                 this.reloadContent();
             }
+        }
+
+        private void MenuChanged(object sender, EventArgsClickableMenuChanged e) {
+            
         }
 
         private void InjectorEnabled(object sender, EventArgsCommand e) {

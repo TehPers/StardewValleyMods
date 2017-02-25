@@ -60,6 +60,10 @@ namespace TehPers.Stardew.FishingOverhaul {
             return Game1.random.Next(167, 173);
         }
 
+        public static bool isTrash(int id) {
+            return id >= 167 && id <= 172;
+        }
+
         public static bool isLegendary(int fish) {
             return fish == 159 || fish == 160 || fish == 163 || fish == 682 || fish == 775;
         }

@@ -81,5 +81,16 @@ namespace TehPers.Stardew.Framework {
         public static TVal GetDefault<TKey, TVal>(this Dictionary<TKey, TVal> dict, TKey key, TVal fallback = default(TVal)) {
             return dict.ContainsKey(key) ? dict[key] : fallback;
         }
+
+        public static void CopyAllFields<T>(this T source, T dest) {
+            Type curType = typeof(T);
+            while (curType != null) {
+                FieldInfo[] fields = curType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                foreach (FieldInfo field in fields) {
+                    field.SetValue(dest, field.GetValue(source));
+                }
+                curType = curType.BaseType;
+            }
+        }
     }
 }

@@ -11,7 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Enums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ModObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Objects.cs" />
   </ItemGroup>
 </Project>

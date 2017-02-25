@@ -8,6 +8,7 @@ using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace TehPers.Stardew.ShroomSpotter {
 
@@ -55,7 +56,12 @@ namespace TehPers.Stardew.ShroomSpotter {
         private void OnPreRenderGuiEvent(object sender, EventArgs e) {
             if (Game1.activeClickableMenu is Billboard) {
                 Billboard menu = (Billboard) Game1.activeClickableMenu;
-                List<ClickableTextureComponent> calendarDays = this.Helper.Reflection.GetPrivateValue<List<ClickableTextureComponent>>(menu, "calendarDays");
+                FieldInfo calendarField = menu.GetType().GetField("calendarDays", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (calendarField == null) {
+                    this.Monitor.Log("Could not find field 'calendarDays' in Billboard!", LogLevel.Error);
+                    return;
+                }
+                List<ClickableTextureComponent> calendarDays = (List<ClickableTextureComponent>) calendarField.GetValue(menu);
                 IPrivateField<string> hoverField = this.Helper.Reflection.GetPrivateField<string>(menu, "hoverText");
                 string hoverText = hoverField.GetValue();
                 if (calendarDays != null && !(hoverText.Contains("Shrooms") || hoverText.Contains("shrooms"))) {
@@ -84,14 +90,19 @@ namespace TehPers.Stardew.ShroomSpotter {
         private void OnPostRenderGuiEvent(object sender, EventArgs e) {
             if (Game1.activeClickableMenu is Billboard) {
                 Billboard menu = (Billboard) Game1.activeClickableMenu;
-                List<ClickableTextureComponent> calendarDays = this.Helper.Reflection.GetPrivateValue<List<ClickableTextureComponent>>(menu, "calendarDays");
+                FieldInfo calendarField = menu.GetType().GetField("calendarDays", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (calendarField == null) {
+                    this.Monitor.Log("Could not find field 'calendarDays' in Billboard!", LogLevel.Error);
+                    return;
+                }
+                List<ClickableTextureComponent> calendarDays = (List<ClickableTextureComponent>) calendarField.GetValue(menu);
                 if (calendarDays == null) return;
                 string hoverText = this.Helper.Reflection.GetPrivateValue<string>(menu, "hoverText");
                 SpriteBatch b = Game1.spriteBatch;
 
                 for (int day = 1; day <= 28; day++) {
                     ClickableTextureComponent component = calendarDays[day - 1];
-                        List<int> shrooms = this.getShroomLayers(day - Game1.dayOfMonth);
+                    List<int> shrooms = this.getShroomLayers(day - Game1.dayOfMonth);
 
                     if (shrooms.Count > 0) {
                         const int id = 422;

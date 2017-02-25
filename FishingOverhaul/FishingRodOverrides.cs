@@ -58,7 +58,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             if (!FishHelper.isLegendary(extra) || config.OverrideLegendaries) {
                 int origExtra = extra;
                 extra = FishHelper.getRandomFish(clearWaterDistance);
-                if (extra >= 167 && extra < 173) {
+                if (FishHelper.isTrash(extra)) {
                     if (false) {
                         Game1.showGlobalMessage("No valid fish to catch! Giving junk instead.");
                         StardewValley.Object o = new StardewValley.Object(extra, 1, false, -1, 0);

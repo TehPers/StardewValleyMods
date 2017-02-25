@@ -52,12 +52,14 @@
     <Compile Include="API\ContentAPI.cs" />
     <Compile Include="API\ContentInjector.cs" />
     <Compile Include="API\OriginalInjector.cs" />
+    <Compile Include="ChangableTexture2D.cs" />
     <Compile Include="ContentMerger.cs" />
     <Compile Include="CustomContentManager.cs" />
     <Compile Include="Configs\EventConfig.cs" />
     <Compile Include="Configs\ModConfig.cs" />
+    <Compile Include="Items\ItemTemplate.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="ModObject.cs" />
+    <Compile Include="Items\ModObject.cs" />
     <Compile Include="NBT\NBTBase.cs" />
     <Compile Include="NBT\NBTByte.cs" />
     <Compile Include="NBT\NBTTrue.cs" />

@@ -122,5 +122,74 @@ namespace TehPers.Stardew.FishingOverhaul {
                 }
             }
         }
+
+        #region Fish Data Generator
+        public void GenerateWeightedFishData(string path) {
+            IEnumerable<FishInfo> fishList = (from fishInfo in config.PossibleFish
+                                              let loc = fishInfo.Key
+                                              from entry in fishInfo.Value
+                                              let fish = entry.Key
+                                              let data = entry.Value
+                                              let seasons = data.Season
+                                              let chance = data.Chance
+                                              select new FishInfo() { Seasons = seasons, Location = loc, Fish = fish, Chance = chance }
+             );
+
+            Dictionary<string, Dictionary<string, Dictionary<int, double>>> result = new Dictionary<string, Dictionary<string, Dictionary<int, double>>>();
+
+            // Spring
+            Season s = Season.SPRING;
+            string str = "spring";
+            result[str] = new Dictionary<string, Dictionary<int, double>>();
+            IEnumerable<FishInfo> seasonalFish = fishList.Where((info) => (info.Seasons & s) > 0);
+            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet())
+                result[str][loc] = new Dictionary<int, double>();
+            foreach (FishInfo fish in seasonalFish) {
+                result[str][fish.Location][fish.Fish] = fish.Chance;
+            }
+
+            // Summer
+            s = Season.SUMMER;
+            str = "summer";
+            result[str] = new Dictionary<string, Dictionary<int, double>>();
+            seasonalFish = fishList.Where((info) => (info.Seasons & s) > 0);
+            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet())
+                result[str][loc] = new Dictionary<int, double>();
+            foreach (FishInfo fish in seasonalFish) {
+                result[str][fish.Location][fish.Fish] = fish.Chance;
+            }
+
+            // Fall
+            s = Season.FALL;
+            str = "fall";
+            result[str] = new Dictionary<string, Dictionary<int, double>>();
+            seasonalFish = fishList.Where((info) => (info.Seasons & s) > 0);
+            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet())
+                result[str][loc] = new Dictionary<int, double>();
+            foreach (FishInfo fish in seasonalFish) {
+                result[str][fish.Location][fish.Fish] = fish.Chance;
+            }
+
+            // Winter
+            s = Season.WINTER;
+            str = "winter";
+            result[str] = new Dictionary<string, Dictionary<int, double>>();
+            seasonalFish = fishList.Where((info) => (info.Seasons & s) > 0);
+            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet())
+                result[str][loc] = new Dictionary<int, double>();
+            foreach (FishInfo fish in seasonalFish) {
+                result[str][fish.Location][fish.Fish] = fish.Chance;
+            }
+
+            this.Helper.WriteJsonFile("path", result);
+        }
+
+        private class FishInfo {
+            public Season Seasons { get; set; }
+            public string Location { get; set; }
+            public double Chance { get; set; }
+            public int Fish { get; set; }
+        }
+        #endregion
     }
 }
