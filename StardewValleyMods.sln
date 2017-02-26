@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntoFramework", "..\..\..\.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCCL", "SCCL\SCCL.csproj", "{45E35EE3-8D19-4E0F-B7EE-2C29F7E5C3E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloseConfirmation", "CloseConfirmation\CloseConfirmation.csproj", "{A843F006-497B-4098-B40D-3B45A37C808C}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Framework\Framework.projitems*{34ab28b0-dc3c-45c2-ac0d-5585169154a5}*SharedItemsImports = 4
@@ -47,6 +49,10 @@ Global
 		{45E35EE3-8D19-4E0F-B7EE-2C29F7E5C3E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45E35EE3-8D19-4E0F-B7EE-2C29F7E5C3E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45E35EE3-8D19-4E0F-B7EE-2C29F7E5C3E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A843F006-497B-4098-B40D-3B45A37C808C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A843F006-497B-4098-B40D-3B45A37C808C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A843F006-497B-4098-B40D-3B45A37C808C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A843F006-497B-4098-B40D-3B45A37C808C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

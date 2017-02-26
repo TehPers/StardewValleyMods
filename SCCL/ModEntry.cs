@@ -12,8 +12,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
-using TehPers.Stardew.Framework;
 using TehPers.Stardew.SCCL.API;
 using TehPers.Stardew.SCCL.Configs;
 
