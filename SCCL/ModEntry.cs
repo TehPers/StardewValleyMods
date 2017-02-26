@@ -1,6 +1,4 @@
-﻿using Entoarox.Framework;
-using Entoarox.Framework.Extensions;
-using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -53,33 +51,49 @@ namespace TehPers.Stardew.SCCL {
                 }
             }
 
+            this.merger = new ContentMerger();
+
             GameEvents.UpdateTick += UpdateTick;
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
             GraphicsEvents.OnPreRenderEvent += OnPreRenderEvent;
-            MenuEvents.MenuChanged += MenuChanged;
+            ContentEvents.AssetLoading += this.merger.AssetLoading;
+
+            #region Console Commands
+            Helper.ConsoleCommands.Add("SCCLEnable", "Enables a content injector | SCCLEnable <injector>", (cmd, args) => {
+                if (args.Length >= 1) {
+                    string name = args[0];
+                    if (ContentAPI.InjectorExists(name)) {
+                        ContentAPI.GetInjector(name).Enabled = true;
+                        Monitor.Log(name + " is enabled", LogLevel.Info);
+                    } else Monitor.Log("No injector with name '" + name + "' exists!", LogLevel.Warn);
+                } else Monitor.Log("Injector name was not specified", LogLevel.Warn);
+            });
+            Helper.ConsoleCommands.Add("SCCLDisable", "Disables a content injector | SCCLEnable <injector>", (cmd, args) => {
+                if (args.Length >= 1) {
+                    string name = args[0];
+                    if (ContentAPI.InjectorExists(name)) {
+                        ContentAPI.GetInjector(name).Enabled = false;
+                        Monitor.Log(name + " is disabled", LogLevel.Info);
+                    } else Monitor.Log("No injector with name '" + name + "' exists!", LogLevel.Warn);
+                } else Monitor.Log("Injector name was not specified", LogLevel.Warn);
+            });
+            Helper.ConsoleCommands.Add("SCCLList", "Lists all content injectors | SCCLList", (cmd, args) => {
+                this.Monitor.Log("Registered injectors: " + string.Join(", ", ContentAPI.GetAllInjectors()), LogLevel.Info);
+            });
+            Helper.ConsoleCommands.Add("SCCLReload", "Reloads the config (ModEnabled is ignored) | SCCLReload", (cmd, args) => {
+                this.config = this.Helper.ReadConfig<ModConfig>();
+                this.loadFromFolder();
+                //this.merger.Cache.Clear();
+                throw new NotImplementedException();
+            });
+            #endregion
         }
 
         #region XNB Content Registering
-        private void registerHandlers() {
-            this.Monitor.Log("Loading delegates");
-            this.merger = this.merger ?? new ContentMerger();
+        private void loadFromFolder() {
+            this.Monitor.Log("Loading delegates", LogLevel.Info);
             this.modContent = this.modContent ?? new ContentManager(Game1.content.ServiceProvider, this.contentPath);
 
-            this.loadFromFolder();
-
-            Command.RegisterCommand("SCCLEnable", "Enables a content injector | SCCLEnable <injector>", new string[] { "(String)<injector>" }).CommandFired += InjectorEnabled;
-            Command.RegisterCommand("SCCLDisable", "Disables a content injector | SCCLEnable <injector>", new string[] { "(String)<injector>" }).CommandFired += InjectorDisabled;
-            Command.RegisterCommand("SCCLList", "Lists all content injectors | SCCLList").CommandFired += (sender, e) => {
-                this.Monitor.Log("Registered injectors: " + string.Join(", ", ContentAPI.GetAllInjectors()), LogLevel.Info);
-            };
-            Command.RegisterCommand("SCCLReload", "Reloads the config (ModEnabled is ignored) | SCCLReload").CommandFired += (sender, e) => {
-                this.config = this.Helper.ReadConfig<ModConfig>();
-                this.loadFromFolder();
-                this.merger.Cache.Clear();
-            };
-        }
-
-        private void loadFromFolder() {
             // Get all xnbs that need delegates
             foreach (string mod in Directory.GetDirectories(Path.Combine(Helper.DirectoryPath, "Content"))) {
                 ContentInjector injector = ContentAPI.GetInjector(Path.GetFileName(mod));
@@ -101,7 +115,7 @@ namespace TehPers.Stardew.SCCL {
                             if (modAsset != null)
                                 injector.RegisterAsset(localModPath.Substring(localModPath.IndexOf('\\') + 1), modAsset);
                         } catch (Exception ex) {
-                            this.Monitor.LogOnce("Unable to load " + xnb, LogLevel.Warn, ex);
+                            //this.Monitor.LogOnce("Unable to load " + xnb, LogLevel.Warn, ex);
                         }
                     }
                 }
@@ -118,19 +132,8 @@ namespace TehPers.Stardew.SCCL {
 
         #region Event Handlers
         private void UpdateTick(object sender, EventArgs e) {
-            if (this.merger != null) {
-                string[] disposedTextures = this.merger.Cache.Where(kv => kv.Value is Texture2D)
-                    .Where(kv => (kv.Value as Texture2D).IsDisposed)
-                    .Select(kv => kv.Key)
-                    .ToArray();
-
-                foreach (string tex in disposedTextures)
-                    this.merger.Cache.Remove(tex);
-            }
-
-            if (!loaded && !(Game1.content.GetType() == typeof(LocalizedContentManager))) {
+            if (!loaded) {
                 this.loaded = true;
-                this.registerHandlers();
 
                 this.Monitor.Log("Loading event injections");
                 this.loadEvents();
@@ -183,37 +186,7 @@ namespace TehPers.Stardew.SCCL {
         }
 
         private void OnPreRenderEvent(object sender, EventArgs e) {
-            if (merger.Dirty.Count > 0) {
-                foreach (string asset in merger.Dirty) merger.Cache.Remove(asset);
-                merger.Dirty.Clear();
-
-                // TODO: to make assets change without needing to be reassigned (wait until SMAPI has content events)
-                this.reloadContent();
-            }
-        }
-
-        private void MenuChanged(object sender, EventArgsClickableMenuChanged e) {
-            
-        }
-
-        private void InjectorEnabled(object sender, EventArgsCommand e) {
-            if (e.Command.CalledArgs.Length >= 1) {
-                string name = e.Command.CalledArgs[0];
-                if (ContentAPI.InjectorExists(name)) {
-                    ContentAPI.GetInjector(name).Enabled = true;
-                    Monitor.Log(name + " is enabled", LogLevel.Info);
-                } else Monitor.Log("No injector with name '" + name + "' exists!", LogLevel.Warn);
-            } else Monitor.Log("Injector name was not specified", LogLevel.Warn);
-        }
-
-        private void InjectorDisabled(object sender, EventArgsCommand e) {
-            if (e.Command.CalledArgs.Length >= 1) {
-                string name = e.Command.CalledArgs[0];
-                if (ContentAPI.InjectorExists(name)) {
-                    ContentAPI.GetInjector(name).Enabled = false;
-                    Monitor.Log(name + " is disabled", LogLevel.Info);
-                } else Monitor.Log("No injector with name '" + name + "' exists!", LogLevel.Warn);
-            } else Monitor.Log("Injector name was not specified", LogLevel.Warn);
+            this.merger.RefreshAssets();
         }
         #endregion
 
@@ -247,91 +220,6 @@ namespace TehPers.Stardew.SCCL {
                     this.Monitor.Log("Maybe your format is invalid?", LogLevel.Warn);
                 }
             }
-        }
-
-        private void reloadValue<T>(ref T asset, string assetName) {
-            object assetObj = asset as object;
-
-            // If the current asset isn't one that was generated by this mod
-            /*if (!this.merger.Cache.ContainsKey(assetName) || this.merger.Cache[assetName] != assetObj) {
-                // If the current asset isn't already registered
-                bool needsUpdate = !ContentAPI.originalInjector.ModContent.ContainsKey(assetName);
-                if (!needsUpdate) {
-                    needsUpdate = true;
-                    foreach (object registered in ContentAPI.originalInjector.ModContent[assetName])
-                        needsUpdate = needsUpdate && (registered != assetObj);
-                }
-
-                if (needsUpdate) {
-                    // Register the asset, replacing the old one if it exists
-                    this.Monitor.Log("Registering asset to [ORIGINAL]: " + assetName);
-                    ContentAPI.originalInjector.ModContent.Remove(assetName);
-                    ContentAPI.originalInjector.RegisterAsset(assetName, asset);
-                }
-            }*/
-
-            if (SI_COMPAT && this.merger.getModAssets<T>(assetName).Count > 0) {
-                if (!this.merger.Cache.ContainsKey(assetName) || this.merger.Cache[assetName] != assetObj) {
-                    bool needsUpdate = !ContentAPI.originalInjector.ModContent.ContainsKey(assetName);
-                    if (!needsUpdate) {
-                        needsUpdate = true;
-                        foreach (object registered in ContentAPI.originalInjector.ModContent[assetName])
-                            needsUpdate = needsUpdate && (registered != assetObj);
-                    }
-
-                    if (needsUpdate) {
-                        // Register the asset, replacing the old one if it exists
-                        this.Monitor.Log("Registering asset to [ORIGINAL]: " + assetName);
-                        ContentAPI.originalInjector.ModContent.Remove(assetName);
-                        ContentAPI.originalInjector.RegisterAsset(assetName, asset);
-                    }
-                }
-            }
-
-            asset = Game1.content.Load<T>(assetName);
-        }
-
-        public void reloadContent() {
-            reloadValue(ref Game1.daybg, "LooseSprites\\daybg");
-            reloadValue(ref Game1.nightbg, "LooseSprites\\nightbg");
-            reloadValue(ref Game1.menuTexture, "Maps\\MenuTiles");
-            reloadValue(ref Game1.lantern, "LooseSprites\\Lighting\\lantern");
-            reloadValue(ref Game1.windowLight, "LooseSprites\\Lighting\\windowLight");
-            reloadValue(ref Game1.sconceLight, "LooseSprites\\Lighting\\sconceLight");
-            reloadValue(ref Game1.cauldronLight, "LooseSprites\\Lighting\\greenLight");
-            reloadValue(ref Game1.indoorWindowLight, "LooseSprites\\Lighting\\indoorWindowLight");
-            reloadValue(ref Game1.shadowTexture, "LooseSprites\\shadow");
-            reloadValue(ref Game1.mouseCursors, "LooseSprites\\Cursors");
-            reloadValue(ref Game1.animations, "TileSheets\\animations");
-            reloadValue(ref Game1.achievements, "Data\\Achievements");
-            reloadValue(ref Game1.eventConditions, "Data\\eventConditions");
-            reloadValue(ref Game1.NPCGiftTastes, "Data\\NPCGiftTastes");
-            reloadValue(ref Game1.dialogueFont, "Fonts\\SpriteFont1");
-            reloadValue(ref Game1.smallFont, "Fonts\\SmallFont");
-            reloadValue(ref Game1.borderFont, "Fonts\\BorderFont");
-            reloadValue(ref Game1.tinyFont, "Fonts\\tinyFont");
-            reloadValue(ref Game1.tinyFontBorder, "Fonts\\tinyFontBorder");
-            reloadValue(ref Game1.smoothFont, "Fonts\\smoothFont");
-            reloadValue(ref Game1.objectSpriteSheet, "Maps\\springobjects");
-            reloadValue(ref Game1.toolSpriteSheet, "TileSheets\\tools");
-            reloadValue(ref Game1.cropSpriteSheet, "TileSheets\\crops");
-            reloadValue(ref Game1.emoteSpriteSheet, "TileSheets\\emotes");
-            reloadValue(ref Game1.debrisSpriteSheet, "TileSheets\\debris");
-            reloadValue(ref Game1.bigCraftableSpriteSheet, "TileSheets\\Craftables");
-            reloadValue(ref Game1.rainTexture, "TileSheets\\rain");
-            reloadValue(ref Game1.buffsIcons, "TileSheets\\BuffsIcons");
-            reloadValue(ref Game1.objectInformation, "Data\\ObjectInformation");
-            reloadValue(ref Game1.bigCraftablesInformation, "Data\\BigCraftablesInformation");
-            reloadValue(ref Tool.weaponsTexture, "TileSheets\\weapons");
-            reloadValue(ref Game1.getFarm().houseTextures, "Buildings\\houses");
-            reloadValue(ref Flooring.floorsTexture, "TerrainFeatures\\Flooring");
-
-            // Terrain features
-            foreach (GameLocation loc in Game1.locations)
-                foreach (TerrainFeature feature in loc.terrainFeatures.Values)
-                    feature.loadSprite();
-
-            EntoFramework.GetContentRegistry().ReloadStaticReferences(); // Reloading twice is fine since I cache any modded files
         }
         #endregion
     }

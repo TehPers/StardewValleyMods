@@ -10,6 +10,7 @@ using static TehPers.Stardew.FishingOverhaul.Configs.ConfigFish;
 using System.Linq;
 using TehPers.Stardew.Framework;
 using StardewValley.Tools;
+using SFarmer = StardewValley.Farmer;
 
 namespace TehPers.Stardew.FishingOverhaul {
     public class CustomBobberBar : BobberBar {
@@ -38,9 +39,9 @@ namespace TehPers.Stardew.FishingOverhaul {
         private int origStreak;
         private int origQuality;
 
-        public Farmer user;
+        public SFarmer user;
 
-        public CustomBobberBar(Farmer user, int whichFish, float fishSize, bool treasure, int bobber, int waterDepth) : base(whichFish, fishSize, treasure, bobber) {
+        public CustomBobberBar(SFarmer user, int whichFish, float fishSize, bool treasure, int bobber, int waterDepth) : base(whichFish, fishSize, treasure, bobber) {
             this.user = user;
             this.origStreak = FishHelper.getStreak(user);
 

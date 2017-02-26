@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TehPers.Stardew.FishingOverhaul.Configs;
 using TehPers.Stardew.Framework;
+using SFarmer = StardewValley.Farmer;
 
 namespace TehPers.Stardew.FishingOverhaul {
     public class FishingRodOverrides {
@@ -21,12 +22,12 @@ namespace TehPers.Stardew.FishingOverhaul {
         // - Treasure quality is increased as your streak increases, but still obviously random
         // - Treasure is more likely to appear as your streak increases
 
-        private static Dictionary<Farmer, int> clearWaterDistances = new Dictionary<Farmer, int>();
+        private static Dictionary<SFarmer, int> clearWaterDistances = new Dictionary<SFarmer, int>();
 
         public static void startMinigameEndFunction(FishingRod rod, int extra) {
             ModEntry.INSTANCE.Monitor.Log("Overriding fishing minigame", LogLevel.Trace);
             ConfigMain config = ModEntry.INSTANCE.config;
-            Farmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Farmer>(rod, "lastUser");
+            SFarmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<SFarmer>(rod, "lastUser");
             int clearWaterDistance = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "clearWaterDistance");
             Vector2 bobber = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Vector2>(rod, "bobber");
 
@@ -80,7 +81,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             ModEntry.INSTANCE.Monitor.Log("Successfully replaced treasure", LogLevel.Trace);
 
             ConfigMain config = ModEntry.INSTANCE.config;
-            Farmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<Farmer>(rod, "lastUser");
+            SFarmer lastUser = ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<SFarmer>(rod, "lastUser");
             int clearWaterDistance = 5;
             if (config.OverrideFishing) {
                 if (clearWaterDistances.ContainsKey(lastUser))

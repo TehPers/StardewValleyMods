@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StardewValley;
+using SFarmer = StardewValley.Farmer;
 
 namespace TehPers.Stardew.CombatOverhaul.Natures {
     public class NatureEnto : Nature {
-        public override bool activate(GameLocation location, int x, int y, int power, Farmer who) {
+        public override bool activate(GameLocation location, int x, int y, int power, SFarmer who) {
             // TODO: If in a specific randomized tile, spawn a cake!
             return true;
         }

@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using StardewValley;
 using StardewValley.Projectiles;
+using SFarmer = StardewValley.Farmer;
 using Microsoft.Xna.Framework;
 
 namespace TehPers.Stardew.CombatOverhaul.Natures {
     public class NatureFire : Nature {
-        public override bool activate(GameLocation location, int x, int y, int power, Farmer who) {
+        public override bool activate(GameLocation location, int x, int y, int power, SFarmer who) {
             Vector2 direction = Game1.currentCursorTile - who.getTileLocation();
             direction.Normalize();
             direction *= 10;

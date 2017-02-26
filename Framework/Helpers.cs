@@ -82,15 +82,23 @@ namespace TehPers.Stardew.Framework {
             return dict.ContainsKey(key) ? dict[key] : fallback;
         }
 
-        public static void CopyAllFields<T>(this T source, T dest) {
-            Type curType = typeof(T);
-            while (curType != null) {
-                FieldInfo[] fields = curType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        public static void CopyAllFields(this object source, object dest) {
+            Type srcType = source.GetType();
+            if (!srcType.IsAssignableFrom(dest.GetType()))
+                throw new ArgumentException("Destination type must be assignable to source type");
+            while (srcType != null) {
+                FieldInfo[] fields = srcType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 foreach (FieldInfo field in fields) {
                     field.SetValue(dest, field.GetValue(source));
                 }
-                curType = curType.BaseType;
+                srcType = srcType.BaseType;
             }
+        }
+
+        public static object ShallowCopy(this object source) {
+            object copy = Activator.CreateInstance(source.GetType());
+            source.CopyAllFields(copy);
+            return copy;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using SFarmer = StardewValley.Farmer;
 using StardewValley.Tools;
 using System;
 using TehPers.Stardew.CombatOverhaul.Natures;
@@ -39,7 +40,7 @@ namespace TehPers.Stardew.CombatOverhaul {
             this.instantUse = true;
         }
 
-        public override void DoFunction(GameLocation location, int x, int y, int power, Farmer who) {
+        public override void DoFunction(GameLocation location, int x, int y, int power, SFarmer who) {
             who.completelyStopAnimatingOrDoingAction();
             this.indexOfMenuItemView = 2;
             this.CurrentParentTileIndex = 2;
@@ -52,7 +53,7 @@ namespace TehPers.Stardew.CombatOverhaul {
             return base.actionWhenPurchased();
         }
 
-        public void executeMagic(GameLocation location, int x, int y, int power, Farmer who) {
+        public void executeMagic(GameLocation location, int x, int y, int power, SFarmer who) {
             if (Charges > 0 && ActiveNature != null && ActiveNature.activate(location, x, y, power, who)) {
                 if (ActiveNature.playWandSound()) Game1.playSound("wand");
                 Charges--;
@@ -95,6 +96,14 @@ namespace TehPers.Stardew.CombatOverhaul {
                 Vector2 loc = location + new Vector2(Game1.tileSize / 2, Game1.tileSize / 2);
                 spriteBatch.Draw(ActiveNature.ScepterTexture, loc, null, Color.White * transparency, 0f, origin, Game1.pixelZoom * scaleSize * correctionScale, SpriteEffects.None, layerDepth);
             }
+        }
+
+        protected override string loadDisplayName() {
+            throw new NotImplementedException();
+        }
+
+        protected override string loadDescription() {
+            throw new NotImplementedException();
         }
     }
 }

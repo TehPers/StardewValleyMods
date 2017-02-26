@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using StardewValley;
 using StardewModdingAPI.Events;
+using SFarmer = StardewValley.Farmer;
 
 namespace TehPers.Stardew.CombatOverhaul.Natures {
     public class NatureLusidity : Nature {
 
-        public override bool activate(GameLocation location, int x, int y, int power, Farmer who) {
+        public override bool activate(GameLocation location, int x, int y, int power, SFarmer who) {
             int timeRemaining = 120;
             ModEntry.INSTANCE.updateEvents.Add(() => {
                 keepFull(who);
@@ -30,7 +31,7 @@ namespace TehPers.Stardew.CombatOverhaul.Natures {
             return "A refreshing aura eminates from this";
         }
 
-        public void keepFull(Farmer who) {
+        public void keepFull(SFarmer who) {
             who.stamina = Math.Min(++who.stamina, who.maxStamina);
             who.health = Math.Min(++who.health, who.maxHealth);
         }

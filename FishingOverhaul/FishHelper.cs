@@ -3,6 +3,7 @@ using StardewValley.Locations;
 using System.Collections.Generic;
 using System.Linq;
 using TehPers.Stardew.Framework;
+using SFarmer = StardewValley.Farmer;
 using static TehPers.Stardew.FishingOverhaul.Configs.ConfigFish;
 
 namespace TehPers.Stardew.FishingOverhaul {
@@ -68,14 +69,14 @@ namespace TehPers.Stardew.FishingOverhaul {
             return fish == 159 || fish == 160 || fish == 163 || fish == 682 || fish == 775;
         }
 
-        public static int getStreak(Farmer who) {
+        public static int getStreak(SFarmer who) {
             return streaks.ContainsKey(who) ? streaks[who] : 0;
         }
 
-        public static void setStreak(Farmer who, int streak) {
+        public static void setStreak(SFarmer who, int streak) {
             streaks[who] = streak;
         }
 
-        public static Dictionary<Farmer, int> streaks = new Dictionary<Farmer, int>();
+        public static Dictionary<SFarmer, int> streaks = new Dictionary<SFarmer, int>();
     }
 }

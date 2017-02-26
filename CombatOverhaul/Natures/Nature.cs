@@ -2,6 +2,7 @@
 using StardewValley;
 using System.Collections.Generic;
 using System.IO;
+using SFarmer = StardewValley.Farmer;
 
 namespace TehPers.Stardew.CombatOverhaul.Natures {
     public abstract class Nature {
@@ -16,7 +17,7 @@ namespace TehPers.Stardew.CombatOverhaul.Natures {
 
         public abstract string getDescription();
 
-        public abstract bool activate(GameLocation location, int x, int y, int power, Farmer who);
+        public abstract bool activate(GameLocation location, int x, int y, int power, SFarmer who);
 
         public virtual bool playWandSound() {
             return true;
