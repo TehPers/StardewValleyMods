@@ -55,7 +55,8 @@ namespace TehPers.Stardew.FishingOverhaul {
                 treasure = true;
 
             // Override caught fish
-            if (!FishHelper.isLegendary(extra) || config.OverrideLegendaries) {
+            bool legendary = FishHelper.isLegendary(extra);
+            if ((!legendary && !config.UseVanillaFish) || (legendary && config.OverrideLegendaries)) {
                 int origExtra = extra;
                 extra = FishHelper.getRandomFish(clearWaterDistance);
                 if (FishHelper.isTrash(extra)) {

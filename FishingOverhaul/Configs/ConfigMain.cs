@@ -13,6 +13,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         public bool OverrideFishing { get; set; } = true;
         public bool OverrideTreasureLoot { get; set; } = true;
         public bool OverrideLegendaries { get; set; } = true;
+        public bool UseVanillaFish { get; set; } = false;
 
         public float BaseDifficultyMult { get; set; } = 0.1f;
         public float DifficultyStreakEffect { get; set; } = 0.02f;
