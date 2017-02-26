@@ -45,8 +45,6 @@ namespace TehPers.Stardew.FishingOverhaul {
             // Events
             GameEvents.UpdateTick += this.UpdateTick;
             ControlEvents.KeyPressed += KeyPressed;
-
-            // DEBUG: Populate global fish data in config
         }
 
         #region Events
@@ -142,10 +140,9 @@ namespace TehPers.Stardew.FishingOverhaul {
             string str = "spring";
             result[str] = new Dictionary<string, Dictionary<int, double>>();
             IEnumerable<FishInfo> seasonalFish = fishList.Where((info) => (info.Seasons & s) > 0);
-            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet())
-                result[str][loc] = new Dictionary<int, double>();
-            foreach (FishInfo fish in seasonalFish) {
-                result[str][fish.Location][fish.Fish] = fish.Chance;
+            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet()) {
+                IEnumerable<FishInfo> locFish = seasonalFish.Where(fish => fish.Location == loc);
+                result[str][loc] = locFish.ToDictionary(fish => fish.Fish, fish => fish.Chance);
             }
 
             // Summer
@@ -153,10 +150,9 @@ namespace TehPers.Stardew.FishingOverhaul {
             str = "summer";
             result[str] = new Dictionary<string, Dictionary<int, double>>();
             seasonalFish = fishList.Where((info) => (info.Seasons & s) > 0);
-            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet())
-                result[str][loc] = new Dictionary<int, double>();
-            foreach (FishInfo fish in seasonalFish) {
-                result[str][fish.Location][fish.Fish] = fish.Chance;
+            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet()) {
+                IEnumerable<FishInfo> locFish = seasonalFish.Where(fish => fish.Location == loc);
+                result[str][loc] = locFish.ToDictionary(fish => fish.Fish, fish => fish.Chance);
             }
 
             // Fall
@@ -164,10 +160,9 @@ namespace TehPers.Stardew.FishingOverhaul {
             str = "fall";
             result[str] = new Dictionary<string, Dictionary<int, double>>();
             seasonalFish = fishList.Where((info) => (info.Seasons & s) > 0);
-            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet())
-                result[str][loc] = new Dictionary<int, double>();
-            foreach (FishInfo fish in seasonalFish) {
-                result[str][fish.Location][fish.Fish] = fish.Chance;
+            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet()) {
+                IEnumerable<FishInfo> locFish = seasonalFish.Where(fish => fish.Location == loc);
+                result[str][loc] = locFish.ToDictionary(fish => fish.Fish, fish => fish.Chance);
             }
 
             // Winter
@@ -175,10 +170,9 @@ namespace TehPers.Stardew.FishingOverhaul {
             str = "winter";
             result[str] = new Dictionary<string, Dictionary<int, double>>();
             seasonalFish = fishList.Where((info) => (info.Seasons & s) > 0);
-            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet())
-                result[str][loc] = new Dictionary<int, double>();
-            foreach (FishInfo fish in seasonalFish) {
-                result[str][fish.Location][fish.Fish] = fish.Chance;
+            foreach (string loc in seasonalFish.Select(info => info.Location).ToHashSet()) {
+                IEnumerable<FishInfo> locFish = seasonalFish.Where(fish => fish.Location == loc);
+                result[str][loc] = locFish.ToDictionary(fish => fish.Fish, fish => fish.Chance);
             }
 
             this.Helper.WriteJsonFile("path", result);
