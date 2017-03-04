@@ -20,7 +20,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         public float CatchSpeed { get; set; } = 1f;
         public float TreasureCatchSpeed { get; set; } = 1.25f;
         public bool RecatchableLegendaries { get; set; } = false;
-        public bool IndestructibleTackle { get; set; } = false;
+        public float TackleDestroyRate { get; set; } = 1.0f;
 
         public string GetFishInWaterKey { get; set; } = "NumPad9";
 
@@ -58,13 +58,13 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         // Getters for simplicity
         internal ConfigTreasure.TreasureData[] PossibleLoot {
             get {
-                return ModEntry.INSTANCE.treasureConfig.PossibleLoot;
+                return ModFishing.INSTANCE.treasureConfig.PossibleLoot;
             }
         }
 
         internal Dictionary<string, Dictionary<int, ConfigFish.FishData>> PossibleFish {
             get {
-                return ModEntry.INSTANCE.fishConfig.PossibleFish;
+                return ModFishing.INSTANCE.fishConfig.PossibleFish;
             }
         }
     }

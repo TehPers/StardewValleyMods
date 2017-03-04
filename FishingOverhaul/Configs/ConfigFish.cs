@@ -3,6 +3,7 @@ using StardewValley;
 using System;
 using System.Collections.Generic;
 using TehPers.Stardew.Framework;
+using static TehPers.Stardew.Framework.Helpers;
 
 namespace TehPers.Stardew.FishingOverhaul.Configs {
     public class ConfigFish {
@@ -10,8 +11,8 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         public Dictionary<string, Dictionary<int, FishData>> PossibleFish { get; set; }
 
         public void populateData() {
-            ModEntry.INSTANCE.Monitor.Log("Automatically populating fish.json with data from Fish.xnb and Locations.xnb", StardewModdingAPI.LogLevel.Info);
-            ModEntry.INSTANCE.Monitor.Log("NOTE: If either of these files are modded, the config will reflect the changes! However, legendary fish and fish in the UndergroundMine are not being pulled from those files due to technical reasons.", StardewModdingAPI.LogLevel.Info);
+            ModFishing.INSTANCE.Monitor.Log("Automatically populating fish.json with data from Fish.xnb and Locations.xnb", StardewModdingAPI.LogLevel.Info);
+            ModFishing.INSTANCE.Monitor.Log("NOTE: If either of these files are modded, the config will reflect the changes! However, legendary fish and fish in the UndergroundMine are not being pulled from those files due to technical reasons.", StardewModdingAPI.LogLevel.Info);
 
             Dictionary<int, string> fish = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
             Dictionary<string, string> locations = Game1.content.Load<Dictionary<string, string>>("Data\\Locations");
@@ -82,7 +83,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                             f = new FishData(chance, water, s, Convert.ToInt32(times[0]), Convert.ToInt32(times[1]), minDepth, minLevel, w);
                             possibleFish[id] = f;
                         } else {
-                            ModEntry.INSTANCE.Monitor.Log("A fish listed in Locations.xnb cannot be found in Fish.xnb! Make sure those files aren't corrupt. ID: " + id, LogLevel.Warn);
+                            ModFishing.INSTANCE.Monitor.Log("A fish listed in Locations.xnb cannot be found in Fish.xnb! Make sure those files aren't corrupt. ID: " + id, LogLevel.Warn);
                         }
                     }
                 }

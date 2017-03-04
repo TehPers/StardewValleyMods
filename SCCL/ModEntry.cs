@@ -56,6 +56,7 @@ namespace TehPers.Stardew.SCCL {
             GameEvents.UpdateTick += UpdateTick;
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
             GraphicsEvents.OnPreRenderEvent += OnPreRenderEvent;
+            GameEvents.LoadContent += loadFromFolder;
             ContentEvents.AssetLoading += this.merger.AssetLoading;
 
             #region Console Commands
@@ -82,15 +83,14 @@ namespace TehPers.Stardew.SCCL {
             });
             Helper.ConsoleCommands.Add("SCCLReload", "Reloads the config (ModEnabled is ignored) | SCCLReload", (cmd, args) => {
                 this.config = this.Helper.ReadConfig<ModConfig>();
-                this.loadFromFolder();
-                //this.merger.Cache.Clear();
-                throw new NotImplementedException();
+                // TODO: remove all previously loaded assets
+                this.loadFromFolder(this, new EventArgs());
             });
             #endregion
         }
 
         #region XNB Content Registering
-        private void loadFromFolder() {
+        private void loadFromFolder(object sender, EventArgs e) {
             this.Monitor.Log("Loading delegates", LogLevel.Info);
             this.modContent = this.modContent ?? new ContentManager(Game1.content.ServiceProvider, this.contentPath);
 
@@ -140,6 +140,10 @@ namespace TehPers.Stardew.SCCL {
             }
         }
 
+        private void OnPreRenderEvent(object sender, EventArgs e) {
+            this.merger.RefreshAssets();
+        }
+
         private void CurrentLocationChanged(object sender, EventArgsCurrentLocationChanged e) {
             GameLocation loc = e.NewLocation;
             if (!Game1.killScreen && Game1.farmEvent == null && loc.currentEvent == null) {
@@ -183,10 +187,6 @@ namespace TehPers.Stardew.SCCL {
                     }
                 }
             }
-        }
-
-        private void OnPreRenderEvent(object sender, EventArgs e) {
-            this.merger.RefreshAssets();
         }
         #endregion
 

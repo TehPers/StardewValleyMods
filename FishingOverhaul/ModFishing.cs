@@ -6,22 +6,27 @@ using StardewValley.Locations;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TehPers.Stardew.FishingOverhaul.Configs;
 using TehPers.Stardew.Framework;
+using SObject = StardewValley.Object;
 
 namespace TehPers.Stardew.FishingOverhaul {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod {
+    public class ModFishing : Mod {
         public const bool DEBUG = false;
-        public static ModEntry INSTANCE;
+        public static ModFishing INSTANCE;
 
         public ConfigMain config;
         public ConfigTreasure treasureConfig;
         public ConfigFish fishConfig;
+        public ConfigStrings strings;
 
-        public ModEntry() {
-            ModEntry.INSTANCE = this;
+        private Dictionary<SObject, float> lastDurability = new Dictionary<SObject, float>();
+
+        public ModFishing() {
+            ModFishing.INSTANCE = this;
         }
 
         /// <summary>Initialise the mod.</summary>
@@ -45,6 +50,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             // Events
             GameEvents.UpdateTick += this.UpdateTick;
             ControlEvents.KeyPressed += KeyPressed;
+            LocalizedContentManager.OnLanguageChange += OnLanguageChange;
         }
 
         #region Events
@@ -57,11 +63,25 @@ namespace TehPers.Stardew.FishingOverhaul {
 
             tryChangeFishingTreasure();
 
-            if (config.IndestructibleTackle && Game1.player.CurrentTool is FishingRod) {
+            if (Game1.player.CurrentTool is FishingRod) {
                 FishingRod rod = Game1.player.CurrentTool as FishingRod;
-                StardewValley.Object bobber = rod.attachments[1];
-                if (bobber != null)
-                    bobber.scale.Y = 1.0f;
+                SObject bobber = rod.attachments[1];
+                if (bobber != null) {
+                    if (lastDurability.ContainsKey(bobber)) {
+                        float last = lastDurability[bobber];
+                        bobber.scale.Y = last + (bobber.scale.Y - last) * config.TackleDestroyRate;
+                        if (bobber.scale.Y <= 0) {
+                            lastDurability.Remove(bobber);
+                            rod.attachments[1] = null;
+                            try {
+                                Game1.showGlobalMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingRod.cs.14086"));
+                            } catch (Exception) {
+                                Game1.showGlobalMessage("Your tackle broke!");
+                                this.Monitor.Log("Could not load string for broken tackle", LogLevel.Warn);
+                            }
+                        } else lastDurability[bobber] = bobber.scale.Y;
+                    } else lastDurability[bobber] = bobber.scale.Y;
+                }
             }
         }
 
@@ -79,17 +99,27 @@ namespace TehPers.Stardew.FishingOverhaul {
                             possibleFish = config.PossibleFish[Game1.currentLocation.name].Where(data => data.Value.meetsCriteria(w, s, Game1.isRaining ? Weather.RAINY : Weather.SUNNY, Game1.timeOfDay, 5, Game1.player.fishingLevel)).Select(data => data.Key).ToArray();
                     }
                     Dictionary<int, string> fish = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
-                    string[] fishByName = possibleFish.Select(id => fish[id].Split('/')[0]).ToArray();
+                    string[] fishByName = (
+                        from id in possibleFish
+                        let data = fish[id].Split('/')
+                        select data.Length > 13 ? data[13] : data[0]
+                        ).ToArray();
                     if (fishByName.Length > 0)
-                        Game1.showGlobalMessage("Fish you can catch right now: " + string.Join<string>(", ", fishByName));
+                        Game1.showGlobalMessage(string.Format(strings.PossibleFish, string.Join<string>(", ", fishByName)));
                     else
-                        Game1.showGlobalMessage("You can't catch any fish there right now!");
+                        Game1.showGlobalMessage(strings.NoPossibleFish);
                 }
             } else if (DEBUG) {
                 if (e.KeyPressed == Keys.R && Game1.player.CurrentTool is FishingRod) {
                     FishingRodOverrides.startMinigameEndFunction(Game1.player.CurrentTool as FishingRod, 702);
                 }
             }
+        }
+
+        private void OnLanguageChange(LocalizedContentManager.LanguageCode code) {
+            //Directory.CreateDirectory(Path.Combine(this.Helper.DirectoryPath, "Translations"));
+            this.strings = Helper.ReadJsonFile<ConfigStrings>("Translations/" + Helpers.getLanguageCode() + ".json") ?? new ConfigStrings();
+            Helper.WriteJsonFile("Translations/" + Helpers.getLanguageCode() + ".json", this.strings);
         }
         #endregion
 

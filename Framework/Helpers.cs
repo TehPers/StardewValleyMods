@@ -1,8 +1,12 @@
-﻿using StardewValley;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Reflection;
+using TehPers.Stardew.Framework;
 
 namespace TehPers.Stardew.Framework {
 
@@ -20,10 +24,14 @@ namespace TehPers.Stardew.Framework {
         }
 
         public static void Shuffle<T>(this IList<T> list) {
+            list.Shuffle(new Random());
+        }
+
+        public static void Shuffle<T>(this IList<T> list, Random rand) {
             int n = list.Count;
             while (n > 1) {
                 n--;
-                int k = Game1.random.Next(n + 1);
+                int k = rand.Next(n + 1);
                 T value = list[k];
                 list[k] = list[n];
                 list[n] = value;
@@ -95,10 +103,86 @@ namespace TehPers.Stardew.Framework {
             }
         }
 
-        public static object ShallowCopy(this object source) {
-            object copy = Activator.CreateInstance(source.GetType());
-            source.CopyAllFields(copy);
+        public static Texture2D Clone(this Texture2D source) {
+            if (source.Format != SurfaceFormat.Color) {
+                return null;
+            }
+            Texture2D copy = new Texture2D(source.GraphicsDevice, source.Width, source.Height);
+            Color[] data = new Color[source.Width * source.Height];
+            source.GetData(data);
+            copy.SetData(data);
             return copy;
+        }
+
+        public static Dictionary<TKey, TVal> Clone<TKey, TVal>(this Dictionary<TKey, TVal> source) {
+            return new Dictionary<TKey, TVal>(source);
+        }
+
+        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> elements) {
+            return Choose(elements, new Random());
+        }
+
+        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> elements, Random rand) {
+            WeightedAuto<T> choice = Choose(elements.Select(kv => new WeightedAuto<T>(kv.Key, kv.Value)), rand);
+            if (choice == null) return default(T);
+            return choice.Element;
+        }
+
+        public static T Choose<T>(this IEnumerable<T> entries) where T : IWeighted {
+            return entries.Choose(new Random());
+        }
+
+        public static T Choose<T>(this IEnumerable<T> entries, Random rand) where T : IWeighted {
+            double totalWeight = entries.Sum(entry => entry.GetWeight());
+            double n = rand.NextDouble();
+            foreach (T entry in entries) {
+                double chance = entry.GetWeight() / totalWeight;
+                if (n < chance) return entry;
+                else n -= chance;
+            }
+            throw new ArgumentException("Enumerable must contain entries", "entries");
+        }
+
+        /// <summary>Defines a weighted chance for an object, allowing easy weighted choosing of a random element from a list of the object.</summary>
+        public interface IWeighted {
+            /// <summary>Returns the weighted chance of the object, in comparison to the other objects in the list.</summary>
+            double GetWeight();
+        }
+
+        private class WeightedAuto<T> : IWeighted {
+            public T Element;
+            private double weight;
+
+            public WeightedAuto(T elem, double weight) {
+                this.Element = elem;
+                this.weight = weight;
+            }
+
+            public double GetWeight() {
+                return this.weight;
+            }
+        }
+
+        public static string getLanguageCode() {
+            if (Game1.content != null && Game1.content.LanguageCodeOverride != null)
+                return Game1.content.LanguageCodeOverride;
+            switch (LocalizedContentManager.CurrentLanguageCode) {
+                case LocalizedContentManager.LanguageCode.ja:
+                    return "ja-JP";
+                case LocalizedContentManager.LanguageCode.ru:
+                    return "ru-RU";
+                case LocalizedContentManager.LanguageCode.zh:
+                    return "zh-CN";
+                case LocalizedContentManager.LanguageCode.pt:
+                    return "pt-BR";
+                case LocalizedContentManager.LanguageCode.es:
+                    return "es-ES";
+                case LocalizedContentManager.LanguageCode.de:
+                    return "de-DE";
+                case LocalizedContentManager.LanguageCode.th:
+                    return "th-TH";
+            }
+            return "";
         }
     }
 }

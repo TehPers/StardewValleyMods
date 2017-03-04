@@ -48,9 +48,6 @@ namespace TehPers.Stardew.SCCL.API {
         public virtual bool RegisterAsset<T>(string assetName, T asset) {
             assetName = assetName.Replace('/', '\\');
 
-            if (!ContentAPI.TryCreateDelegate<T>(assetName))
-                return false;
-
             if (!ModContent.ContainsKey(assetName))
                 ModContent[assetName] = new HashSet<object>();
 
