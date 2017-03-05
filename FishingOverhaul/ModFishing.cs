@@ -44,6 +44,8 @@ namespace TehPers.Stardew.FishingOverhaul {
             this.config.AdditionalLootChance = (float) Math.Min(this.config.AdditionalLootChance, 0.99);
             helper.WriteConfig(this.config);
 
+            OnLanguageChange(LocalizedContentManager.CurrentLanguageCode);
+
             // Stop here if the mod is disabled
             if (!config.ModEnabled) return;
 
@@ -89,15 +91,12 @@ namespace TehPers.Stardew.FishingOverhaul {
             Keys getFishKey;
             if (Enum.TryParse(config.GetFishInWaterKey, out getFishKey) && e.KeyPressed == getFishKey) {
                 if (Game1.currentLocation != null) {
-                    WaterType w = Helpers.convertWaterType(Game1.currentLocation.getFishingLocation(Game1.player.getTileLocation())) ?? WaterType.BOTH;
-                    Season s = Helpers.toSeason(Game1.currentSeason) ?? Season.SPRINGSUMMERFALLWINTER;
-                    int[] possibleFish = new int[] { };
-                    if (config.PossibleFish.ContainsKey(Game1.currentLocation.name)) {
-                        if (Game1.currentLocation is MineShaft)
-                            possibleFish = config.PossibleFish[Game1.currentLocation.name].Where(data => data.Value.meetsCriteria(w, s, Game1.isRaining ? Weather.RAINY : Weather.SUNNY, Game1.timeOfDay, 5, Game1.player.fishingLevel, (Game1.currentLocation as MineShaft).mineLevel)).Select(data => data.Key).ToArray();
-                        else
-                            possibleFish = config.PossibleFish[Game1.currentLocation.name].Where(data => data.Value.meetsCriteria(w, s, Game1.isRaining ? Weather.RAINY : Weather.SUNNY, Game1.timeOfDay, 5, Game1.player.fishingLevel)).Select(data => data.Key).ToArray();
-                    }
+
+                    int[] possibleFish;
+                    if (Game1.currentLocation is MineShaft)
+                        possibleFish = FishHelper.getPossibleFish(5, (Game1.currentLocation as MineShaft).mineLevel).Select(f => f.Key).ToArray();
+                    else
+                        possibleFish = FishHelper.getPossibleFish(5, -1).Select(f => f.Key).ToArray();
                     Dictionary<int, string> fish = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
                     string[] fishByName = (
                         from id in possibleFish
