@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using TehPers.Stardew.SCCL.API;
 using TehPers.Stardew.SCCL.Configs;
 
@@ -56,14 +55,8 @@ namespace TehPers.Stardew.SCCL {
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
             GraphicsEvents.OnPreRenderEvent += OnPreRenderEvent;
             GameEvents.LoadContent += loadFromFolder;
-
 #pragma warning disable
-            // Register the asset loader last (hopefully) so that other mods get to fight over the asset first.
-            Thread t = new Thread(() => {
-                Thread.Sleep(50);
-                ContentEvents.AssetLoading += this.merger.AssetLoading;
-                });
-            t.Start();
+            ContentEvents.AssetLoading += this.merger.AssetLoading;
 #pragma warning restore
 
             #region Console Commands
