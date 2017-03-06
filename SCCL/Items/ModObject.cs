@@ -14,7 +14,6 @@ namespace TehPers.Stardew.SCCL.Items {
 
         internal OverriddenItem(ItemTemplate template, Dictionary<string, object> data) : base(Vector2.Zero, 9000) {
             this.name = template.GetName(data);
-            
         }
 
         public override void drawInMenu(SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, bool drawStackNumber) {

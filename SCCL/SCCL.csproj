@@ -46,11 +46,9 @@
   <ItemGroup>
     <Compile Include="API\ContentAPI.cs" />
     <Compile Include="API\ContentInjector.cs" />
-    <Compile Include="ChangableTexture2D.cs" />
     <Compile Include="ContentMerger.cs" />
     <Compile Include="Configs\EventConfig.cs" />
     <Compile Include="Configs\ModConfig.cs" />
-    <Compile Include="ContentMerger_old.cs" />
     <Compile Include="Items\ItemTemplate.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Items\ModObject.cs" />

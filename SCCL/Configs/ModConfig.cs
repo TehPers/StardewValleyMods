@@ -8,9 +8,7 @@ namespace TehPers.Stardew.SCCL.Configs {
     public class ModConfig {
 
         public bool ModEnabled { get; set; } = true;
-
-        public bool OverwriteAllTextures { get; set; } = false;
-
+        
         public List<string> LoadOrder = new List<string>();
 
         public HashSet<string> DisabledMods = new HashSet<string>();

@@ -21,8 +21,8 @@ namespace TehPers.Stardew.SCCL.API {
          * <param name="name">The name of the injector. This can be your mod's name.</param>
          * <returns>The injector with the given name, or a new one if needed</returns>
          **/
-        public static ContentInjector GetInjector(string name) {
-            if (!mods.ContainsKey(name)) mods[name] = new ContentInjector(name);
+        public static ContentInjector GetInjector(Mod owner, string name) {
+            if (!mods.ContainsKey(name)) mods[name] = new ContentInjector(owner, name);
             return mods[name];
         }
 

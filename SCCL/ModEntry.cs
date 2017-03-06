@@ -1,15 +1,14 @@
 ﻿using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
-using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using TehPers.Stardew.SCCL.API;
 using TehPers.Stardew.SCCL.Configs;
 
@@ -57,14 +56,22 @@ namespace TehPers.Stardew.SCCL {
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
             GraphicsEvents.OnPreRenderEvent += OnPreRenderEvent;
             GameEvents.LoadContent += loadFromFolder;
-            ContentEvents.AssetLoading += this.merger.AssetLoading;
+
+#pragma warning disable
+            // Register the asset loader last (hopefully) so that other mods get to fight over the asset first.
+            Thread t = new Thread(() => {
+                Thread.Sleep(50);
+                ContentEvents.AssetLoading += this.merger.AssetLoading;
+                });
+            t.Start();
+#pragma warning restore
 
             #region Console Commands
             Helper.ConsoleCommands.Add("SCCLEnable", "Enables a content injector | SCCLEnable <injector>", (cmd, args) => {
                 if (args.Length >= 1) {
                     string name = args[0];
                     if (ContentAPI.InjectorExists(name)) {
-                        ContentAPI.GetInjector(name).Enabled = true;
+                        ContentAPI.GetInjector(this, name).Enabled = true;
                         Monitor.Log(name + " is enabled", LogLevel.Info);
                     } else Monitor.Log("No injector with name '" + name + "' exists!", LogLevel.Warn);
                 } else Monitor.Log("Injector name was not specified", LogLevel.Warn);
@@ -73,7 +80,7 @@ namespace TehPers.Stardew.SCCL {
                 if (args.Length >= 1) {
                     string name = args[0];
                     if (ContentAPI.InjectorExists(name)) {
-                        ContentAPI.GetInjector(name).Enabled = false;
+                        ContentAPI.GetInjector(this, name).Enabled = false;
                         Monitor.Log(name + " is disabled", LogLevel.Info);
                     } else Monitor.Log("No injector with name '" + name + "' exists!", LogLevel.Warn);
                 } else Monitor.Log("Injector name was not specified", LogLevel.Warn);
@@ -96,7 +103,7 @@ namespace TehPers.Stardew.SCCL {
 
             // Get all xnbs that need delegates
             foreach (string mod in Directory.GetDirectories(Path.Combine(Helper.DirectoryPath, "Content"))) {
-                ContentInjector injector = ContentAPI.GetInjector(Path.GetFileName(mod));
+                ContentInjector injector = ContentAPI.GetInjector(this, Path.GetFileName(mod));
 
                 List<string> checkDirs = Directory.GetDirectories(mod).ToList();
                 while (checkDirs.Count > 0) {
@@ -114,8 +121,8 @@ namespace TehPers.Stardew.SCCL {
 
                             if (modAsset != null)
                                 injector.RegisterAsset(localModPath.Substring(localModPath.IndexOf('\\') + 1), modAsset);
-                        } catch (Exception ex) {
-                            //this.Monitor.LogOnce("Unable to load " + xnb, LogLevel.Warn, ex);
+                        } catch (Exception) {
+                            this.Monitor.Log("Unable to load " + xnb, LogLevel.Warn);
                         }
                     }
                 }

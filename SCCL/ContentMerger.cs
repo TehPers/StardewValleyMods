@@ -6,9 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using TehPers.Stardew.Framework;
 using TehPers.Stardew.SCCL.API;
 using TehPers.Stardew.SCCL.Configs;
@@ -18,71 +15,30 @@ namespace TehPers.Stardew.SCCL {
     public class ContentMerger {
         public HashSet<string> Dirty { get; } = new HashSet<string>();
         private HashSet<Type> Unmergables { get; } = new HashSet<Type>();
-        private Dictionary<string, object> Cache { get; } = new Dictionary<string, object>();
-        private Dictionary<string, object> Unmerged { get; } = new Dictionary<string, object>();
+        private Dictionary<string, object> Assets { get; } = new Dictionary<string, object>();
+        private Dictionary<string, object> Originals { get; } = new Dictionary<string, object>();
+        internal Dictionary<string, Size> RequiredSize { get; } = new Dictionary<string, Size>();
 
         internal ContentMerger() { }
 
-        public object Merge(string assetName, object orig) {
-            ModConfig config = ModEntry.INSTANCE.config;
-
-            try {
-                object asset = orig == null ? this.getModAssets<object>(assetName)[0].Value : orig;
-
-                if (this.getModAssets<object>(assetName).Count > 0) {
-                    Type t = asset.GetType();
-                    if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
-                        asset = this.GetType().GetMethod("MergeDictionary", BindingFlags.NonPublic | BindingFlags.Instance)
-                            .MakeGenericMethod(t.GetGenericArguments())
-                            .Invoke(this, new object[] { asset, assetName });
-                        //asset = (T) (object) this.MergeMods(asset as Dictionary<int, string>, assetName);
-                    } else if (!config.OverwriteAllTextures && t == typeof(Texture2D)) {
-                        Texture2D texture = asset as Texture2D;
-                        if (texture == null || texture.Format == SurfaceFormat.Color)
-                            asset = this.MergeTextures<Color>(texture, assetName);
-                        else {
-                            ModEntry.INSTANCE.Monitor.Log("Cannot merge this texture format, overriding instead: " + Enum.GetName(typeof(SurfaceFormat), texture.Format), LogLevel.Info);
-                            asset = this.ReplaceIfExists(asset, assetName);
-                        }
-                    } else {
-                        if (!Unmergables.Contains(t)) {
-                            ModEntry.INSTANCE.Monitor.Log("Cannot merge this type, overriding instead: " + t.ToString(), LogLevel.Trace);
-                            Unmergables.Add(t);
-                        }
-                        asset = this.ReplaceIfExists(asset, assetName);
-                    }
-                }
-
-                return asset;
-            } catch (Exception ex) {
-                ModEntry.INSTANCE.Monitor.Log("An error occured while merging " + assetName, LogLevel.Error);
-            }
-
-            return null;
-        }
-
         public void AssetLoading(object sender, IContentEventHelper e) {
-            Unmerged[e.AssetName] = e.Data;
-            Cache[e.AssetName] = this.Merge(e.AssetName, e.Data);
-            this.Dirty.Remove(e.AssetName);
-            e.ReplaceWith(Cache[e.AssetName]);
+            try {
+                Originals[e.AssetName] = e.Data;
+                this.Dirty.Remove(e.AssetName);
+                if (this.Merge(e.AssetName, e.Data)) {
+                    e.ReplaceWith(Assets[e.AssetName]);
+                } else {
+                    Assets[e.AssetName] = e.Data;
+                }
+            } catch (Exception ex) {
+                ex.ToString();
+            }
         }
 
         public void RefreshAssets() {
             foreach (string assetName in Dirty) {
-                if (!Cache.ContainsKey(assetName)) continue;
-
-                object orig = Cache[assetName];
-                object n = null;
-
-                if (Unmerged.ContainsKey(assetName)) n = this.Merge(assetName, Unmerged[assetName]);
-                else n = this.Merge(assetName, null);
-
-                if (n != null) {
-                    if (orig is Texture2D && n is Texture2D) {
-                        //(orig as Texture2D).SetData<Color>()
-                    }
-                }
+                if (!Assets.ContainsKey(assetName)) continue;
+                this.Merge(assetName, Originals.GetDefault(assetName, null));
             }
             Dirty.Clear();
         }
@@ -110,95 +66,182 @@ namespace TehPers.Stardew.SCCL {
         }
 
         #region Mergers
-        private Dictionary<TKey, TVal> MergeDictionary<TKey, TVal>(Dictionary<TKey, TVal> orig, string assetName) {
+        public bool Merge(string assetName, object orig) {
+            try {
+                ModConfig config = ModEntry.INSTANCE.config;
+                Type t = orig.GetType();
+                if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
+                    this.GetType().GetMethod("MergeDictionary", BindingFlags.NonPublic | BindingFlags.Instance)
+                        .MakeGenericMethod(t.GetGenericArguments())
+                        .Invoke(this, new object[] { orig, assetName });
+                } else if (orig is Texture2D) {
+                    Texture2D texture = orig as Texture2D;
+                    if (texture == null || texture.Format == SurfaceFormat.Color)
+                        this.MergeTextures<Color>(texture, assetName);
+                    else {
+                        ModEntry.INSTANCE.Monitor.Log("Cannot merge this texture format, overriding instead: " + Enum.GetName(typeof(SurfaceFormat), texture.Format), LogLevel.Info);
+                        this.ReplaceIfExists(orig, assetName);
+                    }
+                } else {
+                    if (!Unmergables.Contains(t)) {
+                        ModEntry.INSTANCE.Monitor.Log("Cannot merge this type, overriding instead: " + t.ToString(), LogLevel.Trace);
+                        Unmergables.Add(t);
+                    }
+                    this.ReplaceIfExists(orig, assetName);
+                }
+                return true;
+            } catch (Exception ex) {
+                ModEntry.INSTANCE.Monitor.Log("An error occurred while merging " + assetName, LogLevel.Error);
+                ModEntry.INSTANCE.Monitor.Log(ex.Message, LogLevel.Error);
+            }
+            return false;
+        }
+
+        private void MergeDictionary<TKey, TVal>(Dictionary<TKey, TVal> orig, string assetName) {
+            Dictionary<TKey, TVal> final = orig != null ? new Dictionary<TKey, TVal>(orig) : new Dictionary<TKey, TVal>();
             Dictionary<TKey, TVal> diffs = new Dictionary<TKey, TVal>();
             Dictionary<TKey, string> diffMods = new Dictionary<TKey, string>();
             List<KeyValuePair<string, Dictionary<TKey, TVal>>> mods = getModAssets<Dictionary<TKey, TVal>>(assetName);
 
             bool collision = false;
-
             foreach (KeyValuePair<string, Dictionary<TKey, TVal>> modKV in mods) {
+                bool warned = false;
                 foreach (KeyValuePair<TKey, TVal> injection in modKV.Value) {
-                    if (!(orig.ContainsKey(injection.Key) && orig[injection.Key].Equals(injection.Value))) {
+                    TVal val = injection.Value;
+                    if (typeof(TVal) == typeof(string) && final.ContainsKey(injection.Key)) {
+                        if ((final[injection.Key] as string).Count(c => c == '/') != (injection.Value as string).Count(c => c == '/')) {
+                            if (!warned) {
+                                ModEntry.INSTANCE.Monitor.Log(modKV.Key + " might be loading an outdated asset: " + assetName, LogLevel.Warn);
+                                ModEntry.INSTANCE.Monitor.Log("If the game crashes or black-screens, try disabling this mod first.", LogLevel.Warn);
+                            }
+
+                            string entry = val as string;
+                            if (TryPort(ref entry, assetName)) {
+                                val = (TVal) (object) entry;
+                                if (!warned) ModEntry.INSTANCE.Monitor.Log("Attempted to forward-port the mod.", LogLevel.Warn);
+                            }
+
+                            warned = true;
+                        }
+                    }
+
+                    if (!(final.ContainsKey(injection.Key) && final[injection.Key].Equals(val))) {
                         if (!collision && diffs.ContainsKey(injection.Key)) {
                             ModEntry.INSTANCE.Monitor.Log(string.Format("Collision detected between {0} and {1}! Overwriting...", diffMods[injection.Key], modKV.Key), LogLevel.Warn);
                             collision = true;
                         }
-                        diffs[injection.Key] = injection.Value;
+
+                        diffs[injection.Key] = val;
                         diffMods[injection.Key] = modKV.Key;
                     }
                 }
             }
 
-            Dictionary<TKey, TVal> merged = new Dictionary<TKey, TVal>(orig);
             foreach (KeyValuePair<TKey, TVal> diff in diffs)
-                merged[diff.Key] = diff.Value;
+                final[diff.Key] = diff.Value;
 
             if (diffs.Count > 0)
                 ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected {1} changes into {2}.xnb", string.Join(", ", diffMods.Values.ToHashSet()), diffs.Count, assetName), LogLevel.Info);
 
-            return merged;
+            if (Assets.ContainsKey(assetName)) {
+                Dictionary<TKey, TVal> asset = Assets[assetName] as Dictionary<TKey, TVal>;
+                if (asset != null) {
+                    asset.Clear();
+                    foreach (KeyValuePair<TKey, TVal> entry in final)
+                        asset[entry.Key] = entry.Value;
+                }
+            } else
+                Assets[assetName] = final;
         }
 
         // TODO: Needs to have texture injection offsets, so mods can inject a texture at (u, v) in the original
-        /// <remarks>Will not dispose of <paramref name="orig"/></remarks>
-        private Texture2D MergeTextures<TFormat>(Texture2D orig, string assetName) where TFormat : struct {
+        private void MergeTextures<TFormat>(Texture2D orig, string assetName) where TFormat : struct {
+            // Calculate size of texture
+            Size texSize = orig != null ? new Size(orig.Width, orig.Height) : new Size(0, 0);
+            if (RequiredSize.ContainsKey(assetName)) {
+                Size reqSize = RequiredSize[assetName];
+                texSize = new Size(Math.Max(texSize.Width, reqSize.Width), Math.Max(texSize.Height, orig.Height));
+            }
+
+            // Create data array, and fill it with original texture's data if possible
+            TFormat[] sizedOrigData = new TFormat[texSize.Area];
+            if (orig != null) {
+                TFormat[] origData = new TFormat[orig.Width * orig.Height];
+                orig.GetData(origData);
+                for (int y = 0; y < orig.Height; y++)
+                    for (int x = 0; x < orig.Width; x++)
+                        sizedOrigData[y * texSize.Width + x] = origData[y * orig.Width + x];
+            }
+            TFormat[] diffData = new TFormat[sizedOrigData.Length];
+            sizedOrigData.CopyTo(diffData, 0);
+
             Dictionary<int, string> diffMods = new Dictionary<int, string>();
-            TFormat[] origData = new TFormat[orig.Width * orig.Height];
-            Size origSize = new Size(orig.Width, orig.Height);
-            orig.GetData(origData);
-            List<TFormat> diffData = new List<TFormat>(origData);
-
             List<KeyValuePair<string, Texture2D>> mods = getModAssets<Texture2D>(assetName);
+            foreach (KeyValuePair<string, Texture2D> modKV in mods) {
+                string mod = modKV.Key;
+                Texture2D modTexture = modKV.Value;
+                bool collision = false;
+                TFormat[] modData = new TFormat[modTexture.Width * modTexture.Height];
+                Size modSize = new Size(modTexture.Width, modTexture.Height);
+                modTexture.GetData(modData);
 
-            if (mods.Count > 1) {
-                foreach (KeyValuePair<string, Texture2D> modKV in mods) {
-                    string mod = modKV.Key;
-                    Texture2D modTexture = modKV.Value;
-                    bool collision = false;
-                    TFormat[] modData = new TFormat[modTexture.Width * modTexture.Height];
-                    Size modSize = new Size(modTexture.Width, modTexture.Height);
-                    modTexture.GetData(modData);
+                if (modSize != texSize)
+                    ModEntry.INSTANCE.Monitor.Log("Mod's texture is too large for the texture, so it's being trimmed: " + mod, LogLevel.Warn);
 
-                    if (modSize.Width != origSize.Width)
-                        ModEntry.INSTANCE.Monitor.Log("Mod's texture is too wide for the game, so it's being trimmed: " + mod, LogLevel.Warn);
+                for (int y = 0; y < texSize.Height; y++) {
+                    if (y >= modSize.Height) break;
+                    for (int x = 0; x < texSize.Width; x++) {
+                        if (x >= modSize.Width) continue;
 
-                    for (int y = 0; y < modSize.Height; y++) { // Use mod's height
-                        for (int x = 0; x < origSize.Width; x++) { // Use original's width
-                            int i = y * origSize.Width + x; // Use the original's index because we're keeping that width for the final
-                            TFormat pixel;
-                            if (modSize.Width < origSize.Width) // If the mod's texture does not contain this pixel coordinate
-                                pixel = origData[i];
-                            else // Otherwise if it contains this pixel
-                                pixel = modData[y * modSize.Width + x];
+                        int i = y * texSize.Width + x; // Use the original's index because we're keeping that width for the final
+                        TFormat pixel = modData[y * modSize.Width + x];
 
-                            if (i >= origData.Length || !origData[i].Equals(pixel)) {
-                                if (!collision && diffMods.ContainsKey(i)) {
-                                    ModEntry.INSTANCE.Monitor.Log(string.Format("Collision detected between {0} and {1}! Overwriting...", mod, diffMods[i]), LogLevel.Warn);
-                                    collision = true;
-                                }
-
-                                while (i >= diffData.Count) diffData.Add(default(TFormat));
-
-                                diffData[i] = pixel;
-                                diffMods[i] = mod;
+                        if (i >= sizedOrigData.Length || !sizedOrigData[i].Equals(pixel)) {
+                            if (!collision && diffMods.ContainsKey(i)) {
+                                ModEntry.INSTANCE.Monitor.Log(string.Format("Collision detected between {0} and {1}! Overwriting...", mod, diffMods[i]), LogLevel.Warn);
+                                collision = true;
                             }
+                            diffData[i] = pixel;
+                            diffMods[i] = mod;
                         }
                     }
                 }
-            } else {
-                diffMods[0] = mods.First().Key;
             }
 
-            ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected changes into {1}.xnb", string.Join(", ", diffMods.Values.ToHashSet()), assetName), LogLevel.Info);
-            if (mods.Count == 1) return mods.First().Value;
+            if (diffMods.Count > 0)
+                ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected changes into {1}.xnb", string.Join(", ", diffMods.Values.ToHashSet()), assetName), LogLevel.Info);
 
-            Texture2D merged = new Texture2D(orig.GraphicsDevice, origSize.Width, (int) Math.Ceiling((double) diffData.Count / origSize.Width));
+            Texture2D merged = new Texture2D(Game1.graphics.GraphicsDevice, texSize.Width, (int) Math.Ceiling((double) diffData.Length / texSize.Width));
             merged.SetData(diffData.ToArray());
-            return merged;
+
+            if (Assets.ContainsKey(assetName)) {
+                // Replace the data in the existing asset with the data in the merged asset
+                Texture2D asset = Assets[assetName] as Texture2D;
+                TFormat[] assetData = new TFormat[asset.Width * asset.Height];
+                asset.GetData(assetData);
+                if (asset != null && asset.Format == merged.Format) {
+                    for (int y = 0; y < asset.Height; y++) {
+                        if (y >= texSize.Height) break;
+                        for (int x = 0; x < asset.Width; x++) {
+                            if (x >= texSize.Width) break;
+                            assetData[x + y * asset.Width] = diffData[x + y * texSize.Width];
+                        }
+                    }
+                }
+                asset.SetData(assetData);
+            } else {
+                // Use the merged asset
+                Assets[assetName] = merged;
+            }
         }
 
-        private T ReplaceIfExists<T>(T orig, string assetName) {
+        private void ReplaceIfExists<T>(T orig, string assetName) {
+            ModEntry.INSTANCE.Monitor.Log("ReplaceIfExists<" + typeof(T).Name + "> " + assetName, LogLevel.Trace);
+            if (Assets.ContainsKey(assetName)) {
+                ModEntry.INSTANCE.Monitor.Log("Could not overwrite " + assetName + " (" + typeof(T).Name + ")");
+                return;
+            }
+
             T replaced = orig;
             string diffMod = null;
 
@@ -206,7 +249,7 @@ namespace TehPers.Stardew.SCCL {
 
             foreach (KeyValuePair<string, T> modKV in mods) {
                 if (diffMod != null)
-                    ModEntry.INSTANCE.Monitor.Log("Collision detected with " + diffMod + "! Overwriting...", LogLevel.Warn);
+                    ModEntry.INSTANCE.Monitor.Log("Collision detected between " + diffMod + " and " + modKV.Key + "! Overwriting...", LogLevel.Warn);
 
                 replaced = modKV.Value;
                 diffMod = modKV.Key;
@@ -215,7 +258,25 @@ namespace TehPers.Stardew.SCCL {
             if (diffMod != null)
                 ModEntry.INSTANCE.Monitor.Log(string.Format("{0} replaced {1}.xnb", diffMod, assetName), LogLevel.Info);
 
-            return replaced;
+            Assets[assetName] = replaced;
+        }
+        #endregion
+
+        #region Forward Porting
+        /// <summary>Ports a xnb ObjectInformation.xnb entry from 1.11 to 1.2+</summary>
+        private bool TryPort(ref string asset, string assetName) {
+            switch (assetName) {
+                case "Data\\ObjectInformation":
+                    asset = TryPortObjectInformation(asset);
+                    return true;
+            }
+            return false;
+        }
+
+        private string TryPortObjectInformation(string asset) {
+            List<string> data = asset.Split('/').ToList();
+            data.Insert(4, data[0]);
+            return string.Join("/", data);
         }
         #endregion
     }

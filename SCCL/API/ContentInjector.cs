@@ -1,19 +1,25 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TehPers.Stardew.SCCL.Configs;
+using xTile.Dimensions;
 
 namespace TehPers.Stardew.SCCL.API {
-    public class ContentInjector {
+    public sealed class ContentInjector {
         private static MethodInfo registerAssetMethod = typeof(ContentInjector).GetMethods().Where(m => m.Name == "RegisterAsset" && m.IsGenericMethod).First();
 
         internal Dictionary<string, HashSet<object>> ModContent { get; } = new Dictionary<string, HashSet<object>>();
 
-        private string _name;
-        public virtual string Name => _name;
+        /// <summary>Mod that created this injector</summary>
+        private Mod Owner { get; }
 
-        public virtual bool Enabled {
+        /// <summary>Injector name</summary>
+        public string Name { get; }
+
+        public bool Enabled {
             get {
                 return !ModEntry.INSTANCE.config.DisabledMods.Contains(this.Name);
             }
@@ -34,22 +40,26 @@ namespace TehPers.Stardew.SCCL.API {
             }
         }
 
-        internal ContentInjector(string name) {
-            this._name = name;
+        internal ContentInjector(Mod owner, string name) {
+            this.Owner = owner;
+            this.Name = name;
         }
 
         /**
          * <summary>Registers the given asset with the given type and asset name</summary>
-         * <param name="assetName">The name of the asset to merge</param>
-         * <param name="asset">The asset to merge</param>
+         * <param name="assetName">The name of the asset</param>
+         * <param name="asset">The asset</param>
          * <typeparam name="T">The type of the asset to merge. If unknown, use non-generic <seealso cref="RegisterAsset(string, object)"/> instead</typeparam>
          * <returns>Whether the asset was registered successfully. If false, then T was probably incompatible with the asset</returns>
          **/
-        public virtual bool RegisterAsset<T>(string assetName, T asset) {
+        public bool RegisterAsset<T>(string assetName, T asset) {
             assetName = assetName.Replace('/', '\\');
 
             if (!ModContent.ContainsKey(assetName))
                 ModContent[assetName] = new HashSet<object>();
+
+            if (asset is Texture2D)
+                this.RequestTextureSize(assetName, new Size((asset as Texture2D).Width, (asset as Texture2D).Height));
 
             ModContent[assetName].Add(asset);
             this.RefreshAsset(assetName);
@@ -61,22 +71,22 @@ namespace TehPers.Stardew.SCCL.API {
 
         /**
          * <summary>Registers the given asset with the given asset name</summary>
-         * <param name="assetName">The name of the asset to merge</param>
+         * <param name="assetName">The name of the asset</param>
          * <param name="asset">The asset to merge</param>
          * <returns>Whether the asset was registered successfully. If false, then the asset was probably the wrong type</returns>
          **/
-        public virtual bool RegisterAsset(string assetName, object asset) {
+        public bool RegisterAsset(string assetName, object asset) {
             return (bool) registerAssetMethod.MakeGenericMethod(asset.GetType()).Invoke(this, new object[] { assetName, asset });
         }
 
 
         /**
          * <summary>Removes the given asset with the given asset name</summary>
-         * <param name="assetName">The name of the asset to remove</param>
+         * <param name="assetName">The name of the asset</param>
          * <param name="asset">The asset to remove</param>
          * <returns>Whether the asset was removed successfully</returns>
          **/
-        public virtual bool UnregisterAsset(string assetName, object asset) {
+        public bool UnregisterAsset(string assetName, object asset) {
             assetName = assetName.Replace('/', '\\');
 
             if (ModContent.ContainsKey(assetName) && ModContent[assetName].Remove(asset)) {
@@ -89,11 +99,27 @@ namespace TehPers.Stardew.SCCL.API {
 
         /**
          * <summary>Mark the given asset to be regenerated</summary>
-         * <param name="assetName">The name of the asset to regenerate</param>
+         * <param name="assetName">The name of the asset</param>
          * <returns>Whether the asset needs to be marked</returns>
          **/
-        public virtual bool RefreshAsset(string assetName) {
+        public bool RefreshAsset(string assetName) {
             return ModEntry.INSTANCE.merger.Dirty.Add(assetName);
+        }
+
+        /**
+         * <summary>Sets the minimum required size for the texture. Call this before the texture is loaded, during mod entry.</summary>
+         * <param name="assetName">The name of the asset</param>
+         * <param name="size">The required size of the asset. The final asset might not be this size.</param>
+         * <returns>The required texture width, or null if it shouldn't change.</returns>
+         * <remarks>If the original asset is larger than the size that was set, that size will be used. Mod textures will be clipped if needed.</remarks>
+         **/
+        public void RequestTextureSize(string assetName, Size size) {
+            ContentMerger merger = ModEntry.INSTANCE.merger;
+            if (merger.RequiredSize.ContainsKey(assetName)) {
+                Size orig = merger.RequiredSize[assetName];
+                merger.RequiredSize[assetName] = new Size(Math.Max(size.Width, orig.Width), Math.Max(size.Height, orig.Height));
+            }
+            merger.RequiredSize[assetName] = size;
         }
     }
 }
