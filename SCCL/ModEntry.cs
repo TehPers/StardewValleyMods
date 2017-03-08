@@ -11,6 +11,8 @@ using System.Net;
 using TehPers.Stardew.SCCL.API;
 using TehPers.Stardew.SCCL.Configs;
 using TehPers.Stardew.SCCL.Content;
+using TehPers.Stardew.SCCL.Items;
+using TehPers.Stardew.SCCL.Testing;
 
 namespace TehPers.Stardew.SCCL {
     public class ModEntry : Mod {
@@ -29,6 +31,8 @@ namespace TehPers.Stardew.SCCL {
 
         private List<Type> injectedTypes = new List<Type>();
         private bool loaded = false;
+
+        ItemLoader itemLoader;
 
         public ModEntry() {
             if (INSTANCE == null) INSTANCE = this;
@@ -50,15 +54,28 @@ namespace TehPers.Stardew.SCCL {
                 }
             }
 
+            this.itemLoader = new ItemLoader();
             this.merger = new ContentMerger();
 
             GameEvents.UpdateTick += UpdateTick;
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
             GraphicsEvents.OnPreRenderEvent += OnPreRenderEvent;
             GameEvents.LoadContent += LoadFromFolder;
-#pragma warning disable
-            ContentEvents.AssetLoading += this.merger.AssetLoading;
-#pragma warning restore
+
+            ItemCustom custom = new ItemCustom("SCCL.custom");
+            ControlEvents.KeyPressed += (sender, e) => {
+                switch (e.KeyPressed) {
+                    case Microsoft.Xna.Framework.Input.Keys.R:
+                        Game1.player.addItemToInventory(new ModObject(custom));
+                        break;
+                    case Microsoft.Xna.Framework.Input.Keys.T:
+                        itemLoader.Save();
+                        break;
+                    case Microsoft.Xna.Framework.Input.Keys.Y:
+                        itemLoader.Load();
+                        break;
+                }
+            };
 
             #region Console Commands
             Helper.ConsoleCommands.Add("SCCLEnable", "Enables a content injector | SCCLEnable <injector>", (cmd, args) => {
@@ -216,7 +233,7 @@ namespace TehPers.Stardew.SCCL {
                     }
                     this.Helper.WriteJsonFile(configPath, config);
                 } catch (Exception ex) {
-                    this.Monitor.Log("Failed to load " + Path.GetFileName(configPath) + ".", LogLevel.Error);
+                    this.Monitor.Log(string.Format("Failed to load {0}.", Path.GetFileName(configPath)), LogLevel.Error);
                     this.Monitor.Log(ex.Message, LogLevel.Error);
                     this.Monitor.Log("Maybe your format is invalid?", LogLevel.Warn);
                 }

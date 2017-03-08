@@ -51,6 +51,8 @@
     <Compile Include="Configs\EventConfig.cs" />
     <Compile Include="Configs\ModConfig.cs" />
     <Compile Include="Content\OffsetTexture2D.cs" />
+    <Compile Include="Items\ItemData.cs" />
+    <Compile Include="Items\ItemLoader.cs" />
     <Compile Include="Items\ItemTemplate.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Items\ModObject.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="NBT\NBTShort.cs" />
     <Compile Include="NBT\NBTString.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Testing\ItemCustom.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="manifest.json" />

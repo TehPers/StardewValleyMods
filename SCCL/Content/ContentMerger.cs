@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,11 @@ namespace TehPers.Stardew.SCCL.Content {
         private Dictionary<string, object> Originals { get; } = new Dictionary<string, object>();
         internal Dictionary<string, Size> RequiredSize { get; } = new Dictionary<string, Size>();
 
-        internal ContentMerger() { }
+        internal ContentMerger() {
+#pragma warning disable
+            ContentEvents.AssetLoading += this.AssetLoading;
+#pragma warning restore
+        }
 
         public void AssetLoading(object sender, IContentEventHelper e) {
             try {

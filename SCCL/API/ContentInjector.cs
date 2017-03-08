@@ -21,9 +21,7 @@ namespace TehPers.Stardew.SCCL.API {
         public string Name { get; }
 
         public bool Enabled {
-            get {
-                return !ModEntry.INSTANCE.config.DisabledMods.Contains(this.Name);
-            }
+            get => !ModEntry.INSTANCE.config.DisabledMods.Contains(Name);
             set {
                 ModConfig config = ModEntry.INSTANCE.config;
                 bool changed = value != this.Enabled;

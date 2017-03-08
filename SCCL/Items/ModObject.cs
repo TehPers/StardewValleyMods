@@ -5,15 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TehPers.Stardew.Framework;
 
 namespace TehPers.Stardew.SCCL.Items {
-    public class OverriddenItem : StardewValley.Object {
+    public class ModObject : StardewValley.Object {
 
-        public ItemTemplate template;
-        public Dictionary<string, object> data;
+        public ItemTemplate Template { get; set; }
+        public Dictionary<string, object> Data { get; set; }
 
-        internal OverriddenItem(ItemTemplate template, Dictionary<string, object> data) : base(Vector2.Zero, 9000) {
+        public ModObject(ItemTemplate template) : this(template, new Dictionary<string, object>()) { }
+
+        public ModObject(ItemTemplate template, Dictionary<string, object> data) : this(template, data, 1) { }
+
+        public ModObject(ItemTemplate template, Dictionary<string, object> data, int count) : base(Vector2.Zero, Objects.STONE, count) {
+            this.Template = template ?? throw new ArgumentNullException(nameof(template), $"{nameof(template)} is null.");
+            this.Data = data ?? throw new ArgumentException($"{nameof(data)} is null. Use new ModObject(ItemTemplate) instead.", nameof(data));
+
             this.name = template.GetName(data);
+            this.price = template.GetPrice(data);
+            this.edibility = template.GetEdibility(data);
         }
 
         public override void drawInMenu(SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, bool drawStackNumber) {
