@@ -11,7 +11,7 @@ using TehPers.Stardew.SCCL.API;
 using TehPers.Stardew.SCCL.Configs;
 using xTile.Dimensions;
 
-namespace TehPers.Stardew.SCCL {
+namespace TehPers.Stardew.SCCL.Content {
     public class ContentMerger {
         public HashSet<string> Dirty { get; } = new HashSet<string>();
         private HashSet<Type> Unmergables { get; } = new HashSet<Type>();
@@ -43,7 +43,7 @@ namespace TehPers.Stardew.SCCL {
             Dirty.Clear();
         }
 
-        public List<KeyValuePair<string, T>> getModAssets<T>(string assetName) {
+        public List<KeyValuePair<string, T>> GetModAssets<T>(string assetName) {
             // Update load order with any missing mods
             ModConfig config = ModEntry.INSTANCE.config;
             config.LoadOrder.AddRange(
@@ -101,7 +101,7 @@ namespace TehPers.Stardew.SCCL {
             Dictionary<TKey, TVal> final = orig != null ? new Dictionary<TKey, TVal>(orig) : new Dictionary<TKey, TVal>();
             Dictionary<TKey, TVal> diffs = new Dictionary<TKey, TVal>();
             Dictionary<TKey, string> diffMods = new Dictionary<TKey, string>();
-            List<KeyValuePair<string, Dictionary<TKey, TVal>>> mods = getModAssets<Dictionary<TKey, TVal>>(assetName);
+            List<KeyValuePair<string, Dictionary<TKey, TVal>>> mods = GetModAssets<Dictionary<TKey, TVal>>(assetName);
 
             bool collision = false;
             foreach (KeyValuePair<string, Dictionary<TKey, TVal>> modKV in mods) {
@@ -144,14 +144,12 @@ namespace TehPers.Stardew.SCCL {
                 ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected {1} changes into {2}.xnb", string.Join(", ", diffMods.Values.ToHashSet()), diffs.Count, assetName), LogLevel.Info);
 
             if (Assets.ContainsKey(assetName)) {
-                Dictionary<TKey, TVal> asset = Assets[assetName] as Dictionary<TKey, TVal>;
-                if (asset != null) {
+                if (Assets[assetName] is Dictionary<TKey, TVal> asset) {
                     asset.Clear();
                     foreach (KeyValuePair<TKey, TVal> entry in final)
                         asset[entry.Key] = entry.Value;
                 }
-            } else
-                Assets[assetName] = final;
+            } else Assets[assetName] = final;
         }
 
         // TODO: Needs to have texture injection offsets, so mods can inject a texture at (u, v) in the original
@@ -160,7 +158,7 @@ namespace TehPers.Stardew.SCCL {
             Size texSize = orig != null ? new Size(orig.Width, orig.Height) : new Size(0, 0);
             if (RequiredSize.ContainsKey(assetName)) {
                 Size reqSize = RequiredSize[assetName];
-                texSize = new Size(Math.Max(texSize.Width, reqSize.Width), Math.Max(texSize.Height, orig.Height));
+                texSize = new Size(Math.Max(texSize.Width, reqSize.Width), Math.Max(texSize.Height, reqSize.Height));
             }
 
             // Create data array, and fill it with original texture's data if possible
@@ -176,10 +174,11 @@ namespace TehPers.Stardew.SCCL {
             sizedOrigData.CopyTo(diffData, 0);
 
             Dictionary<int, string> diffMods = new Dictionary<int, string>();
-            List<KeyValuePair<string, Texture2D>> mods = getModAssets<Texture2D>(assetName);
-            foreach (KeyValuePair<string, Texture2D> modKV in mods) {
+            List<KeyValuePair<string, OffsetTexture2D>> mods = GetModAssets<OffsetTexture2D>(assetName);
+            foreach (KeyValuePair<string, OffsetTexture2D> modKV in mods) {
                 string mod = modKV.Key;
-                Texture2D modTexture = modKV.Value;
+                OffsetTexture2D offsetTexture = modKV.Value;
+                Texture2D modTexture = offsetTexture.Texture;
                 bool collision = false;
                 TFormat[] modData = new TFormat[modTexture.Width * modTexture.Height];
                 Size modSize = new Size(modTexture.Width, modTexture.Height);
@@ -188,13 +187,23 @@ namespace TehPers.Stardew.SCCL {
                 if (modSize != texSize)
                     ModEntry.INSTANCE.Monitor.Log("Mod's texture is too large for the texture, so it's being trimmed: " + mod, LogLevel.Warn);
 
-                for (int y = 0; y < texSize.Height; y++) {
-                    if (y >= modSize.Height) break;
-                    for (int x = 0; x < texSize.Width; x++) {
-                        if (x >= modSize.Width) continue;
+                for (int y = offsetTexture.Offset.Y; y < texSize.Height; y++) {
+                    int modY = y - offsetTexture.Offset.Y;
+                    if (modY >= modSize.Height) break;
+                    for (int x = offsetTexture.Offset.X; x < texSize.Width; x++) {
+                        int modX = x - offsetTexture.Offset.X;
+                        if (modX >= modSize.Width) continue;
 
+                        // Index of the pixel in the original texture, aka without offset
                         int i = y * texSize.Width + x; // Use the original's index because we're keeping that width for the final
-                        TFormat pixel = modData[y * modSize.Width + x];
+
+                        TFormat pixel = default(TFormat);
+                        try {
+                            // Get the pixel with the offset
+                            pixel = modData[modY * modSize.Width + modX];
+                        } catch (Exception ex) {
+                            ex.ToString();
+                        }
 
                         if (i >= sizedOrigData.Length || !sizedOrigData[i].Equals(pixel)) {
                             if (!collision && diffMods.ContainsKey(i)) {
@@ -245,7 +254,7 @@ namespace TehPers.Stardew.SCCL {
             T replaced = orig;
             string diffMod = null;
 
-            List<KeyValuePair<string, T>> mods = getModAssets<T>(assetName);
+            List<KeyValuePair<string, T>> mods = GetModAssets<T>(assetName);
 
             foreach (KeyValuePair<string, T> modKV in mods) {
                 if (diffMod != null)

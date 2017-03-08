@@ -24,6 +24,13 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
 
         public string GetFishInWaterKey { get; set; } = "NumPad9";
 
+        /* Chance of getting fish vs trash
+        public float FishBaseChance { get; set; } = 0.5f;
+        public float FishLevelEffect { get; set; } = 0.025f;
+        public float FishLuckLevelEffect { get; set; } = 0.01f;
+        public float FishDailyLuckEffect { get; set; } = 1f;
+        public float FishStreakEffect { get; set; } = 0.01f;*/
+
         /* Chance for treasure to appear */
         public float TreasureChance { get; set; } = 0.15f;
         public float TreasureBaitEffect { get; set; } = 0.15f;

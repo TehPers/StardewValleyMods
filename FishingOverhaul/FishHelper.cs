@@ -10,8 +10,8 @@ using TehPers.Stardew.FishingOverhaul.Configs;
 namespace TehPers.Stardew.FishingOverhaul {
     public class FishHelper {
         public static int getRandomFish(int depth) {
-            Season s = Helpers.toSeason(Game1.currentSeason) ?? Season.SPRINGSUMMERFALLWINTER;
-            WaterType w = Helpers.convertWaterType(Game1.currentLocation.getFishingLocation(Game1.player.getTileLocation())) ?? WaterType.BOTH;
+            Season s = Helpers.ToSeason(Game1.currentSeason) ?? Season.SPRINGSUMMERFALLWINTER;
+            WaterType w = Helpers.ConvertWaterType(Game1.currentLocation.getFishingLocation(Game1.player.getTileLocation())) ?? WaterType.BOTH;
             return getRandomFish(w, s, Game1.isRaining ? Weather.RAINY : Weather.SUNNY, Game1.timeOfDay, depth, Game1.player.FishingLevel);
         }
 
@@ -28,8 +28,8 @@ namespace TehPers.Stardew.FishingOverhaul {
         }
 
         public static IEnumerable<KeyValuePair<int, FishData>> getPossibleFish(int depth, int mineLevel = -1) {
-            Season s = Helpers.toSeason(Game1.currentSeason) ?? Season.SPRINGSUMMERFALLWINTER;
-            WaterType w = Helpers.convertWaterType(Game1.currentLocation.getFishingLocation(Game1.player.getTileLocation())) ?? WaterType.BOTH;
+            Season s = Helpers.ToSeason(Game1.currentSeason) ?? Season.SPRINGSUMMERFALLWINTER;
+            WaterType w = Helpers.ConvertWaterType(Game1.currentLocation.getFishingLocation(Game1.player.getTileLocation())) ?? WaterType.BOTH;
             return getPossibleFish(Game1.currentLocation.name, w, s, Game1.isRaining ? Weather.RAINY : Weather.SUNNY, Game1.timeOfDay, depth, Game1.player.FishingLevel, mineLevel);
         }
 

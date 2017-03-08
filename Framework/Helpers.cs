@@ -11,7 +11,7 @@ using TehPers.Stardew.Framework;
 namespace TehPers.Stardew.Framework {
 
     internal static class Helpers {
-        public static T copyFields<T>(T original, T target) {
+        public static T CopyFields<T>(T original, T target) {
             Type typ = original.GetType();
             while (typ != null) {
                 FieldInfo[] fields = typ.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
@@ -46,7 +46,7 @@ namespace TehPers.Stardew.Framework {
             return WebUtility.UrlDecode(baseUri.MakeRelativeUri(otherUri).ToString());
         }
 
-        public static Season? toSeason(string s) {
+        public static Season? ToSeason(string s) {
             switch (s.ToLower()) {
                 case "spring":
                     return Season.SPRING;
@@ -61,11 +61,11 @@ namespace TehPers.Stardew.Framework {
             }
         }
 
-        public static Weather toWeather(bool raining) {
+        public static Weather ToWeather(bool raining) {
             return raining ? Weather.RAINY : Weather.SUNNY;
         }
 
-        public static WaterType? convertWaterType(int type) {
+        public static WaterType? ConvertWaterType(int type) {
             switch (type) {
                 case -1:
                     return WaterType.BOTH;
@@ -78,7 +78,7 @@ namespace TehPers.Stardew.Framework {
             }
         }
 
-        public static int convertWaterType(WaterType type) {
+        public static int ConvertWaterType(WaterType type) {
             return type == WaterType.BOTH ? -1 : (type == WaterType.RIVER ? 0 : 1);
         }
 
@@ -89,35 +89,7 @@ namespace TehPers.Stardew.Framework {
         public static TVal GetDefault<TKey, TVal>(this Dictionary<TKey, TVal> dict, TKey key, TVal fallback = default(TVal)) {
             return dict.ContainsKey(key) ? dict[key] : fallback;
         }
-
-        public static void CopyAllFields(this object source, object dest) {
-            Type srcType = source.GetType();
-            if (!srcType.IsAssignableFrom(dest.GetType()))
-                throw new ArgumentException("Destination type must be assignable to source type");
-            while (srcType != null) {
-                FieldInfo[] fields = srcType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                foreach (FieldInfo field in fields) {
-                    field.SetValue(dest, field.GetValue(source));
-                }
-                srcType = srcType.BaseType;
-            }
-        }
-
-        public static Texture2D Clone(this Texture2D source) {
-            if (source.Format != SurfaceFormat.Color) {
-                return null;
-            }
-            Texture2D copy = new Texture2D(source.GraphicsDevice, source.Width, source.Height);
-            Color[] data = new Color[source.Width * source.Height];
-            source.GetData(data);
-            copy.SetData(data);
-            return copy;
-        }
-
-        public static Dictionary<TKey, TVal> Clone<TKey, TVal>(this Dictionary<TKey, TVal> source) {
-            return new Dictionary<TKey, TVal>(source);
-        }
-
+        
         public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> elements) {
             return Choose(elements, new Random());
         }
@@ -163,7 +135,7 @@ namespace TehPers.Stardew.Framework {
             }
         }
 
-        public static string getLanguageCode() {
+        public static string GetLanguageCode() {
             if (Game1.content != null && Game1.content.LanguageCodeOverride != null)
                 return Game1.content.LanguageCodeOverride;
             switch (LocalizedContentManager.CurrentLanguageCode) {

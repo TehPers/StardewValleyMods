@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TehPers.Stardew.SCCL.Configs;
+using TehPers.Stardew.SCCL.Content;
 using xTile.Dimensions;
 
 namespace TehPers.Stardew.SCCL.API {
@@ -58,10 +59,9 @@ namespace TehPers.Stardew.SCCL.API {
             if (!ModContent.ContainsKey(assetName))
                 ModContent[assetName] = new HashSet<object>();
 
-            if (asset is Texture2D)
-                this.RequestTextureSize(assetName, new Size((asset as Texture2D).Width, (asset as Texture2D).Height));
+            if (asset is Texture2D) ModContent[assetName].Add(new OffsetTexture2D(asset as Texture2D));
+            else ModContent[assetName].Add(asset);
 
-            ModContent[assetName].Add(asset);
             this.RefreshAsset(assetName);
 
             ModEntry.INSTANCE.Monitor.Log(string.Format("[{2}] Registered {0} ({1})", assetName, typeof(T).ToString(), Name), LogLevel.Trace);
@@ -72,13 +72,24 @@ namespace TehPers.Stardew.SCCL.API {
         /**
          * <summary>Registers the given asset with the given asset name</summary>
          * <param name="assetName">The name of the asset</param>
-         * <param name="asset">The asset to merge</param>
+         * <param name="asset">The asset</param>
          * <returns>Whether the asset was registered successfully. If false, then the asset was probably the wrong type</returns>
          **/
         public bool RegisterAsset(string assetName, object asset) {
             return (bool) registerAssetMethod.MakeGenericMethod(asset.GetType()).Invoke(this, new object[] { assetName, asset });
         }
 
+        /**
+         * <summary>Registers the given texture with the given asset name and offset. Will not automatically request the required size.</summary>
+         * <param name="assetName">The name of the asset</param>
+         * <param name="texture">The texture</param>
+         * <param name="xOff">The location in the original texture to merge it in. For example, if xOff is 50, the mod texture will begin at x=50.</param>
+         * <param name="yOff">The location in the original texture to merge it in. For example, if yOff is 50, the mod texture will begin at y=50.</param>
+         * <returns>Whether the texture was registered successfully. If false, then the asset was probably the wrong type</returns>
+         **/
+        public bool RegisterTexture(string assetName, Texture2D texture, int xOff = 0, int yOff = 0) {
+            return this.RegisterAsset(assetName, new OffsetTexture2D(texture, xOff, yOff));
+        }
 
         /**
          * <summary>Removes the given asset with the given asset name</summary>
@@ -109,7 +120,7 @@ namespace TehPers.Stardew.SCCL.API {
         /**
          * <summary>Sets the minimum required size for the texture. Call this before the texture is loaded, during mod entry.</summary>
          * <param name="assetName">The name of the asset</param>
-         * <param name="size">The required size of the asset. The final asset might not be this size.</param>
+         * <param name="size">The required size of the asset.</param>
          * <returns>The required texture width, or null if it shouldn't change.</returns>
          * <remarks>If the original asset is larger than the size that was set, that size will be used. Mod textures will be clipped if needed.</remarks>
          **/
@@ -120,6 +131,18 @@ namespace TehPers.Stardew.SCCL.API {
                 merger.RequiredSize[assetName] = new Size(Math.Max(size.Width, orig.Width), Math.Max(size.Height, orig.Height));
             }
             merger.RequiredSize[assetName] = size;
+        }
+
+        /**
+         * <summary>Sets the minimum required size for the texture. Call this before the texture is loaded, during mod entry.</summary>
+         * <param name="assetName">The name of the asset</param>
+         * * <param name="height">The requested width</param>
+         * <param name="height">The requested height</param>
+         * <returns>The required texture width, or null if it shouldn't change.</returns>
+         * <remarks>If the original asset is larger than the size that was set, that size will be used. Mod textures will be clipped if needed.</remarks>
+         **/
+        public void RequestTextureSize(string assetName, int width, int height) {
+            RequestTextureSize(assetName, new Size(width, height));
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -29,7 +30,7 @@ namespace TehPers.Stardew.FishingOverhaul {
             ModFishing.INSTANCE = this;
         }
 
-        /// <summary>Initialise the mod.</summary>
+        /// <summary>Initialize the mod.</summary>
         /// <param name="helper">Provides methods for interacting with the mod directory, such as read/writing a config file or custom JSON files.</param>
         public override void Entry(IModHelper helper) {
             // Load configs
@@ -63,7 +64,7 @@ namespace TehPers.Stardew.FishingOverhaul {
                 this.Helper.WriteJsonFile("fish.json", this.fishConfig);
             }
 
-            tryChangeFishingTreasure();
+            TryChangeFishingTreasure();
 
             if (Game1.player.CurrentTool is FishingRod) {
                 FishingRod rod = Game1.player.CurrentTool as FishingRod;
@@ -88,10 +89,8 @@ namespace TehPers.Stardew.FishingOverhaul {
         }
 
         private void KeyPressed(object sender, EventArgsKeyPressed e) {
-            Keys getFishKey;
-            if (Enum.TryParse(config.GetFishInWaterKey, out getFishKey) && e.KeyPressed == getFishKey) {
+            if (Enum.TryParse(config.GetFishInWaterKey, out Keys getFishKey) && e.KeyPressed == getFishKey) {
                 if (Game1.currentLocation != null) {
-
                     int[] possibleFish;
                     if (Game1.currentLocation is MineShaft)
                         possibleFish = FishHelper.getPossibleFish(5, (Game1.currentLocation as MineShaft).mineLevel).Select(f => f.Key).ToArray();
@@ -108,26 +107,18 @@ namespace TehPers.Stardew.FishingOverhaul {
                     else
                         Game1.showGlobalMessage(strings.NoPossibleFish);
                 }
-            } else if (DEBUG) {
-                if (e.KeyPressed == Keys.R && Game1.player.CurrentTool is FishingRod) {
-                    FishingRodOverrides.startMinigameEndFunction(Game1.player.CurrentTool as FishingRod, 702);
-                }
             }
         }
 
         private void OnLanguageChange(LocalizedContentManager.LanguageCode code) {
             //Directory.CreateDirectory(Path.Combine(this.Helper.DirectoryPath, "Translations"));
-            this.strings = Helper.ReadJsonFile<ConfigStrings>("Translations/" + Helpers.getLanguageCode() + ".json") ?? new ConfigStrings();
-            Helper.WriteJsonFile("Translations/" + Helpers.getLanguageCode() + ".json", this.strings);
+            this.strings = Helper.ReadJsonFile<ConfigStrings>("Translations/" + Helpers.GetLanguageCode() + ".json") ?? new ConfigStrings();
+            Helper.WriteJsonFile("Translations/" + Helpers.GetLanguageCode() + ".json", this.strings);
         }
         #endregion
 
-        private void tryChangeFishingTreasure() {
-            if (Game1.player.CurrentTool is FishingRod) {
-                //this.Monitor.Log("Player is holding a fishing rod");
-                FishingRod rod = (FishingRod) Game1.player.CurrentTool;
-                //IEnumerable<TemporaryAnimatedSprite> anims;
-
+        private void TryChangeFishingTreasure() {
+            if (Game1.player.CurrentTool is FishingRod rod) {
                 // Look through all animated sprites in the main game
                 if (config.OverrideFishing) {
                     foreach (TemporaryAnimatedSprite anim in Game1.screenOverlayTempSprites) {
@@ -140,12 +131,42 @@ namespace TehPers.Stardew.FishingOverhaul {
 
                 // Look through all animated sprites in the fishing rod
                 if (config.OverrideTreasureLoot) {
+                    HashSet<TemporaryAnimatedSprite> toRemove = new HashSet<TemporaryAnimatedSprite>();
                     foreach (TemporaryAnimatedSprite anim in rod.animations) {
                         if (anim.endFunction == rod.openTreasureMenuEndFunction) {
                             this.Monitor.Log("Overriding treasure animation end function", LogLevel.Trace);
                             anim.endFunction = (i => FishingRodOverrides.openTreasureMenuEndFunction(rod, i));
+                        } else if (false && anim.endFunction == rod.playerCaughtFishEndFunction) {
+#pragma warning disable
+                            /*double fishChance = config.FishBaseChance + Game1.player.FishingLevel * config.FishLevelEffect + Game1.dailyLuck * config.FishDailyLuckEffect + Game1.player.LuckLevel * config.FishLuckLevelEffect + FishHelper.getStreak(Game1.player) * config.FishStreakEffect;
+                            if (FishHelper.isTrash(anim.extraInfoForEndBehavior) && Game1.random.NextDouble() < config.FishBaseChance) {
+                                // Remove the catching animation
+                                anim.endFunction = (extra) => { };
+                                toRemove.Add(anim);
+                                Game1.player.completelyStopAnimatingOrDoingAction();
+
+                                // Undo all the stuff pullFishFromWater does
+                                Game1.player.gainExperience(1, -1);
+
+                                // Add the *HIT* animation and whatnot
+                                rod.hit = true;
+                                List<TemporaryAnimatedSprite> overlayTempSprites = Game1.screenOverlayTempSprites;
+                                TemporaryAnimatedSprite temporaryAnimatedSprite = new TemporaryAnimatedSprite(Game1.mouseCursors, new Rectangle(612, 1913, 74, 30), 1500f, 1, 0, Game1.GlobalToLocal(Game1.viewport, Helper.Reflection.GetPrivateValue<Vector2>(rod, "bobber") + new Vector2(-140f, (float) (-Game1.tileSize * 5 / 2))), false, false, 1f, 0.005f, Color.White, 4f, 0.075f, 0.0f, 0.0f, true);
+                                temporaryAnimatedSprite.scaleChangeChange = -0.005f;
+                                Vector2 vector2 = new Vector2(0.0f, -0.1f);
+                                temporaryAnimatedSprite.motion = vector2;
+                                TemporaryAnimatedSprite.endBehavior endBehavior = new TemporaryAnimatedSprite.endBehavior(rod.startMinigameEndFunction);
+                                temporaryAnimatedSprite.endFunction = endBehavior;
+                                int parentSheetIndex = FishHelper.getRandomFish(Helper.Reflection.GetPrivateValue<int>(rod, "clearWaterDistance")); // This doesn't matter, it gets overridden anyway
+                                temporaryAnimatedSprite.extraInfoForEndBehavior = parentSheetIndex;
+                                overlayTempSprites.Add(temporaryAnimatedSprite);
+                                Game1.playSound("FishHit");
+                            }*/
+#pragma warning restore
                         }
                     }
+
+                    rod.animations.RemoveAll(anim => toRemove.Contains(anim));
                 }
             }
         }

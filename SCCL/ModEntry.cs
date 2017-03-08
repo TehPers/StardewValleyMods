@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using TehPers.Stardew.SCCL.API;
 using TehPers.Stardew.SCCL.Configs;
+using TehPers.Stardew.SCCL.Content;
 
 namespace TehPers.Stardew.SCCL {
     public class ModEntry : Mod {
@@ -54,7 +55,7 @@ namespace TehPers.Stardew.SCCL {
             GameEvents.UpdateTick += UpdateTick;
             LocationEvents.CurrentLocationChanged += CurrentLocationChanged;
             GraphicsEvents.OnPreRenderEvent += OnPreRenderEvent;
-            GameEvents.LoadContent += loadFromFolder;
+            GameEvents.LoadContent += LoadFromFolder;
 #pragma warning disable
             ContentEvents.AssetLoading += this.merger.AssetLoading;
 #pragma warning restore
@@ -84,13 +85,13 @@ namespace TehPers.Stardew.SCCL {
             Helper.ConsoleCommands.Add("SCCLReload", "Reloads the config (ModEnabled is ignored) | SCCLReload", (cmd, args) => {
                 this.config = this.Helper.ReadConfig<ModConfig>();
                 // TODO: remove all previously loaded assets
-                this.loadFromFolder(this, new EventArgs());
+                this.LoadFromFolder(this, new EventArgs());
             });
             #endregion
         }
 
         #region XNB Content Registering
-        private void loadFromFolder(object sender, EventArgs e) {
+        private void LoadFromFolder(object sender, EventArgs e) {
             this.Monitor.Log("Loading delegates", LogLevel.Info);
             this.modContent = this.modContent ?? new ContentManager(Game1.content.ServiceProvider, this.contentPath);
 
@@ -108,7 +109,7 @@ namespace TehPers.Stardew.SCCL {
                     string[] curList = Directory.GetFiles(dir, "*.xnb");
                     foreach (string xnb in curList) {
                         try {
-                            string localModPath = getModRelativePath(mod, xnb);
+                            string localModPath = GetModRelativePath(mod, xnb);
                             localModPath = localModPath.Substring(0, localModPath.Length - 4);
                             object modAsset = this.modContent.Load<object>(localModPath);
 
@@ -122,7 +123,7 @@ namespace TehPers.Stardew.SCCL {
             }
         }
 
-        public string getModRelativePath(string modPath, string assetName) {
+        public string GetModRelativePath(string modPath, string assetName) {
             Uri modUri = new Uri(Path.Combine(this.contentPath, modPath));
             Uri fileUri = new Uri(Path.Combine(modPath, assetName));
             Uri localUri = modUri.MakeRelativeUri(fileUri);
@@ -136,7 +137,7 @@ namespace TehPers.Stardew.SCCL {
                 this.loaded = true;
 
                 this.Monitor.Log("Loading event injections");
-                this.loadEvents();
+                this.LoadEvents();
             }
         }
 
@@ -191,7 +192,7 @@ namespace TehPers.Stardew.SCCL {
         #endregion
 
         #region Loaders
-        private void loadEvents() {
+        private void LoadEvents() {
             string path = Path.Combine(this.Helper.DirectoryPath, "Events");
 
             if (!Directory.Exists(path)) {

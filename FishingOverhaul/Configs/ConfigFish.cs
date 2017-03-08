@@ -52,7 +52,7 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                         int id = Convert.ToInt32(seasonData[j]);
 
                         // From location data
-                        WaterType water = Helpers.convertWaterType(Convert.ToInt32(seasonData[j + 1])) ?? WaterType.BOTH;
+                        WaterType water = Helpers.ConvertWaterType(Convert.ToInt32(seasonData[j + 1])) ?? WaterType.BOTH;
 
                         // From fish data
                         FishData f;

@@ -25,7 +25,9 @@ namespace TehPers.Stardew.FishingOverhaul {
 
         private static Dictionary<SFarmer, int> clearWaterDistances = new Dictionary<SFarmer, int>();
 
+#pragma warning disable IDE1006 // Naming Styles
         public static void startMinigameEndFunction(FishingRod rod, int extra) {
+#pragma warning restore IDE1006 // Naming Styles
             ModFishing.INSTANCE.Monitor.Log("Overriding fishing minigame", LogLevel.Trace);
             ConfigMain config = ModFishing.INSTANCE.config;
             SFarmer lastUser = ModFishing.INSTANCE.Helper.Reflection.GetPrivateValue<SFarmer>(rod, "lastUser");
@@ -62,11 +64,13 @@ namespace TehPers.Stardew.FishingOverhaul {
                 int origExtra = extra;
                 extra = FishHelper.getRandomFish(clearWaterDistance);
                 if (FishHelper.isTrash(extra)) {
-                    if (false) {
+                    if (false) { // TODO: Replace this with code relating to a config option that determines the chance you'll get fish/trash
+#pragma warning disable CS0162 // Unreachable code detected
                         Game1.showGlobalMessage("No valid fish to catch! Giving junk instead.");
                         StardewValley.Object o = new StardewValley.Object(extra, 1, false, -1, 0);
                         rod.pullFishFromWater(extra, -1, 0, 0, false, false);
                         return;
+#pragma warning restore CS0162 // Unreachable code detected
                     } else {
                         ModFishing.INSTANCE.Monitor.Log("No valid fish to catch! Using original fish instead.", LogLevel.Warn);
                         extra = origExtra;
@@ -78,7 +82,9 @@ namespace TehPers.Stardew.FishingOverhaul {
             Game1.activeClickableMenu = new CustomBobberBar(lastUser, extra, fishSize, treasure, rod.attachments[1] != null ? rod.attachments[1].ParentSheetIndex : -1, clearWaterDistance);
         }
 
+#pragma warning disable IDE1006 // Naming Styles
         public static void openTreasureMenuEndFunction(FishingRod rod, int extra) {
+#pragma warning restore IDE1006 // Naming Styles
             ModFishing.INSTANCE.Monitor.Log("Successfully replaced treasure", LogLevel.Trace);
 
             ConfigMain config = ModFishing.INSTANCE.config;
