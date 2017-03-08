@@ -27,6 +27,7 @@ namespace TehPers.Stardew.SCCL.Items {
         }
 
         public override void drawInMenu(SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, bool drawStackNumber) {
+            Texture2D texture = this.Template.GetTexture(this.Data);
             base.drawInMenu(spriteBatch, location, scaleSize, transparency, layerDepth, drawStackNumber);
         }
     }

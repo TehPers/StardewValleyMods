@@ -16,6 +16,7 @@ namespace TehPers.Stardew.SCCL.Content {
     public class ContentMerger {
         public HashSet<string> Dirty { get; } = new HashSet<string>();
         private HashSet<Type> Unmergables { get; } = new HashSet<Type>();
+        private HashSet<string> Failed { get; } = new HashSet<string>();
         private Dictionary<string, object> Assets { get; } = new Dictionary<string, object>();
         private Dictionary<string, object> Originals { get; } = new Dictionary<string, object>();
         internal Dictionary<string, Size> RequiredSize { get; } = new Dictionary<string, Size>();
@@ -29,7 +30,7 @@ namespace TehPers.Stardew.SCCL.Content {
         public void AssetLoading(object sender, IContentEventHelper e) {
             try {
                 Originals[e.AssetName] = e.Data;
-                this.Dirty.Remove(e.AssetName);
+                lock (Dirty) Dirty.Remove(e.AssetName);
                 if (this.Merge(e.AssetName, e.Data)) {
                     e.ReplaceWith(Assets[e.AssetName]);
                 } else {
@@ -41,14 +42,20 @@ namespace TehPers.Stardew.SCCL.Content {
         }
 
         public void RefreshAssets() {
-            foreach (string assetName in Dirty) {
-                if (!Assets.ContainsKey(assetName)) continue;
-                this.Merge(assetName, Originals.GetDefault(assetName, null));
+            // Copies the Dirty hash set with ToHashSet so that if another thread changes Dirty, it doesn't mess up this loop
+            lock (Dirty) {
+                foreach (string assetName in Dirty) {
+                    // If this asset hasn't failed to refresh and it's been loaded and it successfully merges (will attempt to load only if the other two are true)
+                    if (!Failed.Contains(assetName) && Assets.ContainsKey(assetName) && !this.Merge(assetName, Originals.GetDefault(assetName, null))) {
+                        ModEntry.INSTANCE.Monitor.Log($"Failed to merge {assetName}. Will not try to merge it again.", LogLevel.Warn);
+                        Failed.Add(assetName);
+                    }
+                }
+                Dirty.Clear();
             }
-            Dirty.Clear();
         }
 
-        public List<KeyValuePair<string, T>> GetModAssets<T>(string assetName) {
+        public IEnumerable<KeyValuePair<string, T>> GetModAssets<T>(string assetName) {
             // Update load order with any missing mods
             ModConfig config = ModEntry.INSTANCE.config;
             config.LoadOrder.AddRange(
@@ -67,14 +74,28 @@ namespace TehPers.Stardew.SCCL.Content {
                 from asset in injector.ModContent[assetName]
                 where asset is T
                 select new KeyValuePair<string, T>(injector.Name, (T) asset)
-                ).ToList();
+                );
         }
 
         #region Mergers
         public bool Merge(string assetName, object orig) {
             try {
                 ModConfig config = ModEntry.INSTANCE.config;
-                Type t = orig.GetType();
+                Type t = null;
+                if (orig != null) {
+                    t = orig.GetType();
+                } else {
+                    IEnumerable<KeyValuePair<string, object>> modAssets = GetModAssets<object>(assetName);
+
+                    if (modAssets.Any()) t = modAssets.First().Value.GetType();
+
+                    if (t == null || modAssets.Any(asset => asset.Value.GetType() != t)) {
+                        ModEntry.INSTANCE.Monitor.Log($"Failed to predict type of {assetName}. This is probably due to conflicting mods.", LogLevel.Error);
+                        ModEntry.INSTANCE.Monitor.Log($"Related injectors: {String.Join(", ", modAssets.Select(e => e.Key).ToHashSet())}", LogLevel.Error);
+                        return false;
+                    }
+                }
+
                 if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>)) {
                     this.GetType().GetMethod("MergeDictionary", BindingFlags.NonPublic | BindingFlags.Instance)
                         .MakeGenericMethod(t.GetGenericArguments())
@@ -106,10 +127,9 @@ namespace TehPers.Stardew.SCCL.Content {
             Dictionary<TKey, TVal> final = orig != null ? new Dictionary<TKey, TVal>(orig) : new Dictionary<TKey, TVal>();
             Dictionary<TKey, TVal> diffs = new Dictionary<TKey, TVal>();
             Dictionary<TKey, string> diffMods = new Dictionary<TKey, string>();
-            List<KeyValuePair<string, Dictionary<TKey, TVal>>> mods = GetModAssets<Dictionary<TKey, TVal>>(assetName);
 
             bool collision = false;
-            foreach (KeyValuePair<string, Dictionary<TKey, TVal>> modKV in mods) {
+            foreach (KeyValuePair<string, Dictionary<TKey, TVal>> modKV in GetModAssets<Dictionary<TKey, TVal>>(assetName)) {
                 bool warned = false;
                 foreach (KeyValuePair<TKey, TVal> injection in modKV.Value) {
                     TVal val = injection.Value;
@@ -179,8 +199,7 @@ namespace TehPers.Stardew.SCCL.Content {
             sizedOrigData.CopyTo(diffData, 0);
 
             Dictionary<int, string> diffMods = new Dictionary<int, string>();
-            List<KeyValuePair<string, OffsetTexture2D>> mods = GetModAssets<OffsetTexture2D>(assetName);
-            foreach (KeyValuePair<string, OffsetTexture2D> modKV in mods) {
+            foreach (KeyValuePair<string, OffsetTexture2D> modKV in GetModAssets<OffsetTexture2D>(assetName)) {
                 string mod = modKV.Key;
                 OffsetTexture2D offsetTexture = modKV.Value;
                 Texture2D modTexture = offsetTexture.Texture;
@@ -252,16 +271,14 @@ namespace TehPers.Stardew.SCCL.Content {
         private void ReplaceIfExists<T>(T orig, string assetName) {
             ModEntry.INSTANCE.Monitor.Log("ReplaceIfExists<" + typeof(T).Name + "> " + assetName, LogLevel.Trace);
             if (Assets.ContainsKey(assetName)) {
-                ModEntry.INSTANCE.Monitor.Log("Could not overwrite " + assetName + " (" + typeof(T).Name + ")");
+                ModEntry.INSTANCE.Monitor.Log("Could not overwrite " + assetName + " (" + typeof(T).Name + ")", LogLevel.Warn);
                 return;
             }
 
             T replaced = orig;
             string diffMod = null;
 
-            List<KeyValuePair<string, T>> mods = GetModAssets<T>(assetName);
-
-            foreach (KeyValuePair<string, T> modKV in mods) {
+            foreach (KeyValuePair<string, T> modKV in GetModAssets<T>(assetName)) {
                 if (diffMod != null)
                     ModEntry.INSTANCE.Monitor.Log("Collision detected between " + diffMod + " and " + modKV.Key + "! Overwriting...", LogLevel.Warn);
 

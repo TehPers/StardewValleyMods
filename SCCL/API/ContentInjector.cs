@@ -2,8 +2,10 @@
 using StardewModdingAPI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using TehPers.Stardew.Framework;
 using TehPers.Stardew.SCCL.Configs;
 using TehPers.Stardew.SCCL.Content;
 using xTile.Dimensions;
@@ -89,6 +91,34 @@ namespace TehPers.Stardew.SCCL.API {
             return this.RegisterAsset(assetName, new OffsetTexture2D(texture, xOff, yOff));
         }
 
+        /// <summary>Registers all the assets relative to the directory <paramref name="path"/></summary>
+        /// <param name="path">The path to the directory</param>
+        public void RegisterDirectoryAssets(string path) {
+            if (!Directory.Exists(path)) return;
+            List<string> checkDirs = new List<string> { path };
+            while (checkDirs.Count > 0) {
+                string dir = checkDirs[0];
+                checkDirs.RemoveAt(0);
+                checkDirs.AddRange(Directory.GetDirectories(dir));
+
+                // Go through each xnb file
+                string[] curList = Directory.GetFiles(dir, "*.xnb");
+                foreach (string xnb in curList) {
+                    try {
+                        string localModPath = Helpers.LocalizePath(path, xnb);
+                        localModPath = localModPath.Substring(0, localModPath.Length - 4).Replace('/', '\\');
+                        object modAsset = ModEntry.INSTANCE.modContent.Load<object>(localModPath);
+
+                        if (modAsset != null) {
+                            RegisterAsset(localModPath.Substring(localModPath.IndexOf('\\') + 1), modAsset);
+                        }
+                    } catch (Exception) {
+                        ModEntry.INSTANCE.Monitor.Log("Unable to load " + xnb, LogLevel.Warn);
+                    }
+                }
+            }
+        }
+
         /**
          * <summary>Removes the given asset with the given asset name</summary>
          * <param name="assetName">The name of the asset</param>
@@ -112,7 +142,9 @@ namespace TehPers.Stardew.SCCL.API {
          * <returns>Whether the asset needs to be marked</returns>
          **/
         public bool RefreshAsset(string assetName) {
-            return ModEntry.INSTANCE.merger.Dirty.Add(assetName);
+            lock (ModEntry.INSTANCE.merger.Dirty) {
+                return ModEntry.INSTANCE.merger.Dirty.Add(assetName);
+            }
         }
 
         /**

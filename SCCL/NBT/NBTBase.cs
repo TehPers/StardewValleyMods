@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TehPers.Stardew.SCCL.NBT {
     /**<summary>Custom implementation of NBT which is (hopefully) backwards compatible and won't take too much extra space</summary>**/
     public abstract class NBTBase {
+#pragma warning disable CRRSP01 // A misspelled word has been found.
+        const string FORMAT_NAME = "NBTesque";
+#pragma warning restore CRRSP01 // A misspelled word has been found.
 
         public NBTBase() {
 
@@ -25,7 +25,7 @@ namespace TehPers.Stardew.SCCL.NBT {
         public static NBTBase ReadStream(Stream stream) {
             try {
                 using (BinaryReader reader = new BinaryReader(stream)) {
-                    if (reader.ReadString() != "NBTesque" || reader.ReadByte() != 0)
+                    if (reader.ReadString() != FORMAT_NAME || reader.ReadByte() != 0)
                         throw new Exception("Data file is not readable"); // Whatever exception type this should be, I'll figure it out later
                     return ReadStream(reader);
                 }
@@ -43,7 +43,7 @@ namespace TehPers.Stardew.SCCL.NBT {
         public static void WriteStream(Stream stream, NBTBase tag) {
             using (BinaryWriter writer = new BinaryWriter(stream)) {
                 // Guess I'll include a header
-                writer.Write("NBTesque"); // Type
+                writer.Write(FORMAT_NAME); // Type
                 writer.Write((byte) 0); // Version number
                 WriteStream(writer, tag);
             }

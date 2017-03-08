@@ -115,28 +115,7 @@ namespace TehPers.Stardew.SCCL {
             // Get all xnbs that need delegates
             foreach (string mod in Directory.GetDirectories(Path.Combine(Helper.DirectoryPath, "Content"))) {
                 ContentInjector injector = ContentAPI.GetInjector(this, Path.GetFileName(mod));
-
-                List<string> checkDirs = Directory.GetDirectories(mod).ToList();
-                while (checkDirs.Count > 0) {
-                    string dir = checkDirs[0];
-                    checkDirs.RemoveAt(0);
-                    checkDirs.AddRange(Directory.GetDirectories(dir));
-
-                    // Go through each xnb file
-                    string[] curList = Directory.GetFiles(dir, "*.xnb");
-                    foreach (string xnb in curList) {
-                        try {
-                            string localModPath = GetModRelativePath(mod, xnb);
-                            localModPath = localModPath.Substring(0, localModPath.Length - 4);
-                            object modAsset = this.modContent.Load<object>(localModPath);
-
-                            if (modAsset != null)
-                                injector.RegisterAsset(localModPath.Substring(localModPath.IndexOf('\\') + 1), modAsset);
-                        } catch (Exception) {
-                            this.Monitor.Log("Unable to load " + xnb, LogLevel.Warn);
-                        }
-                    }
-                }
+                injector.RegisterDirectoryAssets(mod);
             }
         }
 
