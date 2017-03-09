@@ -98,7 +98,7 @@
   </Target>
   <Target Name="AfterBuild">
     <PropertyGroup>
-      <ModPath>$(GamePath)\Mods\$(TargetName)</ModPath>
+      <ModPath>$(GamePath)\Mods\!$(TargetName)</ModPath>
     </PropertyGroup>
     <CreateItem Include="$(TargetDir)*.dll">
       <Output TaskParameter="Include" ItemName="DLLFiles" />
