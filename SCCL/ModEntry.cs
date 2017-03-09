@@ -45,10 +45,10 @@ namespace TehPers.Stardew.SCCL {
             this.contentPath = Path.Combine(this.Helper.DirectoryPath, "Content");
             if (!Directory.Exists(this.contentPath)) {
                 try {
-                    this.Monitor.Log("Creating directory " + this.contentPath);
+                    this.Monitor.Log($"Creating directory {this.contentPath}");
                     Directory.CreateDirectory(this.contentPath);
                 } catch (Exception ex) {
-                    this.Monitor.Log("Could not create directory " + this.contentPath + "! Please create it yourself.", LogLevel.Error);
+                    this.Monitor.Log($"Could not create directory {this.contentPath}! Please create it yourself.", LogLevel.Error);
                     this.Monitor.Log(ex.Message, LogLevel.Error);
                     return;
                 }

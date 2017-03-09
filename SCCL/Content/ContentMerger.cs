@@ -30,7 +30,7 @@ namespace TehPers.Stardew.SCCL.Content {
         public void AssetLoading(object sender, IContentEventHelper e) {
             try {
                 Originals[e.AssetName] = e.Data;
-                lock (Dirty) Dirty.Remove(e.AssetName);
+                Dirty.Remove(e.AssetName);
                 if (this.Merge(e.AssetName, e.Data)) {
                     e.ReplaceWith(Assets[e.AssetName]);
                 } else {
@@ -43,7 +43,6 @@ namespace TehPers.Stardew.SCCL.Content {
 
         public void RefreshAssets() {
             // Copies the Dirty hash set with ToHashSet so that if another thread changes Dirty, it doesn't mess up this loop
-            lock (Dirty) {
                 foreach (string assetName in Dirty) {
                     // If this asset hasn't failed to refresh and it's been loaded and it successfully merges (will attempt to load only if the other two are true)
                     if (!Failed.Contains(assetName) && Assets.ContainsKey(assetName) && !this.Merge(assetName, Originals.GetDefault(assetName, null))) {
@@ -52,7 +51,6 @@ namespace TehPers.Stardew.SCCL.Content {
                     }
                 }
                 Dirty.Clear();
-            }
         }
 
         public IEnumerable<KeyValuePair<string, T>> GetModAssets<T>(string assetName) {
@@ -100,17 +98,16 @@ namespace TehPers.Stardew.SCCL.Content {
                     this.GetType().GetMethod("MergeDictionary", BindingFlags.NonPublic | BindingFlags.Instance)
                         .MakeGenericMethod(t.GetGenericArguments())
                         .Invoke(this, new object[] { orig, assetName });
-                } else if (orig is Texture2D) {
-                    Texture2D texture = orig as Texture2D;
+                } else if (orig is Texture2D texture) {
                     if (texture == null || texture.Format == SurfaceFormat.Color)
                         this.MergeTextures<Color>(texture, assetName);
                     else {
-                        ModEntry.INSTANCE.Monitor.Log("Cannot merge this texture format, overriding instead: " + Enum.GetName(typeof(SurfaceFormat), texture.Format), LogLevel.Info);
+                        ModEntry.INSTANCE.Monitor.Log($"Cannot merge this texture format, overriding instead: {Enum.GetName(typeof(SurfaceFormat), texture.Format)}", LogLevel.Info);
                         this.ReplaceIfExists(orig, assetName);
                     }
                 } else {
                     if (!Unmergables.Contains(t)) {
-                        ModEntry.INSTANCE.Monitor.Log("Cannot merge this type, overriding instead: " + t.ToString(), LogLevel.Trace);
+                        ModEntry.INSTANCE.Monitor.Log($"Cannot merge this type, overriding instead: {t.ToString()}", LogLevel.Trace);
                         Unmergables.Add(t);
                     }
                     this.ReplaceIfExists(orig, assetName);
@@ -136,7 +133,7 @@ namespace TehPers.Stardew.SCCL.Content {
                     if (typeof(TVal) == typeof(string) && final.ContainsKey(injection.Key)) {
                         if ((final[injection.Key] as string).Count(c => c == '/') != (injection.Value as string).Count(c => c == '/')) {
                             if (!warned) {
-                                ModEntry.INSTANCE.Monitor.Log(modKV.Key + " might be loading an outdated asset: " + assetName, LogLevel.Warn);
+                                ModEntry.INSTANCE.Monitor.Log($"{modKV.Key} might be loading an outdated asset: {assetName}", LogLevel.Warn);
                                 ModEntry.INSTANCE.Monitor.Log("If the game crashes or black-screens, try disabling this mod first.", LogLevel.Warn);
                             }
 
@@ -152,7 +149,7 @@ namespace TehPers.Stardew.SCCL.Content {
 
                     if (!(final.ContainsKey(injection.Key) && final[injection.Key].Equals(val))) {
                         if (!collision && diffs.ContainsKey(injection.Key)) {
-                            ModEntry.INSTANCE.Monitor.Log(string.Format("Collision detected between {0} and {1}! Overwriting...", diffMods[injection.Key], modKV.Key), LogLevel.Warn);
+                            ModEntry.INSTANCE.Monitor.Log($"Collision detected between {diffMods[injection.Key]} and {modKV.Key}! Overwriting...", LogLevel.Warn);
                             collision = true;
                         }
 
@@ -166,7 +163,7 @@ namespace TehPers.Stardew.SCCL.Content {
                 final[diff.Key] = diff.Value;
 
             if (diffs.Count > 0)
-                ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected {1} changes into {2}.xnb", string.Join(", ", diffMods.Values.ToHashSet()), diffs.Count, assetName), LogLevel.Info);
+                ModEntry.INSTANCE.Monitor.Log($"{string.Join(", ", diffMods.Values.ToHashSet())} injected {diffs.Count} changes into {assetName}.xnb", LogLevel.Info);
 
             if (Assets.ContainsKey(assetName)) {
                 if (Assets[assetName] is Dictionary<TKey, TVal> asset) {
@@ -209,7 +206,7 @@ namespace TehPers.Stardew.SCCL.Content {
                 modTexture.GetData(modData);
 
                 if (modSize != texSize)
-                    ModEntry.INSTANCE.Monitor.Log("Mod's texture is too large for the texture, so it's being trimmed: " + mod, LogLevel.Warn);
+                    ModEntry.INSTANCE.Monitor.Log($"Mod's texture is too large for the texture, so it's being trimmed: {mod}", LogLevel.Warn);
 
                 for (int y = offsetTexture.Offset.Y; y < texSize.Height; y++) {
                     int modY = y - offsetTexture.Offset.Y;
@@ -231,7 +228,7 @@ namespace TehPers.Stardew.SCCL.Content {
 
                         if (i >= sizedOrigData.Length || !sizedOrigData[i].Equals(pixel)) {
                             if (!collision && diffMods.ContainsKey(i)) {
-                                ModEntry.INSTANCE.Monitor.Log(string.Format("Collision detected between {0} and {1}! Overwriting...", mod, diffMods[i]), LogLevel.Warn);
+                                ModEntry.INSTANCE.Monitor.Log($"Collision detected between {mod} and {diffMods[i]}! Overwriting...", LogLevel.Warn);
                                 collision = true;
                             }
                             diffData[i] = pixel;
@@ -242,7 +239,7 @@ namespace TehPers.Stardew.SCCL.Content {
             }
 
             if (diffMods.Count > 0)
-                ModEntry.INSTANCE.Monitor.Log(string.Format("{0} injected changes into {1}.xnb", string.Join(", ", diffMods.Values.ToHashSet()), assetName), LogLevel.Info);
+                ModEntry.INSTANCE.Monitor.Log($"{string.Join(", ", diffMods.Values.ToHashSet())} injected changes into {assetName}.xnb", LogLevel.Info);
 
             Texture2D merged = new Texture2D(Game1.graphics.GraphicsDevice, texSize.Width, (int) Math.Ceiling((double) diffData.Length / texSize.Width));
             merged.SetData(diffData.ToArray());
@@ -269,9 +266,9 @@ namespace TehPers.Stardew.SCCL.Content {
         }
 
         private void ReplaceIfExists<T>(T orig, string assetName) {
-            ModEntry.INSTANCE.Monitor.Log("ReplaceIfExists<" + typeof(T).Name + "> " + assetName, LogLevel.Trace);
+            ModEntry.INSTANCE.Monitor.Log($"ReplaceIfExists<{typeof(T).Name}> {assetName}", LogLevel.Trace);
             if (Assets.ContainsKey(assetName)) {
-                ModEntry.INSTANCE.Monitor.Log("Could not overwrite " + assetName + " (" + typeof(T).Name + ")", LogLevel.Warn);
+                ModEntry.INSTANCE.Monitor.Log($"Could not overwrite {assetName} ({typeof(T).Name})", LogLevel.Warn);
                 return;
             }
 
@@ -280,14 +277,14 @@ namespace TehPers.Stardew.SCCL.Content {
 
             foreach (KeyValuePair<string, T> modKV in GetModAssets<T>(assetName)) {
                 if (diffMod != null)
-                    ModEntry.INSTANCE.Monitor.Log("Collision detected between " + diffMod + " and " + modKV.Key + "! Overwriting...", LogLevel.Warn);
+                    ModEntry.INSTANCE.Monitor.Log($"Collision detected between {diffMod} and {modKV.Key}! Overwriting...", LogLevel.Warn);
 
                 replaced = modKV.Value;
                 diffMod = modKV.Key;
             }
 
             if (diffMod != null)
-                ModEntry.INSTANCE.Monitor.Log(string.Format("{0} replaced {1}.xnb", diffMod, assetName), LogLevel.Info);
+                ModEntry.INSTANCE.Monitor.Log($"{diffMod} replaced {assetName}.xnb", LogLevel.Info);
 
             Assets[assetName] = replaced;
         }

@@ -64,7 +64,7 @@ namespace TehPers.Stardew.SCCL.API {
 
             this.RefreshAsset(assetName);
 
-            ModEntry.INSTANCE.Monitor.Log(string.Format("[{2}] Registered {0} ({1})", assetName, typeof(T).ToString(), Name), LogLevel.Trace);
+            ModEntry.INSTANCE.Monitor.Log($"[{Name}] Registered {assetName} ({typeof(T).ToString()})", LogLevel.Trace);
 
             return true;
         }
@@ -102,8 +102,7 @@ namespace TehPers.Stardew.SCCL.API {
                 checkDirs.AddRange(Directory.GetDirectories(dir));
 
                 // Go through each xnb file
-                string[] curList = Directory.GetFiles(dir, "*.xnb");
-                foreach (string xnb in curList) {
+                foreach (string xnb in Directory.GetFiles(dir, "*.xnb")) {
                     try {
                         string localModPath = Helpers.LocalizePath(path, xnb);
                         localModPath = localModPath.Substring(0, localModPath.Length - 4).Replace('/', '\\');
@@ -113,7 +112,7 @@ namespace TehPers.Stardew.SCCL.API {
                             RegisterAsset(localModPath.Substring(localModPath.IndexOf('\\') + 1), modAsset);
                         }
                     } catch (Exception) {
-                        ModEntry.INSTANCE.Monitor.Log("Unable to load " + xnb, LogLevel.Warn);
+                        ModEntry.INSTANCE.Monitor.Log($"Unable to load {xnb}", LogLevel.Warn);
                     }
                 }
             }
@@ -142,9 +141,7 @@ namespace TehPers.Stardew.SCCL.API {
          * <returns>Whether the asset needs to be marked</returns>
          **/
         public bool RefreshAsset(string assetName) {
-            lock (ModEntry.INSTANCE.merger.Dirty) {
-                return ModEntry.INSTANCE.merger.Dirty.Add(assetName);
-            }
+            return ModEntry.INSTANCE.merger.Dirty.Add(assetName);
         }
 
         /**
