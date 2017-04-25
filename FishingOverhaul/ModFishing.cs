@@ -131,7 +131,7 @@ namespace TehPers.Stardew.FishingOverhaul {
 
                 // Look through all animated sprites in the fishing rod
                 if (config.OverrideTreasureLoot) {
-                    HashSet<TemporaryAnimatedSprite> toRemove = new HashSet<TemporaryAnimatedSprite>();
+                    //HashSet<TemporaryAnimatedSprite> toRemove = new HashSet<TemporaryAnimatedSprite>();
                     foreach (TemporaryAnimatedSprite anim in rod.animations) {
                         if (anim.endFunction == rod.openTreasureMenuEndFunction) {
                             this.Monitor.Log("Overriding treasure animation end function", LogLevel.Trace);
@@ -166,7 +166,7 @@ namespace TehPers.Stardew.FishingOverhaul {
                         }
                     }
 
-                    rod.animations.RemoveAll(anim => toRemove.Contains(anim));
+                    //rod.animations.RemoveAll(anim => toRemove.Contains(anim));
                 }
             }
         }
