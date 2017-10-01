@@ -4,162 +4,153 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using System;
-using System.Collections.Generic;
 using TehPers.Stardew.FishingOverhaul.Configs;
-using static TehPers.Stardew.FishingOverhaul.Configs.ConfigFish;
-using System.Linq;
-using TehPers.Stardew.Framework;
 using StardewValley.Tools;
 using SFarmer = StardewValley.Farmer;
 
 namespace TehPers.Stardew.FishingOverhaul {
     public class CustomBobberBar : BobberBar {
 
-        private IPrivateField<bool> treasureField;
-        private IPrivateField<bool> treasureCaughtField;
-        private IPrivateField<float> treasurePositionField;
-        private IPrivateField<float> treasureAppearTimerField;
-        private IPrivateField<float> treasureScaleField;
+        private readonly IPrivateField<bool> _treasureField;
+        private readonly IPrivateField<bool> _treasureCaughtField;
+        private IPrivateField<float> _treasurePositionField;
+        private IPrivateField<float> _treasureAppearTimerField;
+        private IPrivateField<float> _treasureScaleField;
 
-        private IPrivateField<float> distanceFromCatchingField;
-        private IPrivateField<float> treasureCatchLevelField;
+        private readonly IPrivateField<float> _distanceFromCatchingField;
+        private readonly IPrivateField<float> _treasureCatchLevelField;
 
-        private IPrivateField<float> bobberBarPosField;
-        private IPrivateField<float> difficultyField;
-        private IPrivateField<int> fishQualityField;
-        private IPrivateField<bool> perfectField;
+        private IPrivateField<float> _bobberBarPosField;
+        private readonly IPrivateField<float> _difficultyField;
+        private readonly IPrivateField<int> _fishQualityField;
+        private readonly IPrivateField<bool> _perfectField;
 
-        private IPrivateField<SparklingText> sparkleTextField;
+        private readonly IPrivateField<SparklingText> _sparkleTextField;
 
-        private float lastDistanceFromCatching;
-        private float lastTreasureCatchLevel;
-        private bool perfectChanged = false;
-        private bool treasureChanged = false;
-        private bool notifiedFailOrSucceed = false;
-        private int origStreak;
-        private int origQuality;
+        private float _lastDistanceFromCatching;
+        private float _lastTreasureCatchLevel;
+        private bool _perfectChanged;
+        private bool _treasureChanged;
+        private bool _notifiedFailOrSucceed;
+        private readonly int _origStreak;
+        private readonly int _origQuality;
 
-        public SFarmer user;
+        public SFarmer User;
 
         public CustomBobberBar(SFarmer user, int whichFish, float fishSize, bool treasure, int bobber, int waterDepth) : base(whichFish, fishSize, treasure, bobber) {
-            this.user = user;
-            this.origStreak = FishHelper.getStreak(user);
+            this.User = user;
+            this._origStreak = FishHelper.GetStreak(user);
 
             /* Private field hooks */
-            treasureField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "treasure");
-            treasureCaughtField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "treasureCaught");
-            treasurePositionField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasurePosition");
-            treasureAppearTimerField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasureAppearTimer");
-            treasureScaleField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasureScale");
+            this._treasureField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "treasure");
+            this._treasureCaughtField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "treasureCaught");
+            this._treasurePositionField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasurePosition");
+            this._treasureAppearTimerField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasureAppearTimer");
+            this._treasureScaleField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasureScale");
 
-            distanceFromCatchingField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "distanceFromCatching");
-            treasureCatchLevelField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasureCatchLevel");
+            this._distanceFromCatchingField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "distanceFromCatching");
+            this._treasureCatchLevelField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "treasureCatchLevel");
 
-            bobberBarPosField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "bobberBarPos");
-            difficultyField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "difficulty");
-            fishQualityField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<int>(this, "fishQuality");
-            perfectField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "perfect");
+            this._bobberBarPosField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "bobberBarPos");
+            this._difficultyField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<float>(this, "difficulty");
+            this._fishQualityField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<int>(this, "fishQuality");
+            this._perfectField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<bool>(this, "perfect");
 
-            sparkleTextField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<SparklingText>(this, "sparkleText");
+            this._sparkleTextField = ModFishing.INSTANCE.Helper.Reflection.GetPrivateField<SparklingText>(this, "sparkleText");
 
-            lastDistanceFromCatching = distanceFromCatchingField.GetValue();
-            lastTreasureCatchLevel = treasureCatchLevelField.GetValue();
+            this._lastDistanceFromCatching = this._distanceFromCatchingField.GetValue();
+            this._lastTreasureCatchLevel = this._treasureCatchLevelField.GetValue();
 
             /* Actual code */
-            ConfigMain config = ModFishing.INSTANCE.config;
-            ConfigStrings strings = ModFishing.INSTANCE.strings;
+            ConfigMain config = ModFishing.INSTANCE.Config;
+            ConfigStrings strings = ModFishing.INSTANCE.Strings;
 
             // Choose a random fish, this time using the custom fish selector
             FishingRod rod = Game1.player.CurrentTool as FishingRod;
             //int waterDepth = rod != null ? ModEntry.INSTANCE.Helper.Reflection.GetPrivateValue<int>(rod, "clearWaterDistance") : 0;
 
             // Applies difficulty modifier, including if fish isn't paying attention
-            float difficulty = difficultyField.GetValue() * config.BaseDifficultyMult;
-            difficulty *= 1f + config.DifficultyStreakEffect * this.origStreak;
+            float difficulty = this._difficultyField.GetValue() * config.BaseDifficultyMult;
+            difficulty *= 1f + config.DifficultyStreakEffect * this._origStreak;
             double difficultyChance = config.UnawareChance + user.LuckLevel * config.UnawareLuckLevelEffect + Game1.dailyLuck * config.UnawareDailyLuckEffect;
             if (Game1.random.NextDouble() < difficultyChance) {
                 Game1.showGlobalMessage(string.Format(strings.UnawareFish, 1f - config.UnawareMult));
                 difficulty *= config.UnawareMult;
             }
-            difficultyField.SetValue(difficulty);
+            this._difficultyField.SetValue(difficulty);
 
             // Adjusts quality to be increased by streak
-            int fishQuality = fishQualityField.GetValue();
-            this.origQuality = fishQuality;
-            int qualityBonus = (int) Math.Floor((double) this.origStreak / config.StreakForIncreasedQuality);
+            int fishQuality = this._fishQualityField.GetValue();
+            this._origQuality = fishQuality;
+            int qualityBonus = (int) Math.Floor((double) this._origStreak / config.StreakForIncreasedQuality);
             fishQuality = Math.Min(fishQuality + qualityBonus, 3);
             if (fishQuality == 3) fishQuality++; // Iridium-quality fish. Only possible through your perfect streak
-            fishQualityField.SetValue(fishQuality);
+            this._fishQualityField.SetValue(fishQuality);
 
             // Increase the user's perfect streak (this will be dropped to 0 if they don't get a perfect catch)
-            if (this.origStreak >= config.StreakForIncreasedQuality)
-                sparkleTextField.SetValue(new SparklingText(Game1.dialogueFont, string.Format(strings.StreakDisplay, this.origStreak), Color.Yellow, Color.White, false, 0.1, 2500, -1, 500));
-            FishHelper.setStreak(user, this.origStreak + 1);
+            if (this._origStreak >= config.StreakForIncreasedQuality)
+                this._sparkleTextField.SetValue(new SparklingText(Game1.dialogueFont, string.Format(strings.StreakDisplay, this._origStreak), Color.Yellow, Color.White));
+            FishHelper.SetStreak(user, this._origStreak + 1);
         }
 
         public override void update(GameTime time) {
             // Speed warp on normal catching
-            float distanceFromCatching = distanceFromCatchingField.GetValue();
-            float delta = distanceFromCatching - this.lastDistanceFromCatching;
-            distanceFromCatching += (ModFishing.INSTANCE.config.CatchSpeed - 1f) * delta;
-            lastDistanceFromCatching = distanceFromCatching;
-            distanceFromCatchingField.SetValue(distanceFromCatching);
+            float distanceFromCatching = this._distanceFromCatchingField.GetValue();
+            float delta = distanceFromCatching - this._lastDistanceFromCatching;
+            distanceFromCatching += (ModFishing.INSTANCE.Config.CatchSpeed - 1f) * delta;
+            this._lastDistanceFromCatching = distanceFromCatching;
+            this._distanceFromCatchingField.SetValue(distanceFromCatching);
 
             // Speed warp on treasure catching
-            float treasureCatchLevel = treasureCatchLevelField.GetValue();
-            delta = treasureCatchLevel - this.lastTreasureCatchLevel;
-            treasureCatchLevel += (ModFishing.INSTANCE.config.TreasureCatchSpeed - 1f) * delta;
-            lastTreasureCatchLevel = treasureCatchLevel;
-            treasureCatchLevelField.SetValue(treasureCatchLevel);
+            float treasureCatchLevel = this._treasureCatchLevelField.GetValue();
+            delta = treasureCatchLevel - this._lastTreasureCatchLevel;
+            treasureCatchLevel += (ModFishing.INSTANCE.Config.TreasureCatchSpeed - 1f) * delta;
+            this._lastTreasureCatchLevel = treasureCatchLevel;
+            this._treasureCatchLevelField.SetValue(treasureCatchLevel);
 
-            bool perfect = perfectField.GetValue();
-            bool treasure = treasureField.GetValue();
-            bool treasureCaught = treasureCaughtField.GetValue();
+            bool perfect = this._perfectField.GetValue();
+            bool treasure = this._treasureField.GetValue();
+            bool treasureCaught = this._treasureCaughtField.GetValue();
 
-            ConfigStrings strings = ModFishing.INSTANCE.strings;
+            ConfigStrings strings = ModFishing.INSTANCE.Strings;
 
             // Check if still perfect, otherwise apply changes to loot
-            if (!perfectChanged && !perfect) {
-                perfectChanged = true;
-                fishQualityField.SetValue(Math.Min(this.origQuality, 1));
-                int streak = FishHelper.getStreak(this.user);
-                FishHelper.setStreak(this.user, 0);
-                if (this.origStreak >= ModFishing.INSTANCE.config.StreakForIncreasedQuality) {
-                    if (!treasure)
-                        Game1.showGlobalMessage(string.Format(strings.LostStreak, this.origStreak));
-                    else
-                        Game1.showGlobalMessage(string.Format(strings.WarnStreak, this.origStreak));
-                }
+            if (!this._perfectChanged && !perfect) {
+                this._perfectChanged = true;
+                this._fishQualityField.SetValue(Math.Min(this._origQuality, 1));
+                FishHelper.SetStreak(this.User, 0);
+                if (this._origStreak >= ModFishing.INSTANCE.Config.StreakForIncreasedQuality)
+                    Game1.showGlobalMessage(treasure ? string.Format(strings.WarnStreak, this._origStreak) : string.Format(strings.LostStreak, this._origStreak));
             }
 
-            if (!treasureChanged && !perfect && treasure && treasureCaught) {
-                treasureChanged = true;
-                int qualityBonus = (int) Math.Floor((double) this.origStreak / ModFishing.INSTANCE.config.StreakForIncreasedQuality);
-                int quality = this.origQuality;
+            if (!this._treasureChanged && !perfect && treasure && treasureCaught) {
+                this._treasureChanged = true;
+                int qualityBonus = (int) Math.Floor((double) this._origStreak / ModFishing.INSTANCE.Config.StreakForIncreasedQuality);
+                int quality = this._origQuality;
                 quality = Math.Min(quality + qualityBonus, 3);
                 if (quality == 3) quality++;
-                fishQualityField.SetValue(quality);
+                this._fishQualityField.SetValue(quality);
             }
 
             base.update(time);
 
-            distanceFromCatching = distanceFromCatchingField.GetValue();
+            distanceFromCatching = this._distanceFromCatchingField.GetValue();
 
             if (distanceFromCatching <= 0.0) {
                 // Failed to catch fish
                 //FishHelper.setStreak(this.user, 0);
-                if (!notifiedFailOrSucceed && treasure) {
-                    notifiedFailOrSucceed = true;
-                    if (this.origStreak >= ModFishing.INSTANCE.config.StreakForIncreasedQuality)
-                        Game1.showGlobalMessage(string.Format(strings.LostStreak, this.origStreak));
+                if (!this._notifiedFailOrSucceed && treasure) {
+                    this._notifiedFailOrSucceed = true;
+                    if (this._origStreak >= ModFishing.INSTANCE.Config.StreakForIncreasedQuality)
+                        Game1.showGlobalMessage(string.Format(strings.LostStreak, this._origStreak));
                 }
             } else if (distanceFromCatching >= 1.0) {
                 // Succeeded in catching the fish
-                if (!notifiedFailOrSucceed && !perfect && treasure && treasureCaught) {
-                    notifiedFailOrSucceed = true;
-                    if (this.origStreak >= ModFishing.INSTANCE.config.StreakForIncreasedQuality)
-                        Game1.showGlobalMessage(string.Format(strings.KeptStreak, this.origStreak));
-                    FishHelper.setStreak(this.user, this.origStreak);
+                if (!this._notifiedFailOrSucceed && !perfect && treasure && treasureCaught) {
+                    this._notifiedFailOrSucceed = true;
+                    if (this._origStreak >= ModFishing.INSTANCE.Config.StreakForIncreasedQuality)
+                        Game1.showGlobalMessage(string.Format(strings.KeptStreak, this._origStreak));
+                    FishHelper.SetStreak(this.User, this._origStreak);
                 }
             }
         }

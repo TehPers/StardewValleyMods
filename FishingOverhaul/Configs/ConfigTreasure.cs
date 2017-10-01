@@ -8,7 +8,7 @@ using static TehPers.Stardew.Framework.Helpers;
 
 namespace TehPers.Stardew.FishingOverhaul.Configs {
     public class ConfigTreasure {
-        public TreasureData[] PossibleLoot { get; set; } = new TreasureData[] {
+        public TreasureData[] PossibleLoot { get; set; } = {
             new TreasureData(Objects.DRESSED_SPINNER, 0.025, 1, 1, 4, 6, allowDuplicates: false),
             new TreasureData(Objects.BAIT, 0.25, 2, 4),
             //new TreasureData(Objects.BAIT, 0.05, 10), // No need for this I guess
@@ -88,14 +88,9 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
                 this.allowDuplicates = allowDuplicates;
             }
 
-            public bool isValid(int level, int distance) {
-                return level >= this.minLevel && (this.maxLevel >= 10 || level <= this.maxLevel) &&
-                    distance >= this.minCastDistance;
-            }
+            public bool IsValid(int level, int distance) => level >= this.minLevel && (this.maxLevel >= 10 || level <= this.maxLevel) && distance >= this.minCastDistance;
 
-            public double GetWeight() {
-                return this.chance;
-            }
+            public double GetWeight() => this.chance;
         }
     }
 }

@@ -11,7 +11,8 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         public bool ModEnabled { get; set; } = true;
         public bool OverrideFishing { get; set; } = true;
         public bool OverrideTreasureLoot { get; set; } = true;
-        public bool OverrideLegendaries { get; set; } = true;
+        public bool ConfigLegendaries { get; set; } = true;
+        public bool VanillaLegendaries { get; set; } = false;
         public bool UseVanillaFish { get; set; } = false;
 
         public float BaseDifficultyMult { get; set; } = 0.85f;
@@ -62,8 +63,8 @@ namespace TehPers.Stardew.FishingOverhaul.Configs {
         public int MaxTreasureQuantity { get; set; } = 3;
 
         // Getters for simplicity
-        internal ConfigTreasure.TreasureData[] PossibleLoot => ModFishing.INSTANCE.treasureConfig.PossibleLoot;
+        internal ConfigTreasure.TreasureData[] PossibleLoot => ModFishing.INSTANCE.TreasureConfig.PossibleLoot;
 
-        internal Dictionary<string, Dictionary<int, ConfigFish.FishData>> PossibleFish => ModFishing.INSTANCE.fishConfig.PossibleFish;
+        internal Dictionary<string, Dictionary<int, ConfigFish.FishData>> PossibleFish => ModFishing.INSTANCE.FishConfig.PossibleFish;
     }
 }

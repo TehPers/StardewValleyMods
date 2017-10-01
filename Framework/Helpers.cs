@@ -1,12 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using StardewValley;
+﻿using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using TehPers.Stardew.Framework;
 
 namespace TehPers.Stardew.Framework {
 
@@ -23,9 +20,7 @@ namespace TehPers.Stardew.Framework {
             return target;
         }
 
-        public static void Shuffle<T>(this IList<T> list) {
-            list.Shuffle(new Random());
-        }
+        public static void Shuffle<T>(this IList<T> list) => list.Shuffle(new Random());
 
         public static void Shuffle<T>(this IList<T> list, Random rand) {
             int n = list.Count;
@@ -61,9 +56,7 @@ namespace TehPers.Stardew.Framework {
             }
         }
 
-        public static Weather ToWeather(bool raining) {
-            return raining ? Weather.RAINY : Weather.SUNNY;
-        }
+        public static Weather ToWeather(bool raining) => raining ? Weather.RAINY : Weather.SUNNY;
 
         public static WaterType? ConvertWaterType(int type) {
             switch (type) {
@@ -78,33 +71,21 @@ namespace TehPers.Stardew.Framework {
             }
         }
 
-        public static int ConvertWaterType(WaterType type) {
-            return type == WaterType.BOTH ? -1 : (type == WaterType.RIVER ? 0 : 1);
-        }
+        public static int ConvertWaterType(WaterType type) => type == WaterType.BOTH ? -1 : (type == WaterType.RIVER ? 0 : 1);
 
-        public static T As<T>(this object o, T fallback = default(T)) {
-            return (o is T) ? (T) o : fallback;
-        }
+        public static T As<T>(this object o, T fallback = default(T)) => o is T t ? t : fallback;
 
-        public static TVal GetDefault<TKey, TVal>(this Dictionary<TKey, TVal> dict, TKey key, TVal fallback = default(TVal)) {
-            return dict.ContainsKey(key) ? dict[key] : fallback;
-        }
-        
-        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> elements) {
-            return Choose(elements, new Random());
-        }
+        public static TVal GetDefault<TKey, TVal>(this Dictionary<TKey, TVal> dict, TKey key, TVal fallback = default(TVal)) => dict.ContainsKey(key) ? dict[key] : fallback;
 
+        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> elements) => elements.Choose(new Random());
         public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> elements, Random rand) {
-            WeightedAuto<T> choice = Choose(elements.Select(kv => new WeightedAuto<T>(kv.Key, kv.Value)), rand);
-            if (choice == null) return default(T);
-            return choice.Element;
+            WeightedAuto<T> choice = elements.Select(kv => new WeightedAuto<T>(kv.Key, kv.Value)).Choose(rand);
+            return choice == null ? default(T) : choice.Element;
         }
 
-        public static T Choose<T>(this IEnumerable<T> entries) where T : IWeighted {
-            return entries.Choose(new Random());
-        }
-
+        public static T Choose<T>(this IEnumerable<T> entries) where T : IWeighted => entries.Choose(new Random());
         public static T Choose<T>(this IEnumerable<T> entries, Random rand) where T : IWeighted {
+            entries = entries.ToList();
             double totalWeight = entries.Sum(entry => entry.GetWeight());
             double n = rand.NextDouble();
             foreach (T entry in entries) {
@@ -112,7 +93,7 @@ namespace TehPers.Stardew.Framework {
                 if (n < chance) return entry;
                 else n -= chance;
             }
-            throw new ArgumentException("Enumerable must contain entries", "entries");
+            throw new ArgumentException("Enumerable must contain entries", nameof(entries));
         }
 
         /// <summary>Defines a weighted chance for an object, allowing easy weighted choosing of a random element from a list of the object.</summary>
@@ -122,16 +103,16 @@ namespace TehPers.Stardew.Framework {
         }
 
         private class WeightedAuto<T> : IWeighted {
-            public T Element;
-            private double weight;
+            public readonly T Element;
+            private readonly double _weight;
 
             public WeightedAuto(T elem, double weight) {
                 this.Element = elem;
-                this.weight = weight;
+                this._weight = weight;
             }
 
             public double GetWeight() {
-                return this.weight;
+                return this._weight;
             }
         }
 

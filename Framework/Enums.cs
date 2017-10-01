@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
+// ReSharper disable ArrangeStaticMemberQualifier
 namespace TehPers.Stardew.Framework {
-    public enum WaterType : int {
+    [Flags]
+    public enum WaterType {
         /** <summary>Game ID is 1</summary> **/
         LAKE = 1,
 
@@ -16,13 +14,15 @@ namespace TehPers.Stardew.Framework {
         BOTH = LAKE | RIVER
     }
 
-    public enum Weather : int {
+    [Flags]
+    public enum Weather {
         SUNNY = 1,
         RAINY = 2,
         BOTH = SUNNY | RAINY
     }
 
-    public enum Season : int {
+    [Flags]
+    public enum Season {
         SPRING = 1,
         SUMMER = 2,
         FALL = 4,

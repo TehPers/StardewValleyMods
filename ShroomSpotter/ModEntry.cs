@@ -15,34 +15,33 @@ namespace TehPers.Stardew.ShroomSpotter {
     public class ModEntry : Mod {
         public static ModEntry INSTANCE;
 
-        public ModConfig config;
-        public List<UpdateEvent> updateEvents = new List<UpdateEvent>();
+        public ModConfig Config;
+        public List<UpdateEvent> UpdateEvents = new List<UpdateEvent>();
         public delegate bool UpdateEvent();
 
         public ModEntry() {
-            INSTANCE = this;
+            ModEntry.INSTANCE = this;
         }
 
         public override void Entry(IModHelper helper) {
-            this.config = helper.ReadConfig<ModConfig>();
-            if (!config.ModEnabled) return;
+            this.Config = helper.ReadConfig<ModConfig>();
+            if (!this.Config.ModEnabled) return;
 
             //this.Monitor.Log("It is *HIGHLY* recommended you install a Health Bars mod for enemies!", LogLevel.Info);
 
-            ControlEvents.KeyPressed += KeyPressed;
-            GraphicsEvents.OnPreRenderGuiEvent += OnPreRenderGuiEvent;
-            GraphicsEvents.OnPostRenderGuiEvent += OnPostRenderGuiEvent;
+            ControlEvents.KeyPressed += this.KeyPressed;
+            GraphicsEvents.OnPreRenderGuiEvent += this.OnPreRenderGuiEvent;
+            GraphicsEvents.OnPostRenderGuiEvent += this.OnPostRenderGuiEvent;
             //MenuEvents.MenuChanged += MenuEvents_MenuChanged;
         }
 
         #region Events
         private void KeyPressed(object sender, EventArgsKeyPressed e) {
-            Keys getShroomLevels;
-            if (Enum.TryParse(config.GetShroomLevels, out getShroomLevels) && e.KeyPressed == getShroomLevels) {
+            if (Enum.TryParse(this.Config.GetShroomLevels, out Keys getShroomLevels) && e.KeyPressed == getShroomLevels) {
                 // Find all shroom levels
                 List<int> shroomLevels = new List<int>();
                 int daysTilShroom = -1;
-                while (shroomLevels.Count == 0 && ++daysTilShroom < 50) shroomLevels = this.getShroomLayers(daysTilShroom);
+                while (shroomLevels.Count == 0 && ++daysTilShroom < 50) shroomLevels = this.GetShroomLayers(daysTilShroom);
 
                 if (shroomLevels.Count > 0) {
                     if (daysTilShroom == 0)
@@ -68,7 +67,7 @@ namespace TehPers.Stardew.ShroomSpotter {
                     for (int day = 1; day <= 28; day++) {
                         ClickableTextureComponent component = calendarDays[day - 1];
                         if (component.bounds.Contains(Game1.getMouseX(), Game1.getMouseY())) {
-                            List<int> shrooms = this.getShroomLayers(day - Game1.dayOfMonth);
+                            List<int> shrooms = this.GetShroomLayers(day - Game1.dayOfMonth);
 
                             if (hoverText.Length > 0)
                                 hoverText += "\n";
@@ -102,7 +101,7 @@ namespace TehPers.Stardew.ShroomSpotter {
 
                 for (int day = 1; day <= 28; day++) {
                     ClickableTextureComponent component = calendarDays[day - 1];
-                    List<int> shrooms = this.getShroomLayers(day - Game1.dayOfMonth);
+                    List<int> shrooms = this.GetShroomLayers(day - Game1.dayOfMonth);
 
                     if (shrooms.Count > 0) {
                         const int id = 422;
@@ -117,7 +116,7 @@ namespace TehPers.Stardew.ShroomSpotter {
         }
         #endregion
 
-        public List<int> getShroomLayers(int relativeDay) {
+        public List<int> GetShroomLayers(int relativeDay) {
             List<int> shroomLevels = new List<int>();
             for (int mineLevel = 1; mineLevel < 120; mineLevel++) {
                 Random random = new Random((int) Game1.stats.DaysPlayed + relativeDay + mineLevel + (int) Game1.uniqueIDForThisGame / 2);
