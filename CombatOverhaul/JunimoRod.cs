@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using SFarmer = StardewValley.Farmer;
-using StardewValley.Tools;
 using System;
 using TehPers.Stardew.CombatOverhaul.Natures;
 
@@ -33,7 +32,7 @@ namespace TehPers.Stardew.CombatOverhaul {
             }
         }
 
-        public JunimoRod() : base("Junimo Rod", 0, 2, 2, "", false, 0) {
+        public JunimoRod() : base("Junimo Rod", 0, 2, 2, false, 0) {
             this.ActiveNature = null;
             this.upgradeLevel = 0;
             this.CurrentParentTileIndex = this.indexOfMenuItemView;
