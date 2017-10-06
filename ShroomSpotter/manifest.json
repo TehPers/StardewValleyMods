@@ -1,13 +1,13 @@
 ﻿{
-  "Author": "TehPers",
-  "Description": "Tells you which floor the shrooms will be on today.",
-  "EntryDll": "ShroomSpotter.dll",
   "Name": "Shroom Spotter",
-  "UniqueID": "TehPers.ShroomSpotter",
+  "Description": "Tells you which floor the shrooms will be on today.",
+  "Author": "TehPers",
   "Version": {
     "MajorVersion": 1,
     "MinorVersion": 1,
     "PatchVersion": 2,
-    "Build": "0"
-  }
+    "Build": null
+  },
+  "UniqueID": "TehPers.ShroomSpotter",
+  "EntryDll": "ShroomSpotter.dll"
 }

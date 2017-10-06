@@ -1,14 +1,13 @@
-﻿
-{
-  "Author": "TehPers",
-  "Description": "Allows mods to merge content into the game",
-  "EntryDll": "SCCL.dll",
+﻿{
   "Name": "SCCL",
-  "UniqueID": "SCCL",
+  "Description": "Allows mods to merge content into the game",
+  "Author": "TehPers",
   "Version": {
     "MajorVersion": 0,
     "MinorVersion": 1,
     "PatchVersion": 0,
-    "Build": ""
-  }
+    "Build": null
+  },
+  "UniqueID": "SCCL",
+  "EntryDll": "SCCL.dll"
 }
