@@ -28,7 +28,7 @@ namespace TehPers.Stardew.CombatOverhaul {
         /// <summary>Converts a MeleeWeapon into a ModWeapon by copying all the fields</summary>
         /// <param name="original">The original (preferably vanilla) weapon</param>
         public ModWeapon(MeleeWeapon original) {
-            Helpers.copyFields<MeleeWeapon>(original, this);
+            Helpers.CopyFields<MeleeWeapon>(original, this);
             this.name = "Modded: " + this.name;
             ModEntry.INSTANCE.Monitor.Log(name + " | Damage: " + minDamage + " - " + maxDamage);
         }
