@@ -9,5 +9,6 @@
     "Build": null
   },
   "UniqueID": "TehPers.CombatOverhaul",
-  "EntryDll": "CombatOverhaul.dll"
+  "EntryDll": "CombatOverhaul.dll",
+  "UpdateKeys": [ ]
 }

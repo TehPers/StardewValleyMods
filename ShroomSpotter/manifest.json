@@ -9,5 +9,6 @@
     "Build": null
   },
   "UniqueID": "TehPers.ShroomSpotter",
-  "EntryDll": "ShroomSpotter.dll"
+  "EntryDll": "ShroomSpotter.dll",
+  "UpdateKeys": [ "Nexus:908" ]
 }

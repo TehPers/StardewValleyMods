@@ -9,5 +9,6 @@
     "Build": null
   },
   "UniqueID": "SCCL",
-  "EntryDll": "SCCL.dll"
+  "EntryDll": "SCCL.dll",
+  "UpdateKeys": [ "Nexus:889" ]
 }

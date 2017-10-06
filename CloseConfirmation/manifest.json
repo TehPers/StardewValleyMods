@@ -9,5 +9,6 @@
     "Build": null
   },
   "UniqueID": "TehPers.CloseConfirmation",
-  "EntryDll": "CloseConfirmation.dll"
+  "EntryDll": "CloseConfirmation.dll",
+  "UpdateKeys": [ ]
 }
