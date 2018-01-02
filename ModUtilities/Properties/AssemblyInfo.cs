@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FishingOverhaul")]
+[assembly: AssemblyTitle("ModUtilities")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FishingOverhaul")]
+[assembly: AssemblyProduct("ModUtilities")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("da5d42ea-f894-4772-a42a-00ce10161136")]
+[assembly: Guid("ff76df74-815f-4a56-89bc-50cec68f16bb")]
 
 // Version information for an assembly consists of the following four values:
 //

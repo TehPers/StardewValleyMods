@@ -1,0 +1,9 @@
+﻿{
+    "Name": "Teh's Mod Utilities",
+    "Author": "TehPers",
+    "Version": "1.0.0-dev.1",
+    "Description": "Utilities for modders.",
+    "UniqueID": "TehPers.ModUtilities",
+    "EntryDll": "ModUtilities.dll",
+    "UpdateKeys": []
+}
