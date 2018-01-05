@@ -30,9 +30,10 @@ namespace ModUtilities.Menus.Components {
             Rectangle1 bounds = this.AbsoluteBounds;
 
             // Draw the background
-            b.Draw(this._background, new Rectangle2(bounds.X, bounds.Y, Game1.tileSize / 4, bounds.Height), new Rectangle2(0, 0, Game1.tileSize / 4, this._background.Height), Color.White);
-            b.Draw(this._background, new Rectangle2(bounds.X + Game1.tileSize / 4, bounds.Y, bounds.Width - Game1.tileSize / 2, bounds.Height), new Rectangle2(Game1.tileSize / 4, 0, 4, this._background.Height), Color.White);
-            b.Draw(this._background, new Rectangle2(bounds.X + bounds.Width - Game1.tileSize / 4, bounds.Y, Game1.tileSize / 4, bounds.Height), new Rectangle2(this._background.Width - Game1.tileSize / 4, 0, Game1.tileSize / 4, this._background.Height), Color.White);
+            float bgDepth = this.GetGlobalDepth(0);
+            b.Draw(this._background, new Rectangle2(bounds.X, bounds.Y, Game1.tileSize / 4, bounds.Height), new Rectangle2(0, 0, Game1.tileSize / 4, this._background.Height), Color.White, 0, Vector2.Zero, SpriteEffects.None, bgDepth);
+            b.Draw(this._background, new Rectangle2(bounds.X + Game1.tileSize / 4, bounds.Y, bounds.Width - Game1.tileSize / 2, bounds.Height), new Rectangle2(Game1.tileSize / 4, 0, 4, this._background.Height), Color.White, 0, Vector2.Zero, SpriteEffects.None, bgDepth);
+            b.Draw(this._background, new Rectangle2(bounds.X + bounds.Width - Game1.tileSize / 4, bounds.Y, Game1.tileSize / 4, bounds.Height), new Rectangle2(this._background.Width - Game1.tileSize / 4, 0, Game1.tileSize / 4, this._background.Height), Color.White, 0, Vector2.Zero, SpriteEffects.None, bgDepth);
 
             // Draw the text
             const int xPadding = 14;
@@ -40,13 +41,15 @@ namespace ModUtilities.Menus.Components {
             string text = this._selectingKey ? "Press a key..." : (this.SelectedKey == null ? "None" : Enum.GetName(typeof(Keys), this.SelectedKey));
             Vector2 origSize = this.Font.MeasureString(text);
             float scale = (bounds.Height - yPadding) / origSize.Y;
-            b.DrawString(this.Font, text, new Vector2(bounds.X + xPadding, bounds.Y + yPadding), this.Color, 0, Vector2.Zero, scale, SpriteEffects.None, 0);
+            b.DrawString(this.Font, text, new Vector2(bounds.X + xPadding, bounds.Y + yPadding), this.Color, 0, Vector2.Zero, scale, SpriteEffects.None, this.GetGlobalDepth(1));
         }
 
-        protected override void OnLeftClick(Location mousePos, bool playSound) {
-            base.OnLeftClick(mousePos, playSound);
+        protected override bool OnLeftClick(Location mousePos) {
+            if (!base.OnLeftClick(mousePos))
+                return false;
 
             this._selectingKey = !this._selectingKey;
+            return true;
         }
 
         protected override bool OnKeyPressed(Keys key) {

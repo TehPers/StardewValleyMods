@@ -11,7 +11,7 @@ namespace ModUtilities.Menus.Components {
         public float Rotation { get; set; } = 0;
         public Vector2 Origin { get; set; } = Vector2.Zero;
         public SpriteEffects Effects { get; set; } = SpriteEffects.None;
-        public float LayerDepth { get; set; } = 1;
+        public float LayerDepth { get; set; } = 0.8f;
         public SpriteFont Font { get; set; } = Game1.smallFont;
 
         private Vector2 _textScale = Vector2.One;

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows.Forms;
 using Microsoft.Xna.Framework.Input;
 using ModUtilities.Configs;
 using ModUtilities.Helpers;
@@ -17,12 +18,42 @@ namespace ModUtilities {
 
         public ConfigMain Config { get; private set; }
 
+        public Assembly WinForms { get; private set; }
+        public Type Clipboard { get; private set; }
+        public Func<string> GetClipboard { get; private set; }
+
         public ModUtilities() {
             ModUtilities.Instance = this;
         }
 
         public override void Entry(IModHelper helper) {
             this.Config = helper.ReadConfig<ConfigMain>();
+
+            // Try to import winforms
+            this.GetClipboard = () => null;
+            try {
+                this.WinForms = Assembly.Load("System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
+                this.Clipboard = this.WinForms.GetType("System.Windows.Forms.Clipboard");
+                MethodInfo[] clipboardMethods = this.Clipboard.GetMethods();
+
+                // Clipboard.GetText()
+                MethodInfo getClipboardInfo = clipboardMethods.FirstOrDefault(m => m.IsStatic && m.Name == "GetText" && m.GetParameters().Length == 0);
+                if (getClipboardInfo != null) {
+                    Func<string> getClipboardRaw = (Func<string>) Delegate.CreateDelegate(typeof(Func<string>), getClipboardInfo);
+
+                    // Clipboard.GetText() must be called from a STA thread
+                    this.GetClipboard = () => {
+                        string clipboardText = "";
+                        Thread clipboardThread = new Thread(() => clipboardText = getClipboardRaw());
+                        clipboardThread.SetApartmentState(ApartmentState.STA);
+                        clipboardThread.Start();
+                        clipboardThread.Join();
+                        return clipboardText;
+                    };
+                }
+            } catch {
+                this.Monitor.Log("WinForms assembly could not be loaded. Clipboard actions will be disabled. (This is normal for Linux/Mac)", LogLevel.Warn);
+            }
 
             KeyboardInput.CharEntered += this.CharEntered;
             ControlEvents.KeyPressed += this.KeyPressed;
@@ -32,13 +63,11 @@ namespace ModUtilities {
             if (Game1.activeClickableMenu is ModMenu menu) {
                 // Check if ctrl-v was pressed
                 if (e.Character == '\u0016') {
-                    // TODO: Check if System.Windows.Forms breaks cross-platform compatibilty
-                    string clipboardText = "";
-                    Thread clipboardThread = new Thread(() => clipboardText = Clipboard.GetText());
-                    clipboardThread.SetApartmentState(ApartmentState.STA);
-                    clipboardThread.Start();
-                    clipboardThread.Join();
-                    menu.EnterText(clipboardText);
+                    // Try to get the clipboard
+                    string clipboard = this.GetClipboard();
+                    if (clipboard != null) {
+                        menu.EnterText(clipboard);
+                    }
                 }
 
                 // Check if character is printable (https://stackoverflow.com/a/45928048/8430206)
@@ -48,18 +77,9 @@ namespace ModUtilities {
             }
         }
 
-        private void PasteThread() {
-
-        }
-
         private void KeyPressed(object sender, EventArgsKeyPressed e) {
             if (e.KeyPressed == this.Config.ModConfigKey && Game1.activeClickableMenu == null) {
-                Game1.showGlobalMessage("Mod config key pressed");
-                int x = (int) (Game1.viewport.Width * 0.25);
-                int y = (int) (Game1.viewport.Height * 0.125);
-                int width = (int) (Game1.viewport.Width * 0.5);
-                int height = (int) (Game1.viewport.Height * 0.75);
-                Game1.activeClickableMenu = new ModConfigMenu(x, y, width, height);
+                Game1.activeClickableMenu = new ModConfigMenu();
             }
         }
     }
