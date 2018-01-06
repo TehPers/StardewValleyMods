@@ -14,11 +14,11 @@ namespace ModUtilities.Menus.Components {
         private readonly ScrollbarComponent _scrollbar;
 
         public bool AutoScrollbar { get; set; } = true;
-        public bool ScrollbarVisible { get => this._scrollbar.Visible; set => this._scrollbar.Visible = this._scrollbar.Enabled = value; }
+        public bool ScrollbarVisible { get => this._scrollbar.Visible; set => this._scrollbar.Visible = value; }
         public int PixelsPerScroll { get => this._scrollbar.ScrollSpeed; set => this._scrollbar.ScrollSpeed = value; }
         public int ScrollbarPadding { get; set; } = 12;
 
-        public override Rectangle ChildBounds => new Rectangle(0, -(this._scrollbar?.Value ?? 0), this.Size.Width - (this._scrollbar?.Size.Width + this.ScrollbarPadding ?? 0), this.Size.Height);
+        public override Rectangle ChildBounds => new Rectangle(0, -(this._scrollbar?.Value ?? 0), this.Size.Width - (this.ScrollbarVisible ? (this._scrollbar?.Size.Width + this.ScrollbarPadding ?? 0) : 0), this.Size.Height);
 
         public ScrollableComponent() {
             this._scrollbar = new ScrollbarComponent(false)
@@ -53,6 +53,9 @@ namespace ModUtilities.Menus.Components {
             this._scrollbar.Maximum = Math.Max(totalHeight - this.Size.Height, 0);
             this._scrollbar.Location = new Location(this.Size.Width - this._scrollbar.Size.Width, -childBounds.Y);
             this._scrollbar.Size = new Size(this._scrollbar.Size.Width, childBounds.Height);
+            if (this.AutoScrollbar) {
+                this.ScrollbarVisible = this._scrollbar.Maximum > 0;
+            }
         }
 
         public override bool Click(Location mousePos, MouseButtons btn) => this.AbsoluteBounds.Contains(mousePos) && base.Click(mousePos, btn);

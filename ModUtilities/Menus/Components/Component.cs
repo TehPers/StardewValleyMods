@@ -39,7 +39,7 @@ namespace ModUtilities.Menus.Components {
         public virtual Rectangle ChildBounds => new Rectangle(Location.Origin, this.Size);
         /// <summary>Size of this <see cref="Component"/></summary>
         public Size Size { get; set; } = new Size(20, 20);
-        /// <summary>Whether this component should be drawn. It will still have the same bounds and receive events</summary>
+        /// <summary>Whether this component should be drawn. If this is false, the component will not receive events.</summary>
         public bool Visible { get; set; } = true;
         /// <summary>Whether this component should be enabled and receive events</summary>
         public bool Enabled { get; set; } = true;
@@ -66,6 +66,8 @@ namespace ModUtilities.Menus.Components {
         public virtual Rectangle FocusBounds => this.AbsoluteBounds;
         /// <summary>Whether this control is focused</summary>
         public bool IsFocused => this.GetFocusedComponent() == this;
+        /// <summary>Whether this or any of its descendents are focused</summary>
+        public bool IsThisOrChildrenFocused => this.IsFocused || this.Children.Any(c => c.IsFocused);
 
         protected Component() { }
 
@@ -108,7 +110,7 @@ namespace ModUtilities.Menus.Components {
         /// <returns>Whether the mouse click was handled by this component</returns>
         public virtual bool Click(Location mousePos, MouseButtons btn) {
             // Check if component is enabled
-            if (!this.Enabled)
+            if (!this.Enabled || !this.Visible)
                 return false;
 
             // Try to have children handle the click
@@ -137,7 +139,7 @@ namespace ModUtilities.Menus.Components {
         /// <returns>Whether the scroll was handled by this component</returns>
         public virtual bool Scroll(Location mousePos, int direction) {
             // Check if component is enabled
-            if (!this.Enabled)
+            if (!this.Enabled || !this.Visible)
                 return false;
 
             // Pass scroll to children
@@ -153,7 +155,7 @@ namespace ModUtilities.Menus.Components {
         /// <returns>Whether the event was handled by this component</returns>
         public virtual bool Drag(Location mousePos) {
             // Check if component is enabled
-            if (!this.Enabled)
+            if (!this.Enabled || !this.Visible)
                 return false;
 
             // Try to have children handle the click
@@ -167,12 +169,12 @@ namespace ModUtilities.Menus.Components {
         /// <summary>Send a key pressed event to the component and all child components</summary>
         /// <param name="key">The key being pressed</param>
         /// <returns>Whether propagation should stop</returns>
-        public virtual bool PressKey(Keys key) => this.Enabled && this.OnKeyPressed(key) || (this.Parent?.PressKey(key) ?? false);
+        public virtual bool PressKey(Keys key) => this.Enabled && this.Visible && this.OnKeyPressed(key) || (this.Parent?.PressKey(key) ?? false);
 
         /// <summary>Send some text to the component and all child components</summary>
         /// <param name="text">The text to send to the component</param>
         /// <returns>Whether propagation should stop</returns>
-        public virtual bool EnterText(string text) => this.Enabled && this.OnTextEntered(text) || (this.Parent?.EnterText(text) ?? false);
+        public virtual bool EnterText(string text) => this.Enabled && this.Visible && this.OnTextEntered(text) || (this.Parent?.EnterText(text) ?? false);
         #endregion
 
         #region Event handlers
@@ -256,7 +258,10 @@ namespace ModUtilities.Menus.Components {
         public float GetGlobalDepth(float localDepth) => this.DrawDepth - Component.DrawDepthRange * localDepth.Clamp(0, 1);
 
         protected void WithScissorRect(SpriteBatch batch, Rectangle2 scissorRect, Action<SpriteBatch> action, bool respectExistingScissor = true) {
-            // Keep track of the old scissor rectangle
+            // Stop the old drawing code
+            batch.End();
+
+            // Keep track of the old scissor rectangle (this needs to come after End() so they're applied to the GraphicsDevice)
             Rectangle2 oldScissor = batch.GraphicsDevice.ScissorRectangle;
             BlendState oldBlendState = batch.GraphicsDevice.BlendState;
             DepthStencilState oldStencilState = batch.GraphicsDevice.DepthStencilState;
@@ -266,22 +271,25 @@ namespace ModUtilities.Menus.Components {
             if (respectExistingScissor)
                 scissorRect = scissorRect.Intersection(oldScissor) ?? new Rectangle2(0, 0, 0, 0);
 
-            // Setup temporary sprite batch to use the scissor rectangle
-            batch.End();
-            batch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, new RasterizerState { ScissorTestEnable = true });
+            // Draw with the new scissor rectangle
+            using (RasterizerState rasterizerState = new RasterizerState { ScissorTestEnable = true }) {
+                batch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, rasterizerState);
 
-            // Set scissor rectangle
-            batch.GraphicsDevice.ScissorRectangle = scissorRect;
+                // Set scissor rectangle
+                batch.GraphicsDevice.ScissorRectangle = scissorRect;
 
-            // Perform the action
-            action(batch);
+                // Perform the action
+                action(batch);
 
-            // Draw the batch
-            batch.End();
-            batch.Begin(SpriteSortMode.BackToFront, oldBlendState, SamplerState.PointClamp, oldStencilState, oldRasterizerState);
+                // Draw the batch
+                batch.End();
+            }
 
             // Reset scissor rectangle
             batch.GraphicsDevice.ScissorRectangle = oldScissor;
+
+            // Return to last state
+            batch.Begin(SpriteSortMode.BackToFront, oldBlendState, SamplerState.PointClamp, oldStencilState, oldRasterizerState);
         }
     }
 }

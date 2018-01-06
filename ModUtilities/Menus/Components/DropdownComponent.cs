@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ModUtilities.Enums;
 using ModUtilities.Helpers;
 using StardewValley;
 using StardewValley.Menus;
@@ -95,6 +96,13 @@ namespace ModUtilities.Menus.Components {
             return base.OnKeyPressed(key);
         }
 
+        public override bool Click(Location mousePos, MouseButtons btn) {
+            if (this.Opened && !this._dropComponent.AbsoluteBounds.Contains(mousePos))
+                this.Close();
+
+            return base.Click(mousePos, btn);
+        }
+
         public virtual void Open() {
             if (this.Opened)
                 return;
@@ -154,10 +162,15 @@ namespace ModUtilities.Menus.Components {
             }
 
             protected override void OnDraw(SpriteBatch b) {
+                // Update size
+                this.Size = new Size(this.Parent.ChildBounds.Width, this.Size.Height);
+
                 Rectangle bounds = this.AbsoluteBounds;
 
                 // Draw background
-                b.Draw(Game1.staminaRect, bounds.ToXnaRectangle(), new Rectangle2(0, 0, 1, 1), Color.Wheat, 0f, Vector2.Zero, SpriteEffects.None, this.GetGlobalDepth(0));
+                bool hovered = bounds.Contains(new Location(Game1.getMouseX(), Game1.getMouseY()));
+                Color bgColor = hovered ? Color.LightGray : Color.Wheat;
+                b.Draw(Game1.staminaRect, bounds.ToXnaRectangle(), new Rectangle2(0, 0, 1, 1), bgColor, 0f, Vector2.Zero, SpriteEffects.None, this.GetGlobalDepth(0));
 
                 // Draw text
                 b.DrawString(this.Font, this.Text, new Vector2(bounds.X + Game1.pixelZoom, bounds.Y + Game1.pixelZoom * 2), this.TextColor, 0f, Vector2.Zero, Vector2.One, SpriteEffects.None, this.GetGlobalDepth(1));

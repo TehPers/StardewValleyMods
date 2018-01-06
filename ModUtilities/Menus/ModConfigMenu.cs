@@ -54,7 +54,7 @@ namespace ModUtilities.Menus {
             scrollableComponent.AddChild(textbox);
 
             // Dropdown
-            DropdownComponent dropdown = new DropdownComponent(new[] { "Option 1", "Option 2", "Option 3" })
+            DropdownComponent dropdown = new DropdownComponent(new[] { "Option 1", "Option 2", "Option 3", "Option 4", "Option 5", "Option 6" })
                 .Chain(c => c.Location = new Location(0, textbox.Location.Y + textbox.Size.Height))
                 .Chain(c => c.Size = new Size(scrollableComponent.ChildBounds.Width, textbox.Size.Height));
             scrollableComponent.AddChild(dropdown);

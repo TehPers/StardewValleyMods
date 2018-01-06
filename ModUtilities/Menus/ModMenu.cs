@@ -1,10 +1,13 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ModUtilities.Enums;
+using ModUtilities.Helpers;
 using ModUtilities.Menus.Components;
 using StardewValley;
 using StardewValley.Menus;
 using xTile.Dimensions;
+using Rectangle = xTile.Dimensions.Rectangle;
 
 namespace ModUtilities.Menus {
     public class ModMenu : IClickableMenu {
@@ -63,7 +66,19 @@ namespace ModUtilities.Menus {
             using (SpriteBatch menuBatch = new SpriteBatch(Game1.graphics.GraphicsDevice)) {
                 menuBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
                 this.Component.Draw(b);
+
+                //menuBatch.FillRectangle(new Microsoft.Xna.Framework.Rectangle(50, 0, 100, 100), Color.Red, 0.4f);
+                //menuBatch.End();
+
+                //menuBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
+                //menuBatch.FillRectangle(new Microsoft.Xna.Framework.Rectangle(25, 25, 100, 100), Color.Orange, 0.6f);
+                //menuBatch.End();
+
+                //menuBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone);
+                //menuBatch.FillRectangle(new Microsoft.Xna.Framework.Rectangle(0, 0, 100, 100), Color.White, 0.5f);
+
                 this.Component.DrawCursor(b);
+                menuBatch.End();
             }
         }
     }

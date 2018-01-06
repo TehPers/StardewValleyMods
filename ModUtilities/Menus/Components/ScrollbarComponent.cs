@@ -53,7 +53,7 @@ namespace ModUtilities.Menus.Components {
                 if (this.Maximum > 0) {
                     Size buttonSize = new Size(this.ButtonThickness, bounds.Height);
                     Location buttonLoc = new Location((int) (bounds.X + (bounds.Width - buttonSize.Width) * ((float) this.Value / this.Maximum).Clamp(0, 1)), bounds.Y);
-                    b.Draw(Game1.mouseCursors, new Rectangle2(buttonLoc.X + buttonSize.Width, buttonLoc.Y, buttonSize.Height, buttonSize.Width), OptionsSlider.sliderButtonRect, Color.White, (float) (Math.PI / 2F), Vector2.Zero, SpriteEffects.None, buttonDepth);
+                    b.Draw(Game1.mouseCursors, new Rectangle2(buttonLoc.X, buttonLoc.Y + buttonSize.Height, buttonSize.Height, buttonSize.Width), OptionsSlider.sliderButtonRect, Color.White, (float) (-Math.PI / 2F), Vector2.Zero, SpriteEffects.None, buttonDepth);
                 }
             } else {
                 // Draw track
