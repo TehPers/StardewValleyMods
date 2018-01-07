@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ModUtilities.Menus.Components.Interfaces;
 using StardewModdingAPI;
 using StardewValley;
 using xTile.Dimensions;
@@ -9,8 +10,19 @@ using Rectangle1 = xTile.Dimensions.Rectangle;
 using Rectangle2 = Microsoft.Xna.Framework.Rectangle;
 
 namespace ModUtilities.Menus.Components {
-    public class KeybindComponent : Component {
-        public Keys? SelectedKey { get; set; }
+    public class KeybindComponent : Component, IValueComponent<Keys> {
+        private Keys _selectedKey = Keys.None;
+        public Keys SelectedKey {
+            get => this._selectedKey;
+            set {
+                if (value == this._selectedKey)
+                    return;
+
+                this._selectedKey = value;
+                this.OnValueChanged();
+            }
+        }
+
         public SpriteFont Font { get; set; } = Game1.smallFont;
         public Color Color { get; set; } = Game1.textColor;
         public override bool FocusOnClick { get; } = true;
@@ -38,7 +50,7 @@ namespace ModUtilities.Menus.Components {
             // Draw the text
             const int xPadding = 14;
             const int yPadding = 4;
-            string text = this._selectingKey ? "Press a key..." : (this.SelectedKey == null ? "None" : Enum.GetName(typeof(Keys), this.SelectedKey));
+            string text = this._selectingKey ? "Press a key..." : Enum.GetName(typeof(Keys), this.SelectedKey);
             Vector2 origSize = this.Font.MeasureString(text);
             float scale = (bounds.Height - yPadding) / origSize.Y;
             b.DrawString(this.Font, text, new Vector2(bounds.X + xPadding, bounds.Y + yPadding), this.Color, 0, Vector2.Zero, scale, SpriteEffects.None, this.GetGlobalDepth(1));
@@ -62,5 +74,12 @@ namespace ModUtilities.Menus.Components {
 
             return base.OnKeyPressed(key);
         }
+
+        public void SetValue(Keys value) => this.SelectedKey = value;
+
+        public Keys GetValue() => this.SelectedKey;
+
+        public event EventHandler ValueChanged;
+        protected virtual void OnValueChanged() => this.ValueChanged?.Invoke(this, EventArgs.Empty);
     }
 }

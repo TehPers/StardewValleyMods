@@ -52,8 +52,11 @@
     <Compile Include="Configs\ConfigMain.cs" />
     <Compile Include="Helpers\DrawHelpers.cs" />
     <Compile Include="Menus\Components\DropdownComponent.cs" />
+    <Compile Include="Menus\Components\Interfaces\IValueComponent.cs" />
+    <Compile Include="Menus\Components\NumericTextboxComponent.cs" />
     <Compile Include="Menus\Components\ScrollableComponent.cs" />
     <Compile Include="Menus\Components\ScrollbarComponent.cs" />
+    <Compile Include="Menus\IAutoConfig.cs" />
     <Compile Include="Menus\ModMenu.cs" />
     <Compile Include="Menus\Components\CheckboxComponent.cs" />
     <Compile Include="Menus\Components\Component.cs" />
@@ -73,6 +76,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.0.2\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.0.2\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

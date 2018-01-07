@@ -7,16 +7,27 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ModUtilities.Helpers;
+using ModUtilities.Menus.Components.Interfaces;
 using StardewValley;
 using StardewValley.Menus;
 using xTile.Dimensions;
 using Rectangle = xTile.Dimensions.Rectangle;
 
 namespace ModUtilities.Menus.Components {
-    public class CheckboxComponent : Component {
+    public class CheckboxComponent : Component, IValueComponent<bool> {
         public override bool FocusOnClick { get; } = true;
 
-        public bool IsChecked { get; set; }
+        private bool _isChecked;
+        public bool IsChecked {
+            get => this._isChecked;
+            set {
+                if (value == this._isChecked)
+                    return;
+
+                this._isChecked = value;
+                this.OnValueChanged();
+            }
+        }
 
         public CheckboxComponent() {
             this.Size = new Size(OptionsCheckbox.sourceRectUnchecked.Width * Game1.pixelZoom, OptionsCheckbox.sourceRectUnchecked.Height * Game1.pixelZoom);
@@ -54,5 +65,12 @@ namespace ModUtilities.Menus.Components {
             this.IsChecked = !this.IsChecked;
             Game1.playSound("drumkit6");
         }
+
+        public void SetValue(bool value) => this.IsChecked = value;
+
+        public bool GetValue() => this.IsChecked;
+
+        public event EventHandler ValueChanged;
+        protected virtual void OnValueChanged() => this.ValueChanged?.Invoke(this, EventArgs.Empty);
     }
 }

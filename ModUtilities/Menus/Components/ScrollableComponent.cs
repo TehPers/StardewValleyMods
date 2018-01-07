@@ -17,9 +17,15 @@ namespace ModUtilities.Menus.Components {
         public bool ScrollbarVisible { get => this._scrollbar.Visible; set => this._scrollbar.Visible = value; }
         public int PixelsPerScroll { get => this._scrollbar.ScrollSpeed; set => this._scrollbar.ScrollSpeed = value; }
         public int ScrollbarPadding { get; set; } = 12;
+        public int TotalChildrenHeight {
+            get {
+                Component[] internalComponents = this.Children.Where(c => c != this._scrollbar).ToArray();
+                return internalComponents.Any() ? internalComponents.Max(c => c.Location.Y + c.Size.Height) : 0;
+            }
+        }
 
         public override Rectangle ChildBounds => new Rectangle(0, -(this._scrollbar?.Value ?? 0), this.Size.Width - (this.ScrollbarVisible ? (this._scrollbar?.Size.Width + this.ScrollbarPadding ?? 0) : 0), this.Size.Height);
-
+        
         public ScrollableComponent() {
             this._scrollbar = new ScrollbarComponent(false)
                 .Chain(c => c.ScrollSpeed = ModUtilities.Instance.Config.ScrollSpeed);
@@ -46,7 +52,7 @@ namespace ModUtilities.Menus.Components {
             this.OnDrawBackground(b);
 
             // Get total height of all the components
-            int totalHeight = this.Children.Max(c => c.Location.Y + c.Size.Height);
+            int totalHeight = this.TotalChildrenHeight;
 
             // Update scrollbar
             Rectangle childBounds = this.ChildBounds;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ModUtilities.Helpers;
+using ModUtilities.Menus.Components.Interfaces;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -16,13 +18,23 @@ using xTile.Dimensions;
 using Rectangle = xTile.Dimensions.Rectangle;
 
 namespace ModUtilities.Menus.Components {
-    public class TextboxComponent : Component {
+    public class TextboxComponent : Component, IValueComponent<string> {
         private static readonly Location Padding = new Location(14, 4);
         private static readonly Regex NewlineRegex = new Regex(@"\r\n?|\n");
 
         public override bool FocusOnClick { get; } = true;
 
-        public string Text { get; set; } = "";
+        private string _text = "";
+        public string Text {
+            get => this._text;
+            set {
+                if (this._text == value || !this.IsValidText(value))
+                    return;
+
+                this._text = value;
+                this.OnValueChanged();
+            }
+        }
         public SpriteFont Font { get; set; } = Game1.smallFont;
         public int Cursor {
             get {
@@ -73,10 +85,13 @@ namespace ModUtilities.Menus.Components {
                     }
 
                     newText.Append(this.Text.Substring(this.Cursor));
-                    if (this.Cursor < this.Text.Length) {
-                        this.Cursor--;
+                    if (this.IsValidText(newText.ToString())) {
+                        if (this.Cursor < this.Text.Length) {
+                            this.Cursor--;
+                        }
+
+                        this.Text = newText.ToString();
                     }
-                    this.Text = newText.ToString();
                 }
             } else if (key == Keys.Delete) {
                 if (length > 0) {
@@ -86,7 +101,9 @@ namespace ModUtilities.Menus.Components {
                         newText.Append(this.Text.Substring(this.Cursor + 1));
                     }
 
-                    this.Text = newText.ToString();
+                    if (this.IsValidText(newText.ToString())) {
+                        this.Text = newText.ToString();
+                    }
                 }
             } else if (key == Keys.Left) {
                 this.Cursor--;
@@ -103,9 +120,17 @@ namespace ModUtilities.Menus.Components {
             return true;
         }
 
+        /// <summary>Whether this is valid text for the textbox to have</summary>
+        /// <param name="newText">The potential new text</param>
+        /// <returns>True if valid</returns>
+        protected virtual bool IsValidText(string newText) => true;
+
         protected override bool OnTextEntered(string text) {
-            this.Text = this.Text.Substring(0, this.Cursor) + TextboxComponent.NewlineRegex.Replace(text, "") + this.Text.Substring(this.Cursor);
-            this.Cursor += text.Length;
+            string newText = this.Text.Substring(0, this.Cursor) + TextboxComponent.NewlineRegex.Replace(text, "") + this.Text.Substring(this.Cursor);
+            if (this.IsValidText(newText)) {
+                this.Text = newText;
+                this.Cursor += text.Length;
+            }
             return true;
         }
 
@@ -125,5 +150,11 @@ namespace ModUtilities.Menus.Components {
             this.Cursor = curLen;
             return true;
         }
+
+        public void SetValue(string value) => this.Text = value;
+        public string GetValue() => this.Text;
+
+        public event EventHandler ValueChanged;
+        protected virtual void OnValueChanged() => this.ValueChanged?.Invoke(this, EventArgs.Empty);
     }
 }

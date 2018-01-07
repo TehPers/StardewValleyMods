@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -79,8 +80,16 @@ namespace ModUtilities {
 
         private void KeyPressed(object sender, EventArgsKeyPressed e) {
             if (e.KeyPressed == this.Config.ModConfigKey && Game1.activeClickableMenu == null) {
-                Game1.activeClickableMenu = new ModConfigMenu();
+                this.ShowModConfig(this.Config);
             }
+        }
+
+        /// <summary>Sets the active clickable menu to a config editor menu that wraps the given config</summary>
+        /// <param name="config">The config for the menu to wrap</param>
+        public void ShowModConfig(IAutoConfig config) {
+            ModConfigMenu configMenu = new ModConfigMenu();
+            config.BuildConfig(configMenu);
+            Game1.activeClickableMenu = configMenu;
         }
     }
 }
