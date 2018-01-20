@@ -19,7 +19,7 @@ namespace ModUtilities.Configs {
             menu.AddItem(() => this.ScrollSpeed, "Scroll Speed");
             menu.AddItem(() => this.ModConfigKey, "Open Mod Config");
 
-            byte test = 0;
+            bool test = false;
             menu.AddItem(() => test, "Test item");
 
             menu.SettingChanged += (sender, args) => ModUtilities.Instance.Helper.WriteConfig(this);

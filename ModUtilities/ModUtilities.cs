@@ -9,18 +9,21 @@ using Microsoft.Xna.Framework.Input;
 using ModUtilities.Configs;
 using ModUtilities.Helpers;
 using ModUtilities.Menus;
+using StardewConfigFramework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace ModUtilities {
     public class ModUtilities : Mod {
         public static ModUtilities Instance { get; private set; }
 
         public ConfigMain Config { get; private set; }
+        internal IClickableMenu MainConfigMenu;
 
-        public Assembly WinForms { get; private set; }
-        public Type Clipboard { get; private set; }
+        internal Assembly WinForms { get; private set; }
+        internal Type Clipboard { get; private set; }
         public Func<string> GetClipboard { get; private set; }
 
         public ModUtilities() {
@@ -58,6 +61,15 @@ namespace ModUtilities {
 
             KeyboardInput.CharEntered += this.CharEntered;
             ControlEvents.KeyPressed += this.KeyPressed;
+
+            // Register this mod's config
+            this.MainConfigMenu = this.RegisterMainConfig(this, this.Config);
+
+            // StardewConfigMenu
+            //ModOptions options = new ModOptions(this);
+            //ModOptionTrigger viewOptions = new ModOptionTrigger("viewOptions", "Mod Options", OptionActionType.SET);
+            //viewOptions.ActionTriggered += id => this.ShowMenu(this.MainConfigMenu);
+            //options.AddModOption(viewOptions);
         }
 
         private void CharEntered(object sender, CharacterEventArgs e) {
@@ -80,16 +92,32 @@ namespace ModUtilities {
 
         private void KeyPressed(object sender, EventArgsKeyPressed e) {
             if (e.KeyPressed == this.Config.ModConfigKey && Game1.activeClickableMenu == null) {
-                this.ShowModConfig(this.Config);
+                this.ShowMenu(this.MainConfigMenu);
             }
         }
 
-        /// <summary>Sets the active clickable menu to a config editor menu that wraps the given config</summary>
-        /// <param name="config">The config for the menu to wrap</param>
-        public void ShowModConfig(IAutoConfig config) {
+        public void ShowMenu(IClickableMenu menu) => Game1.activeClickableMenu = menu;
+
+        public IClickableMenu GetActiveMenu() => Game1.activeClickableMenu;
+
+        /// <summary>Builds the main config menu for a mod, including the StardewConfigMenu page if that mod is installed</summary>
+        /// <param name="mod">The mod associated with the config</param>
+        /// <param name="config">The config being registered</param>
+        /// <returns>The resulting <see cref="IClickableMenu"/></returns>
+        public IClickableMenu RegisterMainConfig(Mod mod, IAutoConfig config) {
+            ModConfigMenu configMenu = new ModConfigMenu();
+            configMenu.SetParentMod(mod);
+            config.BuildConfig(configMenu);
+            return configMenu;
+        }
+
+        /// <summary>Builds a config menu</summary>
+        /// <param name="config">The config being registered</param>
+        /// <returns>The resulting <see cref="IClickableMenu"/></returns>
+        public IClickableMenu RegisterConfig(IAutoConfig config) {
             ModConfigMenu configMenu = new ModConfigMenu();
             config.BuildConfig(configMenu);
-            Game1.activeClickableMenu = configMenu;
+            return configMenu;
         }
     }
 }

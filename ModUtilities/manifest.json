@@ -5,5 +5,12 @@
     "Description": "Utilities for modders.",
     "UniqueID": "TehPers.ModUtilities",
     "EntryDll": "ModUtilities.dll",
-    "UpdateKeys": []
+    "UpdateKeys": [],
+    "Dependencies": [
+        {
+            "UniqueID": "Juice805.StardewConfigMenu",
+            "MinimumVersion": "1.0.2-2",
+            "Required": false
+        }
+    ]
 }

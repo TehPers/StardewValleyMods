@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework.Input;
 using ModUtilities.Helpers;
 using ModUtilities.Menus.Components;
 using ModUtilities.Menus.Components.Interfaces;
+using StardewConfigFramework;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using xTile.Dimensions;
@@ -12,6 +14,7 @@ using xTile.Dimensions;
 namespace ModUtilities.Menus {
     public class ModConfigMenu : ModMenu {
         public ScrollableComponent ConfigParent { get; }
+        private Mod _parentMod;
 
         public ModConfigMenu() : this((int) (Game1.viewport.Width * 0.25), (int) (Game1.viewport.Height * 0.125), (int) (Game1.viewport.Width * 0.5), (int) (Game1.viewport.Height * 0.75)) { }
 
@@ -30,54 +33,64 @@ namespace ModUtilities.Menus {
             this.Component.AddChild(this.ConfigParent);
         }
 
-        #region AddProperty Built-Ins
+        public void SetParentMod(Mod parent) => this._parentMod = parent;
+
+        #region AddItem Built-Ins
         public TextboxComponent AddItem(Expression<Func<string>> propertySelector, string name) => this.AddItem<string, TextboxComponent>(propertySelector, name);
-        public CheckboxComponent AddItem(Expression<Func<bool>> propertySelector, string name) => this.AddItem<bool, CheckboxComponent>(propertySelector, name);
+        public CheckboxComponent AddItem(Expression<Func<bool>> propertySelector, string name) {
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => {
+                CheckboxComponent checkbox = new CheckboxComponent().Chain(c => c.Location = location);
+                parent.AddChild(ModConfigMenu.DefaultLabelFactory(location, labelText)
+                    ?.Chain(c => c.Location = new Location(checkbox.Location.X + checkbox.Size.Width, checkbox.Location.Y + (checkbox.Size.Height - c.Size.Height) / 2)));
+                return checkbox;
+            });
+        }
+
         public KeybindComponent AddItem(Expression<Func<Keys>> propertySelector, string name) => this.AddItem<Keys, KeybindComponent>(propertySelector, name);
 
         #region NumericTextboxComponent
         public NumericTextboxComponent AddItem(Expression<Func<byte>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, false, byte.MinValue, byte.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, false, byte.MinValue, byte.MaxValue));
         }
 
         public NumericTextboxComponent AddItem(Expression<Func<sbyte>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, false, sbyte.MinValue, sbyte.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, false, sbyte.MinValue, sbyte.MaxValue));
         }
 
         public NumericTextboxComponent AddItem(Expression<Func<ushort>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, false, ushort.MinValue, ushort.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, false, ushort.MinValue, ushort.MaxValue));
         }
 
         public NumericTextboxComponent AddItem(Expression<Func<short>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, false, short.MinValue, short.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, false, short.MinValue, short.MaxValue));
         }
 
         public NumericTextboxComponent AddItem(Expression<Func<uint>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, false, uint.MinValue, uint.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, false, uint.MinValue, uint.MaxValue));
         }
 
         public NumericTextboxComponent AddItem(Expression<Func<int>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, false, int.MinValue, int.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, false, int.MinValue, int.MaxValue));
         }
 
         public NumericTextboxComponent AddItem(Expression<Func<ulong>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, false, ulong.MinValue, ulong.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, false, ulong.MinValue, ulong.MaxValue));
         }
 
         public NumericTextboxComponent AddItem(Expression<Func<long>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, false, long.MinValue, long.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, false, long.MinValue, long.MaxValue));
         }
 
         public NumericTextboxComponent AddItem(Expression<Func<float>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, true, float.MinValue, float.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, true, float.MinValue, float.MaxValue));
         }
 
         public NumericTextboxComponent AddItem(Expression<Func<double>> propertySelector, string name) {
-            return this.AddItem(propertySelector, name, (parent, widthRemaining) => ModConfigMenu.NumericTextboxFactory(parent, widthRemaining, true, double.MinValue, double.MaxValue));
+            return this.AddItem(propertySelector, name, (parent, location, labelText) => ModConfigMenu.NumericTextboxFactory(parent, location, labelText, true, double.MinValue, double.MaxValue));
         }
 
-        private static NumericTextboxComponent NumericTextboxFactory(Component parent, int widthRemaining, bool allowDecimal, double minimum, double maximum) {
-            return ModConfigMenu.DefaultComponentFactory<NumericTextboxComponent>(parent, widthRemaining)
+        private static NumericTextboxComponent NumericTextboxFactory(Component parent, Location location, string labelText, bool allowDecimal, double minimum, double maximum) {
+            return ModConfigMenu.DefaultComponentFactory<NumericTextboxComponent>(parent, location, labelText)
                 .Chain(c => c.AllowDecimal = allowDecimal)
                 .Chain(c => c.Minimum = minimum)
                 .Chain(c => c.Maximum = maximum);
@@ -99,20 +112,9 @@ namespace ModUtilities.Menus {
                 throw new ArgumentException($"Selected field or property must be from an instance of type {nameof(IAutoConfig)}", nameof(propertySelector));
             object parent = Expression.Lambda<Func<object>>(ex.Expression).Compile()();
 
-            // Create the label
-            LabelComponent label = name == null ? null : new LabelComponent().SetText(name);
-            
-            // Create the component
-            int labelWidth = label?.Size.Width ?? 0;
-            TComponent component = componentFactory(this.ConfigParent, this.ConfigParent.ChildBounds.Width - labelWidth);
+            // Create the component (label is created by the function)
+            TComponent component = componentFactory(this.ConfigParent, new Location(0, this.ConfigParent.TotalChildrenHeight), name);
             this.ConfigParent.AddChild(component);
-            component.Location = new Location(labelWidth, this.ConfigParent.TotalChildrenHeight);
-
-            // Position the label
-            if (label != null) {
-                label.Location = new Location(0, component.Location.Y + (component.Size.Height - label.Size.Height) / 2);
-                this.ConfigParent.AddChild(label);
-            }
 
             // Get the property's value
             TProperty value;
@@ -136,14 +138,45 @@ namespace ModUtilities.Menus {
             }
             component.SetValue(value);
 
+            // Add support for Stardew Config Menu
+            if (this._parentMod != null) {
+                object options = SCMHelper.GetModOptions(this._parentMod);
+                if (options != null) {
+                    switch (component) {
+                        case CheckboxComponent checkbox:
+                            SCMHelper.AddCheckbox(options as ModOptions, checkbox.IsChecked, name, (id, isChecked) => checkbox.IsChecked = isChecked);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
             return component;
         }
 
-        private static TComponent DefaultComponentFactory<TComponent>(Component parent, int widthRemaining) where TComponent : Component, new() {
-            return new TComponent().Chain(c => c.Size = new Size(widthRemaining, c.Size.Height));
+        private static TComponent DefaultComponentFactory<TComponent>(Component parent, Location location, string labelText) where TComponent : Component, new() {
+            LabelComponent label = ModConfigMenu.DefaultLabelFactory(location, labelText);
+            parent.AddChild(label);
+            return new TComponent()
+                .Chain(c => c.Location = new Location(location.X + label.Size.Width, location.Y))
+                .Chain(c => c.Size = new Size(parent.ChildBounds.Width - label.Size.Width, c.Size.Height));
         }
 
-        public delegate TComponent ComponentFactory<out TComponent, TValue>(Component parent, int widthRemaining) where TComponent : IValueComponent<TValue>;
+        /// <summary>
+        /// Creates a component and its label
+        /// </summary>
+        /// <typeparam name="TComponent">The type of component being created</typeparam>
+        /// <typeparam name="TValue">The type of value the component represents</typeparam>
+        /// <param name="parent">The parent component</param>
+        /// <param name="location">Where the component should be created</param>
+        /// <param name="labelText">The text associated with the label, or null for no label</param>
+        /// <returns>The component that was created (not the label)</returns>
+        public delegate TComponent ComponentFactory<out TComponent, TValue>(Component parent, Location location, string labelText) where TComponent : IValueComponent<TValue>;
+
+        private static LabelComponent DefaultLabelFactory(Location location, string label) {
+            return label == null ? null : new LabelComponent().SetText(label).Chain(c => c.Location = location);
+        }
 
         public event EventHandler<SettingChangedEventArgs> SettingChanged;
         protected virtual void OnSettingChanged(MemberInfo setting) => this.OnSettingChanged(new SettingChangedEventArgs(setting));

@@ -24,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,6 +37,9 @@
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="StardewConfigFramework, Version=1.0.6540.35209, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Juice805.StardewConfigFramework.1.0.1\lib\net45\StardewConfigFramework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,6 +55,7 @@
     <Compile Include="Helpers\ConfigHelper.cs" />
     <Compile Include="Configs\ConfigMain.cs" />
     <Compile Include="Helpers\DrawHelpers.cs" />
+    <Compile Include="Helpers\SCMHelper.cs" />
     <Compile Include="Menus\Components\DropdownComponent.cs" />
     <Compile Include="Menus\Components\Interfaces\IValueComponent.cs" />
     <Compile Include="Menus\Components\NumericTextboxComponent.cs" />
@@ -66,6 +71,9 @@
     <Compile Include="Menus\Components\TextboxComponent.cs" />
     <Compile Include="Menus\ModConfigMenu.cs" />
     <Compile Include="Enums\MouseButtons.cs" />
+    <Compile Include="Menus\RelativeLocation.cs" />
+    <Compile Include="Menus\RelativeRectangle.cs" />
+    <Compile Include="Menus\RelativeSize.cs" />
     <Compile Include="ModUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

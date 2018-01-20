@@ -37,16 +37,16 @@ namespace ModUtilities.Menus.Components {
         #endregion
 
         #region GetValue
-        double IValueComponent<double>.GetValue() => double.TryParse(this.Text, out double value) ? value : default(double);
-        float IValueComponent<float>.GetValue() => float.TryParse(this.Text, out float value) ? value : default(float);
-        long IValueComponent<long>.GetValue() => long.TryParse(this.Text, out long value) ? value : default(long);
-        ulong IValueComponent<ulong>.GetValue() => ulong.TryParse(this.Text, out ulong value) ? value : default(ulong);
-        int IValueComponent<int>.GetValue() => int.TryParse(this.Text, out int value) ? value : default(int);
-        uint IValueComponent<uint>.GetValue() => uint.TryParse(this.Text, out uint value) ? value : default(uint);
-        short IValueComponent<short>.GetValue() => short.TryParse(this.Text, out short value) ? value : default(short);
-        ushort IValueComponent<ushort>.GetValue() => ushort.TryParse(this.Text, out ushort value) ? value : default(ushort);
-        sbyte IValueComponent<sbyte>.GetValue() => sbyte.TryParse(this.Text, out sbyte value) ? value : default(sbyte);
-        byte IValueComponent<byte>.GetValue() => byte.TryParse(this.Text, out byte value) ? value : default(byte);
+        double IValueComponent<double>.GetValue() => double.TryParse(this.Text, out double value) ? value : default;
+        float IValueComponent<float>.GetValue() => float.TryParse(this.Text, out float value) ? value : default;
+        long IValueComponent<long>.GetValue() => long.TryParse(this.Text, out long value) ? value : default;
+        ulong IValueComponent<ulong>.GetValue() => ulong.TryParse(this.Text, out ulong value) ? value : default;
+        int IValueComponent<int>.GetValue() => int.TryParse(this.Text, out int value) ? value : default;
+        uint IValueComponent<uint>.GetValue() => uint.TryParse(this.Text, out uint value) ? value : default;
+        short IValueComponent<short>.GetValue() => short.TryParse(this.Text, out short value) ? value : default;
+        ushort IValueComponent<ushort>.GetValue() => ushort.TryParse(this.Text, out ushort value) ? value : default;
+        sbyte IValueComponent<sbyte>.GetValue() => sbyte.TryParse(this.Text, out sbyte value) ? value : default;
+        byte IValueComponent<byte>.GetValue() => byte.TryParse(this.Text, out byte value) ? value : default;
         #endregion
         #endregion
     }
