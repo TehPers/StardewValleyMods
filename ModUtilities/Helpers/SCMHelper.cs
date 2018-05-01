@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using ModUtilities.Menus;
 using StardewConfigFramework;
 using StardewModdingAPI;
 
@@ -25,7 +26,7 @@ namespace ModUtilities.Helpers {
                 SCMHelper.AddModOption = t.GetMethod("AddModOption", BindingFlags.Public | BindingFlags.Instance);
             }
 
-            t = GetSCMType("IModSettingsFramework");
+            t = SCMHelper.GetSCMType("IModSettingsFramework");
             if (t != null) {
                 PropertyInfo instanceProperty = t.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
                 object instance = instanceProperty?.GetValue(null);
@@ -49,23 +50,13 @@ namespace ModUtilities.Helpers {
             return options;
         }
 
-        public static object AddCheckbox(object options, bool isChecked, string label, Action<string, bool> valueChanged) {
-            Type modOptionToggle = SCMHelper.GetSCMType("ModOptionToggle");
-            Type toggleEventHandler = SCMHelper.GetSCMType("ModOptionToggleHandler");
-            PropertyInfo isOnProperty = modOptionToggle.GetProperty("IsOn", BindingFlags.Public | BindingFlags.Instance);
+        public static void AddDefaultModOptions(ModConfigMenu menu) {
+            ModOptions options = (ModOptions) SCMHelper.GetModOptions(menu.ParentMod);
+            ModOptionTrigger button = new ModOptionTrigger("openConfig", "Open Config Menu", OptionActionType.SET);
+            button.ActionTriggered += id => ModUtilities.Instance.ShowMenu(menu);
 
-            // Create checkbox
-            object checkbox = Activator.CreateInstance(modOptionToggle, SCMHelper._curID++.ToString(), label, isChecked, true);
-
-            // Add valueChanged event handler
-            EventInfo valueChangedEvent = modOptionToggle.GetEvent("ValueChanged");
-            Delegate eventDelegate = valueChanged.Cast(toggleEventHandler);
-            valueChangedEvent.AddEventHandler(checkbox, eventDelegate);
-
-            // Add checkbox to the page
-            SCMHelper.AddModOption.Invoke(options, new[] { checkbox });
-
-            return checkbox;
+            options.AddModOption(button);
+            //IModSettingsFramework.Instance.AddModOptions(options);
         }
 
         public static Type GetSCMType(string typeName) {

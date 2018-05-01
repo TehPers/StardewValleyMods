@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
 namespace ModUtilities.Menus {
-    public struct RelativeLocation {
+    public struct RelativeLocation : IEquatable<RelativeLocation> {
         public float PercentX { get; }
         public float PercentY { get; }
         public int OffsetX { get; }
@@ -19,8 +19,9 @@ namespace ModUtilities.Menus {
             this.OffsetY = offsetY;
         }
 
-        public RelativeLocation Translate(int absoluteX, int absoluteY) {
-            return new RelativeLocation(this.PercentX, this.PercentY, this.OffsetX + absoluteX, this.OffsetY + absoluteY);
+        public RelativeLocation Translate(RelativeLocation amount) => this.Translate(amount.PercentX, amount.PercentY, amount.OffsetX, amount.OffsetY);
+        public RelativeLocation Translate(float percentX, float percentY, int absoluteX, int absoluteY) {
+            return new RelativeLocation(this.PercentX + percentX, this.PercentY + percentY, this.OffsetX + absoluteX, this.OffsetY + absoluteY);
         }
 
         public Point ToAbsolute(Rectangle parentBounds) {
@@ -28,20 +29,45 @@ namespace ModUtilities.Menus {
         }
 
         public static RelativeLocation operator +(RelativeLocation a, RelativeLocation b) {
-            return new RelativeLocation(a.PercentX + b.PercentX, a.PercentY + b.PercentY, a.OffsetX + b.OffsetX, a.OffsetY + b.OffsetY);
+            return a.Translate(b);
         }
 
         public static RelativeLocation operator -(RelativeLocation a, RelativeLocation b) {
-            return new RelativeLocation(a.PercentX - b.PercentX, a.PercentY - b.PercentY, a.OffsetX - b.OffsetX, a.OffsetY - b.OffsetY);
+            return a.Translate(-b);
         }
 
         public static RelativeLocation operator +(RelativeLocation a, RelativeSize b) {
-            return new RelativeLocation(a.PercentX + b.PercentWidth, a.PercentY + b.PercentHeight, a.OffsetX + b.OffsetWidth, a.OffsetY + b.OffsetHeight);
+            return a.Translate(b.PercentWidth, b.PercentHeight, b.OffsetWidth, b.OffsetHeight);
         }
 
         public static RelativeLocation operator -(RelativeLocation a, RelativeSize b) {
-            return new RelativeLocation(a.PercentX - b.PercentWidth, a.PercentY - b.PercentHeight, a.OffsetX - b.OffsetWidth, a.OffsetY - b.OffsetHeight);
+            return a.Translate(-b.PercentWidth, -b.PercentHeight, -b.OffsetWidth, -b.OffsetHeight);
         }
+
+        public static RelativeLocation operator -(RelativeLocation location) {
+            return new RelativeLocation(-location.PercentX, -location.PercentY, -location.OffsetX, -location.OffsetY);
+        }
+
+        #region Equality
+        public bool Equals(RelativeLocation other) {
+            return this.PercentX.Equals(other.PercentX) && this.PercentY.Equals(other.PercentY) && this.OffsetX == other.OffsetX && this.OffsetY == other.OffsetY;
+        }
+
+        public override bool Equals(object obj) {
+            if (object.ReferenceEquals(null, obj)) return false;
+            return obj is RelativeLocation location && this.Equals(location);
+        }
+
+        public override int GetHashCode() {
+            unchecked {
+                int hashCode = this.PercentX.GetHashCode();
+                hashCode = (hashCode * 397) ^ this.PercentY.GetHashCode();
+                hashCode = (hashCode * 397) ^ this.OffsetX;
+                hashCode = (hashCode * 397) ^ this.OffsetY;
+                return hashCode;
+            }
+        }
+        #endregion
 
         public static RelativeLocation TopLeft { get; } = new RelativeLocation(0, 0, 0, 0);
         public static RelativeLocation TopMiddle { get; } = new RelativeLocation(0.5F, 0, 0, 0);

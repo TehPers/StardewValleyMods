@@ -5,25 +5,28 @@ using Microsoft.Xna.Framework.Input;
 using ModUtilities.Helpers;
 using ModUtilities.Menus.Components;
 using ModUtilities.Menus.Components.Interfaces;
+using ModUtilities.Menus.Components2;
 using StardewConfigFramework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using xTile.Dimensions;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace ModUtilities.Menus {
-    public class ModConfigMenu : ModMenu {
+    public class ModConfigMenu : ModMenu2 {
         public ScrollableComponent ConfigParent { get; }
-        private Mod _parentMod;
+        public Mod ParentMod { get; private set; }
 
-        public ModConfigMenu() : this((int) (Game1.viewport.Width * 0.25), (int) (Game1.viewport.Height * 0.125), (int) (Game1.viewport.Width * 0.5), (int) (Game1.viewport.Height * 0.75)) { }
+        public ModConfigMenu() : this(RelativeRectangle.FromPercent(0.25f, 0.125f, 0.5f, 0.75f)) { }
 
-        public ModConfigMenu(int x, int y, int width, int height) : base(x, y, width, height) {
+        public ModConfigMenu(RelativeRectangle bounds) : base(bounds) {
             // Title
-            LabelComponent title = new LabelComponent()
-                .SetText("Mod Config")
-                .SetScale(1.5f)
-                .Chain(l => l.Location = new Location((this.Component.ChildBounds.Width - l.Size.Width) / 2, 0));
+            LabelComponent2 title = new LabelComponent2()
+                .Chain(l => l.Text = "Mod Config")
+                .SetScale(1.5f);
+            Rectangle titleBounds = title.AbsoluteBounds;
+            title.Location = new RelativeLocation(0.5f, 0f, -titleBounds.Width / 2, 0);
             this.Component.AddChild(title);
 
             // Main scrollable area
@@ -33,7 +36,14 @@ namespace ModUtilities.Menus {
             this.Component.AddChild(this.ConfigParent);
         }
 
-        public void SetParentMod(Mod parent) => this._parentMod = parent;
+        public void SetParentMod(Mod parent) {
+            this.ParentMod = parent;
+
+            // Add support for Stardew Config Menu
+            if (parent != null) {
+                SCMHelper.AddDefaultModOptions(this);
+            }
+        }
 
         #region AddItem Built-Ins
         public TextboxComponent AddItem(Expression<Func<string>> propertySelector, string name) => this.AddItem<string, TextboxComponent>(propertySelector, name);
@@ -138,20 +148,6 @@ namespace ModUtilities.Menus {
             }
             component.SetValue(value);
 
-            // Add support for Stardew Config Menu
-            if (this._parentMod != null) {
-                object options = SCMHelper.GetModOptions(this._parentMod);
-                if (options != null) {
-                    switch (component) {
-                        case CheckboxComponent checkbox:
-                            SCMHelper.AddCheckbox(options as ModOptions, checkbox.IsChecked, name, (id, isChecked) => checkbox.IsChecked = isChecked);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
             return component;
         }
 
@@ -183,6 +179,7 @@ namespace ModUtilities.Menus {
         protected virtual void OnSettingChanged(SettingChangedEventArgs e) => this.SettingChanged?.Invoke(this, e);
 
         public class SettingChangedEventArgs : EventArgs {
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local - It's used by Newtonsoft.Json
             private MemberInfo Setting { get; }
 
             public SettingChangedEventArgs(MemberInfo setting) {

@@ -56,8 +56,11 @@
     <Compile Include="Configs\ConfigMain.cs" />
     <Compile Include="Helpers\DrawHelpers.cs" />
     <Compile Include="Helpers\SCMHelper.cs" />
+    <Compile Include="Menus\Components2\Component2.cs" />
+    <Compile Include="Menus\Components2\LabelComponent2.cs" />
     <Compile Include="Menus\Components\DropdownComponent.cs" />
     <Compile Include="Menus\Components\Interfaces\IValueComponent.cs" />
+    <Compile Include="Menus\Components2\MenuComponent2.cs" />
     <Compile Include="Menus\Components\NumericTextboxComponent.cs" />
     <Compile Include="Menus\Components\ScrollableComponent.cs" />
     <Compile Include="Menus\Components\ScrollbarComponent.cs" />
@@ -71,6 +74,7 @@
     <Compile Include="Menus\Components\TextboxComponent.cs" />
     <Compile Include="Menus\ModConfigMenu.cs" />
     <Compile Include="Enums\MouseButtons.cs" />
+    <Compile Include="Menus\ModMenu2.cs" />
     <Compile Include="Menus\RelativeLocation.cs" />
     <Compile Include="Menus\RelativeRectangle.cs" />
     <Compile Include="Menus\RelativeSize.cs" />

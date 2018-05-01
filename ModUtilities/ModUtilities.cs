@@ -92,7 +92,8 @@ namespace ModUtilities {
 
         private void KeyPressed(object sender, EventArgsKeyPressed e) {
             if (e.KeyPressed == this.Config.ModConfigKey && Game1.activeClickableMenu == null) {
-                this.ShowMenu(this.MainConfigMenu);
+                //this.ShowMenu(this.MainConfigMenu);
+                this.ShowMenu(new ModMenu2(RelativeRectangle.FromPercent(0.25f, 0.25f, 0.5f, 0.5f)));
             }
         }
 
