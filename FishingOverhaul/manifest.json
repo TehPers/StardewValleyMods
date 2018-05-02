@@ -8,8 +8,8 @@
     "UpdateKeys": [ "Nexus:866" ],
     "Dependencies": [
         {
-            "UniqueID": "TehPers.ModUtilities",
-            "MinimumVersion": "1.0.0-dev.1"
+            "UniqueID": "TehPers.Core",
+            "MinimumVersion": "0.0.0"
         }
     ]
 }

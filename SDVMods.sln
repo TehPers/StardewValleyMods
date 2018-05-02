@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishingOverhaul", "FishingOverhaul\FishingOverhaul.csproj", "{DA5D42EA-F894-4772-A42A-00CE10161136}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModUtilities", "ModUtilities\ModUtilities.csproj", "{FF76DF74-815F-4A56-89BC-50CEC68F16BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehCore", "TehCore\TehCore.csproj", "{2D8D9C15-E910-42D8-8CC2-69DA52405D78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{FF76DF74-815F-4A56-89BC-50CEC68F16BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF76DF74-815F-4A56-89BC-50CEC68F16BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF76DF74-815F-4A56-89BC-50CEC68F16BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D8D9C15-E910-42D8-8CC2-69DA52405D78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D8D9C15-E910-42D8-8CC2-69DA52405D78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D8D9C15-E910-42D8-8CC2-69DA52405D78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D8D9C15-E910-42D8-8CC2-69DA52405D78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
