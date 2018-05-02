@@ -27,8 +27,8 @@ namespace FishingOverhaul {
             this.LoadConfigs();
 
             // Make sure this mod is enabled
-            //if (!this.MainConfig.ModEnabled)
-                //return;
+            if (!this.MainConfig.ModEnabled)
+                return;
 
             GameEvents.UpdateTick += this.UpdateTick;
         }
@@ -49,8 +49,6 @@ namespace FishingOverhaul {
             ModCore.Instance.Json.WriteJson("config.json", this.MainConfig, this.Helper, this.MainConfig.MinifyConfigs);
             ModCore.Instance.Json.WriteJson("treasure.json", this.TreasureConfig, this.Helper, this.MainConfig.MinifyConfigs);
             ModCore.Instance.Json.WriteJson("fish.json", this.FishConfig, this.Helper, this.MainConfig.MinifyConfigs);
-            //this.Helper.WriteJsonFile("treasure.json", this.TreasureConfig);
-            //this.Helper.WriteJsonFile("fish.json", this.FishConfig);    
         }
 
         #region Events

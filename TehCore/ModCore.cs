@@ -13,7 +13,7 @@ namespace TehCore {
         public override void Entry(IModHelper helper) {
             ModCore.Instance = this;
 
-            this.Json.AddSMAPIConverters(helper);
+            this.Json.AddSmapiConverters(helper);
         }
     }
 }

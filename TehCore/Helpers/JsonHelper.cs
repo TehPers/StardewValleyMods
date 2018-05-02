@@ -24,7 +24,7 @@ namespace TehCore.Helpers {
             }
         };
 
-        public void AddSMAPIConverters(IModHelper helper) {
+        public void AddSmapiConverters(IModHelper helper) {
             object smapiJsonHelper = helper.GetType().GetField("JsonHelper", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(helper);
             JsonSerializerSettings smapiSettings = smapiJsonHelper?.GetType().GetField("JsonSettings", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(smapiJsonHelper) as JsonSerializerSettings;
             if (smapiSettings != null) {

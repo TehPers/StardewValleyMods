@@ -50,6 +50,7 @@
     <Compile Include="Configs\DescriptionAttribute.cs" />
     <Compile Include="Configs\DescriptiveJsonConverter.cs" />
     <Compile Include="Configs\JsonDescribeAttribute.cs" />
+    <Compile Include="Enums\Objects.cs" />
     <Compile Include="Enums\WaterType.cs" />
     <Compile Include="Enums\Season.cs" />
     <Compile Include="Enums\Weather.cs" />

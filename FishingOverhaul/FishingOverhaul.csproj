@@ -51,6 +51,7 @@
     <Compile Include="Configs\ConfigMain.cs" />
     <Compile Include="Configs\ConfigTreasure.cs" />
     <Compile Include="Configs\FishData.cs" />
+    <Compile Include="Configs\TreasureData.cs" />
     <Compile Include="CustomFishingRod.cs" />
     <Compile Include="FishHelper.cs" />
     <Compile Include="ModFishing.cs" />
