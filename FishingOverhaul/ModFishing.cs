@@ -15,6 +15,7 @@ using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Tools;
 using TehCore;
+using TehCore.Weighted;
 
 namespace FishingOverhaul {
     public class ModFishing : Mod {
@@ -76,58 +77,79 @@ namespace FishingOverhaul {
         }
 
         private void PostRenderHud(object sender, EventArgs eventArgs) {
-            if (Game1.player.CurrentTool is CustomFishingRod rod) {
+            if (this.MainConfig.ShowFishingData && Game1.player.CurrentTool is CustomFishingRod rod) {
                 Color textColor = Color.White;
                 SpriteFont font = Game1.smallFont;
 
                 // Draw the fishing GUI to the screen
                 SpriteBatch batch = Game1.spriteBatch;
+                float boxWidth = 0;
                 float lineHeight = font.MeasureString("#").Y;
-                float destY = 0;
+                float boxHeight = 0;
 
-                // Draw streak
-                string streakText = ModFishing.Translate("text.streak", FishHelper.GetStreak(Game1.player));
-                batch.DrawStringWithShadow(font, streakText, Vector2.Zero, textColor);
-                destY += lineHeight;
-
-                // Get info on all the possible fish
-                Dictionary<int, FishData> possibleFish;
-                if (Game1.currentLocation is MineShaft m) {
-                    possibleFish = FishHelper.GetPossibleFish(m.mineLevel).ToDictionary();
-                } else {
-                    possibleFish = FishHelper.GetPossibleFish().ToDictionary();
-                }
-
-                // Draw treasure chance
-                string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", FishHelper.GetTreasureChance(Game1.player, rod)));
-                batch.DrawStringWithShadow(font, treasureText, new Vector2(0, destY), textColor);
-                destY += lineHeight;
-
-                // Draw trash chance
-                float fishChance = FishHelper.GetFishChance(Game1.player);
-                string trashText = ModFishing.Translate("text.trash", ModFishing.Translate("text.percent", 1f - fishChance));
-                batch.DrawStringWithShadow(font, trashText, new Vector2(0, destY), textColor );
-                destY += lineHeight;
-
-                if (possibleFish.Any()) {
-                    // Calculate total weigh of each possible fish (for percentages)
-                    double totalWeight = possibleFish.Sum(kv => kv.Value.Chance);
+                // Setup the sprite batch
+                using (SpriteBatch hudBatch = new SpriteBatch(Game1.graphics.GraphicsDevice)) {
+                    hudBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
                     
-                    // Draw info for each fish
-                    const float iconScale = Game1.pixelZoom / 2f;
-                    foreach (KeyValuePair<int, FishData> fishData in possibleFish) {
-                        // Draw fish icon
-                        Rectangle source = GameLocation.getSourceRectForObject(fishData.Key);
-                        batch.Draw(Game1.objectSpriteSheet, new Vector2(0, destY), source, Color.White, 0.0f, Vector2.Zero, iconScale, SpriteEffects.None, 1f);
-                        lineHeight = Math.Max(lineHeight, source.Height * iconScale);
+                    // Draw streak
+                    string streakText = ModFishing.Translate("text.streak", FishHelper.GetStreak(Game1.player));
+                    hudBatch.DrawStringWithShadow(font, streakText, Vector2.Zero, textColor, 1f);
+                    boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
+                    boxHeight += lineHeight;
 
-                        // Draw fish information
-                        string chanceText = ModFishing.Translate("text.percent", fishChance * fishData.Value.Chance / totalWeight);
-                        batch.DrawStringWithShadow(font, $"{FishHelper.GetFishName(fishData.Key)} - {chanceText}", new Vector2(source.Width * iconScale, destY), textColor);
+                    // Get info on all the possible fish
+                    IWeightedElement<int?>[] possibleFish = FishHelper.GetPossibleFish(Game1.player).ToArray();
+                    double totalWeight = possibleFish.SumWeights(); // Should always be 1
+                    possibleFish = possibleFish.Where(e => e.Value != null).ToArray();
+                    double fishChance = possibleFish.SumWeights() / totalWeight;
 
-                        // Update destY
-                        destY += lineHeight;
+                    // Draw treasure chance
+                    string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", FishHelper.GetTreasureChance(Game1.player, rod)));
+                    hudBatch.DrawStringWithShadow(font, treasureText, new Vector2(0, boxHeight), textColor, 1f);
+                    boxWidth = Math.Max(boxWidth, font.MeasureString(treasureText).X);
+                    boxHeight += lineHeight;
+
+                    // Draw trash chance
+                    string trashText = ModFishing.Translate("text.trash", ModFishing.Translate("text.percent", 1f - fishChance));
+                    hudBatch.DrawStringWithShadow(font, trashText, new Vector2(0, boxHeight), textColor, 1f);
+                    boxWidth = Math.Max(boxWidth, font.MeasureString(trashText).X);
+                    boxHeight += lineHeight;
+
+                    if (possibleFish.Any()) {
+                        // Calculate total weigh of each possible fish (for percentages)
+                        totalWeight = possibleFish.SumWeights();
+
+                        // Draw info for each fish
+                        const float iconScale = Game1.pixelZoom / 2f;
+                        foreach (IWeightedElement<int?> fishData in possibleFish) {
+                            // Skip trash
+                            if (fishData.Value == null)
+                                continue;
+
+                            // Get fish ID
+                            int fish = fishData.Value.Value;
+
+                            // Draw fish icon
+                            Rectangle source = GameLocation.getSourceRectForObject(fish);
+                            hudBatch.Draw(Game1.objectSpriteSheet, new Vector2(0, boxHeight), source, Color.White, 0.0f, Vector2.Zero, iconScale, SpriteEffects.None, 0.8F);
+                            lineHeight = Math.Max(lineHeight, source.Height * iconScale);
+
+                            // Draw fish information
+                            string chanceText = ModFishing.Translate("text.percent", fishChance * fishData.GetWeight() / totalWeight);
+                            string fishText = $"{FishHelper.GetFishName(fish)} - {chanceText}";
+                            hudBatch.DrawStringWithShadow(font, fishText, new Vector2(source.Width * iconScale, boxHeight), textColor, 0.8F);
+                            boxWidth = Math.Max(boxWidth, font.MeasureString(fishText).X + source.Width * iconScale);
+
+                            // Update destY
+                            boxHeight += lineHeight;
+                        }
                     }
+
+                    // Draw the background rectangle
+                    hudBatch.Draw(ModCore.Instance.WhitePixel, new Rectangle(0, 0, (int) boxWidth, (int) boxHeight), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.75F);
+
+                    // Done drawing HUD
+                    hudBatch.End();
                 }
             }
         }

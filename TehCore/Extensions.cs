@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using TehCore.Enums;
+using TehCore.Weighted;
 
 namespace TehCore {
     public static partial class Extensions {
@@ -62,42 +63,72 @@ namespace TehCore {
         /// <summary>Retrieves a value from a <see cref="IDictionary{TKey,TValue}"/> with the given fallback value</summary>
         /// <typeparam name="TKey">The <see cref="IDictionary{TKey,TValue}"/>'s key type</typeparam>
         /// <typeparam name="TVal">The <see cref="IDictionary{TKey,TValue}"/>'s value type</typeparam>
-        /// <param name="dict">The dictionary to try to retrieve the value from</param>
+        /// <param name="source">The dictionary to try to retrieve the value from</param>
         /// <param name="key">The key of the value to retrieve</param>
         /// <param name="fallback">The fallback value if the key doesn't exist in the dictionary</param>
         /// <returns>If the key exists in <see cref="dict"/>, the value associated with <see cref="key"/>, otherwise <see cref="fallback"/></returns>
-        public static TVal GetDefault<TKey, TVal>(this IDictionary<TKey, TVal> dict, TKey key, TVal fallback = default(TVal)) => dict.ContainsKey(key) ? dict[key] : fallback;
+        public static TVal GetDefault<TKey, TVal>(this IDictionary<TKey, TVal> source, TKey key, TVal fallback = default(TVal)) => source.ContainsKey(key) ? source[key] : fallback;
 
-        public static void Shuffle<T>(this IList<T> list) => list.Shuffle(new Random());
-        public static void Shuffle<T>(this IList<T> list, Random rand) {
-            int n = list.Count;
+        public static void Shuffle<T>(this IList<T> source) => source.Shuffle(new Random());
+        public static void Shuffle<T>(this IList<T> source, Random rand) {
+            int n = source.Count;
             while (n > 1) {
                 n--;
                 int k = rand.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
+                T value = source[k];
+                source[k] = source[n];
+                source[n] = value;
             }
         }
 
-        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> elements) => elements.Choose(new Random());
-        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> elements, Random rand) {
-            WeightedAuto<T> choice = elements.Select(kv => new WeightedAuto<T>(kv.Key, kv.Value)).Choose(rand);
-            return choice == null ? default(T) : choice.Element;
+        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> source) => source.Choose(new Random());
+        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> source, Random rand) {
+            return source.Select(kv => new WeightedElement<T>(kv.Key, kv.Value)).Choose<T>(rand);
         }
 
-        public static T Choose<T>(this IEnumerable<T> entries) where T : IWeighted => entries.Choose(new Random());
-        public static T Choose<T>(this IEnumerable<T> entries, Random rand) where T : IWeighted {
-            entries = entries.ToList();
-            double totalWeight = entries.Sum(entry => entry.GetWeight());
+        public static T Choose<T>(this IEnumerable<T> source) where T : IWeighted => source.Choose(new Random());
+        public static T Choose<T>(this IEnumerable<T> source, Random rand) where T : IWeighted {
+            source = source.ToList();
+            double totalWeight = source.Sum(entry => entry.GetWeight());
             double n = rand.NextDouble();
-            foreach (T entry in entries) {
+            foreach (T entry in source) {
                 double chance = entry.GetWeight() / totalWeight;
                 if (n < chance) return entry;
                 else n -= chance;
             }
-            throw new ArgumentException("Enumerable must contain entries", nameof(entries));
+            throw new ArgumentException("Enumerable must contain entries", nameof(source));
         }
+
+        public static T Choose<T>(this IEnumerable<IWeightedElement<T>> source) => source.Choose(new Random());
+        public static T Choose<T>(this IEnumerable<IWeightedElement<T>> source, Random rand) {
+            IWeighted result = ((IEnumerable<IWeighted>) source).Choose(rand);
+            return ((WeightedElement<T>) result).Value;
+        }
+
+        public static IEnumerable<IWeightedElement<T>> ToWeighted<T>(this IEnumerable<T> source, Func<T, double> weightSelector) => source.ToWeighted(weightSelector, e => e);
+        public static IEnumerable<IWeightedElement<TEntry>> ToWeighted<TSource, TEntry>(this IEnumerable<TSource> source, Func<TSource, double> weightSelector, Func<TSource, TEntry> entrySelector) {
+            return source.Select(e => new WeightedElement<TEntry>(entrySelector(e), weightSelector(e)));
+        }
+
+        public static IEnumerable<IWeightedElement<T>> Normalize<T>(this IEnumerable<T> source) where T : IWeighted => source.NormalizeTo(1D);
+        public static IEnumerable<IWeightedElement<T>> NormalizeTo<T>(this IEnumerable<T> source, double weight) where T : IWeighted {
+            source = source.ToList();
+            double totalWeight = source.SumWeights();
+            if (totalWeight == 0)
+                totalWeight = 1;
+            return source.Select(e => new WeightedElement<T>(e, weight * e.GetWeight() / totalWeight));
+        }
+
+        public static IEnumerable<IWeightedElement<T>> Normalize<T>(this IEnumerable<IWeightedElement<T>> source) => source.NormalizeTo(1D);
+        public static IEnumerable<IWeightedElement<T>> NormalizeTo<T>(this IEnumerable<IWeightedElement<T>> source, double weight) {
+            source = source.ToList();
+            double totalWeight = source.SumWeights();
+            if (totalWeight == 0)
+                totalWeight = 1;
+            return source.Select(e => new WeightedElement<T>(e.Value, weight * e.GetWeight() / totalWeight));
+        }
+
+        public static double SumWeights<T>(this IEnumerable<T> source) where T : IWeighted => source.Sum(e => e.GetWeight());
 
         /// <summary>Creates a new string containing one string repeated any number of times.</summary>
         /// <param name="input">The string to repeat</param>
@@ -129,10 +160,10 @@ namespace TehCore {
                 return null;
             }
         }
-        
-        public static void DrawStringWithShadow(this SpriteBatch batch, SpriteFont font, string text, Vector2 position, Color color) {
-            batch.DrawString(font, text, position + Vector2.One * Game1.pixelZoom / 2f, Color.Black);
-            batch.DrawString(font, text, position, color);
+
+        public static void DrawStringWithShadow(this SpriteBatch batch, SpriteFont font, string text, Vector2 position, Color color, float depth = 0F) {
+            batch.DrawString(font, text, position + Vector2.One * Game1.pixelZoom / 2f, Color.Black, 0F, Vector2.Zero, Vector2.One, SpriteEffects.None, depth - 0.001F);
+            batch.DrawString(font, text, position, color, 0F, Vector2.Zero, Vector2.One, SpriteEffects.None, depth);
         }
 
         public delegate void DrawStringOrShadow(Vector2 position, bool shadow);

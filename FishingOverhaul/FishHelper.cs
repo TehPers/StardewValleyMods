@@ -4,44 +4,112 @@ using System.Linq;
 using FishingOverhaul.Configs;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using TehCore;
 using TehCore.Enums;
+using TehCore.Weighted;
+using SObject = StardewValley.Object;
 using SFarmer = StardewValley.Farmer;
 
 namespace FishingOverhaul {
     public class FishHelper {
 
-        private const bool NEVER_TRASH = true;
+        public static int? GetRandomFish(Farmer who, int mineLevel = -1) => FishHelper.GetRandomFish(FishHelper.GetPossibleFish(who));
 
-        public static int? GetRandomFish(int mineLevel = -1) => FishHelper.GetRandomFish(FishHelper.GetPossibleFish(mineLevel));
-
-        public static int? GetRandomFish(IEnumerable<KeyValuePair<int, FishData>> possibleFish) {
+        public static int? GetRandomFish(IEnumerable<IWeightedElement<int?>> possibleFish) {
             ConfigMain config = ModFishing.Instance.MainConfig;
             possibleFish = possibleFish.ToList();
 
-            //if (!config.ConfigLegendaries)
-            //    possibleFish = possibleFish.Where(e => !FishHelper.IsLegendary(e.Key));
+            // Filter out legendaries
+            if (!config.CustomLegendaries)
+                possibleFish = possibleFish.Where(e => e.Value != null && !FishHelper.IsLegendary(e.Value.Value));
 
-            return possibleFish.Any() ? possibleFish.Select(e => new KeyValuePair<int, double>(e.Key, e.Value.Chance)).Choose(Game1.random) : (int?) null;
+            // No possible fish
+            if (!possibleFish.Any())
+                return null;
+
+            // Select a fish
+            return possibleFish.Choose(Game1.random);
         }
 
-        public static IEnumerable<KeyValuePair<int, FishData>> GetPossibleFish(int mineLevel = -1) {
+        public static IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who) {
             Season s = Extensions.ToSeason(Game1.currentSeason) ?? Season.Spring | Season.Summer | Season.Fall | Season.Winter;
-            WaterType w = Extensions.ToWaterType(Game1.currentLocation.getFishingLocation(Game1.player.getTileLocation())) ?? WaterType.Both;
-            return FishHelper.GetPossibleFish(Game1.currentLocation.Name, w, s, Game1.isRaining ? Weather.Rainy : Weather.Sunny, Game1.timeOfDay, Game1.player.FishingLevel, mineLevel);
+            WaterType w = Extensions.ToWaterType(who.currentLocation?.getFishingLocation(who.getTileLocation()) ?? -1) ?? WaterType.Both;
+            int mineLevel = who.currentLocation is MineShaft mine ? mine.mineLevel : -1;
+            return FishHelper.GetPossibleFish(who, who.currentLocation?.Name ?? "", w, s, Game1.isRaining ? Weather.Rainy : Weather.Sunny, Game1.timeOfDay, Game1.player.FishingLevel, mineLevel);
         }
 
-        public static IEnumerable<KeyValuePair<int, FishData>> GetPossibleFish(string location, WaterType water, Season s, Weather w, int time, int fishLevel, int mineLevel = -1) {
-            switch (location) {
-                default:
-                    water = WaterType.Both;
-                    break;
+        public static IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterType water, Season season, Weather weather, int time, int fishLevel, int mineLevel = -1) {
+            // Custom handling for farm maps
+            if (locationName == "Farm") {
+                switch (Game1.whichFarm) {
+                    case 1: {
+                            // Forest fish + town fish
+                            IEnumerable<IWeightedElement<int?>> forestFish = FishHelper.GetPossibleFish(who, "Forest", water, season, weather, time, fishLevel, mineLevel).NormalizeTo(0.3);
+                            IEnumerable<IWeightedElement<int?>> townFish = FishHelper.GetPossibleFish(who, "Town", water, season, weather, time, fishLevel, mineLevel).NormalizeTo(0.7);
+                            return forestFish.Concat(townFish);
+                        }
+                    case 2: {
+                            // Forest fish + woodskip
+                            float scale = 0.05F + (float) Game1.dailyLuck;
+                            IEnumerable<IWeightedElement<int?>> forestFish = FishHelper.GetPossibleFish(who, "Forest", water, season, weather, time, fishLevel, mineLevel).NormalizeTo(1 - scale);
+                            IWeightedElement<int?>[] woodSkip = { new WeightedElement<int?>(734, scale) };
+                            return forestFish.Concat(woodSkip);
+                        }
+                    case 3: {
+                            // Forest fish + default farm fish
+                            IEnumerable<IWeightedElement<int?>> forestFish = FishHelper.GetPossibleFish(who, "Forest", water, season, weather, time, fishLevel, mineLevel);
+                            IEnumerable<IWeightedElement<int?>> farmFish = FishHelper.GetPossibleFishWithoutFarm(who, locationName, water, season, weather, time, fishLevel, mineLevel);
+                            return forestFish.Concat(farmFish);
+                        }
+                    case 4: {
+                            // Mountain fish + default farm fish
+                            IEnumerable<IWeightedElement<int?>> forestFish = FishHelper.GetPossibleFish(who, "Mountain", water, season, weather, fishLevel, mineLevel).NormalizeTo(0.35);
+                            IEnumerable<IWeightedElement<int?>> farmFish = FishHelper.GetPossibleFishWithoutFarm(who, locationName, water, season, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                            return forestFish.Concat(farmFish);
+                        }
+                }
             }
 
-            if (!ModFishing.Instance.FishConfig.PossibleFish.ContainsKey(location))
-                return new KeyValuePair<int, FishData>[] { };
+            return FishHelper.GetPossibleFishWithoutFarm(who, locationName, water, season, weather, time, fishLevel, mineLevel);
+        }
 
-            return ModFishing.Instance.FishConfig.PossibleFish[location].Where(f => f.Value.MeetsCriteria(water, s, w, time, fishLevel, mineLevel));
+        private static IEnumerable<IWeightedElement<int?>> GetPossibleFishWithoutFarm(Farmer who, string locationName, WaterType water, Season season, Weather weather, int time, int fishLevel, int mineLevel = -1) {
+            // Check if this location has fish data
+            if (!ModFishing.Instance.FishConfig.PossibleFish.ContainsKey(locationName))
+                return new[] { new WeightedElement<int?>(null, 1) };
+
+            // Check if this is the farm
+            if (locationName == "Farm" && !ModFishing.Instance.MainConfig.GlobalFishSettings.AllowFishOnAllFarms)
+                return new[] { new WeightedElement<int?>(null, 1) };
+
+            // Get chance for fish
+            float fishChance = FishHelper.GetFishChance(who);
+
+            // Filter all the fish that can be caught at that location
+            IEnumerable<IWeightedElement<int?>> fish = ModFishing.Instance.FishConfig.PossibleFish[locationName].Where(f => {
+                // Legendary fish criteria
+                if (FishHelper.IsLegendary(f.Key)) {
+                    // If custom legendaries is disabled, then don't include legendary fish. They are handled in CustomFishingRod
+                    if (!ModFishing.Instance.MainConfig.CustomLegendaries) {
+                        return false;
+                    }
+
+                    // If recatchable legendaries is disabled, then make sure this fish hasn't been caught yet
+                    if (!ModFishing.Instance.MainConfig.RecatchableLegendaries && who.fishCaught.ContainsKey(f.Key)) {
+                        return false;
+                    }
+                }
+
+                // Normal criteria check
+                return f.Value.MeetsCriteria(water, season, weather, time, fishLevel, mineLevel);
+            }).ToWeighted(kv => kv.Value.GetWeightedChance(fishLevel), kv => (int?) kv.Key);
+
+            // Include trash
+            IWeightedElement<int?>[] trash = { new WeightedElement<int?>(null, 1) };
+
+            // Combine fish with trash
+            return fish.NormalizeTo(fishChance).Concat(trash.NormalizeTo(1 - fishChance));
         }
 
         public static int GetRandomTrash() => Game1.random.Next(167, 173);
@@ -50,9 +118,7 @@ namespace FishingOverhaul {
 
         public static bool IsLegendary(int fish) => fish == 159 || fish == 160 || fish == 163 || fish == 682 || fish == 775;
 
-        public static float GetTrashChance(SFarmer who) => 1F - FishHelper.GetFishChance(who);
-
-        public static float GetFishChance(SFarmer who) {
+        private static float GetFishChance(SFarmer who) {
             ConfigMain.ConfigGlobalFish config = ModFishing.Instance.MainConfig.GlobalFishSettings;
 
             // Calculate chance

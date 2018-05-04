@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using TehCore;
 using TehCore.Configs;
 using TehCore.Enums;
+using TehCore.Weighted;
 
 namespace FishingOverhaul.Configs {
+
     [JsonDescribe]
     public class FishData {
-
         [Description("The weighted chance of this fish appearing")]
         public double Chance { get; set; }
 
@@ -43,22 +46,51 @@ namespace FishingOverhaul.Configs {
         }
 
         public bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level) {
-            return (this.WaterType & waterType) > 0 && (this.Season & season) > 0 && (this.Weather & weather) > 0 && level >= this.MinLevel && this.Times.Any(range => time >= range.Start && time <= range.Finish);
+            return (this.WaterType & waterType) > 0
+                   && (this.Season & season) > 0
+                   && (this.Weather & weather) > 0
+                   && level >= this.MinLevel
+                   && this.Times.Any(range => time >= range.Start && time <= range.Finish);
         }
 
         public bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level, int mineLevel) {
-            return this.MeetsCriteria(waterType, season, weather, time, level) && (this.MineLevel == -1 || mineLevel == this.MineLevel);
+            return this.MeetsCriteria(waterType, season, weather, time, level)
+                   && (this.MineLevel == -1 || mineLevel == this.MineLevel);
         }
 
         public virtual float GetWeightedChance(int level) {
             return (float) this.Chance + level / 50f;
         }
 
+        public FishData WithScaledChance(float scale) {
+            FishData newData = new FishData(this.Chance * scale, this.WaterType, this.Season, minLevel: this.MinLevel, weather: this.Weather, mineLevel: this.MineLevel);
+            newData.Times.Clear();
+            newData.Times.AddRange(this.Times);
+            return newData;
+        }
+
         public override string ToString() => $"Chance: {this.Chance}, Weather: {this.Weather}, Season: {this.Season}";
+
+        public static FishData Trash { get; } = new FishData(1, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
+
+        public class CombinedFishData : IWeighted {
+            public int Fish { get; }
+            public FishData Data { get; }
+            public int Level { get; }
+
+            public CombinedFishData(int fish, FishData data, int level) {
+                this.Fish = fish;
+                this.Data = data;
+                this.Level = level;
+            }
+
+            public double GetWeight() {
+                return this.Data.GetWeightedChance(this.Level);
+            }
+        }
 
         [JsonDescribe]
         public struct TimeInterval {
-
             [Description("The earliest time in this interval")]
             public int Start;
 

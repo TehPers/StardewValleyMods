@@ -6,7 +6,6 @@ namespace FishingOverhaul.Configs {
 
     [JsonDescribe]
     public class ConfigMain {
-        
         [Description("Whether or not this mod should make changes to the game.")]
         public bool ModEnabled { get; set; } = true;
 
@@ -16,11 +15,14 @@ namespace FishingOverhaul.Configs {
         [Description("Whether this mod affects legendary fish as well.")]
         public bool CustomLegendaries { get; set; } = true;
 
-        [Description("Whether you can catch legendary fish multiple times. Vanilla is false. NOTE: This *INCLUDES* Legend. It is far more balanced this way.")]
+        [Description("Whether you can catch legendary fish multiple times (including Legend). This setting only matters if " + nameof(ConfigMain.CustomLegendaries) + " is true. Vanilla is false")]
         public bool RecatchableLegendaries { get; set; } = true;
 
         [Description("Whether the fish should be shown while catching it. False for vanilla")]
         public bool ShowFish { get; set; } = true;
+
+        [Description("Whether or not to show current streak, chance for treasure, chance for each fish, etc. while fishing.")]
+        public bool ShowFishingData { get; set; } = true;
 
         [Description("Settings for streaks.")]
         public ConfigStreak StreakSettings { get; set; } = new ConfigStreak();
@@ -86,6 +88,9 @@ namespace FishingOverhaul.Configs {
 
             [Description("Effect your streak has on your chance to find a fish. For example, 0.01 means +1% chance per perfect catch in your streak.")]
             public float FishStreakEffect { get; set; } = 0.005f;
+
+            [Description("Whether all farm types should have fish. The default farm fish can be defined in fish.json. Vanilla is false")]
+            public bool AllowFishOnAllFarms { get; set; } = false;
         }
 
         [JsonDescribe]

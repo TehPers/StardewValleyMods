@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using TehCore;
 using TehCore.Configs;
+using TehCore.Weighted;
 
 namespace FishingOverhaul.Configs {
 

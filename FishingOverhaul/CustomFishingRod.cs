@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using FishingOverhaul.Configs;
 using Microsoft.Xna.Framework;
+using Netcode;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
@@ -76,21 +77,35 @@ namespace FishingOverhaul {
 
                 // Fish caught, override it
                 this.isNibbling = false;
+                int? fish = null;
 
                 // Check if legendary fish are being overridden as well
                 if (!ModFishing.Instance.MainConfig.CustomLegendaries) {
-                    // TODO: Check if a legendary would be caught
+                    // Check if a legendary would be caught
+                    double baitValue = this.attachments[0]?.Price / 10.0 ?? 0.0;
+                    bool bubblyZone = false;
+                    if (location.fishSplashPoint.Value != Point.Zero)
+                        bubblyZone = new Rectangle(location.fishSplashPoint.X * 64, location.fishSplashPoint.Y * 64, 64, 64).Intersects(new Rectangle((int) this.bobber.X - 80, (int) this.bobber.Y - 80, 64, 64));
+                    SObject normalFish = location.getFish(this.fishingNibbleAccumulator, this.attachments[0]?.ParentSheetIndex ?? -1, this._clearWaterDistance.Value + (bubblyZone ? 1 : 0), this.lastUser, baitValue + (bubblyZone ? 0.4 : 0.0));
 
                     // If so, select that fish
+                    if (FishHelper.IsLegendary(normalFish.ParentSheetIndex)) {
+                        fish = normalFish.ParentSheetIndex;
+                    }
                 }
 
+                // Void mayonnaise
                 if (location.Name.Equals("WitchSwamp") && !Game1.MasterPlayer.mailReceived.Contains("henchmanGone") && Game1.random.NextDouble() < 0.25 && !Game1.player.hasItemInInventory(308, 1)) {
                     this.pullFishFromWater(308, -1, 0, 0, false);
                     return;
                 }
 
-                bool trash = Game1.random.NextDouble() < FishHelper.GetTrashChance(who);
-                int? fish = trash ? null : FishHelper.GetRandomFish();
+                // Choose a random fish if one hasn't been chosen yet
+                if (fish == null) {
+                    fish = FishHelper.GetRandomFish(this.lastUser);
+                }
+
+                // Check if a fish was chosen
                 if (fish == null) {
                     // Secret note
                     if (who.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08) {
@@ -102,9 +117,14 @@ namespace FishingOverhaul {
                     // Trash
                     this.pullFishFromWater(FishHelper.GetRandomTrash(), -1, 0, 0, false);
                 } else {
-                    // Make sure this isn't another player and hasn't been handled yet
-                    if (this.hit || !who.IsLocalPlayer)
+                    // Make sure this hasn't been handled yet
+                    if (this.hit)
                         return;
+
+                    // Check if favBait should be set to true (still not sure what this does...)
+                    SObject fishObject = new SObject(fish.Value, 1);
+                    if (Math.Abs(fishObject.Scale.X - 1.0) < 0.001)
+                        this.favBait = true;
 
                     // Show hit animation
                     this.hit = true;
@@ -115,8 +135,6 @@ namespace FishingOverhaul {
                         extraInfoForEndBehavior = fish.Value
                     });
                     location.localSound("FishHit");
-
-                    // TODO: Figure out what this is: this.favBait
                 }
 
                 // Base call, but without affecting anything
@@ -178,7 +196,6 @@ namespace FishingOverhaul {
             bool treasure = !Game1.isFestival();
             treasure &= this.lastUser.fishCaught != null && this.lastUser.fishCaught.Count > 1;
             treasure &= Game1.random.NextDouble() < FishHelper.GetTreasureChance(this.lastUser, this);
-            treasure = true;
             Game1.activeClickableMenu = new CustomBobberBar(this.lastUser, fish, fishSize, treasure, this.attachments[1]?.ParentSheetIndex ?? -1);
         }
 

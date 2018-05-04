@@ -56,7 +56,8 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="Configs\DescriptiveJsonWriter.cs" />
     <Compile Include="Helpers\JsonHelper.cs" />
-    <Compile Include="IWeighted.cs" />
+    <Compile Include="Weighted\IWeighted.cs" />
+    <Compile Include="Weighted\IWeightedElement.cs" />
     <Compile Include="Menus\ConfigMenuBuilder.cs" />
     <Compile Include="Menus\Elements\Element.cs" />
     <Compile Include="Menus\Elements\OutsideSize.cs" />
@@ -64,7 +65,7 @@
     <Compile Include="ModCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectedField.cs" />
-    <Compile Include="WeightedAuto.cs" />
+    <Compile Include="Weighted\WeightedElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="manifest.json">
