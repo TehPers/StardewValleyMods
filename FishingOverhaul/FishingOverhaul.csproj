@@ -52,12 +52,14 @@
     <Compile Include="Configs\ConfigTreasure.cs" />
     <Compile Include="Configs\FishData.cs" />
     <Compile Include="Configs\TreasureData.cs" />
+    <Compile Include="CustomBobberBar.cs" />
     <Compile Include="CustomFishingRod.cs" />
     <Compile Include="FishHelper.cs" />
     <Compile Include="ModFishing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="i18n\default.json" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

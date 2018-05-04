@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace FishingOverhaul {
+namespace TehCore {
     public class ReflectedField<TObject, TField> {
         public FieldInfo Field { get; }
         public TObject Owner { get; }
@@ -15,8 +12,10 @@ namespace FishingOverhaul {
             set => this.Field.SetValue(this.Owner, value);
         }
 
-        public ReflectedField(TObject owner, string field) {
-            this.Field = typeof(TObject).GetFields().FirstOrDefault(f => f.Name == field && f.FieldType == typeof(TField));
+        public ReflectedField(TObject owner, string field) : this(owner, field, BindingFlags.NonPublic | BindingFlags.Instance) { }
+
+        public ReflectedField(TObject owner, string field, BindingFlags flags) {
+            this.Field = typeof(TObject).GetFields(flags).FirstOrDefault(f => f.Name == field && f.FieldType == typeof(TField));
             this.Owner = owner;
 
             if (this.Field == null) {

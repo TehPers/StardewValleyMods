@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace FishingOverhaul.Configs {
 
     [JsonDescribe]
     public class ConfigFish {
+
+        [Description("All the fish that can be caught")]
         public Dictionary<string, Dictionary<int, FishData>> PossibleFish { get; set; }
 
         public void PopulateData() {
@@ -70,7 +73,6 @@ namespace FishingOverhaul.Configs {
 
                             string[] times = fishInfo[5].Split(' ');
                             string weather = fishInfo[7].ToLower();
-                            int minDepth = Convert.ToInt32(fishInfo[9]);
                             int minLevel = Convert.ToInt32(fishInfo[12]);
                             double chance = Convert.ToDouble(fishInfo[10]);
 
@@ -85,7 +87,7 @@ namespace FishingOverhaul.Configs {
                             }
 
                             // Add initial data
-                            f = new FishData(chance, water, s, Convert.ToInt32(times[0]), Convert.ToInt32(times[1]), minDepth, minLevel, w);
+                            f = new FishData(chance, water, s, Convert.ToInt32(times[0]), Convert.ToInt32(times[1]), minLevel, w);
 
                             // Add extra time ranges to the data
                             for (int startTime = 2; startTime + 1 < times.Length; startTime += 2)
@@ -102,19 +104,19 @@ namespace FishingOverhaul.Configs {
             // NOW THEN, for the special cases >_>
 
             // Glacierfish
-            this.PossibleFish["Forest"][775] = new FishData(.02, WaterType.River, Season.Winter, maxTime: 2000, minDepth: 5, minLevel: 6);
+            this.PossibleFish["Forest"][775] = new FishData(.02, WaterType.River, Season.Winter, maxTime: 2000, minLevel: 6);
 
             // Crimsonfish
-            this.PossibleFish["Beach"][159] = new FishData(.02, WaterType.Both, Season.Summer, maxTime: 2000, minDepth: 4, minLevel: 5);
+            this.PossibleFish["Beach"][159] = new FishData(.02, WaterType.Both, Season.Summer, maxTime: 2000, minLevel: 5);
 
             // Legend
-            this.PossibleFish["Mountain"][163] = new FishData(.02, WaterType.Lake, Season.Spring, maxTime: 2300, minDepth: 5, minLevel: 10, weather: Weather.Rainy);
+            this.PossibleFish["Mountain"][163] = new FishData(.02, WaterType.Lake, Season.Spring, maxTime: 2300, minLevel: 10, weather: Weather.Rainy);
 
             // Angler
-            this.PossibleFish["Town"][160] = new FishData(.02, WaterType.Both, Season.Fall, minDepth: 4, minLevel: 3);
+            this.PossibleFish["Town"][160] = new FishData(.02, WaterType.Both, Season.Fall, minLevel: 3);
 
             // Mutant Carp
-            this.PossibleFish["Sewer"][682] = new FishData(.02, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter, minDepth: 5);
+            this.PossibleFish["Sewer"][682] = new FishData(.02, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
 
             // UndergroundMine
             double mineBaseChance = 0.3;

@@ -1,7 +1,7 @@
 ﻿{
     "Name": "Teh's Fishing Overhaul",
     "Author": "TehPers",
-    "Version": "2.0.0-dev.1",
+    "Version": "2.0.0-dev.2",
     "Description": "A complete overhaul of vanilla fishing, with a huge amount of customization.",
     "UniqueID": "TehPers.FishingOverhaul",
     "EntryDll": "FishingOverhaul.dll",
@@ -9,7 +9,7 @@
     "Dependencies": [
         {
             "UniqueID": "TehPers.Core",
-            "MinimumVersion": "0.0.0"
+            "MinimumVersion": "1.0.0-dev"
         }
     ]
 }

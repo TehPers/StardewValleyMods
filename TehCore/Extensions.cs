@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewValley;
 using TehCore.Enums;
 
 namespace TehCore {
@@ -14,6 +17,8 @@ namespace TehCore {
         /// <returns>A <see cref="HashSet{T}"/> that contains values of type <see cref="TSource"/> selected from the input sequence.</returns>
         /// <remarks>In framework versions 4.7.2+, this method can be removed</remarks>
         public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source) => new HashSet<TSource>(source.ToArray());
+
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source) => source.ToDictionary(kv => kv.Key, kv => kv.Value);
 
         public static Season? ToSeason(string s) {
             switch (s.ToLower()) {
@@ -124,5 +129,12 @@ namespace TehCore {
                 return null;
             }
         }
+        
+        public static void DrawStringWithShadow(this SpriteBatch batch, SpriteFont font, string text, Vector2 position, Color color) {
+            batch.DrawString(font, text, position + Vector2.One * Game1.pixelZoom / 2f, Color.Black);
+            batch.DrawString(font, text, position, color);
+        }
+
+        public delegate void DrawStringOrShadow(Vector2 position, bool shadow);
     }
 }

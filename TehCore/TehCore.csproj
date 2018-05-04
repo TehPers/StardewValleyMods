@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configs\DescriptionAttribute.cs" />
     <Compile Include="Configs\DescriptiveJsonConverter.cs" />
     <Compile Include="Configs\JsonDescribeAttribute.cs" />
     <Compile Include="Enums\Objects.cs" />
@@ -58,6 +57,10 @@
     <Compile Include="Configs\DescriptiveJsonWriter.cs" />
     <Compile Include="Helpers\JsonHelper.cs" />
     <Compile Include="IWeighted.cs" />
+    <Compile Include="Menus\ConfigMenuBuilder.cs" />
+    <Compile Include="Menus\Elements\Element.cs" />
+    <Compile Include="Menus\Elements\OutsideSize.cs" />
+    <Compile Include="Menus\Menu.cs" />
     <Compile Include="ModCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectedField.cs" />

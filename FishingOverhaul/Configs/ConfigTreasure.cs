@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace FishingOverhaul.Configs {
 
         [Description("All the treasure that can be found while fishing")]
         public TreasureData[] PossibleLoot { get; set; } = {
-            new TreasureData(Objects.DressedSpinner, 0.025, 1, 1, 4, 6, allowDuplicates: false),
+            new TreasureData(Objects.DressedSpinner, 0.025, 1, 1, 6, allowDuplicates: false),
             new TreasureData(Objects.Bait, 0.25, 2, 4),
             //new TreasureData(Objects.BAIT, 0.05, 10), // No need for this I guess
 
@@ -28,9 +29,9 @@ namespace FishingOverhaul.Configs {
             new TreasureData(Objects.MagmaGeode, 0.125, 1, 3),
             new TreasureData(Objects.OmniGeode, 0.0625, 1, 3),
 
-            new TreasureData(Objects.IridiumOre, 0.0075, 1, 3, 5),
-            new TreasureData(Objects.GoldOre, 0.15, 3, 10, 4),
-            new TreasureData(Objects.IronOre, 0.15, 3, 10, 3),
+            new TreasureData(Objects.IridiumOre, 0.0075, 1, 3),
+            new TreasureData(Objects.GoldOre, 0.15, 3, 10),
+            new TreasureData(Objects.IronOre, 0.15, 3, 10),
             new TreasureData(Objects.CopperOre, 0.15, 3, 10),
             new TreasureData(Objects.Coal, 0.3, 3, 10),
 
@@ -44,19 +45,19 @@ namespace FishingOverhaul.Configs {
 
             // Gems
             new TreasureData(Objects.Diamond, 0.01, allowDuplicates: false),
-            new TreasureData(Objects.FireQuartz, 0.025, 1, 3, 4),
-            new TreasureData(Objects.Emerald, 0.025, 1, 3, 4),
-            new TreasureData(Objects.Ruby, 0.025, 1, 3, 4),
-            new TreasureData(Objects.FrozenTear, 0.025, 1, 3, 3),
-            new TreasureData(Objects.Jade, 0.025, 1, 3, 3),
-            new TreasureData(Objects.Aquamarine, 0.025, 1, 3, 3),
+            new TreasureData(Objects.FireQuartz, 0.025, 1, 3),
+            new TreasureData(Objects.Emerald, 0.025, 1, 3),
+            new TreasureData(Objects.Ruby, 0.025, 1, 3),
+            new TreasureData(Objects.FrozenTear, 0.025, 1, 3),
+            new TreasureData(Objects.Jade, 0.025, 1, 3),
+            new TreasureData(Objects.Aquamarine, 0.025, 1, 3),
             new TreasureData(Objects.EarthCrystal, 0.025, 1, 3),
             new TreasureData(Objects.Amethyst, 0.025, 1, 3),
             new TreasureData(Objects.Topaz, 0.025, 1, 3),
 
             // Weapons
-            new TreasureData(Objects.NeptuneGlaive, 0.001, minDistance: 5, meleeWeapon: true, allowDuplicates: false),
-            new TreasureData(Objects.BrokenTrident, 0.001, minDistance: 5, meleeWeapon: true, allowDuplicates: false),
+            new TreasureData(Objects.NeptuneGlaive, 0.001, meleeWeapon: true, allowDuplicates: false),
+            new TreasureData(Objects.BrokenTrident, 0.001, meleeWeapon: true, allowDuplicates: false),
 
             // Equippables
             new TreasureData(Objects.IridiumBand, 0.0025, allowDuplicates: false),
