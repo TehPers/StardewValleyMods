@@ -99,7 +99,7 @@ namespace FishingOverhaul {
             difficulty *= 1F + this._origStreak * config.DifficultySettings.DifficultyStreakEffect;
             if (this.Unaware) {
                 difficulty *= config.UnawareSettings.UnawareMult;
-                Game1.showGlobalMessage(ModFishing.Translate("text.unaware", 1F - config.UnawareSettings.UnawareMult));
+                Game1.showGlobalMessage(ModFishing.Translate("text.unaware", ModFishing.Translate("text.percent", 1F - config.UnawareSettings.UnawareMult)));
             }
             this._difficulty.Value = difficulty;
 
