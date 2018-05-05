@@ -7,6 +7,7 @@ using StardewValley;
 using StardewValley.Locations;
 using TehCore;
 using TehCore.Enums;
+using TehCore.Helpers;
 using TehCore.Weighted;
 using SObject = StardewValley.Object;
 using SFarmer = StardewValley.Farmer;
@@ -33,8 +34,8 @@ namespace FishingOverhaul {
         }
 
         public static IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who) {
-            Season s = Extensions.ToSeason(Game1.currentSeason) ?? Season.Spring | Season.Summer | Season.Fall | Season.Winter;
-            WaterType w = Extensions.ToWaterType(who.currentLocation?.getFishingLocation(who.getTileLocation()) ?? -1) ?? WaterType.Both;
+            Season s = SDVHelpers.ToSeason(Game1.currentSeason) ?? Season.Spring | Season.Summer | Season.Fall | Season.Winter;
+            WaterType w = SDVHelpers.ToWaterType(who.currentLocation?.getFishingLocation(who.getTileLocation()) ?? -1) ?? WaterType.Both;
             int mineLevel = who.currentLocation is MineShaft mine ? mine.mineLevel : -1;
             return FishHelper.GetPossibleFish(who, who.currentLocation?.Name ?? "", w, s, Game1.isRaining ? Weather.Rainy : Weather.Sunny, Game1.timeOfDay, Game1.player.FishingLevel, mineLevel);
         }

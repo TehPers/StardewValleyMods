@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
+using TehCore.Helpers;
 
 namespace TehCore.Configs {
     public class DescriptiveJsonWriter : JsonWriter {

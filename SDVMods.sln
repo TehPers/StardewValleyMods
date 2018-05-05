@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModUtilities", "ModUtilitie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehCore", "TehCore\TehCore.csproj", "{2D8D9C15-E910-42D8-8CC2-69DA52405D78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShroomSpotter", "ShroomSpotter\ShroomSpotter.csproj", "{E03C0A09-A342-41F8-8E45-B871C13FB7B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{2D8D9C15-E910-42D8-8CC2-69DA52405D78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D8D9C15-E910-42D8-8CC2-69DA52405D78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D8D9C15-E910-42D8-8CC2-69DA52405D78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E03C0A09-A342-41F8-8E45-B871C13FB7B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E03C0A09-A342-41F8-8E45-B871C13FB7B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E03C0A09-A342-41F8-8E45-B871C13FB7B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E03C0A09-A342-41F8-8E45-B871C13FB7B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

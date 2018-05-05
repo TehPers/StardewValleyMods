@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2D8D9C15-E910-42D8-8CC2-69DA52405D78}</ProjectGuid>
+    <ProjectGuid>{E03C0A09-A342-41F8-8E45-B871C13FB7B9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TehCore</RootNamespace>
-    <AssemblyName>TehCore</AssemblyName>
+    <RootNamespace>ShroomSpotter</RootNamespace>
+    <AssemblyName>ShroomSpotter</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -33,10 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,34 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configs\DescriptiveJsonConverter.cs" />
-    <Compile Include="Configs\JsonDescribeAttribute.cs" />
-    <Compile Include="Enums\MouseButtons.cs" />
-    <Compile Include="Enums\Objects.cs" />
-    <Compile Include="Enums\WaterType.cs" />
-    <Compile Include="Enums\Season.cs" />
-    <Compile Include="Enums\Weather.cs" />
-    <Compile Include="Helpers\AssortedHelpers.cs" />
-    <Compile Include="Configs\DescriptiveJsonWriter.cs" />
-    <Compile Include="Helpers\DrawHelpers.cs" />
-    <Compile Include="Helpers\EnumerableHelpers.cs" />
-    <Compile Include="Helpers\JsonHelper.cs" />
-    <Compile Include="Helpers\MathHelpers.cs" />
-    <Compile Include="Helpers\SDVHelpers.cs" />
-    <Compile Include="Helpers\WeightedHelpers.cs" />
-    <Compile Include="Menus\BoxModel\BoxRectangle.cs" />
-    <Compile Include="Menus\BoxModel\BoxVector.cs" />
-    <Compile Include="Menus\BoxModel\OuterSize.cs" />
-    <Compile Include="Menus\BoxModel\Vector2I.cs" />
-    <Compile Include="Weighted\IWeighted.cs" />
-    <Compile Include="Weighted\IWeightedElement.cs" />
-    <Compile Include="Menus\ConfigMenuBuilder.cs" />
-    <Compile Include="Menus\Elements\Element.cs" />
-    <Compile Include="Menus\Menu.cs" />
-    <Compile Include="ModCore.cs" />
+    <Compile Include="ModConfig.cs" />
+    <Compile Include="ModShrooms.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReflectedField.cs" />
-    <Compile Include="Weighted\WeightedElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="manifest.json">

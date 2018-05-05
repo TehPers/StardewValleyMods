@@ -14,6 +14,7 @@ using StardewValley.Objects;
 using StardewValley.Tools;
 using TehCore;
 using TehCore.Enums;
+using TehCore.Helpers;
 using SObject = StardewValley.Object;
 
 namespace FishingOverhaul {
@@ -159,6 +160,8 @@ namespace FishingOverhaul {
 
         public void OpenChestEndFunction(int extra) {
             base.openChestEndFunction(extra);
+            if (!this.lastUser.IsLocalPlayer)
+                return;
 
             // Replace the end function for the custom treasure
             foreach (TemporaryAnimatedSprite anim in this.animations) {
@@ -208,6 +211,23 @@ namespace FishingOverhaul {
             //    clearWaterDistance = FishingRodOverrides.ClearWaterDistances[this.lastUser];
             //else
             //    ModFishing.Instance.Monitor.Log("The bobber bar was not replaced. Fishing might not be overridden by this mod", LogLevel.Warn);
+
+            if (this.lastUser.IsLocalPlayer) {
+                if (this.attachments[0] != null) {
+                    --this.attachments[0].Stack;
+                    if (this.attachments[0].Stack <= 0) {
+                        this.attachments[0] = null;
+                        Game1.showGlobalMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingRod.cs.14085"));
+                    }
+                }
+                if (this.attachments[1] != null) {
+                    this.attachments[1].Scale = new Vector2(this.attachments[1].Scale.X, this.attachments[1].Scale.Y - 0.05f);
+                    if (this.attachments[1].Scale.Y <= 0.0) {
+                        this.attachments[1] = null;
+                        Game1.showGlobalMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingRod.cs.14086"));
+                    }
+                }
+            }
 
             int whichFish = this._whichFish.Value;
             int fishQuality = this._fishQuality.Value;
@@ -283,6 +303,8 @@ namespace FishingOverhaul {
         public override string getDescription() {
             return "[DEBUG] A handy custom fishing rod.";
         }
+
+        public override string DisplayName { get; set; } = "Custom Fishing Rod";
 
         public FishingRod AsNormalFishingRod() {
             // Copy over properties

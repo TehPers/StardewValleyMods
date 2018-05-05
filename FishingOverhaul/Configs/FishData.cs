@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TehCore;
 using TehCore.Configs;
 using TehCore.Enums;
@@ -18,7 +19,7 @@ namespace FishingOverhaul.Configs {
         public double Chance { get; set; }
 
         [Description("The times this fish can appear")]
-        public List<TimeInterval> Times { get; } = new List<TimeInterval>();
+        public HashSet<TimeInterval> Times { get; } = new HashSet<TimeInterval>();
 
         [Description("The types of water this fish can appear in. Lake = 1, river = 2. For both, add the numbers together.")]
         public WaterType WaterType { get; set; }
@@ -35,22 +36,27 @@ namespace FishingOverhaul.Configs {
         [Description("The mine level this fish can be found on.")]
         public int MineLevel { get; set; }
 
-        public FishData(double chance, WaterType waterType, Season season, int minTime = 600, int maxTime = 2600, int minLevel = 0, Weather? weather = null, int mineLevel = -1) {
+        public FishData(double chance, int minTime, int maxTime, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int mineLevel = -1)
+            : this(chance, new[] { new TimeInterval(minTime, maxTime) }, waterType, season, minLevel, weather, mineLevel) { }
+
+        public FishData(double chance, IEnumerable<TimeInterval> times, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int mineLevel = -1) {
             this.Chance = chance;
             this.WaterType = waterType;
             this.Season = season;
-            this.Times.Add(new TimeInterval(minTime, maxTime));
             this.MinLevel = minLevel;
             this.Weather = weather ?? Weather.Sunny | Weather.Rainy;
             this.MineLevel = mineLevel;
+            if (times != null)
+                this.Times = new HashSet<TimeInterval>(times);
         }
 
         public bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level) {
+            // Note: HasFlag won't work because these are checking for an intersection, not for a single bit
             return (this.WaterType & waterType) > 0
                    && (this.Season & season) > 0
                    && (this.Weather & weather) > 0
                    && level >= this.MinLevel
-                   && this.Times.Any(range => time >= range.Start && time <= range.Finish);
+                   && this.Times.Any(t => time >= t.Start && time < t.Finish);
         }
 
         public bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level, int mineLevel) {
@@ -62,16 +68,9 @@ namespace FishingOverhaul.Configs {
             return (float) this.Chance + level / 50f;
         }
 
-        public FishData WithScaledChance(float scale) {
-            FishData newData = new FishData(this.Chance * scale, this.WaterType, this.Season, minLevel: this.MinLevel, weather: this.Weather, mineLevel: this.MineLevel);
-            newData.Times.Clear();
-            newData.Times.AddRange(this.Times);
-            return newData;
-        }
-
         public override string ToString() => $"Chance: {this.Chance}, Weather: {this.Weather}, Season: {this.Season}";
 
-        public static FishData Trash { get; } = new FishData(1, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
+        public static FishData Trash { get; } = new FishData(1, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
 
         public class CombinedFishData : IWeighted {
             public int Fish { get; }
@@ -92,14 +91,29 @@ namespace FishingOverhaul.Configs {
         [JsonDescribe]
         public struct TimeInterval {
             [Description("The earliest time in this interval")]
-            public int Start;
+            public int Start { get; }
 
             [Description("The latest time in this interval")]
-            public int Finish;
+            public int Finish { get; }
 
+            [JsonConstructor]
             public TimeInterval(int start, int finish) {
                 this.Start = start;
                 this.Finish = finish;
+            }
+
+            public override bool Equals(object obj) {
+                return base.Equals(obj);
+            }
+
+            public bool Equals(TimeInterval other) {
+                return this.Start == other.Start && this.Finish == other.Finish;
+            }
+
+            public override int GetHashCode() {
+                unchecked {
+                    return (this.Start * 397) ^ this.Finish;
+                }
             }
         }
     }
