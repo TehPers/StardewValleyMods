@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using FishingOverhaul.Api;
+using FishingOverhaul.Api.Enums;
 using TehCore.Helpers.Json;
 
 namespace FishingOverhaul.Configs {

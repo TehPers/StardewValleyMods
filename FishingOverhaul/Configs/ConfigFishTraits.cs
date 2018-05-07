@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FishingOverhaul.Api;
+using FishingOverhaul.Api.Enums;
 using StardewModdingAPI;
 using StardewValley;
 using TehCore.Api.Enums;

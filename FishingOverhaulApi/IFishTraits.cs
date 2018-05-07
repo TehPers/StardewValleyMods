@@ -1,4 +1,6 @@
-﻿namespace FishingOverhaul.Api {
+﻿using FishingOverhaul.Api.Enums;
+
+namespace FishingOverhaul.Api {
     public interface IFishTraits {
         float Difficulty { get; }
         int MaxSize { get; }

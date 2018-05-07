@@ -44,9 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FishMotionType.cs" />
+    <Compile Include="Enums\FishMotionType.cs" />
     <Compile Include="IFishData.cs" />
     <Compile Include="IFishingApi.cs" />
+    <Compile Include="IFishTraits.cs" />
     <Compile Include="ITreasureData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

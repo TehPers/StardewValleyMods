@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using FishingOverhaul.Api;
+using StardewValley;
 using TehCore.Api.Enums;
 using TehCore.Helpers.Json;
 
@@ -61,8 +62,8 @@ namespace FishingOverhaul.Configs {
                    && (this.MineLevel == null || mineLevel == this.MineLevel);
         }
 
-        public virtual float GetWeight(int level) {
-            return (float) this.Chance + level / 50f;
+        public virtual float GetWeight(Farmer who) {
+            return (float) this.Chance + who.FishingLevel / 50f;
         }
 
         public override string ToString() => $"Chance: {this.Chance}, Weather: {this.Weather}, Season: {this.Season}";

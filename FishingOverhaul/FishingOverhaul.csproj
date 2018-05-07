@@ -47,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configs\ConfigFishTraits.cs" />
+    <Compile Include="Configs\FishTraits.cs" />
     <Compile Include="Configs\WeightedFishData.cs" />
     <Compile Include="FishingApi.cs" />
     <Compile Include="Configs\ConfigFish.cs" />
