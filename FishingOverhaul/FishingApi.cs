@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FishingOverhaul.Api;
 using FishingOverhaul.Configs;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Tools;
@@ -26,6 +27,8 @@ namespace FishingOverhaul {
         private readonly HashSet<ITreasureData> _added = new HashSet<ITreasureData>();
         private readonly HashSet<TreasureData> _removed = new HashSet<TreasureData>();
         private readonly Dictionary<int, double> _trash = Enumerable.Range(FishingApi.MIN_TRASH_ID, FishingApi.MAX_TRASH_ID - FishingApi.MIN_TRASH_ID).ToDictionary(id => id, id => 1D);
+        private readonly Dictionary<int, string> _fishNames = new Dictionary<int, string>();
+        private readonly Dictionary<Farmer, int> _streaks = new Dictionary<Farmer, int>();
 
         public void SetFishChance(float? chance) {
             this._fishChance = chance;
@@ -233,6 +236,30 @@ namespace FishingOverhaul {
 
             // Combine fish with trash
             return fish.NormalizeTo(fishChance).Concat(trash.NormalizeTo(1 - fishChance));
+        }
+
+        public string GetFishName(int fish) {
+            // Check if fish names have been loaded in yet
+            if (!this._fishNames.Any()) {
+                // Get raw content data for fish
+                Dictionary<int, string> fishContent = ModFishing.Instance.Helper.Content.Load<Dictionary<int, string>>("Data\\Fish", ContentSource.GameContent);
+
+                // Store all the names
+                foreach (KeyValuePair<int, string> fishData in fishContent) {
+                    string[] contentData = fishContent[fishData.Key].Split('/');
+                    this._fishNames[fishData.Key] = contentData.Length > 13 ? contentData[13] : contentData[0];
+                }
+            }
+
+            return this._fishNames.TryGetValue(fish, out string name) ? name : null;
+        }
+
+        public int GetStreak(Farmer who) {
+            return this._streaks.TryGetValue(who, out int streak) ? streak : 0;
+        }
+
+        public void SetStreak(Farmer who, int streak) {
+            this._streaks[who] = streak;
         }
     }
 }

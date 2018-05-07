@@ -52,7 +52,7 @@ namespace FishingOverhaul {
 
         public CustomBobberBar(Farmer user, int whichFish, float fishSize, bool treasure, int bobber) : base(whichFish, fishSize, treasure, bobber) {
             this.User = user;
-            this._origStreak = FishHelper.GetStreak(user);
+            this._origStreak = ModFishing.Instance.Api.GetStreak(user);
             this._whichFish = whichFish;
 
             /* Private field hooks */
@@ -114,7 +114,7 @@ namespace FishingOverhaul {
             // Increase the user's perfect streak (this will be dropped to 0 if they don't get a perfect catch)
             if (this._origStreak >= config.StreakSettings.StreakForIncreasedQuality)
                 this._sparkleText.Value = new SparklingText(Game1.dialogueFont, ModFishing.Translate("text.streak", this._origStreak), Color.Yellow, Color.White);
-            FishHelper.SetStreak(user, this._origStreak + 1);
+            ModFishing.Instance.Api.SetStreak(user, this._origStreak + 1);
         }
 
         public override void update(GameTime time) {
@@ -142,7 +142,7 @@ namespace FishingOverhaul {
             if (!this._perfectChanged && !perfect) {
                 this._perfectChanged = true;
                 this._fishQuality.Value = Math.Min(this._origQuality, 1);
-                FishHelper.SetStreak(this.User, 0);
+                ModFishing.Instance.Api.SetStreak(this.User, 0);
                 if (this._origStreak >= ModFishing.Instance.MainConfig.StreakSettings.StreakForIncreasedQuality) {
                     Game1.showGlobalMessage(ModFishing.Translate(treasure ? "text.warnStreak" : "text.lostStreak", this._origStreak));
                 }
@@ -176,7 +176,7 @@ namespace FishingOverhaul {
                     this._notifiedFailOrSucceed = true;
                     if (this._origStreak >= ModFishing.Instance.MainConfig.StreakSettings.StreakForIncreasedQuality)
                         Game1.showGlobalMessage(ModFishing.Translate("text.keptStreak", this._origStreak));
-                    FishHelper.SetStreak(this.User, this._origStreak);
+                    ModFishing.Instance.Api.SetStreak(this.User, this._origStreak);
                 }
             }
         }

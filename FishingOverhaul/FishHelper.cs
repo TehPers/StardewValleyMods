@@ -14,16 +14,10 @@ using SFarmer = StardewValley.Farmer;
 
 namespace FishingOverhaul {
     internal class FishHelper {
-
         public static int? GetRandomFish(Farmer who, int mineLevel = -1) => FishHelper.GetRandomFish(ModFishing.Instance.Api.GetPossibleFish(who));
 
         public static int? GetRandomFish(IEnumerable<IWeightedElement<int?>> possibleFish) {
-            ConfigMain config = ModFishing.Instance.MainConfig;
             possibleFish = possibleFish.ToList();
-
-            // Filter out legendaries
-            if (!config.CustomLegendaries)
-                possibleFish = possibleFish.Where(e => e.Value != null && !FishHelper.IsLegendary(e.Value.Value));
 
             // No possible fish
             if (!possibleFish.Any())
@@ -47,7 +41,7 @@ namespace FishingOverhaul {
             chance += who.FishingLevel * config.FishLevelEffect;
             chance += who.LuckLevel * config.FishLuckLevelEffect;
             chance += (float) Game1.dailyLuck * config.FishDailyLuckEffect;
-            chance += FishHelper.GetStreak(who) * config.FishStreakEffect;
+            chance += ModFishing.Instance.Api.GetStreak(who) * config.FishStreakEffect;
 
             return chance;
         }
@@ -59,7 +53,7 @@ namespace FishingOverhaul {
             float chance = config.TreasureChance;
             chance += who.LuckLevel * config.TreasureLuckLevelEffect;
             chance += (float) Game1.dailyLuck * config.TreasureDailyLuckEffect;
-            chance += config.TreasureStreakEffect * FishHelper.GetStreak(who);
+            chance += config.TreasureStreakEffect * ModFishing.Instance.Api.GetStreak(who);
             if (rod.getBaitAttachmentIndex() == 703)
                 chance += config.TreasureBaitEffect;
             if (rod.getBobberAttachmentIndex() == 693)
@@ -80,28 +74,5 @@ namespace FishingOverhaul {
 
             return chance;
         }
-
-        public static int GetStreak(SFarmer who) => FishHelper.Streaks.TryGetValue(who, out int streak) ? streak : 0;
-
-        public static void SetStreak(SFarmer who, int streak) => FishHelper.Streaks[who] = streak;
-
-        public static string GetFishName(int id) {
-            // Check if fish names have been loaded in yet
-            if (!FishHelper.FishNames.Any()) {
-                // Get raw content data for fish
-                Dictionary<int, string> fishContent = ModFishing.Instance.Helper.Content.Load<Dictionary<int, string>>("Data\\Fish", ContentSource.GameContent);
-
-                // Store all the names
-                foreach (KeyValuePair<int, string> fishData in fishContent) {
-                    string[] contentData = fishContent[fishData.Key].Split('/');
-                    FishHelper.FishNames[fishData.Key] = contentData.Length > 13 ? contentData[13] : contentData[0];
-                }
-            }
-
-            return FishHelper.FishNames.TryGetValue(id, out string name) ? name : null;
-        }
-
-        private static readonly Dictionary<SFarmer, int> Streaks = new Dictionary<SFarmer, int>();
-        private static readonly Dictionary<int, string> FishNames = new Dictionary<int, string>();
     }
 }

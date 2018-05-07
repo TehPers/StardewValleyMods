@@ -91,7 +91,7 @@ namespace FishingOverhaul {
                     batch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
 
                     // Draw streak
-                    string streakText = ModFishing.Translate("text.streak", FishHelper.GetStreak(Game1.player));
+                    string streakText = ModFishing.Translate("text.streak", this.Api.GetStreak(Game1.player));
                     batch.DrawStringWithShadow(font, streakText, Vector2.Zero, textColor, 1f);
                     boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
                     boxHeight += lineHeight;
@@ -135,7 +135,7 @@ namespace FishingOverhaul {
 
                             // Draw fish information
                             string chanceText = ModFishing.Translate("text.percent", fishChance * fishData.GetWeight() / totalWeight);
-                            string fishText = $"{FishHelper.GetFishName(fish)} - {chanceText}";
+                            string fishText = $"{this.Api.GetFishName(fish)} - {chanceText}";
                             batch.DrawStringWithShadow(font, fishText, new Vector2(source.Width * iconScale, boxHeight), textColor, 0.8F);
                             boxWidth = Math.Max(boxWidth, font.MeasureString(fishText).X + source.Width * iconScale);
 

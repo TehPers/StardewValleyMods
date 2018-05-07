@@ -67,7 +67,7 @@ namespace FishingOverhaul.Configs {
 
         public override string ToString() => $"Chance: {this.Chance}, Weather: {this.Weather}, Season: {this.Season}";
 
-        public static FishData Trash { get; } = new FishData(1, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
+        public static IFishData Trash { get; } = new FishData(1, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
 
         [JsonDescribe]
         public class TimeInterval {

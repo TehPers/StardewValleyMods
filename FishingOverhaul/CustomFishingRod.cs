@@ -160,7 +160,7 @@ namespace FishingOverhaul {
         }
 
         public void OpenChestEndFunction(int extra) {
-            base.openChestEndFunction(extra);
+            this.openChestEndFunction(extra);
             if (!this.lastUser.IsLocalPlayer)
                 return;
 
@@ -245,7 +245,7 @@ namespace FishingOverhaul {
 
             // Select rewards
             float chance = 1f;
-            int streak = FishHelper.GetStreak(this.lastUser);
+            int streak = ModFishing.Instance.Api.GetStreak(this.lastUser);
             while (possibleLoot.Count > 0 && rewards.Count < config.MaxTreasureQuantity && Game1.random.NextDouble() <= chance) {
                 ITreasureData treasure = possibleLoot.Choose(Game1.random);
 

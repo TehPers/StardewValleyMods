@@ -127,5 +127,20 @@ namespace FishingOverhaul.Api {
         /// <param name="mineLevel">The current mine level, or null to ignore fish specific to certain levels in the mine.</param>
         /// <returns>All the fish that can be caught with their associated weights.</returns>
         IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterType water, Season season, Weather weather, int time, int fishLevel, int? mineLevel = null);
+
+        /// <summary>Gets the display name of a fish.</summary>
+        /// <param name="fish">The ID of the fish to get the name of.</param>
+        /// <returns>The display name of the fish with the given ID.</returns>
+        string GetFishName(int fish);
+
+        /// <summary>Gets the current perfect streak of a <see cref="Farmer"/>.</summary>
+        /// <param name="who">The farmer.</param>
+        /// <returns>The current perfect fishing streak of the <see cref="Farmer"/>.</returns>
+        int GetStreak(Farmer who);
+
+        /// <summary>Sets the current perfect fishing streak of a <see cref="Farmer"/>.</summary>
+        /// <param name="who">The farmer.</param>
+        /// <param name="streak">The streak the given <see cref="Farmer"/> should have.</param>
+        void SetStreak(Farmer who, int streak);
     }
 }
