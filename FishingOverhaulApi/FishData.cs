@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using TehCore.Enums;
-using TehCore.Helpers.Json;
-using TehCore.Weighted;
 
-namespace FishingOverhaul.Configs {
+namespace FishingOverhaul.Api {
 
     [JsonDescribe]
     public class FishData {
@@ -40,7 +37,7 @@ namespace FishingOverhaul.Configs {
             this.WaterType = waterType;
             this.Season = season;
             this.MinLevel = minLevel;
-            this.Weather = weather ?? Weather.Sunny | Weather.Rainy;
+            this.Weather = weather ?? this.Weather.Sunny | this.Weather.Rainy;
             this.MineLevel = mineLevel;
             if (times != null) {
                 this.Times = new List<TimeInterval>(times);

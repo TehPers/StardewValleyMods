@@ -37,14 +37,14 @@ namespace FishingOverhaul {
 
             GameEvents.UpdateTick += this.UpdateTick;
             GraphicsEvents.OnPostRenderHudEvent += this.PostRenderHud;
-            SaveEvents.BeforeSave += this.BeforeSave;
+            //SaveEvents.BeforeSave += this.BeforeSave;
         }
 
         private void LoadConfigs() {
             // Load configs
-            this.MainConfig = this.Helper.TryReadJsonFile<ConfigMain>("config.json") ?? new ConfigMain();
-            this.TreasureConfig = this.Helper.TryReadJsonFile<ConfigTreasure>("treasure.json") ?? new ConfigTreasure();
-            this.FishConfig = this.Helper.TryReadJsonFile<ConfigFish>("fish.json");
+            this.MainConfig = this.Helper.ReadJsonFile<ConfigMain>("config.json") ?? new ConfigMain();
+            this.TreasureConfig = this.Helper.ReadJsonFile<ConfigTreasure>("treasure.json") ?? new ConfigTreasure();
+            this.FishConfig = this.Helper.ReadJsonFile<ConfigFish>("fish.json");
 
             // Populate fish config if empty
             if (this.FishConfig == null) {
@@ -67,18 +67,8 @@ namespace FishingOverhaul {
             }
         }
 
-        private void BeforeSave(object sender, EventArgs eventArgs) {
-            for (int i = 0; i < Game1.player.Items.Count; i++) {
-                Item item = Game1.player.Items[i];
-
-                if (item is CustomFishingRod rod) {
-                    Game1.player.Items[i] = rod.AsNormalFishingRod();
-                }
-            }
-        }
-
         private void PostRenderHud(object sender, EventArgs eventArgs) {
-            if (this.MainConfig.ShowFishingData && Game1.player.CurrentTool is CustomFishingRod rod) {
+            if (this.MainConfig.ShowFishingData && !Game1.eventUp && Game1.player.CurrentTool is CustomFishingRod rod) {
                 Color textColor = Color.White;
                 SpriteFont font = Game1.smallFont;
 

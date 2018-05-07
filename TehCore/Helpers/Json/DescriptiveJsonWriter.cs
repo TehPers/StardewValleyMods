@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Utilities;
-using TehCore.Helpers;
 
-namespace TehCore.Configs {
+namespace TehCore.Helpers.Json {
     public class DescriptiveJsonWriter : JsonWriter {
         private readonly TextWriter _writer;
         private int _indent;
@@ -232,6 +226,22 @@ namespace TehCore.Configs {
 
         public override void WriteValue(TimeSpan value) {
             this.WriteValueToken(JTokenType.TimeSpan, $"{this.QuoteChar}{value.ToString(null, this.Culture)}{this.QuoteChar}");
+        }
+
+        public override void WriteValue(Uri value) {
+            if (value == null) {
+                this.WriteNull();
+            } else {
+                this.WriteValue(value.OriginalString);
+            }
+        }
+
+        public override void WriteValue(byte[] value) {
+            if (value == null) {
+                this.WriteNull();
+            } else {
+                this.WriteValue(Convert.ToBase64String(value));
+            }
         }
 
         #region Nullables

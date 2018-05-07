@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using Microsoft.Xna.Framework.Input;
-using TehCore.Configs;
+using TehCore.Helpers.Json;
 
 namespace FishingOverhaul.Configs {
 

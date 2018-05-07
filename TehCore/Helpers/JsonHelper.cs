@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -6,9 +7,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using StardewModdingAPI;
-using TehCore.Configs;
+using TehCore.Helpers.Json;
 
 namespace TehCore.Helpers {
     public class JsonHelper {
@@ -19,6 +21,9 @@ namespace TehCore.Helpers {
             ObjectCreationHandling = ObjectCreationHandling.Replace, // avoid issue where default ICollection<T> values are duplicated each time the config is loaded
             Converters = new List<JsonConverter>
             {
+                // Properly converts Net* objects
+                new NetConverter(),
+
                 // Provides descriptions
                 new DescriptiveJsonConverter()
             }
@@ -36,9 +41,10 @@ namespace TehCore.Helpers {
             }
         }
 
-        public void WriteJson<T>(string path, T model, IModHelper helper, bool minify = false) {
+        public void WriteJson<TModel>(string path, TModel model, IModHelper helper, bool minify = false) where TModel : class => this.WriteJson(path, model, helper, s => { }, minify);
+        public void WriteJson<TModel>(string path, TModel model, IModHelper helper, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class {
             //string fullPath = Path.Combine(helper.DirectoryPath, PathUtilities.NormalisePathSeparators(path));
-            string fullPath = Path.Combine(helper.DirectoryPath, path);
+            string fullPath = helper != null ? Path.Combine(helper.DirectoryPath, path) : path;
 
             // Validate path
             if (string.IsNullOrWhiteSpace(fullPath))
@@ -57,10 +63,30 @@ namespace TehCore.Helpers {
                     writer.Minify = minify;
 
                     // Serialize
-                    JsonSerializer serializer = JsonSerializer.CreateDefault(this._jsonSettings);
+                    JsonSerializerSettings jsonSettings = this._jsonSettings.Clone();
+                    settings(jsonSettings);
+                    JsonSerializer serializer = JsonSerializer.CreateDefault(jsonSettings);
                     serializer.Serialize(writer, model);
                 }
             }
+        }
+
+        public TModel ReadJson<TModel>(string path, IModHelper helper, Action<JsonSerializerSettings> settings) where TModel : class {
+            //string fullPath = Path.Combine(helper.DirectoryPath, PathUtilities.NormalisePathSeparators(path));
+            string fullPath = helper != null ? Path.Combine(helper.DirectoryPath, path) : path;
+
+            // Validate path
+            if (string.IsNullOrWhiteSpace(fullPath))
+                throw new ArgumentException("The file path is empty or invalid.", nameof(fullPath));
+            if (!File.Exists(fullPath))
+                return null;
+
+            // Setup serializer settings
+            JsonSerializerSettings jsonSettings = this._jsonSettings.Clone();
+            settings(jsonSettings);
+
+            // Deserialize
+            return JsonConvert.DeserializeObject<TModel>(File.ReadAllText(fullPath), jsonSettings);
         }
     }
 }

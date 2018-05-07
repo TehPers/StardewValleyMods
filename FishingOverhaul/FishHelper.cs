@@ -5,11 +5,9 @@ using FishingOverhaul.Configs;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
-using TehCore;
 using TehCore.Enums;
 using TehCore.Helpers;
 using TehCore.Weighted;
-using SObject = StardewValley.Object;
 using SFarmer = StardewValley.Farmer;
 
 namespace FishingOverhaul {

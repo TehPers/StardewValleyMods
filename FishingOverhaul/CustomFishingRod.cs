@@ -15,11 +15,11 @@ using StardewValley.Tools;
 using TehCore;
 using TehCore.Enums;
 using TehCore.Helpers;
+using TehCore.Saves;
 using SObject = StardewValley.Object;
 
 namespace FishingOverhaul {
-    public class CustomFishingRod : FishingRod {
-
+    public class CustomFishingRod : FishingRod, ICustomItem<CustomFishingRod.RodData> {
         private readonly ReflectedField<FishingRod, int> _clearWaterDistance;
         private readonly ReflectedField<FishingRod, int> _whichFish;
         private readonly ReflectedField<FishingRod, int> _fishQuality;
@@ -320,6 +320,20 @@ namespace FishingOverhaul {
             }
 
             return rod;
+        }
+
+        public RodData Save() {
+            return new RodData {
+                SerializedData = SaveHelper.XmlSerializableToDictionary<FishingRod>(this)
+            };
+        }
+
+        public void Load(RodData model) {
+            SaveHelper.DictionaryToXmlSerializable<FishingRod>(this, model.SerializedData);
+        }
+
+        public class RodData {
+            public Dictionary<string, object> SerializedData { get; set; }
         }
     }
 }

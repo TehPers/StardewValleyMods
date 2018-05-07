@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
-namespace TehCore.Configs {
+namespace TehCore.Helpers.Json {
     public class DescriptiveJsonConverter : JsonConverter {
         private bool _enabled = true;
 

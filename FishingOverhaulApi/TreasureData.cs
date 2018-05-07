@@ -1,12 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using TehCore.Helpers.Json;
-using TehCore.Weighted;
 
-namespace FishingOverhaul.Configs {
+namespace FishingOverhaul.Api {
 
     [JsonDescribe]
-    public class TreasureData : IWeighted {
+    public class TreasureData {
 
         [Description("ID of the first (or only) item")]
         public int Id { get; set; }

@@ -47,25 +47,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configs\DescriptiveJsonConverter.cs" />
-    <Compile Include="Configs\JsonDescribeAttribute.cs" />
+    <Compile Include="Helpers\Json\NetExposer.cs" />
+    <Compile Include="Helpers\Json\DescriptiveJsonConverter.cs" />
+    <Compile Include="Helpers\Json\JsonDescribeAttribute.cs" />
     <Compile Include="Enums\MouseButtons.cs" />
     <Compile Include="Enums\Objects.cs" />
     <Compile Include="Enums\WaterType.cs" />
     <Compile Include="Enums\Season.cs" />
     <Compile Include="Enums\Weather.cs" />
     <Compile Include="Helpers\AssortedHelpers.cs" />
-    <Compile Include="Configs\DescriptiveJsonWriter.cs" />
+    <Compile Include="Helpers\Json\DescriptiveJsonWriter.cs" />
+    <Compile Include="Helpers\Json\CustomItemData.cs" />
     <Compile Include="Helpers\DrawHelpers.cs" />
     <Compile Include="Helpers\EnumerableHelpers.cs" />
+    <Compile Include="Helpers\Json\InventorySource.cs" />
+    <Compile Include="Enums\InventoryType.cs" />
     <Compile Include="Helpers\JsonHelper.cs" />
     <Compile Include="Helpers\MathHelpers.cs" />
+    <Compile Include="Helpers\SaveHelper.cs" />
     <Compile Include="Helpers\SDVHelpers.cs" />
     <Compile Include="Helpers\WeightedHelpers.cs" />
     <Compile Include="Menus\BoxModel\BoxRectangle.cs" />
     <Compile Include="Menus\BoxModel\BoxVector.cs" />
     <Compile Include="Menus\BoxModel\OuterSize.cs" />
     <Compile Include="Menus\BoxModel\Vector2I.cs" />
+    <Compile Include="Saves\ICustomItem.cs" />
+    <Compile Include="Saves\IStorageObject.cs" />
     <Compile Include="Weighted\IWeighted.cs" />
     <Compile Include="Weighted\IWeightedElement.cs" />
     <Compile Include="Menus\ConfigMenuBuilder.cs" />
@@ -77,6 +84,7 @@
     <Compile Include="Weighted\WeightedElement.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\Json\NetConverter.cs" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -84,6 +92,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configs\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

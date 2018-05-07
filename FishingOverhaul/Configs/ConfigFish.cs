@@ -8,8 +8,8 @@ using StardewValley;
 using TehCore.Enums;
 using TehCore;
 using StardewModdingAPI;
-using TehCore.Configs;
 using TehCore.Helpers;
+using TehCore.Helpers.Json;
 
 namespace FishingOverhaul.Configs {
 
