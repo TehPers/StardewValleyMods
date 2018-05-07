@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FishMotionType.cs" />
     <Compile Include="IFishData.cs" />
     <Compile Include="IFishingApi.cs" />
     <Compile Include="ITreasureData.cs" />

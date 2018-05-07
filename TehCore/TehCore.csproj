@@ -87,9 +87,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configs\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\TehCoreApi\TehCoreApi.csproj">
       <Project>{437499c7-9e3c-41f7-a9a0-3d7815f3ac83}</Project>

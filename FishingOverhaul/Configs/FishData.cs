@@ -25,7 +25,7 @@ namespace FishingOverhaul.Configs {
         public Weather Weather { get; set; } = Weather.Rainy | Weather.Sunny;
 
         [Description("The minimum fishing level required to find this fish.")]
-        public int MinLevel { get; set; } = 0;
+        public int MinLevel { get; set; }
 
         [Description("The mine level this fish can be found on, or null if it can be found on any floor.")]
         public int? MineLevel { get; set; }
@@ -58,7 +58,7 @@ namespace FishingOverhaul.Configs {
 
         public bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level, int? mineLevel) {
             return this.MeetsCriteria(waterType, season, weather, time, level)
-                   && (this.MineLevel == -1 || mineLevel == this.MineLevel);
+                   && (this.MineLevel == null || mineLevel == this.MineLevel);
         }
 
         public virtual float GetWeight(int level) {

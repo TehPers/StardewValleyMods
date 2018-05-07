@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Tools;
+using TehCore.Api.Enums;
 using TehCore.Api.Weighted;
 
 namespace FishingOverhaul.Api {
@@ -108,5 +110,22 @@ namespace FishingOverhaul.Api {
         /// <summary>Gets all the trash in the trash list with their associated weights.</summary>
         /// <returns>An enumeration of the trash list.</returns>
         IEnumerable<IWeightedElement<int>> GetPossibleTrash();
+
+        /// <summary>Gets all the fish a <see cref="Farmer"/> can catch.</summary>
+        /// <param name="who">The farmer.</param>
+        /// <returns>All the fish that can be caught with their associated weights.</returns>
+        IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who);
+
+        /// <summary>Gets all the fish a <see cref="Farmer"/> can catch under the given circumstances.</summary>
+        /// <param name="who">The farmer.</param>
+        /// <param name="locationName">The name of the <see cref="GameLocation"/>.</param>
+        /// <param name="water">The allowed types of water.</param>
+        /// <param name="season">The allowed seasons.</param>
+        /// <param name="weather">The allowed weathers.</param>
+        /// <param name="time">The allowed time. This should be between 0600 and 2600, where the first two digits represent the hour, and the second two digits represent the minute.</param>
+        /// <param name="fishLevel">The allowed fishing level.</param>
+        /// <param name="mineLevel">The current mine level, or null to ignore fish specific to certain levels in the mine.</param>
+        /// <returns>All the fish that can be caught with their associated weights.</returns>
+        IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterType water, Season season, Weather weather, int time, int fishLevel, int? mineLevel = null);
     }
 }

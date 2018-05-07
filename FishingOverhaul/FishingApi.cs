@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using FishingOverhaul.Api;
 using FishingOverhaul.Configs;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Tools;
+using TehCore.Api.Enums;
 using TehCore.Api.Weighted;
 using TehCore.Helpers;
 
@@ -151,6 +153,86 @@ namespace FishingOverhaul {
 
         public IEnumerable<IWeightedElement<int>> GetPossibleTrash() {
             return this._trash.ToWeighted();
+        }
+
+        public IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who) {
+            Season s = SDVHelpers.ToSeason(Game1.currentSeason) ?? Season.Spring | Season.Summer | Season.Fall | Season.Winter;
+            WaterType w = SDVHelpers.ToWaterType(who.currentLocation?.getFishingLocation(who.getTileLocation()) ?? -1) ?? WaterType.Both;
+            int mineLevel = who.currentLocation is MineShaft mine ? mine.mineLevel : -1;
+            return this.GetPossibleFish(who, who.currentLocation?.Name ?? "", w, s, Game1.isRaining ? Weather.Rainy : Weather.Sunny, Game1.timeOfDay, Game1.player.FishingLevel, mineLevel);
+        }
+
+        public IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterType water, Season season, Weather weather, int time, int fishLevel, int? mineLevel = null) {
+            // Custom handling for farm maps
+            if (locationName == "Farm" && this.GetFishableFarmFishing()) {
+                switch (Game1.whichFarm) {
+                    case 1: {
+                            // Forest fish + town fish
+                            IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, season, weather, time, fishLevel, mineLevel).NormalizeTo(0.3);
+                            IEnumerable<IWeightedElement<int?>> townFish = this.GetPossibleFish(who, "Town", water, season, weather, time, fishLevel, mineLevel).NormalizeTo(0.7);
+                            return forestFish.Concat(townFish);
+                        }
+                    case 2: {
+                            // Forest fish + woodskip
+                            float scale = 0.05F + (float) Game1.dailyLuck;
+                            IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, season, weather, time, fishLevel, mineLevel).NormalizeTo(1 - scale);
+                            IWeightedElement<int?>[] woodSkip = { new WeightedElement<int?>(734, scale) };
+                            return forestFish.Concat(woodSkip);
+                        }
+                    case 3: {
+                            // Forest fish + default farm fish
+                            IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, season, weather, time, fishLevel, mineLevel);
+                            IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishWithoutFarm(who, locationName, water, season, weather, time, fishLevel, mineLevel);
+                            return forestFish.Concat(farmFish);
+                        }
+                    case 4: {
+                            // Mountain fish + default farm fish
+                            IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Mountain", water, season, weather, time, fishLevel, mineLevel).NormalizeTo(0.35);
+                            IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishWithoutFarm(who, locationName, water, season, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                            return forestFish.Concat(farmFish);
+                        }
+                }
+            }
+
+            return this.GetPossibleFishWithoutFarm(who, locationName, water, season, weather, time, fishLevel, mineLevel);
+        }
+
+        private IEnumerable<IWeightedElement<int?>> GetPossibleFishWithoutFarm(Farmer who, string locationName, WaterType water, Season season, Weather weather, int time, int fishLevel, int? mineLevel = null) {
+            // Check if this location has fish data
+            if (!ModFishing.Instance.FishConfig.PossibleFish.ContainsKey(locationName))
+                return new[] { new WeightedElement<int?>(null, 1) };
+
+            // Check if this is the farm
+            if (locationName == "Farm" && !this.GetFarmFishing())
+                return new[] { new WeightedElement<int?>(null, 1) };
+
+            // Get chance for fish
+            float fishChance = this.GetFishChance(who);
+
+            // Filter all the fish that can be caught at that location
+            IEnumerable<IWeightedElement<int?>> fish = this.GetFishData(locationName).Where(f => {
+                // Legendary fish criteria
+                if (FishHelper.IsLegendary(f.Key)) {
+                    // If custom legendaries is disabled, then don't include legendary fish. They are handled in CustomFishingRod
+                    if (!ModFishing.Instance.MainConfig.CustomLegendaries) {
+                        return false;
+                    }
+
+                    // If recatchable legendaries is disabled, then make sure this fish hasn't been caught yet
+                    if (!ModFishing.Instance.MainConfig.RecatchableLegendaries && who.fishCaught.ContainsKey(f.Key)) {
+                        return false;
+                    }
+                }
+
+                // Normal criteria check
+                return f.Value.MeetsCriteria(water, season, weather, time, fishLevel, mineLevel);
+            }).ToWeighted(kv => kv.Value.GetWeight(fishLevel), kv => (int?) kv.Key);
+
+            // Include trash
+            IWeightedElement<int?>[] trash = { new WeightedElement<int?>(null, 1) };
+
+            // Combine fish with trash
+            return fish.NormalizeTo(fishChance).Concat(trash.NormalizeTo(1 - fishChance));
         }
     }
 }

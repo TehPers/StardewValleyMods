@@ -97,7 +97,7 @@ namespace FishingOverhaul {
                     boxHeight += lineHeight;
 
                     // Get info on all the possible fish
-                    IWeightedElement<int?>[] possibleFish = FishHelper.GetPossibleFish(Game1.player).ToArray();
+                    IWeightedElement<int?>[] possibleFish = this.Api.GetPossibleFish(Game1.player).ToArray();
                     double totalWeight = possibleFish.SumWeights(); // Should always be 1
                     possibleFish = possibleFish.Where(e => e.Value != null).ToArray();
                     double fishChance = possibleFish.SumWeights() / totalWeight;
