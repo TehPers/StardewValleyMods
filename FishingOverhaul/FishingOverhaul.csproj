@@ -58,7 +58,6 @@
     <Compile Include="CustomFishingRod.cs" />
     <Compile Include="FishHelper.cs" />
     <Compile Include="ModFishing.cs" />
-    <Compile Include="FishingSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

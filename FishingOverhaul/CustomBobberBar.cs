@@ -1,4 +1,5 @@
 ﻿using System;
+using FishingOverhaul.Api;
 using FishingOverhaul.Configs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,7 +10,6 @@ using TehCore;
 
 namespace FishingOverhaul {
     public class CustomBobberBar : BobberBar {
-
         private readonly ReflectedField<BobberBar, bool> _treasure;
         private readonly ReflectedField<BobberBar, bool> _treasureCaught;
         private readonly ReflectedField<BobberBar, float> _treasurePosition;
@@ -30,6 +30,8 @@ namespace FishingOverhaul {
         private readonly ReflectedField<BobberBar, float> _reelRotation;
         private readonly ReflectedField<BobberBar, float> _bobberPosition;
         private readonly ReflectedField<BobberBar, bool> _bossFish;
+        private readonly ReflectedField<BobberBar, int> _motionType;
+        private readonly ReflectedField<BobberBar, int> _fishSize;
 
         private readonly ReflectedField<BobberBar, Vector2> _barShake;
         private readonly ReflectedField<BobberBar, Vector2> _fishShake;
@@ -77,6 +79,8 @@ namespace FishingOverhaul {
             this._reelRotation = new ReflectedField<BobberBar, float>(this, "reelRotation");
             this._bobberPosition = new ReflectedField<BobberBar, float>(this, "bobberPosition");
             this._bossFish = new ReflectedField<BobberBar, bool>(this, "bossFish");
+            this._motionType = new ReflectedField<BobberBar, int>(this, "motionType");
+            this._fishSize = new ReflectedField<BobberBar, int>(this, "fishSize");
 
             this._barShake = new ReflectedField<BobberBar, Vector2>(this, "barShake");
             this._fishShake = new ReflectedField<BobberBar, Vector2>(this, "fishShake");
@@ -90,18 +94,26 @@ namespace FishingOverhaul {
 
             /* Actual code */
             ConfigMain config = ModFishing.Instance.MainConfig;
+            IFishTraits traits = ModFishing.Instance.Api.GetFishTraits(whichFish);
 
             // Check if fish is unaware
             this.Unaware = Game1.random.NextDouble() < ModFishing.Instance.Api.GetUnawareChance(user, whichFish);
 
             // Applies difficulty modifier, including if fish is unaware
-            float difficulty = this._difficulty.Value * config.DifficultySettings.BaseDifficultyMult;
+            float difficulty = traits?.Difficulty ?? this._difficulty.Value;
+            difficulty *= config.DifficultySettings.BaseDifficultyMult;
             difficulty *= 1F + this._origStreak * config.DifficultySettings.DifficultyStreakEffect;
             if (this.Unaware) {
                 difficulty *= config.UnawareSettings.UnawareMult;
                 Game1.showGlobalMessage(ModFishing.Translate("text.unaware", ModFishing.Translate("text.percent", 1F - config.UnawareSettings.UnawareMult)));
             }
             this._difficulty.Value = difficulty;
+
+            // Adjusts additional traits about the fish
+            if (traits != null) {
+                this._motionType.Value = (int) traits.MotionType;
+                this._fishSize.Value = traits.MinSize + (int) ((traits.MaxSize - traits.MinSize) * fishSize) + 1;
+            }
 
             // Adjusts quality to be increased by streak
             int fishQuality = this._fishQuality.Value;

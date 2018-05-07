@@ -83,6 +83,16 @@ namespace FishingOverhaul.Api {
         /// <returns>True if an override was removed, false if not.</returns>
         bool ResetFishData(string location, int fish);
 
+        /// <summary>Sets the traits of a fish.</summary>
+        /// <param name="fish">The ID of the fish.</param>
+        /// <param name="traits">The new traits of the fish, or null to remove any overrides.</param>
+        void SetFishTraits(int fish, IFishTraits traits);
+
+        /// <summary>Gets the traits of a fish.</summary>
+        /// <param name="fish">The ID of the fish.</param>
+        /// <returns>The traits of the fish, or null if unknown.</returns>
+        IFishTraits GetFishTraits(int fish);
+
         /// <summary>Adds new treasure data to the list of obtainable treasure.</summary>
         /// <param name="data">The data to add as a new treasure.</param>
         /// <returns>True if added, false if it's a duplicate entry.</returns>

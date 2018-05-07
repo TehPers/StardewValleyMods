@@ -25,6 +25,7 @@ namespace FishingOverhaul {
         public FishingApi Api { get; }
         public ConfigMain MainConfig { get; private set; }
         public ConfigFish FishConfig { get; private set; }
+        public ConfigFishTraits FishTraitsConfig { get; private set; }
         public ConfigTreasure TreasureConfig { get; private set; }
 
         public ModFishing() {
@@ -54,6 +55,7 @@ namespace FishingOverhaul {
             this.MainConfig = this.Helper.ReadJsonFile<ConfigMain>("config.json") ?? new ConfigMain();
             this.TreasureConfig = this.Helper.ReadJsonFile<ConfigTreasure>("treasure.json") ?? new ConfigTreasure();
             this.FishConfig = this.Helper.ReadJsonFile<ConfigFish>("fish.json");
+            this.FishTraitsConfig = this.Helper.ReadJsonFile<ConfigFishTraits>("fishTraits.json");
 
             // Populate fish config if empty
             if (this.FishConfig == null) {
@@ -61,10 +63,17 @@ namespace FishingOverhaul {
                 this.FishConfig.PopulateData();
             }
 
+            // Populate fish traits config if empty
+            if (this.FishTraitsConfig == null) {
+                this.FishTraitsConfig = new ConfigFishTraits();
+                this.FishTraitsConfig.PopulateData();
+            }
+
             // Make sure the configs are generated
             ModCore.Instance.Json.WriteJson("config.json", this.MainConfig, this.Helper, this.MainConfig.MinifyConfigs);
             ModCore.Instance.Json.WriteJson("treasure.json", this.TreasureConfig, this.Helper, this.MainConfig.MinifyConfigs);
             ModCore.Instance.Json.WriteJson("fish.json", this.FishConfig, this.Helper, this.MainConfig.MinifyConfigs);
+            ModCore.Instance.Json.WriteJson("fishTraits.json", this.FishTraitsConfig, this.Helper, this.MainConfig.MinifyConfigs);
         }
 
         #region Events

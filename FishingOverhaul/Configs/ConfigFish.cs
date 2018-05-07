@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StardewValley;
-using TehCore.Enums;
-using TehCore;
 using StardewModdingAPI;
 using TehCore.Api.Enums;
 using TehCore.Helpers;

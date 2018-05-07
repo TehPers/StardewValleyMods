@@ -24,6 +24,7 @@ namespace FishingOverhaul {
         private bool? _farmFishing;
         private bool? _fishableFarmFishing;
         private readonly Dictionary<string, Dictionary<int, IFishData>> _fishDataOverrides = new Dictionary<string, Dictionary<int, IFishData>>();
+        private readonly Dictionary<int, IFishTraits> _fishTraitsOverrides = new Dictionary<int, IFishTraits>();
         private readonly HashSet<ITreasureData> _added = new HashSet<ITreasureData>();
         private readonly HashSet<TreasureData> _removed = new HashSet<TreasureData>();
         private readonly Dictionary<int, double> _trash = Enumerable.Range(FishingApi.MIN_TRASH_ID, FishingApi.MAX_TRASH_ID - FishingApi.MIN_TRASH_ID).ToDictionary(id => id, id => 1D);
@@ -128,6 +129,18 @@ namespace FishingOverhaul {
 
         public bool ResetFishData(string location, int fish) {
             return this._fishDataOverrides.TryGetValue(location, out Dictionary<int, IFishData> overrideLocData) && overrideLocData.Remove(fish);
+        }
+
+        public void SetFishTraits(int fish, IFishTraits traits) {
+            if (traits == null) {
+                this._fishTraitsOverrides.Remove(fish);
+            } else {
+                this._fishTraitsOverrides[fish] = traits;
+            }
+        }
+
+        public IFishTraits GetFishTraits(int fish) {
+            return this._fishTraitsOverrides.TryGetValue(fish, out IFishTraits traits) ? traits : null;
         }
 
         public bool AddTreasureData(ITreasureData data) {
