@@ -103,7 +103,7 @@ namespace FishingOverhaul {
                     double fishChance = possibleFish.SumWeights() / totalWeight;
 
                     // Draw treasure chance
-                    string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", FishHelper.GetTreasureChance(Game1.player, rod)));
+                    string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", this.Api.GetTreasureChance(Game1.player, rod)));
                     batch.DrawStringWithShadow(font, treasureText, new Vector2(0, boxHeight), textColor, 1f);
                     boxWidth = Math.Max(boxWidth, font.MeasureString(treasureText).X);
                     boxHeight += lineHeight;

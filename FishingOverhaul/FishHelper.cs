@@ -5,6 +5,7 @@ using FishingOverhaul.Configs;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Tools;
 using TehCore.Api.Enums;
 using TehCore.Api.Weighted;
 using TehCore.Enums;
@@ -41,7 +42,7 @@ namespace FishingOverhaul {
 
         public static IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterType water, Season season, Weather weather, int time, int fishLevel, int mineLevel = -1) {
             // Custom handling for farm maps
-            if (locationName == "Farm") {
+            if (locationName == "Farm" && ModFishing.Instance.Api.GetFishableFarmFishing()) {
                 switch (Game1.whichFarm) {
                     case 1: {
                             // Forest fish + town fish
@@ -80,14 +81,14 @@ namespace FishingOverhaul {
                 return new[] { new WeightedElement<int?>(null, 1) };
 
             // Check if this is the farm
-            if (locationName == "Farm" && !ModFishing.Instance.MainConfig.GlobalFishSettings.AllowFishOnAllFarms)
+            if (locationName == "Farm" && !ModFishing.Instance.Api.GetFarmFishing())
                 return new[] { new WeightedElement<int?>(null, 1) };
 
             // Get chance for fish
-            float fishChance = FishHelper.GetRawFishChance(who);
+            float fishChance = ModFishing.Instance.Api.GetFishChance(who);
 
             // Filter all the fish that can be caught at that location
-            IEnumerable<IWeightedElement<int?>> fish = ModFishing.Instance.FishConfig.PossibleFish[locationName].Where(f => {
+            IEnumerable<IWeightedElement<int?>> fish = ModFishing.Instance.Api.GetFishData(locationName).Where(f => {
                 // Legendary fish criteria
                 if (FishHelper.IsLegendary(f.Key)) {
                     // If custom legendaries is disabled, then don't include legendary fish. They are handled in CustomFishingRod
@@ -112,9 +113,9 @@ namespace FishingOverhaul {
             return fish.NormalizeTo(fishChance).Concat(trash.NormalizeTo(1 - fishChance));
         }
 
-        public static int GetRandomTrash() => Game1.random.Next(167, 173);
+        public static int GetRandomTrash() => ModFishing.Instance.Api.GetPossibleTrash().Choose(Game1.random);
 
-        public static bool IsTrash(int id) => id >= 167 && id <= 172;
+        public static bool IsTrash(int id) => ModFishing.Instance.Api.GetPossibleTrash().Any(t => t.Value == id);
 
         public static bool IsLegendary(int fish) => fish == 159 || fish == 160 || fish == 163 || fish == 682 || fish == 775;
 
@@ -131,7 +132,7 @@ namespace FishingOverhaul {
             return chance;
         }
 
-        public static float GetTreasureChance(SFarmer who, CustomFishingRod rod) {
+        public static float GetRawTreasureChance(SFarmer who, FishingRod rod) {
             ConfigMain.ConfigGlobalTreasure config = ModFishing.Instance.MainConfig.GlobalTreasureSettings;
 
             // Calculate chance
@@ -149,10 +150,7 @@ namespace FishingOverhaul {
             return Math.Min(chance, config.MaxTreasureChance);
         }
 
-        public static float GetUnawareChance(SFarmer who, int fish) {
-            if (FishHelper.IsLegendary(fish))
-                return 0F;
-
+        public static float GetRawUnawareChance(SFarmer who) {
             ConfigMain.ConfigUnaware config = ModFishing.Instance.MainConfig.UnawareSettings;
 
             // Calculate chance

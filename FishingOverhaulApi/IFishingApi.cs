@@ -1,16 +1,54 @@
 ﻿using System.Collections.Generic;
 using StardewValley;
+using StardewValley.Tools;
+using TehCore.Api.Weighted;
 
 namespace FishingOverhaul.Api {
     public interface IFishingApi {
-        /// <summary>Gets the chance for a farmer to catch a fish.</summary>
+        /// <summary>Sets the chance of catching fish. This overrides any fish chance calculations done by the mod itself.</summary>
+        /// <param name="chance">The new chance of catching fish, or null to remove any overrides.</param>
+        void SetFishChance(float? chance);
+
+        /// <summary>Gets the chance for a <see cref="Farmer"/> to catch a fish.</summary>
         /// <param name="who">The farmer.</param>
-        /// <returns>The chance for the given farmer to catch a fish.</returns>
+        /// <returns>The chance for the given <see cref="Farmer"/> to catch a fish.</returns>
         float GetFishChance(Farmer who);
 
-        /// <summary>Sets the chance of catching fish. This overrides any fish chance calculations done by the mod itself.</summary>
-        /// <param name="chance">The new chance of catching fish, or null to have the mod calculate fish chances.</param>
-        void SetFishChance(float? chance);
+        /// <summary>Sets the chance of finding treasure. This overrides any treasure chance calculations done by the mod itself.</summary>
+        /// <param name="chance">The new chance of finding treasure, or null to remove any overrides.</param>
+        void SetTreasureChance(float? chance);
+
+        /// <summary>Gets the chance for a <see cref="Farmer"/> to find treasure while fishing.</summary>
+        /// <param name="who">The farmer.</param>
+        /// <param name="rod">The equipped fishing rod.</param>
+        /// <returns>The chance for the given <see cref="Farmer"/> to find treasure with the given <see cref="FishingRod"/>.</returns>
+        float GetTreasureChance(Farmer who, FishingRod rod);
+
+        /// <summary>Sets the chance that a <see cref="Farmer"/> finds an unaware fish. Legendary fish cannot be unaware. This disables any unaware fish chance calculations done by the mod itself.</summary>
+        /// <param name="chance">The new chance of finding unaware fish, or null to remove any overrides.</param>
+        void SetUnawareChance(float? chance);
+
+        /// <summary>Gets the chance for a <see cref="Farmer"/> to find an unaware fish.</summary>
+        /// <param name="who">The farmer.</param>
+        /// <param name="fish">The fish. Legendary fish cannot be unaware.</param>
+        /// <returns>The chance for the given <see cref="Farmer"/> to find an unaware fish.</returns>
+        float GetUnawareChance(Farmer who, int fish);
+
+        /// <summary>Sets whether players can catch fish from the "Farm" location on their farm, regardless of what type of farm it is. To disable fishing on farms that normally allow fishing as well, see <see cref="SetFishableFarmFishing"/>.</summary>
+        /// <param name="allowFish">True to allow fishing, false to disallow fishing, or null to remove any overrides.</param>
+        void SetFarmFishing(bool? allowFish);
+
+        /// <summary>Gets whether players can catch fish from the "Farm" location on their farm. For normally fishable farms, if <see cref="GetFishableFarmFishing"/> returns true, players can still fish on those farms.</summary>
+        /// <returns>True if players can fish on their farm, false if not.</returns>
+        bool GetFarmFishing();
+
+        /// <summary>Sets whether players can catch fish on normally fishable farms. If <see cref="GetFarmFishing"/> returns true, fish can also be pulled from the "Farm" location regardless of this value.</summary>
+        /// <param name="allowFish">True to allow fishing, false to disallow fishing, or null to remove any overrides.</param>
+        void SetFishableFarmFishing(bool? allowFish);
+
+        /// <summary>Gets whether players can catch fish on normally fishable farms. If <see cref="GetFarmFishing"/> returns true, fish will still be pulled from the "Farm" location.</summary>
+        /// <returns></returns>
+        bool GetFishableFarmFishing();
 
         /// <summary>Gets all the fish data at the given location.</summary>
         /// <param name="location">The location to get fish data for.</param>
@@ -56,5 +94,19 @@ namespace FishingOverhaul.Api {
         /// <summary>Gets all the obtainable treasure data.</summary>
         /// <returns>An <see cref="IEnumerable{ITreasureData}"/> containing all the available treasure data.</returns>
         IEnumerable<ITreasureData> GetTreasureData();
+
+        /// <summary>Sets the weight of an item in the trash list. If the item isn't already in the list, it will be inserted.</summary>
+        /// <param name="id">The ID to assign the weight to.</param>
+        /// <param name="weight">The weight of the item in the trash list.</param>
+        void SetTrashWeight(int id, double weight);
+
+        /// <summary>Removes an item from the list of trash.</summary>
+        /// <param name="id">The ID to remove from the list of trash.</param>
+        /// <returns>True if the ID was removed, false if not.</returns>
+        bool RemoveTrash(int id);
+
+        /// <summary>Gets all the trash in the trash list with their associated weights.</summary>
+        /// <returns>An enumeration of the trash list.</returns>
+        IEnumerable<IWeightedElement<int>> GetPossibleTrash();
     }
 }

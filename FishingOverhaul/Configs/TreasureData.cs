@@ -5,11 +5,12 @@ using System.Linq;
 using TehCore.Api.Weighted;
 using TehCore.Helpers.Json;
 using FishingOverhaul.Api;
+using StardewValley;
 
 namespace FishingOverhaul.Configs {
 
     [JsonDescribe]
-    internal class TreasureData : ITreasureData {
+    public class TreasureData : ITreasureData {
 
         [Description("ID of the first (or only) item")]
         public int Id { get; set; }
@@ -50,8 +51,8 @@ namespace FishingOverhaul.Configs {
             this.AllowDuplicates = allowDuplicates;
         }
 
-        public bool IsValid(int level) {
-            return level >= this.MinLevel && (this.MaxLevel >= 10 || level <= this.MaxLevel);
+        public bool IsValid(Farmer who) {
+            return who.FishingLevel >= this.MinLevel && (this.MaxLevel >= 10 || who.FishingLevel <= this.MaxLevel);
         }
 
         public IList<int> PossibleIds() {

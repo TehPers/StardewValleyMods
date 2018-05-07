@@ -92,7 +92,7 @@ namespace FishingOverhaul {
             ConfigMain config = ModFishing.Instance.MainConfig;
 
             // Check if fish is unaware
-            this.Unaware = Game1.random.NextDouble() < FishHelper.GetUnawareChance(user, whichFish);
+            this.Unaware = Game1.random.NextDouble() < ModFishing.Instance.Api.GetUnawareChance(user, whichFish);
 
             // Applies difficulty modifier, including if fish is unaware
             float difficulty = this._difficulty.Value * config.DifficultySettings.BaseDifficultyMult;
@@ -253,8 +253,7 @@ namespace FishingOverhaul {
                 if (ModFishing.Instance.MainConfig.ShowFish) {
                     Rectangle fishSrc = GameLocation.getSourceRectForObject(this._whichFish);
                     b.Draw(Game1.objectSpriteSheet, fishPos, fishSrc, Color.White, 0.0f, new Vector2(10f, 10f), 2.25f, SpriteEffects.None, 0.88f);
-                }
-                else {
+                } else {
                     Rectangle fishSrc = new Rectangle(614 + (this._bossFish.Value ? 20 : 0), 1840, 20, 20);
                     b.Draw(Game1.mouseCursors, fishPos, fishSrc, Color.White, 0.0f, new Vector2(10f, 10f), 2f, SpriteEffects.None, 0.88f);
                 }

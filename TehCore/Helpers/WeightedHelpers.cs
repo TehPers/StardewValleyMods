@@ -17,9 +17,9 @@ namespace TehCore.Helpers {
             }
         }
 
-        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> source) => source.Choose(new Random());
-        public static T Choose<T>(this IEnumerable<KeyValuePair<T, double>> source, Random rand) {
-            return source.Select(kv => new WeightedElement<T>(kv.Key, kv.Value)).Choose<T>(rand);
+        public static T Choose<T>(this IDictionary<T, double> source) => source.Choose(new Random());
+        public static T Choose<T>(this IDictionary<T, double> source, Random rand) {
+            return source.ToWeighted().Choose<T>(rand);
         }
 
         public static T Choose<T>(this IEnumerable<T> source) where T : IWeighted => source.Choose(new Random());
@@ -41,6 +41,9 @@ namespace TehCore.Helpers {
             return ((WeightedElement<T>) result).Value;
         }
 
+        public static IEnumerable<IWeightedElement<T>> ToWeighted<T>(this IDictionary<T, double> source) {
+            return source.Select(kv => new WeightedElement<T>(kv.Key, kv.Value));
+        }
         public static IEnumerable<IWeightedElement<T>> ToWeighted<T>(this IEnumerable<T> source, Func<T, double> weightSelector) => source.ToWeighted(weightSelector, e => e);
         public static IEnumerable<IWeightedElement<TEntry>> ToWeighted<TSource, TEntry>(this IEnumerable<TSource> source, Func<TSource, double> weightSelector, Func<TSource, TEntry> entrySelector) {
             return source.Select(e => new WeightedElement<TEntry>(entrySelector(e), weightSelector(e)));

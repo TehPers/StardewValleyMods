@@ -199,7 +199,7 @@ namespace FishingOverhaul {
             // Check if there should be treasure
             bool treasure = !Game1.isFestival();
             treasure &= this.lastUser.fishCaught != null && this.lastUser.fishCaught.Count > 1;
-            treasure &= Game1.random.NextDouble() < FishHelper.GetTreasureChance(this.lastUser, this);
+            treasure &= Game1.random.NextDouble() < ModFishing.Instance.Api.GetTreasureChance(this.lastUser, this);
             Game1.activeClickableMenu = new CustomBobberBar(this.lastUser, fish, fishSize, treasure, this.attachments[1]?.ParentSheetIndex ?? -1);
         }
 
@@ -241,7 +241,7 @@ namespace FishingOverhaul {
             if (extra == 1) rewards.Add(new SObject(whichFish, 1, false, -1, fishQuality));
 
             List<ITreasureData> possibleLoot = new List<ITreasureData>(ModFishing.Instance.TreasureConfig.PossibleLoot)
-                .Where(treasure => treasure.IsValid(this.lastUser.FishingLevel)).ToList();
+                .Where(treasure => treasure.IsValid(this.lastUser)).ToList();
 
             // Select rewards
             float chance = 1f;
