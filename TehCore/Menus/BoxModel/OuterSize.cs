@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TehCore.Menus.BoxModel {
+﻿namespace TehCore.Menus.BoxModel {
     public struct OuterSize {
         public static OuterSize Zero { get; } = new OuterSize(0);
 

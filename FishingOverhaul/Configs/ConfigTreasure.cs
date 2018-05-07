@@ -12,7 +12,7 @@ namespace FishingOverhaul.Configs {
     public class ConfigTreasure {
 
         [Description("All the treasure that can be found while fishing")]
-        public TreasureData[] PossibleLoot { get; set; } = {
+        public List<TreasureData> PossibleLoot { get; set; } = new List<TreasureData> {
             new TreasureData(Objects.DressedSpinner, 0.025, 1, 1, 6, allowDuplicates: false),
             new TreasureData(Objects.Bait, 0.25, 2, 4),
             //new TreasureData(Objects.BAIT, 0.05, 10), // No need for this I guess

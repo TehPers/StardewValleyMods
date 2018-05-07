@@ -5,9 +5,10 @@ using FishingOverhaul.Configs;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
+using TehCore.Api.Enums;
+using TehCore.Api.Weighted;
 using TehCore.Enums;
 using TehCore.Helpers;
-using TehCore.Weighted;
 using SFarmer = StardewValley.Farmer;
 
 namespace FishingOverhaul {
@@ -83,7 +84,7 @@ namespace FishingOverhaul {
                 return new[] { new WeightedElement<int?>(null, 1) };
 
             // Get chance for fish
-            float fishChance = FishHelper.GetFishChance(who);
+            float fishChance = FishHelper.GetRawFishChance(who);
 
             // Filter all the fish that can be caught at that location
             IEnumerable<IWeightedElement<int?>> fish = ModFishing.Instance.FishConfig.PossibleFish[locationName].Where(f => {
@@ -102,7 +103,7 @@ namespace FishingOverhaul {
 
                 // Normal criteria check
                 return f.Value.MeetsCriteria(water, season, weather, time, fishLevel, mineLevel);
-            }).ToWeighted(kv => kv.Value.GetWeightedChance(fishLevel), kv => (int?) kv.Key);
+            }).ToWeighted(kv => kv.Value.GetWeight(fishLevel), kv => (int?) kv.Key);
 
             // Include trash
             IWeightedElement<int?>[] trash = { new WeightedElement<int?>(null, 1) };
@@ -117,7 +118,7 @@ namespace FishingOverhaul {
 
         public static bool IsLegendary(int fish) => fish == 159 || fish == 160 || fish == 163 || fish == 682 || fish == 775;
 
-        private static float GetFishChance(SFarmer who) {
+        public static float GetRawFishChance(SFarmer who) {
             ConfigMain.ConfigGlobalFish config = ModFishing.Instance.MainConfig.GlobalFishSettings;
 
             // Calculate chance

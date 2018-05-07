@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
+using FishingOverhaul.Api;
 using FishingOverhaul.Configs;
 using Microsoft.Xna.Framework;
 using Netcode;
@@ -239,17 +240,18 @@ namespace FishingOverhaul {
             List<Item> rewards = new List<Item>();
             if (extra == 1) rewards.Add(new SObject(whichFish, 1, false, -1, fishQuality));
 
-            List<TreasureData> possibleLoot = new List<TreasureData>(ModFishing.Instance.TreasureConfig.PossibleLoot)
+            List<ITreasureData> possibleLoot = new List<ITreasureData>(ModFishing.Instance.TreasureConfig.PossibleLoot)
                 .Where(treasure => treasure.IsValid(this.lastUser.FishingLevel)).ToList();
 
             // Select rewards
             float chance = 1f;
             int streak = FishHelper.GetStreak(this.lastUser);
             while (possibleLoot.Count > 0 && rewards.Count < config.MaxTreasureQuantity && Game1.random.NextDouble() <= chance) {
-                TreasureData treasure = possibleLoot.Choose(Game1.random);
+                ITreasureData treasure = possibleLoot.Choose(Game1.random);
 
                 // Choose an ID for the treasure
-                int id = treasure.Id + Game1.random.Next(treasure.IdRange - 1);
+                IList<int> ids = treasure.PossibleIds();
+                int id = ids[Game1.random.Next(ids.Count)];
 
                 // Lost books have custom handling
                 if (id == Objects.LostBook) {
@@ -284,8 +286,6 @@ namespace FishingOverhaul {
 
                 // Update chance
                 chance *= config.AdditionalLootChance + streak * config.StreakAdditionalLootChance;
-
-                //rewards.Add(new StardewValley.Object(Vector2.Zero, Objects.BAIT, Game1.random.Next(10, 25)));
             }
 
             // Add bait if no rewards were selected. NOTE: This should never happen

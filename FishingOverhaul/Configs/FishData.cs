@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using TehCore.Enums;
+using FishingOverhaul.Api;
+using TehCore.Api.Enums;
 using TehCore.Helpers.Json;
-using TehCore.Weighted;
 
 namespace FishingOverhaul.Configs {
 
     [JsonDescribe]
-    public class FishData {
+    public class FishData : IFishData {
         [Description("The weighted chance of this fish appearing")]
         public double Chance { get; set; } = 1D;
 
@@ -27,15 +27,15 @@ namespace FishingOverhaul.Configs {
         [Description("The minimum fishing level required to find this fish.")]
         public int MinLevel { get; set; } = 0;
 
-        [Description("The mine level this fish can be found on.")]
-        public int MineLevel { get; set; } = -1;
+        [Description("The mine level this fish can be found on, or null if it can be found on any floor.")]
+        public int? MineLevel { get; set; }
 
         public FishData() { }
 
-        public FishData(double chance, int minTime, int maxTime, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int mineLevel = -1)
+        public FishData(double chance, int minTime, int maxTime, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int? mineLevel = null)
             : this(chance, new[] { new TimeInterval(minTime, maxTime) }, waterType, season, minLevel, weather, mineLevel) { }
 
-        public FishData(double chance, IEnumerable<TimeInterval> times, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int mineLevel = -1) {
+        public FishData(double chance, IEnumerable<TimeInterval> times, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int? mineLevel = null) {
             this.Chance = chance;
             this.WaterType = waterType;
             this.Season = season;
@@ -56,34 +56,18 @@ namespace FishingOverhaul.Configs {
                    && this.Times.Any(t => time >= t.Start && time < t.Finish);
         }
 
-        public bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level, int mineLevel) {
+        public bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level, int? mineLevel) {
             return this.MeetsCriteria(waterType, season, weather, time, level)
                    && (this.MineLevel == -1 || mineLevel == this.MineLevel);
         }
 
-        public virtual float GetWeightedChance(int level) {
+        public virtual float GetWeight(int level) {
             return (float) this.Chance + level / 50f;
         }
 
         public override string ToString() => $"Chance: {this.Chance}, Weather: {this.Weather}, Season: {this.Season}";
 
         public static FishData Trash { get; } = new FishData(1, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
-
-        public class CombinedFishData : IWeighted {
-            public int Fish { get; }
-            public FishData Data { get; }
-            public int Level { get; }
-
-            public CombinedFishData(int fish, FishData data, int level) {
-                this.Fish = fish;
-                this.Data = data;
-                this.Level = level;
-            }
-
-            public double GetWeight() {
-                return this.Data.GetWeightedChance(this.Level);
-            }
-        }
 
         [JsonDescribe]
         public class TimeInterval {

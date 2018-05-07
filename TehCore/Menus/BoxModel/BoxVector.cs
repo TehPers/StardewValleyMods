@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using xTile.Dimensions;
-
-namespace TehCore.Menus.BoxModel {
+﻿namespace TehCore.Menus.BoxModel {
     public struct BoxVector {
         public static BoxVector Zero { get; } = new BoxVector(0, 0, 0, 0);
         public static BoxVector Fill { get; } = new BoxVector(0, 0, 1, 1);

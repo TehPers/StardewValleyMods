@@ -15,16 +15,21 @@ using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Tools;
 using TehCore;
+using TehCore.Api.Weighted;
 using TehCore.Helpers;
-using TehCore.Weighted;
 
 namespace FishingOverhaul {
     public class ModFishing : Mod {
         public static ModFishing Instance { get; private set; }
 
+        public FishingApi Api { get; }
         public ConfigMain MainConfig { get; private set; }
         public ConfigFish FishConfig { get; private set; }
         public ConfigTreasure TreasureConfig { get; private set; }
+
+        public ModFishing() {
+            this.Api = new FishingApi();
+        }
 
         public override void Entry(IModHelper helper) {
             ModFishing.Instance = this;
@@ -38,6 +43,10 @@ namespace FishingOverhaul {
             GameEvents.UpdateTick += this.UpdateTick;
             GraphicsEvents.OnPostRenderHudEvent += this.PostRenderHud;
             //SaveEvents.BeforeSave += this.BeforeSave;
+        }
+
+        public override object GetApi() {
+            return this.Api;
         }
 
         private void LoadConfigs() {
@@ -80,7 +89,7 @@ namespace FishingOverhaul {
                 // Setup the sprite batch
                 using (SpriteBatch batch = new SpriteBatch(Game1.graphics.GraphicsDevice)) {
                     batch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
-                    
+
                     // Draw streak
                     string streakText = ModFishing.Translate("text.streak", FishHelper.GetStreak(Game1.player));
                     batch.DrawStringWithShadow(font, streakText, Vector2.Zero, textColor, 1f);

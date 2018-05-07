@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TehCore.Enums {
+﻿namespace TehCore.Enums {
     public class Objects {
         public const int Bait = 685;
         public const int DressedSpinner = 687;

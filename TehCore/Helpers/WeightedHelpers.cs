@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TehCore.Weighted;
+using TehCore.Api.Weighted;
 
 namespace TehCore.Helpers {
     public static class WeightedHelpers {

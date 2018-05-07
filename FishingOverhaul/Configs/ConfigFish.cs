@@ -8,6 +8,7 @@ using StardewValley;
 using TehCore.Enums;
 using TehCore;
 using StardewModdingAPI;
+using TehCore.Api.Enums;
 using TehCore.Helpers;
 using TehCore.Helpers.Json;
 

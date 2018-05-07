@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TehCore.Enums {
+namespace TehCore.Api.Enums {
     [Flags]
     public enum Weather {
         Sunny = 1,

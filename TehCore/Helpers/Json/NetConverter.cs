@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Netcode;
 using Newtonsoft.Json;
-using StardewValley;
 
 namespace TehCore.Helpers.Json {
     public class NetConverter : JsonConverter {

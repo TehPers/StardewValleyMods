@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TehCore.Saves {
+﻿namespace TehCore.Saves {
     public interface ICustomItem<TModel> {
         /// <summary>Stores all the info about this item onto a single object.</summary>
         /// <returns>An object containing the info about this item that needs to be saved.</returns>

@@ -1,4 +1,4 @@
-﻿namespace TehCore.Weighted {
+﻿namespace TehCore.Api.Weighted {
     public class WeightedElement<T> : IWeightedElement<T> {
         public T Value { get; }
         private readonly double _weight;

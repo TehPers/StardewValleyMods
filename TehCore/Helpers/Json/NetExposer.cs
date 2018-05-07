@@ -2,7 +2,6 @@
 using System.IO;
 using System.Reflection;
 using Netcode;
-using Newtonsoft.Json;
 
 namespace TehCore.Helpers.Json {
     public sealed class NetExposer {

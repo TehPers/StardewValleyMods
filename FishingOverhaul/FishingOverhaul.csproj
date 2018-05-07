@@ -47,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configs\IFishData.cs" />
+    <Compile Include="ModApi.cs" />
     <Compile Include="Configs\ConfigFish.cs" />
     <Compile Include="Configs\ConfigMain.cs" />
     <Compile Include="Configs\ConfigTreasure.cs" />
@@ -71,6 +73,14 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\FishingOverhaulApi\FishingOverhaulApi.csproj">
+      <Project>{6FD61B65-282D-4764-ABBD-DA2501EFCFF1}</Project>
+      <Name>FishingOverhaulApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TehCoreApi\TehCoreApi.csproj">
+      <Project>{437499C7-9E3C-41F7-A9A0-3D7815F3AC83}</Project>
+      <Name>TehCoreApi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TehCore\TehCore.csproj">
       <Project>{2d8d9c15-e910-42d8-8cc2-69da52405d78}</Project>
       <Name>TehCore</Name>

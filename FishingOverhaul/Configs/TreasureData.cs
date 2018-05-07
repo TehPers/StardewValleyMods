@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using TehCore.Api.Weighted;
 using TehCore.Helpers.Json;
-using TehCore.Weighted;
+using FishingOverhaul.Api;
 
 namespace FishingOverhaul.Configs {
 
     [JsonDescribe]
-    public class TreasureData : IWeighted {
+    internal class TreasureData : ITreasureData {
 
         [Description("ID of the first (or only) item")]
         public int Id { get; set; }
@@ -47,8 +50,16 @@ namespace FishingOverhaul.Configs {
             this.AllowDuplicates = allowDuplicates;
         }
 
-        public bool IsValid(int level) => level >= this.MinLevel && (this.MaxLevel >= 10 || level <= this.MaxLevel);
+        public bool IsValid(int level) {
+            return level >= this.MinLevel && (this.MaxLevel >= 10 || level <= this.MaxLevel);
+        }
 
-        public double GetWeight() => this.Chance;
+        public IList<int> PossibleIds() {
+            return Enumerable.Range(this.Id, Math.Max(1, this.IdRange)).ToList();
+        }
+
+        public double GetWeight() {
+            return this.Chance;
+        }
     }
 }
