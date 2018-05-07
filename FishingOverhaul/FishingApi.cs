@@ -242,7 +242,7 @@ namespace FishingOverhaul {
 
                 // Normal criteria check
                 return f.Value.MeetsCriteria(water, season, weather, time, fishLevel, mineLevel);
-            }).ToWeighted(kv => kv.Value.GetWeight(fishLevel), kv => (int?) kv.Key);
+            }).ToWeighted(kv => kv.Value.GetWeight(who), kv => (int?) kv.Key);
 
             // Include trash
             IWeightedElement<int?>[] trash = { new WeightedElement<int?>(null, 1) };

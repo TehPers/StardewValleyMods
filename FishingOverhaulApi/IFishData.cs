@@ -1,11 +1,12 @@
-﻿using TehCore.Api.Enums;
+﻿using StardewValley;
+using TehCore.Api.Enums;
 
 namespace FishingOverhaul.Api {
     public interface IFishData {
         /// <summary>Returns the weighted chance of this fish being selected (in comparison to other fish) for the given farmer.</summary>
-        /// <param name="level">The farmer's fishing level</param>
+        /// <param name="who">The farmer.</param>
         /// <returns>The weighted chance of this fish being selected.</returns>
-        float GetWeight(int level);
+        float GetWeight(Farmer who);
 
         /// <summary>Whether this fish meets the given criteria and can be caught.</summary>
         /// <param name="waterType">The type of water this fish is in.</param>
