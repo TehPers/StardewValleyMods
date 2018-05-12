@@ -14,6 +14,10 @@
         /// <summary>Absolute size on the bottom</summary>
         public int Bottom { get; }
 
+        public Vector2I TopLeft => new Vector2I(this.Left, this.Top);
+
+        public Vector2I BottomRight => new Vector2I(this.Right, this.Bottom);
+
         public OuterSize(int left, int right, int top, int bottom) {
             this.Left = left;
             this.Right = right;

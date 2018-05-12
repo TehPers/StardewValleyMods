@@ -1,6 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-
-namespace TehCore.Menus.BoxModel {
+﻿namespace TehCore.Menus.BoxModel {
     public struct BoxRectangle {
         public BoxVector Location { get; }
         public BoxVector Size { get; }
@@ -10,11 +8,11 @@ namespace TehCore.Menus.BoxModel {
             this.Size = size;
         }
 
-        public Rectangle ToAbsolute(Vector2I parentSize) => this.ToAbsolute(parentSize.X, parentSize.Y);
-        public Rectangle ToAbsolute(int parentWidth, int parentHeight) {
+        public Rectangle2I ToAbsolute(Rectangle2I parentBounds) => this.ToAbsolute(parentBounds.Location.X, parentBounds.Location.Y, parentBounds.Size.X, parentBounds.Size.Y);
+        public Rectangle2I ToAbsolute(int parentX, int parentY, int parentWidth, int parentHeight) {
             Vector2I loc = this.Location.ToAbsolute(parentWidth, parentHeight);
             Vector2I size = this.Size.ToAbsolute(parentWidth, parentHeight);
-            return new Rectangle(loc.X, loc.Y, size.X, size.Y);
+            return new Rectangle2I(loc.X + parentX, loc.Y + parentY, size.X, size.Y);
         }
     }
 }

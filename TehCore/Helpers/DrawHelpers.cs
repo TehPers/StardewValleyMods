@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using Rectangle2 = Microsoft.Xna.Framework.Rectangle;
 using Rectangle = xTile.Dimensions.Rectangle;
 
@@ -73,6 +74,13 @@ namespace TehCore.Helpers {
         public static void DrawStringWithShadow(this SpriteBatch batch, SpriteFont font, string text, Vector2 position, Color color, float depth = 0F) {
             batch.DrawString(font, text, position + Vector2.One * Game1.pixelZoom / 2f, Color.Black, 0F, Vector2.Zero, Vector2.One, SpriteEffects.None, depth - 0.001F);
             batch.DrawString(font, text, position, color, 0F, Vector2.Zero, Vector2.One, SpriteEffects.None, depth);
+        }
+
+        public static void DrawSpeechBubble(this Character who, string text, Color color, int style = 1) {
+            Vector2 local = Game1.GlobalToLocal(new Vector2(who.getStandingX(), who.getStandingY() - 192 + who.yJumpOffset));
+            if (style == 0)
+                local += new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2));
+            SpriteText.drawStringWithScrollCenteredAt(Game1.spriteBatch, text, (int) local.X, (int) local.Y, "", 1F, (int) color.PackedValue, 1, (float) (who.getTileY() * 64 / 10000.0 + 1.0 / 1000.0 + who.getTileX() / 10000.0));
         }
     }
 }

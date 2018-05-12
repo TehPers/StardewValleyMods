@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Input;
 
 namespace ShroomSpotter {
-    public class ModConfig {
+    public class MainConfig {
         public bool ModEnabled { get; set; } = true;
         public Keys GetShroomLevels { get; set; } = Keys.NumPad5;
     }

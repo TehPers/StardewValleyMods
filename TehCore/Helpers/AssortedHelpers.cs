@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using Microsoft.Xna.Framework.Input;
 using Netcode;
 using Newtonsoft.Json;
 using StardewModdingAPI;
@@ -58,34 +61,6 @@ namespace TehCore.Helpers {
             return obj;
         }
 
-        public static bool IsNetFieldBase(this Type type) {
-            // Check if objectType extends NetFieldBase
-            while (type != null && type != typeof(object)) {
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(NetFieldBase<,>))
-                    return true;
-
-                // Check base class
-                type = type.BaseType;
-            }
-
-            // Doesn't extend it
-            return false;
-        }
-
-        public static bool IsNetArray(this Type type) {
-            // Check if objectType extends NetFieldBase
-            while (type != null && type != typeof(object)) {
-                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(NetArray<,>))
-                    return true;
-
-                // Check base class
-                type = type.BaseType;
-            }
-
-            // Doesn't extend it
-            return false;
-        }
-        
         public static JsonSerializerSettings Clone(this JsonSerializerSettings source) {
             return new JsonSerializerSettings {
                 CheckAdditionalContent = source.CheckAdditionalContent,
@@ -118,6 +93,43 @@ namespace TehCore.Helpers {
                 TraceWriter = source.TraceWriter,
                 TypeNameAssemblyFormatHandling = source.TypeNameAssemblyFormatHandling,
             };
+        }
+
+        /// <summary>Performs any number of simultaneous breadth-first traversals over a graph, returning each vertex that was reached.</summary>
+        /// <typeparam name="TVertex">The type of the vertex in the graph.</typeparam>
+        /// <param name="starts">All vertices that the traversals should begin at.</param>
+        /// <param name="getNeighbors">A function returning all vertices the given vertex is connected to.</param>
+        /// <param name="equalityComparer">Equality comparer for vertices to avoid the same vertex being checked multiple times.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> containing each vertex that was reached.</returns>
+        public static IEnumerable<TVertex> Traverse<TVertex>(this IEnumerable<TVertex> starts, Func<GraphNode<TVertex>, IEnumerable<TVertex>> getNeighbors, IEqualityComparer<TVertex> equalityComparer = null) {
+            Queue<GraphNode<TVertex>> open = new Queue<GraphNode<TVertex>>(starts.Select(s => new GraphNode<TVertex>(s, 0)));
+            HashSet<TVertex> closed = equalityComparer != null ? new HashSet<TVertex>(equalityComparer) : new HashSet<TVertex>();
+
+            // As long as there's any open nodes
+            while (open.Any()) {
+                // Take the closest one (the first in the queue will always be closest for breadth-first)
+                // As a side note, since this is just a traversal, it doesn't matter which one we take since we're going to visit them all
+                GraphNode<TVertex> cur = open.Dequeue();
+                if (!closed.Add(cur.Value))
+                    continue;
+
+                yield return cur.Value;
+                foreach (TVertex neighbor in getNeighbors(cur)) {
+                    open.Enqueue(new GraphNode<TVertex>(neighbor, cur.TotalCost + 1));
+                }
+            }
+        }
+
+        /// <summary>Wrapper class for vertices which represents a node in a graph.</summary>
+        /// <typeparam name="TVertex">The type of the vertex in the graph.</typeparam>
+        public class GraphNode<TVertex> {
+            public TVertex Value { get; set; }
+            public int TotalCost { get; set; }
+
+            public GraphNode(TVertex value, int totalCost) {
+                this.Value = value;
+                this.TotalCost = totalCost;
+            }
         }
     }
 }

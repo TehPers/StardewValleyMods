@@ -16,13 +16,13 @@ namespace ShroomSpotter {
     public class ModShrooms : Mod {
         public static ModShrooms Instance;
 
-        public ModConfig Config { get; set; }
+        public MainConfig Config { get; set; }
         public List<UpdateEvent> UpdateEvents = new List<UpdateEvent>();
         public delegate bool UpdateEvent();
 
         public override void Entry(IModHelper helper) {
             ModShrooms.Instance = this;
-            this.Config = helper.ReadConfig<ModConfig>();
+            this.Config = helper.ReadConfig<MainConfig>();
             if (!this.Config.ModEnabled) return;
 
             //this.Monitor.Log("It is *HIGHLY* recommended you install a Health Bars mod for enemies!", LogLevel.Info);
@@ -30,7 +30,22 @@ namespace ShroomSpotter {
             ControlEvents.KeyPressed += this.KeyPressed;
             GraphicsEvents.OnPreRenderGuiEvent += this.OnPreRenderGuiEvent;
             GraphicsEvents.OnPostRenderGuiEvent += this.OnPostRenderGuiEvent;
+            GraphicsEvents.OnPostRenderHudEvent += this.OnPostRenderHudEvent;
             //MenuEvents.MenuChanged += MenuEvents_MenuChanged;
+        }
+
+        private void OnPostRenderHudEvent(object sender, EventArgs eventArgs) {
+            StringBuilder debugText = new StringBuilder();
+            debugText.AppendLine($"Days played: {Game1.stats.DaysPlayed}");
+
+            // NEED HOST UNIQUE ID
+            debugText.AppendLine($"Unique game ID: {Game1.uniqueIDForThisGame}");
+            Random random = new Random((int) Game1.stats.DaysPlayed + 15 + this.GetHostUniqueID() / 2);
+            debugText.AppendLine($"Random number 1: {random.NextDouble()}");
+            debugText.AppendLine($"Random number 2: {random.NextDouble()}");
+            debugText.AppendLine($"Random number 3: {random.NextDouble()}");
+            debugText.AppendLine($"Random number 4: {random.NextDouble()}");
+            Game1.spriteBatch.DrawString(Game1.smallFont, debugText.ToString(), Vector2.Zero, Color.White);
         }
 
         #region Events
@@ -127,7 +142,7 @@ namespace ShroomSpotter {
         public List<int> GetShroomLayers(int relativeDay) {
             List<int> shroomLevels = new List<int>();
             for (int mineLevel = 1; mineLevel < 120; mineLevel++) {
-                Random random = new Random((int) Game1.stats.DaysPlayed + relativeDay + mineLevel + (int) Game1.uniqueIDForThisGame / 2);
+                Random random = new Random((int) Game1.stats.DaysPlayed + relativeDay + mineLevel + (int) this.GetHostUniqueID() / 2);
 
                 // Simulate all the random values grabbed before the shrooms
                 if (random.NextDouble() < 0.3 && mineLevel > 2)
@@ -138,6 +153,11 @@ namespace ShroomSpotter {
             }
 
             return shroomLevels;
+        }
+
+        public int GetHostUniqueID() {
+            // TODO: Sync this in multiplayer when SMAPI's multiplayer helpers come out
+            return (int) Game1.uniqueIDForThisGame;
         }
     }
 }

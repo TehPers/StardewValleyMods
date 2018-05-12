@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StardewValley.Menus;
 using TehCore.Enums;
 using TehCore.Helpers;
 using TehCore.Menus.BoxModel;
@@ -17,16 +18,20 @@ namespace TehCore.Menus.Elements {
         private Element _focused;
 
         /* Size properties */
+        /// <summary>Distance from this <see cref="Element"/>'s edges to the edges of its <see cref="Parent"/>'s padding.</summary>
         public OuterSize Margin { get; set; } = OuterSize.Zero;
+        /// <summary>Distance from this <see cref="Element"/>'s edges to the edges of its <see cref="Children"/>'s margins.</summary>
         public OuterSize Padding { get; set; } = OuterSize.Zero;
 
-        public Element Parent { get; set; } = null;
+        /// <summary>The <see cref="Element"/> this is a child of.</summary>
+        public Element Parent { get; set; }
+        /// <summary>This <see cref="Element"/>'s children elements.</summary>
         public List<Element> Children { get; } = new List<Element>();
 
         /// <summary>Location relative to <see cref="Parent"/>, or the viewport if <see cref="Parent"/> is null</summary>
-        public virtual BoxVector Location { get; set; } = BoxVector.Zero;
+        public BoxVector Location { get; set; } = BoxVector.Zero;
         /// <summary>Size of this <see cref="Element"/></summary>
-        public virtual BoxVector Size { get; set; } = BoxVector.Fill;
+        public BoxVector Size { get; set; } = BoxVector.Fill;
         /// <summary>Bounds relative to <see cref="Parent"/>, or the viewport if <see cref="Parent"/> is null</summary>
         public BoxRectangle Bounds {
             get => new BoxRectangle(this.Location, this.Size);
@@ -41,7 +46,7 @@ namespace TehCore.Menus.Elements {
         /// <summary>Bounds this control can be clicked in to get focused</summary>
         public virtual BoxRectangle FocusBounds => this.Bounds;
         /// <summary>Whether this control is focused</summary>
-        public bool IsFocused => this.GetFocusedComponent() == this;
+        public bool IsFocused => this.GetFocusedElement() == this;
         /// <summary>Whether this or any of its descendents are focused</summary>
         public bool IsThisOrChildrenFocused => this.IsFocused || this.Children.Any(c => c.IsFocused);
 
@@ -52,7 +57,12 @@ namespace TehCore.Menus.Elements {
         /// <summary>The text to display when this component is hovered over by the mouse</summary>
         public string HoverText { get; } = null;
         /// <summary>What depth to draw this component at</summary>
-        private float DrawDepth => this.Parent?.DrawDepth - Element.DrawDepthRange ?? Element.DrawDepthStart;
+        private float DrawDepth => this.Parent?.DrawDepth + Element.DrawDepthRange ?? Element.DrawDepthStart;
+
+        /// <summary>Whether this <see cref="Element"/> should block the game's <see cref="ChatBox"/> from being open while focused.</summary>
+        public virtual bool BlockChatbox { get; } = false;
+        /// <summary>Whether keys held down should have repeated input events.</summary>
+        public virtual bool RepeatKeystrokes { get; } = false;
 
         protected Element() { }
 
@@ -73,47 +83,58 @@ namespace TehCore.Menus.Elements {
             return this;
         }
 
+        protected Rectangle2I GetChildrenBounds(Rectangle2I parentBounds) {
+            return new Rectangle2I(parentBounds.Location + this.Location.ToAbsolute(parentBounds.Size) + this.Padding.TopLeft, this.Size.ToAbsolute(parentBounds.Size) - this.Padding.TopLeft - this.Padding.BottomRight);
+        }
+
         #region Events
         /// <summary>Draws the component</summary>
         /// <param name="batch">The <see cref="SpriteBatch"/> used for drawing to the screen</param>
-        /// <param name="parentSize">The size of the parent element</param>
-        public void Draw(SpriteBatch batch, Vector2I parentSize) {
+        /// <param name="parentBounds">The parent element's absolute children bounds.</param>
+        public void Draw(SpriteBatch batch, Rectangle2I parentBounds) {
             if (!this.Visible)
                 return;
 
             // Draw control
-            this.OnDraw(batch, parentSize);
+            this.OnDraw(batch, parentBounds);
 
             // Draw children
+            Rectangle2I childrenBounds = this.GetChildrenBounds(parentBounds);
             foreach (Element child in this.Children) {
-                child.Draw(batch, this.Size.ToAbsolute(parentSize));
+                // Don't draw children that don't fit in this menu
+                if (childrenBounds.Height <= 0)
+                    break;
+                
+                child.Draw(batch, childrenBounds);
+                Vector2I childSize = child.Size.ToAbsolute(childrenBounds.Size);
+                childrenBounds = new Rectangle2I(childrenBounds.X, childrenBounds.Y + childSize.Y, childrenBounds.Width, childrenBounds.Height - childSize.Y);
             }
         }
 
         /// <summary>Click the control</summary>
         /// <param name="mousePos">The position of the mouse</param>
         /// <param name="buttons">The mouse button that was clicked</param>
-        /// <param name="parentSize">The size of the parent element</param>
+        /// <param name="parentBounds">The parent element's absolute children bounds.</param>
         /// <returns>Whether the mouse click was handled by this component</returns>
-        public bool Click(Point mousePos, MouseButtons buttons, Vector2I parentSize) {
+        public bool Click(Vector2I mousePos, MouseButtons buttons, Rectangle2I parentBounds) {
             // Check if component is enabled
             if (!this.Enabled || !this.Visible)
                 return false;
 
             // Try to have children handle the click
-            if (this.Children.Any(child => child.Click(mousePos, buttons, parentSize)))
+            if (this.Children.Any(child => child.Click(mousePos, buttons, this.GetChildrenBounds(parentBounds))))
                 return true;
 
             // If the click was outside this component's bounds, don't handle it
-            if (!this.Bounds.ToAbsolute(parentSize).Contains(mousePos))
+            if (!this.Bounds.ToAbsolute(parentBounds).Contains(mousePos))
                 return false;
 
             // Handle the click
             switch (buttons) {
                 case MouseButtons.LEFT:
-                    return this.OnLeftClick(mousePos, parentSize);
+                    return this.OnLeftClick(mousePos, parentBounds);
                 case MouseButtons.RIGHT:
-                    return this.OnRightClick(mousePos, parentSize);
+                    return this.OnRightClick(mousePos, parentBounds);
             }
 
             // Somehow not a right or left click
@@ -123,36 +144,36 @@ namespace TehCore.Menus.Elements {
         // <summary>Scroll the mouse over the component</summary>
         /// <param name="mousePos">The position of the mouse</param>
         /// <param name="direction">The direction being scrolled in</param>
-        /// <param name="parentSize">The size of the parent element</param>
+        /// <param name="parentBounds">The parent element's absolute children bounds.</param>
         /// <returns>Whether the scroll was handled by this component</returns>
-        public bool Scroll(Point mousePos, int direction, Vector2I parentSize) {
+        public bool Scroll(Vector2I mousePos, int direction, Rectangle2I parentBounds) {
             // Check if component is enabled
             if (!this.Enabled || !this.Visible)
                 return false;
 
             // Pass scroll to children
-            if (this.Children.Any(child => child.Scroll(mousePos, direction, parentSize)))
+            if (this.Children.Any(child => child.Scroll(mousePos, direction, this.GetChildrenBounds(parentBounds))))
                 return true;
 
             // Try to handle the scroll
-            return this.Bounds.ToAbsolute(parentSize).Contains(mousePos) && this.OnScroll(mousePos, direction, parentSize);
+            return this.Bounds.ToAbsolute(parentBounds).Contains(mousePos) && this.OnScroll(mousePos, direction, parentBounds);
         }
 
         /// <summary>Drag left click over the component</summary>
         /// <param name="mousePos">The position of the mouse</param>
-        /// <param name="parentSize">The size of the parent element</param>
+        /// <param name="parentBounds">The parent element's absolute children bounds.</param>
         /// <returns>Whether the event was handled by this component</returns>
-        public bool Drag(Point mousePos, Vector2I parentSize) {
+        public bool Drag(Vector2I mousePos, Rectangle2I parentBounds) {
             // Check if component is enabled
             if (!this.Enabled || !this.Visible)
                 return false;
 
             // Try to have children handle the click
-            if (this.Children.Any(child => child.Drag(mousePos, parentSize)))
+            if (this.Children.Any(child => child.Drag(mousePos, this.GetChildrenBounds(parentBounds))))
                 return true;
 
             // If the click was outside this component's bounds, don't handle it
-            return this.Bounds.ToAbsolute(parentSize).Contains(mousePos) && this.OnDrag(mousePos, parentSize);
+            return this.Bounds.ToAbsolute(parentBounds).Contains(mousePos) && this.OnDrag(mousePos, parentBounds);
         }
 
         /// <summary>Send a key pressed event to the component and all child components</summary>
@@ -168,17 +189,17 @@ namespace TehCore.Menus.Elements {
 
         #region Event Handlers
         /// <summary>Called when this component should draw itself</summary>
-        /// <param name="b">The <see cref="SpriteBatch"/> used for drawing to the screen</param>
-        /// <param name="parentSize">The size of the parent element</param>
-        protected abstract void OnDraw(SpriteBatch b, Vector2I parentSize);
+        /// <param name="batch">The <see cref="SpriteBatch"/> used for drawing to the screen</param>
+        /// <param name="parentBounds">The parent element's absolute children bounds.</param>
+        protected abstract void OnDraw(SpriteBatch batch, Rectangle2I parentBounds);
 
         /// <summary>Called when this component is left clicked</summary>
         /// <param name="mousePos">The location of the mouse</param>
-        /// <param name="parentSize">The size of the parent element</param>
+        /// <param name="parentBounds">The parent element's absolute children bounds.</param>
         /// <returns>Whether to stop propagation of the event</returns>
-        protected virtual bool OnLeftClick(Point mousePos, Vector2I parentSize) {
+        protected virtual bool OnLeftClick(Vector2I mousePos, Rectangle2I parentBounds) {
             // Focus this control if supposed to
-            if (this.FocusOnClick && this.FocusBounds.ToAbsolute(parentSize).Contains(mousePos)) {
+            if (this.FocusOnClick && this.FocusBounds.ToAbsolute(parentBounds).Contains(mousePos)) {
                 this.Focus();
                 return true;
             }
@@ -188,11 +209,11 @@ namespace TehCore.Menus.Elements {
 
         /// <summary>Called when this component is right clicked</summary>
         /// <param name="mousePos">The location of the mouse</param>
-        /// <param name="parentSize">The size of the parent element</param>
+        /// <param name="parentBounds">The parent element's absolute children bounds.</param>
         /// <returns>Whether to stop propagation of the event</returns>
-        protected virtual bool OnRightClick(Point mousePos, Vector2I parentSize) {
+        protected virtual bool OnRightClick(Vector2I mousePos, Rectangle2I parentBounds) {
             // Focus this control if supposed to
-            if (this.FocusOnClick && this.FocusBounds.ToAbsolute(parentSize).Contains(mousePos)) {
+            if (this.FocusOnClick && this.FocusBounds.ToAbsolute(parentBounds).Contains(mousePos)) {
                 this.Focus();
                 return true;
             }
@@ -202,10 +223,10 @@ namespace TehCore.Menus.Elements {
 
         /// <summary>Called whenever the mouse is scrolled over this component</summary>
         /// <param name="mousePos">The location of the mouse</param>
-        /// <param name="parentSize">The size of the parent element</param>
         /// <param name="direction">The direction and amount of scroll</param>
+        /// <param name="parentBounds">The parent element's absolute children bounds.</param>
         /// <returns>Whether to stop propagation of the event</returns>
-        protected virtual bool OnScroll(Point mousePos, int direction, Vector2I parentSize) => false;
+        protected virtual bool OnScroll(Vector2I mousePos, int direction, Rectangle2I parentBounds) => false;
 
         /// <summary>Called whenever a key is pressed</summary>
         /// <param name="key">The key that was pressed</param>
@@ -214,9 +235,9 @@ namespace TehCore.Menus.Elements {
 
         /// <summary>Called whenever the left mouse button is dragged over this control</summary>
         /// <param name="mousePos">The position of the mouse</param>
-        /// <param name="parentSize">The size of the parent element</param>
+        /// <param name="parentBounds">The parent element's absolute children bounds.</param>
         /// <returns>Whether to stop propagation of the event</returns>
-        protected virtual bool OnDrag(Point mousePos, Vector2I parentSize) => false;
+        protected virtual bool OnDrag(Vector2I mousePos, Rectangle2I parentBounds) => false;
 
         /// <summary>Called whenever text is sent to this control</summary>
         /// <param name="text">The text that was entered</param>
@@ -227,9 +248,9 @@ namespace TehCore.Menus.Elements {
         #region Focus
         /// <summary>Gets the currently focused component</summary>
         /// <returns>The currently focused component</returns>
-        public Element GetFocusedComponent() {
+        public Element GetFocusedElement() {
             if (this.Parent != null)
-                return this.Parent.GetFocusedComponent();
+                return this.Parent.GetFocusedElement();
 
             return this._focused?.Enabled == true ? this._focused : null;
         }
@@ -253,7 +274,7 @@ namespace TehCore.Menus.Elements {
         /// <param name="localDepth">Value between 0 and 1 (inclusive) for use when planning what gets drawn on top of what. Higher values are drawn over lower values</param>
         /// <returns>The global depth, for use in draw calls and such</returns>
         public float GetGlobalDepth(float localDepth) => this.DrawDepth - Element.DrawDepthRange * localDepth.Clamp(0, 1);
-        
+
         /// <summary>Executes some code with a given scissor rectangle (drawing will be limited to the rectangle)</summary>
         /// <param name="batch">The <see cref="SpriteBatch"/> being used for drawing calls</param>
         /// <param name="scissorRect">The rectangle to limit drawing to</param>

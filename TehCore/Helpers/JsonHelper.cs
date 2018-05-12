@@ -35,7 +35,7 @@ namespace TehCore.Helpers {
             }
         }
 
-        public void WriteJson<TModel>(string path, TModel model, IModHelper helper, bool minify = false) where TModel : class => this.WriteJson(path, model, helper, s => { }, minify);
+        public void WriteJson<TModel>(string path, TModel model, IModHelper helper, bool minify = false) where TModel : class => this.WriteJson(path, model, helper, null, minify);
         public void WriteJson<TModel>(string path, TModel model, IModHelper helper, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class {
             //string fullPath = Path.Combine(helper.DirectoryPath, PathUtilities.NormalisePathSeparators(path));
             string fullPath = helper != null ? Path.Combine(helper.DirectoryPath, path) : path;
@@ -58,7 +58,7 @@ namespace TehCore.Helpers {
 
                     // Serialize
                     JsonSerializerSettings jsonSettings = this._jsonSettings.Clone();
-                    settings(jsonSettings);
+                    settings?.Invoke(jsonSettings);
                     JsonSerializer serializer = JsonSerializer.CreateDefault(jsonSettings);
                     serializer.Serialize(writer, model);
                 }
@@ -77,10 +77,22 @@ namespace TehCore.Helpers {
 
             // Setup serializer settings
             JsonSerializerSettings jsonSettings = this._jsonSettings.Clone();
-            settings(jsonSettings);
+            settings?.Invoke(jsonSettings);
 
             // Deserialize
             return JsonConvert.DeserializeObject<TModel>(File.ReadAllText(fullPath), jsonSettings);
+        }
+
+        public TModel ReadOrCreate<TModel>(string path, IModHelper helper, bool minify = false) where TModel : class, new() => this.ReadOrCreate(path, helper, null, Activator.CreateInstance<TModel>, minify);
+        public TModel ReadOrCreate<TModel>(string path, IModHelper helper, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class, new() => this.ReadOrCreate(path, helper, settings, Activator.CreateInstance<TModel>, minify);
+        public TModel ReadOrCreate<TModel>(string path, IModHelper helper, Func<TModel> modelFactory, bool minify = false) where TModel : class => this.ReadOrCreate(path, helper, null, modelFactory, minify);
+        public TModel ReadOrCreate<TModel>(string path, IModHelper helper, Action<JsonSerializerSettings> settings, Func<TModel> modelFactory, bool minify = false) where TModel : class {
+            TModel model = this.ReadJson<TModel>(path, helper, settings);
+            if (model == null) {
+                model = modelFactory();
+                this.WriteJson(path, model, helper, settings, minify);
+            }
+            return model;
         }
     }
 }

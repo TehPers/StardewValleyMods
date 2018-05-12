@@ -81,13 +81,13 @@ namespace TehCore.Helpers {
             }
 
             // Write the custom items to the save
-            ModCore.Instance.Json.WriteJson(path, itemData, ModCore.Instance.Helper, settings => { settings.TypeNameHandling = TypeNameHandling.All; }, true);
+            ModCore.Instance.JsonHelper.WriteJson(path, itemData, ModCore.Instance.Helper, settings => { settings.TypeNameHandling = TypeNameHandling.All; }, true);
         }
 
         public void DeserializeCustomItems() {
             // Load the custom item data
             string path = Path.Combine(Constants.CurrentSavePath, "tpc-inventories.json");
-            List<CustomItemData> itemData = ModCore.Instance.Json.ReadJson<List<CustomItemData>>(path, null, settings => { settings.TypeNameHandling = TypeNameHandling.All; });
+            List<CustomItemData> itemData = ModCore.Instance.JsonHelper.ReadJson<List<CustomItemData>>(path, null, settings => { settings.TypeNameHandling = TypeNameHandling.All; });
             if (itemData == null)
                 return;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 
 namespace TehCore.Menus.BoxModel {
     public struct Vector2I {
@@ -23,6 +24,10 @@ namespace TehCore.Menus.BoxModel {
             Vector2I tmpThis = this;
             return space.Aggregate(new Vector2I(0, 0), (current, v) => current + tmpThis.Dot(v) * current.Dot(v) * v);
         }
+
+        public Vector2I Translate(int addX, int addY) => new Vector2I(this.X + addX, this.Y + addY);
+
+        public Vector2 ToVector2() => new Vector2(this.X, this.Y);
 
         public static Vector2I operator +(Vector2I a, Vector2I b) => new Vector2I(a.X + b.X, a.Y + b.Y);
         public static Vector2I operator -(Vector2I a, Vector2I b) => new Vector2I(a.X - b.X, a.Y - b.Y);

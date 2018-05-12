@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
 using FishingOverhaul.Api;
 using FishingOverhaul.Configs;
 using Microsoft.Xna.Framework;
-using Netcode;
-using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
@@ -301,10 +297,8 @@ namespace FishingOverhaul {
         }
 
         public override string getDescription() {
-            return "[DEBUG] A handy custom fishing rod.";
+            return $"[DEBUG]\n{base.getDescription()}";
         }
-
-        public override string DisplayName { get; set; } = "Custom Fishing Rod";
 
         public FishingRod AsNormalFishingRod() {
             // Copy over properties

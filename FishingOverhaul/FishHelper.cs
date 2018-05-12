@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using FishingOverhaul.Configs;
-using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Tools;
-using TehCore.Api.Enums;
 using TehCore.Api.Weighted;
-using TehCore.Enums;
 using TehCore.Helpers;
 using SFarmer = StardewValley.Farmer;
 
