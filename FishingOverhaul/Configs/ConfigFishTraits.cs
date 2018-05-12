@@ -22,13 +22,19 @@ namespace FishingOverhaul.Configs {
             ModFishing.Instance.Monitor.Log("Automatically populating fishTraits.json with data from Fish.xnb", LogLevel.Info);
             ModFishing.Instance.Monitor.Log("NOTE: If this file is modded, the config will reflect the changes!", LogLevel.Info);
 
-            Dictionary<int, string> fish = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
+            Dictionary<int, string> fishDict = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
             this.FishTraits = this.FishTraits ?? new Dictionary<int, FishTraits>();
+            IEnumerable<int> possibleFish = (from locationKV in ModFishing.Instance.FishConfig.PossibleFish
+                                             from fishKV in locationKV.Value
+                                             select fishKV.Key).Distinct();
 
-            // Loop through each fish
-            foreach (KeyValuePair<int, string> rawData in fish) {
+            // Loop through each possible fish
+            foreach (int fish in possibleFish) {
                 try {
-                    string[] data = rawData.Value.Split('/');
+                    if (!fishDict.TryGetValue(fish, out string rawData))
+                        continue;
+
+                    string[] data = rawData.Split('/');
 
                     // Get difficulty
                     float difficulty = Convert.ToInt32(data[1]);
@@ -59,14 +65,14 @@ namespace FishingOverhaul.Configs {
                     int maxSize = Convert.ToInt32(data[4]);
 
                     // Add trait
-                    this.FishTraits.Add(rawData.Key, new FishTraits {
+                    this.FishTraits.Add(fish, new FishTraits {
                         Difficulty = difficulty,
                         MinSize = minSize,
                         MaxSize = maxSize,
                         MotionType = motionType
                     });
                 } catch (Exception) {
-                    ModFishing.Instance.Monitor.Log($"Failed to generate traits for {rawData.Key}, vanilla traits will be used.", LogLevel.Warn);
+                    ModFishing.Instance.Monitor.Log($"Failed to generate traits for {fish}, vanilla traits will be used.", LogLevel.Warn);
                 }
             }
         }

@@ -49,7 +49,7 @@ namespace FishingOverhaul {
 
             GameEvents.UpdateTick += this.UpdateTick;
             GraphicsEvents.OnPostRenderHudEvent += this.PostRenderHud;
-            ControlEvents.KeyPressed += (sender, pressed) => {
+            /*ControlEvents.KeyPressed += (sender, pressed) => {
                 if (pressed.KeyPressed == Keys.NumPad7) {
                     Menu menu = new Menu(Game1.viewport.Width / 6, Game1.viewport.Height / 6, 2 * Game1.viewport.Width / 3, 2 * Game1.viewport.Height / 3);
                     menu.MainElement.AddChild(new TextElement {
@@ -65,7 +65,7 @@ namespace FishingOverhaul {
                     });
                     ModCore.Instance.ShowMenu(menu);
                 }
-            };
+            };*/
         }
 
         public override object GetApi() {
@@ -173,11 +173,13 @@ namespace FishingOverhaul {
                 batch.Draw(ModCore.Instance.WhitePixel, new Rectangle(0, 0, (int) boxWidth, (int) boxHeight), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.75F);
 
                 // Debug info
+                /*
                 StringBuilder text = new StringBuilder();
                 text.AppendLine($"Hover Key: {Enum.GetName(typeof(Keys), ModCore.Instance.InputHelper._heldKey ?? Keys.None)}");
                 text.AppendLine($"Time Pressed: {DateTime.UtcNow - ModCore.Instance.InputHelper._keyStart:g}");
                 text.AppendLine($"Time Since Repeat: {DateTime.UtcNow - ModCore.Instance.InputHelper._lastRepeat:g}");
                 batch.DrawStringWithShadow(Game1.smallFont, text.ToString(), new Vector2(0, boxHeight), Color.White, 0.8F);
+                */
 
                 // Done drawing HUD
                 batch.End();

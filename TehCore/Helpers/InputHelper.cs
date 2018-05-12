@@ -101,7 +101,6 @@ namespace TehCore.Helpers {
             float frequency = timeHeld.TotalSeconds < config.KeyRepeatRampTime + config.KeyRepeatDelay ? config.KeyRepeatMinFrequency : config.KeyRepeatMaxFrequency;
             TimeSpan period = TimeSpan.FromSeconds(1 / frequency);
             if (delta >= period) {
-                ModCore.Instance.Monitor.Log($"Event on {heldKey}", LogLevel.Info);
                 this.OnRepeatedKeystroke(new EventArgsKeyRepeated(heldKey));
                 this._lastRepeat = now;
             }

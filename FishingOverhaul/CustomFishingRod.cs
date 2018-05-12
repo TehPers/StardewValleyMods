@@ -52,8 +52,8 @@ namespace FishingOverhaul {
             }
 
             // DEBUG: Always ready to catch a fish
-            if (this.isFishing)
-                this.isNibbling = true;
+            //if (this.isFishing)
+            //    this.isNibbling = true;
 
             if (this.isFishing && this.isNibbling) {
                 // Animation
