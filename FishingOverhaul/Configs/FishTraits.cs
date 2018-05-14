@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
-using FishingOverhaul.Api;
-using FishingOverhaul.Api.Enums;
-using TehCore.Helpers.Json;
+using TehPers.Core.Helpers.Json;
+using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Api.Enums;
 
-namespace FishingOverhaul.Configs {
+namespace TehPers.FishingOverhaul.Configs {
     [JsonDescribe]
     public class FishTraits : IFishTraits {
         [Description("The difficulty of this fish.")]

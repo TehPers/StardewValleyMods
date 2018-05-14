@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using StardewValley;
-using TehCore.Api.Weighted;
+using TehPers.Core.Api.Weighted;
 
-namespace FishingOverhaul.Api {
+namespace TehPers.FishingOverhaul.Api {
     public interface ITreasureData : IWeighted {
         bool AllowDuplicates { get; }
         bool MeleeWeapon { get; }

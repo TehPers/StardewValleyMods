@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TehCoreApi")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("TehPers.Core.Api")]
+[assembly: AssemblyDescription("Types used by the API for Teh's Core Mod for Stardew Valley")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TehCoreApi")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCompany("TehPers")]
+[assembly: AssemblyProduct("TehPers.Core.Api")]
+[assembly: AssemblyCopyright("Copyright ©2018 TehPers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

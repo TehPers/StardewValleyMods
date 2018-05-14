@@ -1,7 +1,6 @@
 ﻿using StardewValley;
-using SObject = StardewValley.Object;
 
-namespace TehCore.Saves {
+namespace TehPers.Core.Saves {
     public interface ICustomItem {
         /// <summary>When this item is saved, what it should be replaced with in the inventory.</summary>
         /// <returns>The object this should be replaced with when saving.</returns>

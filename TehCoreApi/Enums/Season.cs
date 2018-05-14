@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TehCore.Api.Enums {
+namespace TehPers.Core.Api.Enums {
     [Flags]
     public enum Season {
         Spring = 1,

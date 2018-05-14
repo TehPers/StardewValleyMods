@@ -1,36 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using FishingOverhaul.Api.Enums;
-using FishingOverhaul.Configs;
-using FishingOverhaul.Patches;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Locations;
-using StardewValley.Menus;
-using StardewValley.Network;
 using StardewValley.Tools;
-using TehCore;
-using TehCore.Api.Enums;
-using TehCore.Api.Weighted;
-using TehCore.Enums;
-using TehCore.Helpers;
-using TehCore.Helpers.Json;
-using TehCore.Menus;
-using TehCore.Menus.BoxModel;
-using TehCore.Menus.Elements;
+using TehPers.Core;
+using TehPers.Core.Api.Enums;
+using TehPers.Core.Api.Weighted;
+using TehPers.Core.Helpers;
+using TehPers.FishingOverhaul.Api.Enums;
+using TehPers.FishingOverhaul.Configs;
 
-namespace FishingOverhaul {
+namespace TehPers.FishingOverhaul {
     public class ModFishing : Mod {
         public static ModFishing Instance { get; private set; }
 
@@ -112,17 +98,14 @@ namespace FishingOverhaul {
                 config.PopulateData();
                 return config;
             }, this.MainConfig.MinifyConfigs);
+
+            // Not a config, but whatever
+            this.Api.AddTrashData(new DefaultTrashData());
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 797 }, 0.01D, "Submarine")); // Pearl
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 0.99D, "Submarine")); // Seaweed
         }
 
         #region Events
-        private void UpdateTick(object sender, EventArgs e) {
-            // Replace the player's fishing rod with a custom rod
-            if (Game1.player.CurrentTool is FishingRod rod && !(rod is CustomFishingRod)) {
-                this.Monitor.Log("Normal rod found, replacing...", LogLevel.Info);
-                Game1.player.CurrentTool = new CustomFishingRod(rod);
-            }
-        }
-
         private void PostRenderHud(object sender, EventArgs eventArgs) {
             if (!this.MainConfig.ShowFishingData || Game1.eventUp || !(Game1.player.CurrentTool is FishingRod rod))
                 return;

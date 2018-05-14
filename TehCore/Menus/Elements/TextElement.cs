@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using TehCore.Enums;
-using TehCore.Menus.BoxModel;
+using TehPers.Core.Enums;
+using TehPers.Core.Menus.BoxModel;
 
-namespace TehCore.Menus.Elements {
+namespace TehPers.Core.Menus.Elements {
     public class TextElement : Element {
         public string Text { get; set; } = "";
         public Color Color { get; set; } = Game1.textColor;

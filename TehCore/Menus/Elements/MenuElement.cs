@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
-using TehCore.Helpers;
-using TehCore.Menus.BoxModel;
+using TehPers.Core.Helpers;
+using TehPers.Core.Menus.BoxModel;
 
-namespace TehCore.Menus.Elements {
+namespace TehPers.Core.Menus.Elements {
     public class MenuElement : Element {
         public virtual bool StopKeyPropagation { get; set; } = false;
 

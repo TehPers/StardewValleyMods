@@ -2,17 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FishingOverhaul.Api;
-using FishingOverhaul.Api.Enums;
 using StardewModdingAPI;
-using StardewValley;
-using TehCore.Api.Enums;
-using TehCore.Helpers;
-using TehCore.Helpers.Json;
+using TehPers.Core.Helpers.Json;
+using TehPers.FishingOverhaul.Api.Enums;
 
-namespace FishingOverhaul.Configs {
+namespace TehPers.FishingOverhaul.Configs {
     [JsonDescribe]
     public class ConfigFishTraits {
         [Description("The traits for each fish.")]

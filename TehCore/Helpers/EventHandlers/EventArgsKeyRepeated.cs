@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework.Input;
 
-namespace TehCore.Helpers.EventHandlers {
+namespace TehPers.Core.Helpers.EventHandlers {
     public class EventArgsKeyRepeated : EventArgs {
         public Keys RepeatedKey { get; }
         public char? Character { get; }

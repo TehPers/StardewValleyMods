@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 using Netcode;
 
-namespace TehCore.Helpers.Json {
+namespace TehPers.Core.Helpers.Json {
     public sealed class NetExposer {
         private readonly MethodInfo _unwrap = typeof(NetExposer).GetMethod(nameof(NetExposer.Unwrap), BindingFlags.Public | BindingFlags.Static);
 

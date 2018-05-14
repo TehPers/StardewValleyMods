@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using Netcode;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
-using SObject = StardewValley.Object;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public static class AssortedHelpers {
         private static readonly MethodInfo _genericCast = typeof(AssortedHelpers).GetMethod(nameof(AssortedHelpers.GenericCast), BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly Type[] _primitiveTypes = { typeof(bool), typeof(byte), typeof(char), typeof(DateTime), typeof(decimal), typeof(double), typeof(short), typeof(int), typeof(long), typeof(sbyte), typeof(float), typeof(string), typeof(ushort), typeof(uint), typeof(ulong) };

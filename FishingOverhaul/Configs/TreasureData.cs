@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using TehCore.Api.Weighted;
-using TehCore.Helpers.Json;
-using FishingOverhaul.Api;
 using StardewValley;
+using TehPers.Core.Helpers.Json;
+using TehPers.FishingOverhaul.Api;
 
-namespace FishingOverhaul.Configs {
+namespace TehPers.FishingOverhaul.Configs {
 
     [JsonDescribe]
     public class TreasureData : ITreasureData {

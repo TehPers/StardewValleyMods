@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley;
-using StardewValley.Menus;
-using TehCore.Configs;
-using TehCore.Helpers.EventHandlers;
+using TehPers.Core.Configs;
+using TehPers.Core.Helpers.EventHandlers;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public class InputHelper {
         private readonly Func<string> _getClipboardRaw;
 

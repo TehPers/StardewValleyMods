@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FishingOverhaul.Api;
-using FishingOverhaul.Configs;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Tools;
-using TehCore.Api.Enums;
-using TehCore.Api.Weighted;
-using TehCore.Helpers;
+using TehPers.Core.Api.Enums;
+using TehPers.Core.Api.Weighted;
+using TehPers.Core.Helpers;
+using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Configs;
 
-namespace FishingOverhaul {
+namespace TehPers.FishingOverhaul {
     public class FishingApi : IFishingApi {
         private const int MIN_TRASH_ID = 167;
         private const int MAX_TRASH_ID = 173;
@@ -27,7 +25,8 @@ namespace FishingOverhaul {
         private readonly Dictionary<int, IFishTraits> _fishTraitsOverrides = new Dictionary<int, IFishTraits>();
         private readonly HashSet<ITreasureData> _added = new HashSet<ITreasureData>();
         private readonly HashSet<TreasureData> _removed = new HashSet<TreasureData>();
-        private readonly Dictionary<int, double> _trash = Enumerable.Range(FishingApi.MIN_TRASH_ID, FishingApi.MAX_TRASH_ID - FishingApi.MIN_TRASH_ID).ToDictionary(id => id, id => 1D);
+        private readonly HashSet<ITrashData> _trash = new HashSet<ITrashData>();
+        //private readonly Dictionary<int, double> _trash = Enumerable.Range(FishingApi.MIN_TRASH_ID, FishingApi.MAX_TRASH_ID - FishingApi.MIN_TRASH_ID).ToDictionary(id => id, id => 1D);
         private readonly Dictionary<int, string> _fishNames = new Dictionary<int, string>();
         private readonly Dictionary<Farmer, int> _streaks = new Dictionary<Farmer, int>();
         private readonly HashSet<int> _hidden = new HashSet<int>();
@@ -160,18 +159,29 @@ namespace FishingOverhaul {
             return ModFishing.Instance.TreasureConfig.PossibleLoot.Except(this._removed).Concat(this._added);
         }
 
-        public void SetTrashWeight(int id, double weight) {
-            this._trash[id] = weight;
+        public bool AddTrashData(ITrashData data) {
+            return this._trash.Add(data);
         }
 
-        public bool RemoveTrash(int id) {
-            return this._trash.Remove(id);
+        public bool RemoveTrashData(ITrashData data) {
+            return this._trash.Remove(data);
         }
 
-        public IEnumerable<IWeightedElement<int>> GetPossibleTrash() {
-            return this._trash.ToWeighted();
+        public IEnumerable<ITrashData> GetTrashData() {
+            return this._trash;
         }
 
+        public IEnumerable<ITrashData> GetTrashData(Farmer who) {
+            Season s = SDVHelpers.ToSeason(Game1.currentSeason) ?? Season.Spring | Season.Summer | Season.Fall | Season.Winter;
+            WaterType w = SDVHelpers.ToWaterType(who.currentLocation?.getFishingLocation(who.getTileLocation()) ?? -1) ?? WaterType.Both;
+            int mineLevel = who.currentLocation is MineShaft mine ? mine.mineLevel : -1;
+            return this.GetTrashData(who, who.currentLocation?.Name ?? "", w, s, Game1.isRaining ? Weather.Rainy : Weather.Sunny, Game1.timeOfDay, Game1.player.FishingLevel, mineLevel);
+        }
+
+        public IEnumerable<ITrashData> GetTrashData(Farmer who, string locationName, WaterType waterType, Season season, Weather weather, int time, int fishingLevel, int? mineLevel) {
+            return this._trash.Where(t => t.MeetsCriteria(who, locationName, waterType, season, weather, time, fishingLevel, mineLevel));
+        }
+        
         public IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who) {
             Season s = SDVHelpers.ToSeason(Game1.currentSeason) ?? Season.Spring | Season.Summer | Season.Fall | Season.Winter;
             WaterType w = SDVHelpers.ToWaterType(who.currentLocation?.getFishingLocation(who.getTileLocation()) ?? -1) ?? WaterType.Both;

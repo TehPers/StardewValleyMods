@@ -4,7 +4,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace TehCore.Helpers.Json {
+namespace TehPers.Core.Helpers.Json {
     public class DescriptiveJsonWriter : JsonWriter {
         private readonly TextWriter _writer;
         private int _indent;

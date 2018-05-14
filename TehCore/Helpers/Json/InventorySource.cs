@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Objects;
-using TehCore.Enums;
-using TehCore.Saves;
+using TehPers.Core.Enums;
+using TehPers.Core.Saves;
 
-namespace TehCore.Helpers.Json {
+namespace TehPers.Core.Helpers.Json {
     public class InventorySource {
         public InventoryType Type { get; set; }
         public string LocationName { get; set; }

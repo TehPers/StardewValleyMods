@@ -4,9 +4,9 @@ using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 using StardewModdingAPI;
-using TehCore.Helpers.Json;
+using TehPers.Core.Helpers.Json;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public class JsonHelper {
 
         /// <summary>The JSON settings to use when serialising and deserialising files.</summary>

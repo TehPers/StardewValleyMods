@@ -3,7 +3,7 @@ using System.IO;
 using Netcode;
 using Newtonsoft.Json;
 
-namespace TehCore.Helpers.Json {
+namespace TehPers.Core.Helpers.Json {
     public class NetConverter : JsonConverter {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
             AbstractNetSerializable serializable = (AbstractNetSerializable) value;

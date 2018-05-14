@@ -1,4 +1,4 @@
-﻿namespace TehCore.Menus.BoxModel {
+﻿namespace TehPers.Core.Menus.BoxModel {
     public struct BoxVector {
         public static BoxVector Zero { get; } = new BoxVector(0, 0, 0, 0);
         public static BoxVector Fill { get; } = new BoxVector(0, 0, 1, 1);

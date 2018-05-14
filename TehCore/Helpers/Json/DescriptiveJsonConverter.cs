@@ -6,7 +6,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace TehCore.Helpers.Json {
+namespace TehPers.Core.Helpers.Json {
     public class DescriptiveJsonConverter : JsonConverter {
         private bool _enabled = true;
 

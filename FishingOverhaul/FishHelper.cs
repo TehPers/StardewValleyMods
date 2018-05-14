@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FishingOverhaul.Configs;
 using StardewValley;
 using StardewValley.Tools;
-using TehCore.Api.Weighted;
-using TehCore.Helpers;
+using TehPers.Core.Api.Enums;
+using TehPers.Core.Api.Weighted;
+using TehPers.Core.Helpers;
+using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Configs;
 using SFarmer = StardewValley.Farmer;
 
-namespace FishingOverhaul {
+namespace TehPers.FishingOverhaul {
     internal class FishHelper {
-        public static int? GetRandomFish(Farmer who, int mineLevel = -1) => FishHelper.GetRandomFish(ModFishing.Instance.Api.GetPossibleFish(who));
+        public static int? GetRandomFish(Farmer who) {
+            return FishHelper.GetRandomFish(ModFishing.Instance.Api.GetPossibleFish(who));
+        }
 
         public static int? GetRandomFish(IEnumerable<IWeightedElement<int?>> possibleFish) {
-            possibleFish = possibleFish.ToList();
+            possibleFish = possibleFish.ToArray();
 
             // No possible fish
             if (!possibleFish.Any())
@@ -23,9 +27,26 @@ namespace FishingOverhaul {
             return possibleFish.Choose(Game1.random);
         }
 
-        public static int GetRandomTrash() => ModFishing.Instance.Api.GetPossibleTrash().Choose(Game1.random);
+        public static int? GetRandomTrash(Farmer who) => FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who));
 
-        public static bool IsTrash(int id) => ModFishing.Instance.Api.GetPossibleTrash().Any(t => t.Value == id);
+        public static int? GetRandomTrash(Farmer who, string locationName, WaterType waterType, Season season, Weather weather, int time, int fishingLevel, int? mineLevel) => FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who, locationName, waterType, season, weather, time, fishingLevel, mineLevel));
+
+        public static int? GetRandomTrash(IEnumerable<ITrashData> trashData) {
+            trashData = trashData.ToArray();
+
+            // No possible trash
+            if (!trashData.Any())
+                return null;
+
+            // Select a trash data
+            ITrashData data = trashData.Choose(Game1.random);
+            int[] ids = data.PossibleIds.ToArray();
+
+            // Select a trash ID
+            return !ids.Any() ? (int?) null : ids.ToWeighted(id => 1D).Choose(Game1.random);
+        }
+
+        public static bool IsTrash(int id) => ModFishing.Instance.Api.GetTrashData().Any(t => t.PossibleIds.Contains(id));
 
         public static bool IsLegendary(int fish) => fish == 159 || fish == 160 || fish == 163 || fish == 682 || fish == 775;
 

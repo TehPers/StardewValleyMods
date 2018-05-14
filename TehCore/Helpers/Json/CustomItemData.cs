@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TehCore.Helpers.Json {
+namespace TehPers.Core.Helpers.Json {
     public class CustomItemData {
         public InventorySource Source { get; set; }
         public int Slot { get; set; }

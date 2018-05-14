@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TehCore.Api.Weighted;
+using TehPers.Core.Api.Weighted;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public static class WeightedHelpers {
         public static void Shuffle<T>(this IList<T> source) => source.Shuffle(new Random());
         public static void Shuffle<T>(this IList<T> source, Random rand) {

@@ -1,4 +1,4 @@
-﻿namespace TehCore.Enums {
+﻿namespace TehPers.Core.Api.Enums {
     public class Objects {
         public const int Bait = 685;
         public const int DressedSpinner = 687;

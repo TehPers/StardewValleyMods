@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Tools;
-using TehCore.Api.Enums;
-using TehCore.Api.Weighted;
+using TehPers.Core.Api.Enums;
+using TehPers.Core.Api.Weighted;
 
-namespace FishingOverhaul.Api {
+namespace TehPers.FishingOverhaul.Api {
     public interface IFishingApi {
         /// <summary>Sets the chance of catching fish. This overrides any fish chance calculations done by the mod itself.</summary>
         /// <param name="chance">The new chance of catching fish, or null to remove any overrides.</param>
@@ -106,21 +105,38 @@ namespace FishingOverhaul.Api {
         /// <summary>Gets all the obtainable treasure data.</summary>
         /// <returns>An <see cref="IEnumerable{ITreasureData}"/> containing all the available treasure data.</returns>
         IEnumerable<ITreasureData> GetTreasureData();
+        
+        /// <summary>Adds new trash data to the list of obtainable trash.</summary>
+        /// <param name="data">The data to add as new trash.</param>
+        /// <returns>True if added, false if it's a duplicate entry.</returns>
+        bool AddTrashData(ITrashData data);
 
-        /// <summary>Sets the weight of an item in the trash list. If the item isn't already in the list, it will be inserted.</summary>
-        /// <param name="id">The ID to assign the weight to.</param>
-        /// <param name="weight">The weight of the item in the trash list.</param>
-        void SetTrashWeight(int id, double weight);
+        /// <summary>Removes existing trash data from the list of obtainable trash.</summary>
+        /// <param name="data">The data that should be removed.</param>
+        /// <returns>True if removed, false if the data doesn't exist.</returns>
+        bool RemoveTrashData(ITrashData data);
 
-        /// <summary>Removes an item from the list of trash.</summary>
-        /// <param name="id">The ID to remove from the list of trash.</param>
-        /// <returns>True if the ID was removed, false if not.</returns>
-        bool RemoveTrash(int id);
+        /// <summary>Gets all the obtainable trash data.</summary>
+        /// <returns>An <see cref="IEnumerable{T}"/> containing all the available trash data.</returns>
+        IEnumerable<ITrashData> GetTrashData();
 
-        /// <summary>Gets all the trash in the trash list with their associated weights.</summary>
-        /// <returns>An enumeration of the trash list.</returns>
-        IEnumerable<IWeightedElement<int>> GetPossibleTrash();
+        /// <summary>Gets all the trash a <see cref="Farmer"/> can catch.</summary>
+        /// <param name="who">The farmer.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> containing all the trash the given <see cref="Farmer"/> can catch.</returns>
+        IEnumerable<ITrashData> GetTrashData(Farmer who);
 
+        /// <summary>Gets all the obtainable trash data with the given criteria.</summary>
+        /// <param name="who">The farmer.</param>
+        /// <param name="locationName">The name of the current location being fished in.</param>
+        /// <param name="waterType">The type of water the <see cref="Farmer"/> is fishing in.</param>
+        /// <param name="season">The current season.</param>
+        /// <param name="weather">The current weather.</param>
+        /// <param name="time">The current time.</param>
+        /// <param name="fishingLevel">The current <see cref="Farmer"/>'s fishing level.</param>
+        /// <param name="mineLevel">The current level in the mine, or null if not in the mine.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> containing all the available trash data that meets the given criteria.</returns>
+        IEnumerable<ITrashData> GetTrashData(Farmer who, string locationName, WaterType waterType, Season season, Weather weather, int time, int fishingLevel, int? mineLevel);
+        
         /// <summary>Gets all the fish a <see cref="Farmer"/> can catch.</summary>
         /// <param name="who">The farmer.</param>
         /// <returns>All the fish that can be caught with their associated weights.</returns>

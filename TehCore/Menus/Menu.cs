@@ -1,15 +1,12 @@
-﻿using System.ComponentModel;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.Menus;
-using TehCore.Enums;
-using TehCore.Menus.BoxModel;
-using TehCore.Menus.Elements;
-using xTile.Dimensions;
+using TehPers.Core.Enums;
+using TehPers.Core.Menus.BoxModel;
+using TehPers.Core.Menus.Elements;
 
-namespace TehCore.Menus {
+namespace TehPers.Core.Menus {
 
     public class Menu : IClickableMenu {
         public MenuElement MainElement { get; } = new MenuElement();

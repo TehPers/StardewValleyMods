@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace TehCore {
+namespace TehPers.Core {
     public class ReflectedField<TObject, TField> {
         public FieldInfo Field { get; }
         public TObject Owner { get; }

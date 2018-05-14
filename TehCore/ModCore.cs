@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
-using TehCore.Configs;
-using TehCore.Helpers;
-using TehCore.Helpers.EventHandlers;
-using TehCore.Menus;
+using TehPers.Core.Configs;
+using TehPers.Core.Helpers;
+using TehPers.Core.Helpers.EventHandlers;
+using TehPers.Core.Menus;
 
-namespace TehCore {
+namespace TehPers.Core {
     public class ModCore : Mod {
         public static ModCore Instance { get; private set; }
 

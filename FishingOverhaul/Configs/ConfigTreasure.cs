@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TehCore.Enums;
-using TehCore.Helpers.Json;
+using TehPers.Core.Api.Enums;
+using TehPers.Core.Helpers.Json;
 
-namespace FishingOverhaul.Configs {
+namespace TehPers.FishingOverhaul.Configs {
 
     [JsonDescribe]
     public class ConfigTreasure {

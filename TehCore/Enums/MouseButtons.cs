@@ -1,4 +1,4 @@
-﻿namespace TehCore.Enums {
+﻿namespace TehPers.Core.Enums {
     public enum MouseButtons {
         LEFT,
         RIGHT,

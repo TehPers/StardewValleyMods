@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using FishingOverhaul.Api;
 using StardewValley;
-using TehCore.Api.Enums;
-using TehCore.Helpers.Json;
+using TehPers.Core.Api.Enums;
+using TehPers.Core.Helpers.Json;
+using TehPers.FishingOverhaul.Api;
 
-namespace FishingOverhaul.Configs {
+namespace TehPers.FishingOverhaul.Configs {
 
     [JsonDescribe]
     public class FishData : IFishData {

@@ -6,7 +6,7 @@ using StardewValley.BellsAndWhistles;
 using Rectangle2 = Microsoft.Xna.Framework.Rectangle;
 using Rectangle = xTile.Dimensions.Rectangle;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public static class DrawHelpers {
         public static void FillRectangle(this SpriteBatch batch, int x, int y, int width, int height, Color color) => batch.FillRectangle(new Rectangle2(x, y, width, height), color);
         public static void FillRectangle(this SpriteBatch batch, Rectangle bounds, Color color) => batch.FillRectangle(new Rectangle2(bounds.X, bounds.Y, bounds.Width, bounds.Height), color);

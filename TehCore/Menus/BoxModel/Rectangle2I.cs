@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using StardewValley;
+﻿using Microsoft.Xna.Framework;
 
-namespace TehCore.Menus.BoxModel {
+namespace TehPers.Core.Menus.BoxModel {
     public struct Rectangle2I {
         /// <summary>The top, left point of this rectangle.</summary>
         public Vector2I Location { get; }

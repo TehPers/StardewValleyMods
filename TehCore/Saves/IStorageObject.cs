@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using StardewValley;
 
-namespace TehCore.Saves {
+namespace TehPers.Core.Saves {
     public interface IStorageObject {
         IList<Item> Inventory { get; }
     }

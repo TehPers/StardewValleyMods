@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public static class InputHelpers {
         private static readonly UnicodeCategory[] NonRenderingCategories = { UnicodeCategory.Control, UnicodeCategory.OtherNotAssigned, UnicodeCategory.Surrogate };
 

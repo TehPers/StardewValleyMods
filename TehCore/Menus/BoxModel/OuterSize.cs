@@ -1,4 +1,4 @@
-﻿namespace TehCore.Menus.BoxModel {
+﻿namespace TehPers.Core.Menus.BoxModel {
     public struct OuterSize {
         public static OuterSize Zero { get; } = new OuterSize(0);
 

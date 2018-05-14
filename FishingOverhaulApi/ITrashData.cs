@@ -1,21 +1,22 @@
-﻿using StardewValley;
+﻿using System.Collections.Generic;
+using StardewValley;
 using TehPers.Core.Api.Enums;
+using TehPers.Core.Api.Weighted;
 
 namespace TehPers.FishingOverhaul.Api {
-    public interface IFishData {
-        /// <summary>Returns the weighted chance of this fish being selected (in comparison to other fish) for the given farmer.</summary>
-        /// <param name="who">The farmer.</param>
-        /// <returns>The weighted chance of this fish being selected.</returns>
-        float GetWeight(Farmer who);
+    public interface ITrashData : IWeighted {
+        IEnumerable<int> PossibleIds { get; }
 
         /// <summary>Whether this fish meets the given criteria and can be caught.</summary>
+        /// <param name="who">The farmer that is fishing.</param>
+        /// <param name="locationName">The name of the current location being fished in.</param>
         /// <param name="waterType">The type of water this fish is in.</param>
         /// <param name="season">The current season.</param>
         /// <param name="weather">The current weather.</param>
         /// <param name="time">The current time.</param>
-        /// <param name="level">The current farmer's fishing level.</param>
+        /// <param name="fishingLevel">The current farmer's fishing level.</param>
         /// <param name="mineLevel">The current level in the mine, or null if not in the mine.</param>
         /// <returns>True if this fish can be caught, false otherwise.</returns>
-        bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level, int? mineLevel);
+        bool MeetsCriteria(Farmer who, string locationName, WaterType waterType, Season season, Weather weather, int time, int fishingLevel, int? mineLevel);
     }
 }

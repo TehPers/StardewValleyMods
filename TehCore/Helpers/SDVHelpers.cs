@@ -1,6 +1,6 @@
-﻿using TehCore.Api.Enums;
+﻿using TehPers.Core.Api.Enums;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public static class SDVHelpers {
         public static Season? ToSeason(string s) {
             switch (s.ToLower()) {

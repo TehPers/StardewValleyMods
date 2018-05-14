@@ -8,13 +8,13 @@ using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
-using TehCore.Enums;
-using TehCore.Helpers.Json;
-using TehCore.Saves;
+using TehPers.Core.Enums;
+using TehPers.Core.Helpers.Json;
+using TehPers.Core.Saves;
 using SObject = StardewValley.Object;
 using Type = System.Type;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public class SaveHelper {
         private static readonly MethodInfo _saveMethod = typeof(SaveHelper).GetMethod(nameof(SaveHelper.GetSaveData), BindingFlags.Static | BindingFlags.NonPublic);
         private static readonly MethodInfo _loadMethod = typeof(SaveHelper).GetMethod(nameof(SaveHelper.LoadSaveData), BindingFlags.Static | BindingFlags.NonPublic);

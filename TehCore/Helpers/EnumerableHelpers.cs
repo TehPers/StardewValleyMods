@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public static class EnumerableHelpers {
         /// <summary>Creates a <see cref="HashSet{T}"/> from an <see cref="IEnumerable{T}"/>.</summary>
         /// <typeparam name="TSource">The type of the elements of <see cref="source"/></typeparam>

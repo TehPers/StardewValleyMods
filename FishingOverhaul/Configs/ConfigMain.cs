@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
-using Microsoft.Xna.Framework.Input;
-using TehCore.Helpers.Json;
+using TehPers.Core.Helpers.Json;
 
-namespace FishingOverhaul.Configs {
+namespace TehPers.FishingOverhaul.Configs {
 
     [JsonDescribe]
     public class ConfigMain {

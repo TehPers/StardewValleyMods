@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FishingOverhaulApi")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Teh's Fishing Overhaul API")]
+[assembly: AssemblyDescription("All the interfaces, types, etc. used by Teh's Fishing Overhaul's API in Stardew Valley.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("TehPers")]
 [assembly: AssemblyProduct("FishingOverhaulApi")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright ©2018 TehPers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

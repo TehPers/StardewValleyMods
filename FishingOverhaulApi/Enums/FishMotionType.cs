@@ -1,4 +1,4 @@
-﻿namespace FishingOverhaul.Api.Enums {
+﻿namespace TehPers.FishingOverhaul.Api.Enums {
     public enum FishMotionType {
         MIXED = 0,
         DART = 1,

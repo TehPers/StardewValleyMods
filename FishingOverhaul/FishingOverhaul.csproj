@@ -7,8 +7,8 @@
     <ProjectGuid>{DA5D42EA-F894-4772-A42A-00CE10161136}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FishingOverhaul</RootNamespace>
-    <AssemblyName>FishingOverhaul</AssemblyName>
+    <RootNamespace>TehPers.FishingOverhaul</RootNamespace>
+    <AssemblyName>TehPers.FishingOverhaul</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -51,7 +51,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configs\ConfigFishTraits.cs" />
+    <Compile Include="Configs\DefaultTrashData.cs" />
     <Compile Include="Configs\FishTraits.cs" />
+    <Compile Include="Configs\SpecificTrashData.cs" />
     <Compile Include="Configs\WeightedFishData.cs" />
     <Compile Include="FishingApi.cs" />
     <Compile Include="Configs\ConfigFish.cs" />
@@ -60,7 +62,6 @@
     <Compile Include="Configs\FishData.cs" />
     <Compile Include="Configs\TreasureData.cs" />
     <Compile Include="CustomBobberBar.cs" />
-    <Compile Include="CustomFishingRod.cs" />
     <Compile Include="FishHelper.cs" />
     <Compile Include="FishingRodOverrider.cs" />
     <Compile Include="ModFishing.cs" />

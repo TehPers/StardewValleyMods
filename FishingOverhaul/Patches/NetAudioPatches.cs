@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Harmony;
-using StardewModdingAPI;
+﻿using Harmony;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.Tools;
 
-namespace FishingOverhaul.Patches {
+namespace TehPers.FishingOverhaul.Patches {
     [HarmonyPatch(typeof(NetAudio))]
     [HarmonyPatch(nameof(NetAudio.PlayLocal))]
     public class NetAudioPatches {

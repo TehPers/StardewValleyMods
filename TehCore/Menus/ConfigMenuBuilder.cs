@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TehCore.Menus {
+namespace TehPers.Core.Menus {
     public class ConfigMenuBuilder {
 
         public Menu BuildConfigMenu(IGuiConfig config) {

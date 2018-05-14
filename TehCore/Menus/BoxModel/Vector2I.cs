@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 
-namespace TehCore.Menus.BoxModel {
+namespace TehPers.Core.Menus.BoxModel {
     public struct Vector2I {
         public int X { get; }
         public int Y { get; }

@@ -1,4 +1,4 @@
-﻿namespace TehCore.Menus.BoxModel {
+﻿namespace TehPers.Core.Menus.BoxModel {
     public struct BoxRectangle {
         public BoxVector Location { get; }
         public BoxVector Size { get; }

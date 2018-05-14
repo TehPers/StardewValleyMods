@@ -6,12 +6,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using TehCore.Helpers;
-using TehCore.Menus.BoxModel;
+using TehPers.Core.Helpers;
+using TehPers.Core.Menus.BoxModel;
 using xTile.Dimensions;
 
-namespace TehCore.Menus.Elements {
+namespace TehPers.Core.Menus.Elements {
     public class TextboxElement : Element {
         private static readonly Location TextPadding = new Location(14, 4);
         private static readonly Regex NewlineRegex = new Regex(@"\r\n?|\n");

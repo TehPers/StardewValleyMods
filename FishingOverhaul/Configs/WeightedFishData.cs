@@ -1,8 +1,8 @@
-﻿using FishingOverhaul.Api;
-using StardewValley;
-using TehCore.Api.Weighted;
+﻿using StardewValley;
+using TehPers.Core.Api.Weighted;
+using TehPers.FishingOverhaul.Api;
 
-namespace FishingOverhaul.Configs {
+namespace TehPers.FishingOverhaul.Configs {
     public class WeightedFishData : IWeighted {
         public int Fish { get; }
         public IFishData Data { get; }

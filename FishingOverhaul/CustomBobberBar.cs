@@ -1,14 +1,14 @@
 ﻿using System;
-using FishingOverhaul.Api;
-using FishingOverhaul.Configs;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
-using TehCore;
+using TehPers.Core;
+using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Configs;
 
-namespace FishingOverhaul {
+namespace TehPers.FishingOverhaul {
     public class CustomBobberBar : BobberBar {
         private readonly ReflectedField<BobberBar, bool> _treasure;
         private readonly ReflectedField<BobberBar, bool> _treasureCaught;

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TehCore.Helpers.Json;
+﻿using System.ComponentModel;
+using TehPers.Core.Helpers.Json;
 
-namespace TehCore.Configs {
+namespace TehPers.Core.Configs {
     [JsonDescribe]
     internal class ConfigMain {
         [Description("Settings for input handing.")]

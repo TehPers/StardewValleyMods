@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TehCore.Helpers {
+namespace TehPers.Core.Helpers {
     public static class MathHelpers {
         public static sbyte Clamp(this sbyte value, sbyte lower, sbyte upper) => Math.Max(Math.Min(value, upper), lower);
         public static byte Clamp(this byte value, byte lower, byte upper) => Math.Max(Math.Min(value, upper), lower);

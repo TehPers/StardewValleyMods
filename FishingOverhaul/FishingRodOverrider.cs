@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Tools;
-using TehCore;
+using TehPers.Core.Api.Enums;
 using Object = StardewValley.Object;
 
-namespace FishingOverhaul {
+namespace TehPers.FishingOverhaul {
     internal class FishingRodOverrider {
         private readonly FieldInfo _pullFishField = typeof(FishingRod).GetField("pullFishFromWaterEvent", BindingFlags.NonPublic | BindingFlags.Instance);
         private readonly FieldInfo _netEventOnEvent = typeof(AbstractNetEvent1<byte[]>).GetField("onEvent", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -127,7 +124,6 @@ namespace FishingOverhaul {
             }
 
             // Check if a fish was chosen
-            fish = fish ?? 147;
             if (fish == null) {
                 // Secret note
                 if (user.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08) {
@@ -137,7 +133,13 @@ namespace FishingOverhaul {
                 }
 
                 // Trash
-                rod.pullFishFromWater(FishHelper.GetRandomTrash(), -1, 0, 0, false);
+                int? trash = FishHelper.GetRandomTrash(user);
+                if (trash.HasValue) {
+                    rod.pullFishFromWater(trash.Value, -1, 0, 0, false);
+                } else {
+                    ModFishing.Instance.Monitor.Log($"No possible trash found for {location.Name}, using stone instead. This is probably caused by another mod removing trash data.", LogLevel.Warn);
+                    rod.pullFishFromWater(Objects.Stone, -1, 0, 0, false);
+                }
             } else {
                 // Check if favBait should be set to true (still not sure what this does...)
                 Object fishObject = new Object(fish.Value, 1);

@@ -7,8 +7,8 @@
     <ProjectGuid>{2D8D9C15-E910-42D8-8CC2-69DA52405D78}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TehCore</RootNamespace>
-    <AssemblyName>TehCore</AssemblyName>
+    <RootNamespace>TehPers.Core</RootNamespace>
+    <AssemblyName>TehPers.Core</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>

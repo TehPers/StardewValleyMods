@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using StardewValley;
 using StardewModdingAPI;
-using TehCore.Api.Enums;
-using TehCore.Helpers;
-using TehCore.Helpers.Json;
+using TehPers.Core.Api.Enums;
+using TehPers.Core.Helpers;
+using TehPers.Core.Helpers.Json;
 
-namespace FishingOverhaul.Configs {
+namespace TehPers.FishingOverhaul.Configs {
 
     [JsonDescribe]
     public class ConfigFish {
@@ -132,6 +131,20 @@ namespace FishingOverhaul.Configs {
             this.PossibleFish["UndergroundMine"][158] = new FishData(mineBaseChance / 2d, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 20);
             this.PossibleFish["UndergroundMine"][161] = new FishData(mineBaseChance / 3d, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 60);
             this.PossibleFish["UndergroundMine"][162] = new FishData(mineBaseChance / 3d, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 100);
+
+            // Submarine
+            double curChance = 0.1D;
+            this.PossibleFish["Submarine"][800] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Blobfish
+            curChance = (1 - curChance) * 0.18D;
+            this.PossibleFish["Submarine"][799] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Spook Fish
+            curChance = (1 - curChance) * 0.28D;
+            this.PossibleFish["Submarine"][798] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Midnight Squid
+            curChance = (1 - curChance) * 0.1D;
+            this.PossibleFish["Submarine"][154] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Sea Cucumber
+            curChance = (1 - curChance) * 0.08D;
+            this.PossibleFish["Submarine"][155] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Super Cucumber
+            curChance = (1 - curChance) * 0.05D;
+            this.PossibleFish["Submarine"][149] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Octupus
         }
     }
 }

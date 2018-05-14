@@ -5,11 +5,11 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley.Menus;
-using TehCore.Enums;
-using TehCore.Helpers;
-using TehCore.Menus.BoxModel;
+using TehPers.Core.Enums;
+using TehPers.Core.Helpers;
+using TehPers.Core.Menus.BoxModel;
 
-namespace TehCore.Menus.Elements {
+namespace TehPers.Core.Menus.Elements {
     public abstract class Element {
         private const float DrawDepthStart = 0.5f;
         private const float DrawDepthRange = 0.01f;
