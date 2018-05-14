@@ -110,18 +110,18 @@ namespace TehPers.FishingOverhaul.Api {
         /// <summary>Sets the weight of an item in the trash list. If the item isn't already in the list, it will be inserted.</summary>
         /// <param name="id">The ID to assign the weight to.</param>
         /// <param name="weight">The weight of the item in the trash list.</param>
-        [Obsolete("Use " + nameof(IFishingApi.AddTrashData) + " instead. Will be removed before next version of Teh's Fishing Overhaul, so don't use this.")]
+        [Obsolete("Use " + nameof(IFishingApi.AddTrashData) + " instead. Will be removed before the non-beta release of Teh's Fishing Overhaul, so don't use this.")]
         void SetTrashWeight(int id, double weight);
 
         /// <summary>Removes an item from the list of trash.</summary>
         /// <param name="id">The ID to remove from the list of trash.</param>
         /// <returns>True if the ID was removed, false if not.</returns>
-        [Obsolete("Use " + nameof(IFishingApi.RemoveTrashData) + " instead. Will be removed before next version of Teh's Fishing Overhaul, so don't use this.")]
+        [Obsolete("Use " + nameof(IFishingApi.RemoveTrashData) + " instead. Will be removed before the non-beta release of Teh's Fishing Overhaul, so don't use this.")]
         bool RemoveTrash(int id);
 
         /// <summary>Gets all the trash in the trash list with their associated weights.</summary>
         /// <returns>An enumeration of the trash list.</returns>
-        [Obsolete("Use " + nameof(IFishingApi.GetTrashData) + " instead. Will be removed before next version of Teh's Fishing Overhaul, so don't use this.")]
+        [Obsolete("Use " + nameof(IFishingApi.GetTrashData) + " instead. Will be removed before the non-beta release of Teh's Fishing Overhaul, so don't use this.")]
         IEnumerable<IWeightedElement<int>> GetPossibleTrash();
 
         /// <summary>Adds new trash data to the list of obtainable trash.</summary>
