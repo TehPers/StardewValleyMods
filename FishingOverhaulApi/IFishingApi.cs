@@ -143,6 +143,11 @@ namespace FishingOverhaul.Api {
         /// <returns>The display name of the fish with the given ID.</returns>
         string GetFishName(int fish);
 
+        /// <summary>Sets the display name of a fish within this mod.</summary>
+        /// <param name="fish">The ID of the fish.</param>
+        /// <param name="name">The name of the fish.</param>
+        void SetFishName(int fish, string name);
+
         /// <summary>Gets the current perfect streak of a <see cref="Farmer"/>.</summary>
         /// <param name="who">The farmer.</param>
         /// <returns>The current perfect fishing streak of the <see cref="Farmer"/>.</returns>
@@ -152,5 +157,19 @@ namespace FishingOverhaul.Api {
         /// <param name="who">The farmer.</param>
         /// <param name="streak">The streak the given <see cref="Farmer"/> should have.</param>
         void SetStreak(Farmer who, int streak);
+
+        /// <summary>Hides a fish from the "possible fish" HUD element and the bobber bar.</summary>
+        /// <param name="fish">The ID of the fish to hide.</param>
+        void HideFish(int fish);
+
+        /// <summary>Reveals a fish in the "possible fish" HUD element and the bobber bar. This undoes <see cref="HideFish"/>.</summary>
+        /// <param name="fish">The ID of the fish to reveal.</param>
+        /// <returns>True if the fish was revealed, false if it wasn't hidden to begin with.</returns>
+        bool RevealFish(int fish);
+
+        /// <summary>Gets whether a fish is hidden.</summary>
+        /// <param name="fish">The ID of the fish.</param>
+        /// <returns>True if the fish is hidden, false if otherwise.</returns>
+        bool IsHidden(int fish);
     }
 }

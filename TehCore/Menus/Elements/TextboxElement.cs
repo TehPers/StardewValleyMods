@@ -45,7 +45,7 @@ namespace TehCore.Menus.Elements {
         private int _cursor;
 
         public TextboxElement() {
-            this._background = ModCore.Instance.Helper.Content.Load<Texture2D>(@"LooseSprites\textBox", ContentSource.GameContent);
+            this._background = ModCore.Instance.Helper.Content.Load<Texture2D>(@"LooseSprites\textBox.xnb", ContentSource.GameContent);
             this.Size = new BoxVector(0, this._background.Height, 1f, 0);
             this.Padding = new OuterSize(14, 4);
         }

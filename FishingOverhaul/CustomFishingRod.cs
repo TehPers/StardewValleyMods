@@ -16,7 +16,7 @@ using TehCore.Saves;
 using SObject = StardewValley.Object;
 
 namespace FishingOverhaul {
-    public class CustomFishingRod : FishingRod, ICustomItem<CustomFishingRod.RodData> {
+    public class CustomFishingRod : FishingRod {
         private readonly ReflectedField<FishingRod, int> _clearWaterDistance;
         private readonly ReflectedField<FishingRod, int> _whichFish;
         private readonly ReflectedField<FishingRod, int> _fishQuality;
@@ -325,6 +325,13 @@ namespace FishingOverhaul {
         public void Load(RodData model) {
             SaveHelper.DictionaryToXmlSerializable<FishingRod>(this, model.SerializedData);
         }
+
+        public Item GetReplacement() {
+            return this.AsNormalFishingRod();
+        }
+
+        public bool ShouldSerialize { get; } = false;
+        public bool ShouldDeserialize { get; } = false;
 
         public class RodData {
             public Dictionary<string, object> SerializedData { get; set; }

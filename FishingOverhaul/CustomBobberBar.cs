@@ -262,7 +262,7 @@ namespace FishingOverhaul {
 
                 // Draw the fish
                 Vector2 fishPos = new Vector2(this.xPositionOnScreen + 64 + 18, this.yPositionOnScreen + 12 + 24 + this._bobberPosition.Value) + this._fishShake.Value + this._everythingShake.Value;
-                if (ModFishing.Instance.MainConfig.ShowFish) {
+                if (ModFishing.Instance.MainConfig.ShowFish && !ModFishing.Instance.Api.IsHidden(this._whichFish)) {
                     Rectangle fishSrc = GameLocation.getSourceRectForObject(this._whichFish);
                     b.Draw(Game1.objectSpriteSheet, fishPos, fishSrc, Color.White, 0.0f, new Vector2(10f, 10f), 2.25f, SpriteEffects.None, 0.88f);
                 } else {

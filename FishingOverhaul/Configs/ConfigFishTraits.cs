@@ -22,7 +22,7 @@ namespace FishingOverhaul.Configs {
             ModFishing.Instance.Monitor.Log("Automatically populating fishTraits.json with data from Fish.xnb", LogLevel.Info);
             ModFishing.Instance.Monitor.Log("NOTE: If this file is modded, the config will reflect the changes!", LogLevel.Info);
 
-            Dictionary<int, string> fishDict = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
+            Dictionary<int, string> fishDict = ModFishing.Instance.Helper.Content.Load<Dictionary<int, string>>(@"Data\Fish.xnb", ContentSource.GameContent);
             this.FishTraits = this.FishTraits ?? new Dictionary<int, FishTraits>();
             IEnumerable<int> possibleFish = (from locationKV in ModFishing.Instance.FishConfig.PossibleFish
                                              from fishKV in locationKV.Value
@@ -37,7 +37,7 @@ namespace FishingOverhaul.Configs {
                     string[] data = rawData.Split('/');
 
                     // Get difficulty
-                    float difficulty = Convert.ToInt32(data[1]);
+                    int.TryParse(data[1], out int difficulty);
 
                     // Get motion type
                     string motionTypeName = data[2].ToLower();

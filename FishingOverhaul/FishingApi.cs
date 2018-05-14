@@ -30,6 +30,7 @@ namespace FishingOverhaul {
         private readonly Dictionary<int, double> _trash = Enumerable.Range(FishingApi.MIN_TRASH_ID, FishingApi.MAX_TRASH_ID - FishingApi.MIN_TRASH_ID).ToDictionary(id => id, id => 1D);
         private readonly Dictionary<int, string> _fishNames = new Dictionary<int, string>();
         private readonly Dictionary<Farmer, int> _streaks = new Dictionary<Farmer, int>();
+        private readonly HashSet<int> _hidden = new HashSet<int>();
 
         public void SetFishChance(float? chance) {
             this._fishChance = chance;
@@ -255,7 +256,7 @@ namespace FishingOverhaul {
             // Check if fish names have been loaded in yet
             if (!this._fishNames.Any()) {
                 // Get raw content data for fish
-                Dictionary<int, string> fishContent = ModFishing.Instance.Helper.Content.Load<Dictionary<int, string>>("Data\\Fish", ContentSource.GameContent);
+                Dictionary<int, string> fishContent = ModFishing.Instance.Helper.Content.Load<Dictionary<int, string>>(@"Data\Fish.xnb", ContentSource.GameContent);
 
                 // Store all the names
                 foreach (KeyValuePair<int, string> fishData in fishContent) {
@@ -267,12 +268,28 @@ namespace FishingOverhaul {
             return this._fishNames.TryGetValue(fish, out string name) ? name : null;
         }
 
+        public void SetFishName(int fish, string name) {
+            this._fishNames[fish] = name ?? string.Empty;
+        }
+
         public int GetStreak(Farmer who) {
             return this._streaks.TryGetValue(who, out int streak) ? streak : 0;
         }
 
         public void SetStreak(Farmer who, int streak) {
             this._streaks[who] = streak;
+        }
+
+        public void HideFish(int fish) {
+            this._hidden.Add(fish);
+        }
+
+        public bool RevealFish(int fish) {
+            return this._hidden.Remove(fish);
+        }
+
+        public bool IsHidden(int fish) {
+            return this._hidden.Contains(fish);
         }
     }
 }

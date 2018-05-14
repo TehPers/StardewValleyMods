@@ -19,8 +19,8 @@ namespace FishingOverhaul.Configs {
             ModFishing.Instance.Monitor.Log("Automatically populating fish.json with data from Fish.xnb and Locations.xnb", LogLevel.Info);
             ModFishing.Instance.Monitor.Log("NOTE: If either of these files are modded, the config will reflect the changes! However, legendary fish and fish in the UndergroundMine are not being pulled from those files due to technical reasons.", LogLevel.Info);
 
-            Dictionary<int, string> fish = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
-            Dictionary<string, string> locations = Game1.content.Load<Dictionary<string, string>>("Data\\Locations");
+            Dictionary<int, string> fish = ModFishing.Instance.Helper.Content.Load<Dictionary<int, string>>(@"Data\Fish.xnb", ContentSource.GameContent);
+            Dictionary<string, string> locations = ModFishing.Instance.Helper.Content.Load<Dictionary<string, string>>(@"Data\Locations.xnb", ContentSource.GameContent);
 
             this.PossibleFish = this.PossibleFish ?? new Dictionary<string, Dictionary<int, FishData>>();
 

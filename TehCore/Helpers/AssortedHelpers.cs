@@ -4,10 +4,13 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Netcode;
 using Newtonsoft.Json;
 using StardewModdingAPI;
+using StardewValley;
+using SObject = StardewValley.Object;
 
 namespace TehCore.Helpers {
     public static class AssortedHelpers {
@@ -95,13 +98,59 @@ namespace TehCore.Helpers {
             };
         }
 
+        public static IEnumerable<Point> GetFloodedTiles(this GameLocation location, int? maxDistance) {
+            if (location.waterTiles == null)
+                return Enumerable.Empty<Point>();
+
+            // Get a list of all the water tile coordinates
+            int width = location.waterTiles.GetLength(0);
+            int height = location.waterTiles.GetLength(1);
+            List<Point> waterTiles = new List<Point>();
+            for (int x = 0; x < width; x++) {
+                for (int y = 0; y < height; y++) {
+                    if (location.waterTiles[x, y]) {
+                        waterTiles.Add(new Point(x, y));
+                    }
+                }
+            }
+
+            // Traverse the graph
+            return waterTiles.Traverse(GetNeighbors).Select(node => node.Value);
+
+            // Neighbors function
+            IEnumerable<Point> GetNeighbors(GraphNode<Point> cur) {
+                // Check if this is at the max possible distance before adding neighbors
+                if (maxDistance != null && cur.TotalCost >= maxDistance)
+                    return Enumerable.Empty<Point>();
+
+                // Filter out each neighboring point
+                return (new[] {
+                    new Point(cur.Value.X, cur.Value.Y + 1),
+                    new Point(cur.Value.X, cur.Value.Y - 1),
+                    new Point(cur.Value.X + 1, cur.Value.Y),
+                    new Point(cur.Value.X - 1, cur.Value.Y)
+                }).Where(neighbor => {
+                    // Make sure it's a valid tile
+                    if (neighbor.X < 0 || neighbor.Y < 0 || neighbor.X >= width || neighbor.Y >= height)
+                        return false;
+
+                    // Make sure there's no fence there
+                    if (location.Objects.ContainsKey(new Vector2(neighbor.X, neighbor.Y)))
+                        return false;
+
+                    // It's a valid tile
+                    return true;
+                });
+            }
+        }
+
         /// <summary>Performs any number of simultaneous breadth-first traversals over a graph, returning each vertex that was reached.</summary>
         /// <typeparam name="TVertex">The type of the vertex in the graph.</typeparam>
         /// <param name="starts">All vertices that the traversals should begin at.</param>
         /// <param name="getNeighbors">A function returning all vertices the given vertex is connected to.</param>
         /// <param name="equalityComparer">Equality comparer for vertices to avoid the same vertex being checked multiple times.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> containing each vertex that was reached.</returns>
-        public static IEnumerable<TVertex> Traverse<TVertex>(this IEnumerable<TVertex> starts, Func<GraphNode<TVertex>, IEnumerable<TVertex>> getNeighbors, IEqualityComparer<TVertex> equalityComparer = null) {
+        public static IEnumerable<GraphNode<TVertex>> Traverse<TVertex>(this IEnumerable<TVertex> starts, Func<GraphNode<TVertex>, IEnumerable<TVertex>> getNeighbors, IEqualityComparer<TVertex> equalityComparer = null) {
             Queue<GraphNode<TVertex>> open = new Queue<GraphNode<TVertex>>(starts.Select(s => new GraphNode<TVertex>(s, 0)));
             HashSet<TVertex> closed = equalityComparer != null ? new HashSet<TVertex>(equalityComparer) : new HashSet<TVertex>();
 
@@ -113,7 +162,10 @@ namespace TehCore.Helpers {
                 if (!closed.Add(cur.Value))
                     continue;
 
-                yield return cur.Value;
+                // Return this node
+                yield return cur;
+
+                // Enqueue all the neighbors of this node
                 foreach (TVertex neighbor in getNeighbors(cur)) {
                     open.Enqueue(new GraphNode<TVertex>(neighbor, cur.TotalCost + 1));
                 }

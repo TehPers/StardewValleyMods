@@ -4,7 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using FishingOverhaul.Api.Enums;
 using FishingOverhaul.Configs;
+using FishingOverhaul.Patches;
+using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -15,11 +18,14 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
 using StardewValley.Menus;
+using StardewValley.Network;
 using StardewValley.Tools;
 using TehCore;
+using TehCore.Api.Enums;
 using TehCore.Api.Weighted;
 using TehCore.Enums;
 using TehCore.Helpers;
+using TehCore.Helpers.Json;
 using TehCore.Menus;
 using TehCore.Menus.BoxModel;
 using TehCore.Menus.Elements;
@@ -34,6 +40,9 @@ namespace FishingOverhaul {
         public ConfigFishTraits FishTraitsConfig { get; private set; }
         public ConfigTreasure TreasureConfig { get; private set; }
 
+        internal FishingRodOverrider Overrider { get; set; }
+        internal HarmonyInstance Harmony { get; private set; }
+
         public ModFishing() {
             this.Api = new FishingApi();
         }
@@ -47,7 +56,22 @@ namespace FishingOverhaul {
             if (!this.MainConfig.ModEnabled)
                 return;
 
-            GameEvents.UpdateTick += this.UpdateTick;
+            // Apply patches
+            this.Harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            this.Harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            // Easter eggs I guess
+            this.Api.SetFishTraits(Objects.Diamond, new FishTraits {
+                Difficulty = 100,
+                MinSize = 1,
+                MaxSize = 3,
+                MotionType = FishMotionType.DART
+            });
+
+            this.Api.SetFishData("Town", Objects.Diamond, new FishData(0.1, new FishData.TimeInterval[] { new FishData.TimeInterval(600, 2600) }, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter));
+            this.Api.HideFish(Objects.Diamond);
+
+            this.Overrider = new FishingRodOverrider();
             GraphicsEvents.OnPostRenderHudEvent += this.PostRenderHud;
             /*ControlEvents.KeyPressed += (sender, pressed) => {
                 if (pressed.KeyPressed == Keys.NumPad7) {
@@ -93,14 +117,14 @@ namespace FishingOverhaul {
         #region Events
         private void UpdateTick(object sender, EventArgs e) {
             // Replace the player's fishing rod with a custom rod
-            if (!Game1.IsMultiplayer && Game1.player.CurrentTool is FishingRod rod && !(rod is CustomFishingRod)) {
+            if (Game1.player.CurrentTool is FishingRod rod && !(rod is CustomFishingRod)) {
                 this.Monitor.Log("Normal rod found, replacing...", LogLevel.Info);
                 Game1.player.CurrentTool = new CustomFishingRod(rod);
             }
         }
 
         private void PostRenderHud(object sender, EventArgs eventArgs) {
-            if (Game1.IsMultiplayer || !this.MainConfig.ShowFishingData || Game1.eventUp || !(Game1.player.CurrentTool is CustomFishingRod rod))
+            if (!this.MainConfig.ShowFishingData || Game1.eventUp || !(Game1.player.CurrentTool is FishingRod rod))
                 return;
 
             Color textColor = Color.White;
@@ -153,6 +177,10 @@ namespace FishingOverhaul {
                         // Get fish ID
                         int fish = fishData.Value.Value;
 
+                        // Don't draw hidden fish
+                        if (this.Api.IsHidden(fish))
+                            continue;
+
                         // Draw fish icon
                         Rectangle source = GameLocation.getSourceRectForObject(fish);
                         batch.Draw(Game1.objectSpriteSheet, new Vector2(0, boxHeight), source, Color.White, 0.0f, Vector2.Zero, iconScale, SpriteEffects.None, 0.8F);
@@ -173,13 +201,18 @@ namespace FishingOverhaul {
                 batch.Draw(ModCore.Instance.WhitePixel, new Rectangle(0, 0, (int) boxWidth, (int) boxHeight), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.75F);
 
                 // Debug info
-                /*
+                //Point[] floodedTiles = Game1.currentLocation?.GetFloodedTiles(10).ToArray() ?? new Point[0];
                 StringBuilder text = new StringBuilder();
-                text.AppendLine($"Hover Key: {Enum.GetName(typeof(Keys), ModCore.Instance.InputHelper._heldKey ?? Keys.None)}");
-                text.AppendLine($"Time Pressed: {DateTime.UtcNow - ModCore.Instance.InputHelper._keyStart:g}");
-                text.AppendLine($"Time Since Repeat: {DateTime.UtcNow - ModCore.Instance.InputHelper._lastRepeat:g}");
+                //text.AppendLine($"Hover Key: {Enum.GetName(typeof(Keys), ModCore.Instance.InputHelper._heldKey ?? Keys.None)}");
+                //text.AppendLine($"Time Pressed: {DateTime.UtcNow - ModCore.Instance.InputHelper._keyStart:g}");
+                //text.AppendLine($"Time Since Repeat: {DateTime.UtcNow - ModCore.Instance.InputHelper._lastRepeat:g}");
+                //text.AppendLine($"Flooded tile? {floodedTiles.Contains(new Point(Game1.player.getTileX(), Game1.player.getTileY()))}");
                 batch.DrawStringWithShadow(Game1.smallFont, text.ToString(), new Vector2(0, boxHeight), Color.White, 0.8F);
-                */
+
+                //foreach (Point floodedTile in floodedTiles) {
+                //    Rectangle rect = new Rectangle(floodedTile.X * Game1.tileSize - Game1.viewport.X, floodedTile.Y * Game1.tileSize - Game1.viewport.Y, Game1.tileSize, Game1.tileSize);
+                //    batch.FillRectangle(rect, new Color(0, 1F, 0F, 0.25F));
+                //}
 
                 // Done drawing HUD
                 batch.End();

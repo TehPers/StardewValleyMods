@@ -20,31 +20,38 @@ namespace TehCore.Helpers {
         private static readonly MethodInfo _loadMethod = typeof(SaveHelper).GetMethod(nameof(SaveHelper.LoadSaveData), BindingFlags.Static | BindingFlags.NonPublic);
 
         public void SerializeCustomItems() {
+            // Remove all custom items from inventories
+            this.SerializeCustomItems(this.GetAllInventories());
+        }
+
+        public IDictionary<InventorySource, IList<Item>> GetAllInventories() {
             Dictionary<InventorySource, IList<Item>> inventories = new Dictionary<InventorySource, IList<Item>>();
 
-            // Player inventory
-            inventories.Add(new InventorySource(InventoryType.PLAYER, null, Vector2.Zero, false), Game1.player.Items);
+            // Farmer inventories
+            foreach (Farmer farmer in Game1.getAllFarmers()) {
+                inventories.Add(new InventorySource(farmer), farmer.Items);
+            }
 
+            // World inventories
             foreach (GameLocation location in Game1.locations) {
                 foreach (SerializableDictionary<Vector2, SObject> objectDict in location.Objects) {
                     foreach (KeyValuePair<Vector2, SObject> kv in objectDict) {
                         switch (kv.Value) {
                             case Chest chest:
                                 // Chests
-                                inventories.Add(new InventorySource(InventoryType.CHEST, location.Name, kv.Key, location.isStructure.Value), chest.items);
+                                inventories.Add(new InventorySource(location, chest), chest.items);
                                 break;
                             case IStorageObject storageObject:
                                 // Custom storage objects
                                 // TODO: actually add support for custom game objects
-                                inventories.Add(new InventorySource(InventoryType.CUSTOM, location.Name, kv.Key, location.isStructure.Value), storageObject.Inventory);
+                                inventories.Add(new InventorySource(location, storageObject, kv.Key), storageObject.Inventory);
                                 break;
                         }
                     }
                 }
             }
 
-            // Remove all the items in those inventories
-            this.SerializeCustomItems(inventories);
+            return inventories;
         }
 
         private void SerializeCustomItems(IDictionary<InventorySource, IList<Item>> inventories) {
@@ -58,6 +65,9 @@ namespace TehCore.Helpers {
                     // Get the current item
                     Item item = inventoryKV.Value[slot];
                     if (item == null)
+                        continue;
+
+                    if (!(item is ICustomItem customItem && customItem.ShouldDeserialize))
                         continue;
 
                     // Check if that item is ICustomItem<T>
@@ -74,8 +84,8 @@ namespace TehCore.Helpers {
                         object saveData = SaveHelper._saveMethod.MakeGenericMethod(interfaceType.GetGenericArguments()).Invoke(null, new object[] { item });
                         itemData.Add(new CustomItemData(inventoryKV.Key, slot, saveData, item.GetType()));
 
-                        // Remove the custom item to avoid issues while serializing
-                        inventoryKV.Value[slot] = null;
+                        // Replace the custom item to avoid issues while serializing
+                        inventoryKV.Value[slot] = customItem.GetReplacement();
                     }
                 }
             }
@@ -130,7 +140,9 @@ namespace TehCore.Helpers {
                         SaveHelper._loadMethod.MakeGenericMethod(interfaceType.GetGenericArguments()).Invoke(null, new[] { item, data.Data });
 
                         // Put it in the inventory
-                        inventory[data.Slot] = item;
+                        if (item is ICustomItem customItem && customItem.ShouldSerialize) {
+                            inventory[data.Slot] = item;
+                        }
                     }
                 } else {
                     ModCore.Instance.Monitor.Log($"{itemType?.FullName} is not an ICustomItem, skipping", LogLevel.Error);

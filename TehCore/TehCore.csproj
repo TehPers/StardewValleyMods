@@ -56,7 +56,6 @@
     <Compile Include="Helpers\Json\DescriptiveJsonConverter.cs" />
     <Compile Include="Helpers\Json\JsonDescribeAttribute.cs" />
     <Compile Include="Enums\MouseButtons.cs" />
-    <Compile Include="Enums\Objects.cs" />
     <Compile Include="Helpers\AssortedHelpers.cs" />
     <Compile Include="Helpers\Json\DescriptiveJsonWriter.cs" />
     <Compile Include="Helpers\Json\CustomItemData.cs" />

@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DA5D42EA-F894-4772-A42A-00CE10161136}</ProjectGuid>
+    <ProjectGuid>{12D92E0F-41E5-484C-B821-BA5C95DDEC97}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FishingOverhaul</RootNamespace>
-    <AssemblyName>FishingOverhaul</AssemblyName>
+    <RootNamespace>VariableFishing</RootNamespace>
+    <AssemblyName>VariableFishing</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,12 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\Harmony (DLLs)\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,26 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configs\ConfigFishTraits.cs" />
-    <Compile Include="Configs\FishTraits.cs" />
-    <Compile Include="Configs\WeightedFishData.cs" />
-    <Compile Include="FishingApi.cs" />
-    <Compile Include="Configs\ConfigFish.cs" />
-    <Compile Include="Configs\ConfigMain.cs" />
-    <Compile Include="Configs\ConfigTreasure.cs" />
-    <Compile Include="Configs\FishData.cs" />
-    <Compile Include="Configs\TreasureData.cs" />
-    <Compile Include="CustomBobberBar.cs" />
-    <Compile Include="CustomFishingRod.cs" />
-    <Compile Include="FishHelper.cs" />
-    <Compile Include="FishingRodOverrider.cs" />
-    <Compile Include="ModFishing.cs" />
-    <Compile Include="Patches\NetAudioPatches.cs" />
+    <Compile Include="ConfigMain.cs" />
+    <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="i18n\default.json" />
-    <None Include="i18n\pt.json" />
     <None Include="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -77,21 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\FishingOverhaulApi\FishingOverhaulApi.csproj">
-      <Project>{6FD61B65-282D-4764-ABBD-DA2501EFCFF1}</Project>
-      <Name>FishingOverhaulApi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TehCoreApi\TehCoreApi.csproj">
-      <Project>{437499C7-9E3C-41F7-A9A0-3D7815F3AC83}</Project>
-      <Name>TehCoreApi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TehCore\TehCore.csproj">
-      <Project>{2d8d9c15-e910-42d8-8cc2-69da52405d78}</Project>
-      <Name>TehCore</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

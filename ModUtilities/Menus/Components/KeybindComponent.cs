@@ -31,7 +31,7 @@ namespace ModUtilities.Menus.Components {
         private bool _selectingKey;
 
         public KeybindComponent() {
-            this._background = ModUtilities.Instance.Helper.Content.Load<Texture2D>(@"LooseSprites\textBox", ContentSource.GameContent);
+            this._background = ModUtilities.Instance.Helper.Content.Load<Texture2D>(@"LooseSprites\textBox.xnb", ContentSource.GameContent);
             this.Size = new Size(100, this._background.Height);
         }
 

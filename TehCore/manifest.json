@@ -5,6 +5,5 @@
     "Description": "Helper utilities for mods",
     "UniqueID": "TehPers.Core",
     "EntryDll": "TehCore.dll",
-    "UpdateKeys": [ "Nexus:2150" ],
-    "Dependencies": []
+    "UpdateKeys": [ "Nexus:2150" ]
 }

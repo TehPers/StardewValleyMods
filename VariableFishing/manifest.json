@@ -1,0 +1,9 @@
+﻿{
+    "Name": "Variable Fishing",
+    "Author": "TehPers",
+    "Version": "1.0.0-beta",
+    "Description": "Changes the difficulty of fishing based on the config.",
+    "UniqueID": "TehPers.VariableFishing",
+    "EntryDll": "VariableFishing.dll",
+    "UpdateKeys": [ "" ]
+}
