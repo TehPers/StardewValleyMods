@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6FD61B65-282D-4764-ABBD-DA2501EFCFF1}</ProjectGuid>
+    <ProjectGuid>{2D8D9C15-E910-42D8-8CC2-69DA52405D78}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TehPers.FishingOverhaul.Api</RootNamespace>
-    <AssemblyName>TehPers.FishingOverhaul.Api</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>TehPers.Core</RootNamespace>
+    <AssemblyName>TehPers.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <ModUnitTests>True</ModUnitTests>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,24 +47,59 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\FishMotionType.cs" />
-    <Compile Include="IFishData.cs" />
-    <Compile Include="IFishingApi.cs" />
-    <Compile Include="IFishTraits.cs" />
-    <Compile Include="ITrashData.cs" />
-    <Compile Include="ITreasureData.cs" />
+    <Compile Include="Configs\ConfigMain.cs" />
+    <Compile Include="Enums\Alignment.cs" />
+    <Compile Include="Helpers\EventHandlers\EventArgsKeyRepeated.cs" />
+    <Compile Include="Helpers\InputHelper.cs" />
+    <Compile Include="Helpers\InputHelpers.cs" />
+    <Compile Include="Helpers\Json\NetExposer.cs" />
+    <Compile Include="Helpers\Json\DescriptiveJsonConverter.cs" />
+    <Compile Include="Helpers\Json\JsonDescribeAttribute.cs" />
+    <Compile Include="Enums\MouseButtons.cs" />
+    <Compile Include="Helpers\AssortedHelpers.cs" />
+    <Compile Include="Helpers\Json\DescriptiveJsonWriter.cs" />
+    <Compile Include="Helpers\Json\CustomItemData.cs" />
+    <Compile Include="Helpers\DrawHelpers.cs" />
+    <Compile Include="Helpers\EnumerableHelpers.cs" />
+    <Compile Include="Helpers\Json\InventorySource.cs" />
+    <Compile Include="Enums\InventoryType.cs" />
+    <Compile Include="Helpers\JsonHelper.cs" />
+    <Compile Include="Helpers\MathHelpers.cs" />
+    <Compile Include="Helpers\SaveHelper.cs" />
+    <Compile Include="Helpers\SDVHelpers.cs" />
+    <Compile Include="Helpers\WeightedHelpers.cs" />
+    <Compile Include="Menus\BoxModel\BoxRectangle.cs" />
+    <Compile Include="Menus\BoxModel\BoxVector.cs" />
+    <Compile Include="Menus\BoxModel\OuterSize.cs" />
+    <Compile Include="Menus\BoxModel\Rectangle2I.cs" />
+    <Compile Include="Menus\BoxModel\Vector2I.cs" />
+    <Compile Include="Menus\Elements\MenuElement.cs" />
+    <Compile Include="Menus\Elements\TextboxElement.cs" />
+    <Compile Include="Menus\Elements\TextElement.cs" />
+    <Compile Include="Saves\ICustomItem.cs" />
+    <Compile Include="Saves\IStorageObject.cs" />
+    <Compile Include="Menus\ConfigMenuBuilder.cs" />
+    <Compile Include="Menus\Elements\Element.cs" />
+    <Compile Include="Menus\Menu.cs" />
+    <Compile Include="ModCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReflectedField.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\Json\NetConverter.cs" />
+    <None Include="manifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\TehCoreApi\TehCoreApi.csproj">
+    <ProjectReference Include="..\TehCoreApi\TehPers.Core.Api.csproj">
       <Project>{437499c7-9e3c-41f7-a9a0-3d7815f3ac83}</Project>
-      <Name>TehCoreApi</Name>
+      <Name>TehPers.Core.Api</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -81,17 +81,17 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\FishingOverhaulApi\FishingOverhaulApi.csproj">
+    <ProjectReference Include="..\FishingOverhaulApi\TehPers.FishingOverhaul.Api.csproj">
       <Project>{6FD61B65-282D-4764-ABBD-DA2501EFCFF1}</Project>
-      <Name>FishingOverhaulApi</Name>
+      <Name>TehPers.FishingOverhaul.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TehCoreApi\TehCoreApi.csproj">
+    <ProjectReference Include="..\TehCoreApi\TehPers.Core.Api.csproj">
       <Project>{437499C7-9E3C-41F7-A9A0-3D7815F3AC83}</Project>
-      <Name>TehCoreApi</Name>
+      <Name>TehPers.Core.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TehCore\TehCore.csproj">
+    <ProjectReference Include="..\TehCore\TehPers.Core.csproj">
       <Project>{2d8d9c15-e910-42d8-8cc2-69da52405d78}</Project>
-      <Name>TehCore</Name>
+      <Name>TehPers.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
