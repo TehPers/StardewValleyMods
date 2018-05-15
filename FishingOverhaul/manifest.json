@@ -4,16 +4,12 @@
     "Version": "2.0.1-beta",
     "Description": "A complete overhaul of vanilla fishing, with a huge amount of customization.",
     "UniqueID": "TehPers.FishingOverhaul",
-    "EntryDll": "FishingOverhaul.dll",
+    "EntryDll": "TehPers.FishingOverhaul.dll",
     "UpdateKeys": [ "Nexus:866" ],
     "Dependencies": [
         {
             "UniqueID": "TehPers.Core",
-            "MinimumVersion": "1.0.0-dev"
+            "MinimumVersion": "1.0.1-dev"
         },
-        {
-            "UniqueID": "TehPers.VariableFishing",
-            "IsRequired": false
-        }
     ]
 }

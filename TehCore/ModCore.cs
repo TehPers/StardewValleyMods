@@ -36,9 +36,9 @@ namespace TehPers.Core {
             this.MainConfig = this.JsonHelper.ReadOrCreate<ConfigMain>("config.json", helper);
 
             // Save events
-            SaveEvents.BeforeSave += (sender, e) => this.SaveHelper.SerializeCustomItems();
-            SaveEvents.AfterSave += (sender, e) => this.SaveHelper.DeserializeCustomItems();
-            SaveEvents.AfterLoad += (sender, e) => this.SaveHelper.DeserializeCustomItems();
+            //SaveEvents.BeforeSave += (sender, e) => this.SaveHelper.SerializeCustomItems();
+            //SaveEvents.AfterSave += (sender, e) => this.SaveHelper.DeserializeCustomItems();
+            //SaveEvents.AfterLoad += (sender, e) => this.SaveHelper.DeserializeCustomItems();
 
             // Input events
             KeyboardInput.CharEntered += this.CharEntered;

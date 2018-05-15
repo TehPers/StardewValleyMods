@@ -133,6 +133,8 @@ namespace TehPers.FishingOverhaul.Configs {
             this.PossibleFish["UndergroundMine"][162] = new FishData(mineBaseChance / 3d, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 100);
 
             // Submarine
+            if (!this.PossibleFish.ContainsKey("Submarine"))
+                this.PossibleFish.Add("Submarine", new Dictionary<int, FishData>());
             double curChance = 0.1D;
             this.PossibleFish["Submarine"][800] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Blobfish
             curChance = (1 - curChance) * 0.18D;

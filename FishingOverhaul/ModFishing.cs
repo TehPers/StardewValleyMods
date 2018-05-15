@@ -13,6 +13,7 @@ using TehPers.Core;
 using TehPers.Core.Api.Enums;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Helpers;
+using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Enums;
 using TehPers.FishingOverhaul.Configs;
 
@@ -54,7 +55,7 @@ namespace TehPers.FishingOverhaul {
                 MotionType = FishMotionType.DART
             });
 
-            this.Api.SetFishData("Town", Objects.Diamond, new FishData(0.1, new FishData.TimeInterval[] { new FishData.TimeInterval(600, 2600) }, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter));
+            this.Api.SetFishData("Town", Objects.Diamond, new FishData(0.1, new[] { new FishData.TimeInterval(600, 2600) }, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter));
             this.Api.HideFish(Objects.Diamond);
 
             this.Overrider = new FishingRodOverrider();
@@ -119,87 +120,88 @@ namespace TehPers.FishingOverhaul {
             float boxHeight = 0;
 
             // Setup the sprite batch
-            using (SpriteBatch batch = new SpriteBatch(Game1.graphics.GraphicsDevice)) {
-                batch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
+            SpriteBatch batch = Game1.spriteBatch;
+            batch.End();
+            batch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
+            //using (SpriteBatch batch = new SpriteBatch(Game1.graphics.GraphicsDevice)) {
 
-                // Draw streak
-                string streakText = ModFishing.Translate("text.streak", this.Api.GetStreak(Game1.player));
-                batch.DrawStringWithShadow(font, streakText, Vector2.Zero, textColor, 1f);
-                boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
-                boxHeight += lineHeight;
+            // Draw streak
+            string streakText = ModFishing.Translate("text.streak", this.Api.GetStreak(Game1.player));
+            batch.DrawStringWithShadow(font, streakText, Vector2.Zero, textColor, 1f);
+            boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
+            boxHeight += lineHeight;
 
-                // Get info on all the possible fish
-                IWeightedElement<int?>[] possibleFish = this.Api.GetPossibleFish(Game1.player).ToArray();
-                double totalWeight = possibleFish.SumWeights(); // Should always be 1
-                possibleFish = possibleFish.Where(e => e.Value != null).ToArray();
-                double fishChance = possibleFish.SumWeights() / totalWeight;
+            // Get info on all the possible fish
+            IWeightedElement<int?>[] possibleFish = this.Api.GetPossibleFish(Game1.player).ToArray();
+            double totalWeight = possibleFish.SumWeights(); // Should always be 1
+            possibleFish = possibleFish.Where(e => e.Value != null).ToArray();
+            double fishChance = possibleFish.SumWeights() / totalWeight;
 
-                // Draw treasure chance
-                string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", this.Api.GetTreasureChance(Game1.player, rod)));
-                batch.DrawStringWithShadow(font, treasureText, new Vector2(0, boxHeight), textColor, 1f);
-                boxWidth = Math.Max(boxWidth, font.MeasureString(treasureText).X);
-                boxHeight += lineHeight;
+            // Draw treasure chance
+            string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", this.Api.GetTreasureChance(Game1.player, rod)));
+            batch.DrawStringWithShadow(font, treasureText, new Vector2(0, boxHeight), textColor, 1f);
+            boxWidth = Math.Max(boxWidth, font.MeasureString(treasureText).X);
+            boxHeight += lineHeight;
 
-                // Draw trash chance
-                string trashText = ModFishing.Translate("text.trash", ModFishing.Translate("text.percent", 1f - fishChance));
-                batch.DrawStringWithShadow(font, trashText, new Vector2(0, boxHeight), textColor, 1f);
-                boxWidth = Math.Max(boxWidth, font.MeasureString(trashText).X);
-                boxHeight += lineHeight;
+            // Draw trash chance
+            string trashText = ModFishing.Translate("text.trash", ModFishing.Translate("text.percent", 1f - fishChance));
+            batch.DrawStringWithShadow(font, trashText, new Vector2(0, boxHeight), textColor, 1f);
+            boxWidth = Math.Max(boxWidth, font.MeasureString(trashText).X);
+            boxHeight += lineHeight;
 
-                if (possibleFish.Any()) {
-                    // Calculate total weigh of each possible fish (for percentages)
-                    totalWeight = possibleFish.SumWeights();
+            if (possibleFish.Any()) {
+                // Calculate total weigh of each possible fish (for percentages)
+                totalWeight = possibleFish.SumWeights();
 
-                    // Draw info for each fish
-                    const float iconScale = Game1.pixelZoom / 2f;
-                    foreach (IWeightedElement<int?> fishData in possibleFish) {
-                        // Skip trash
-                        if (fishData.Value == null)
-                            continue;
+                // Draw info for each fish
+                const float iconScale = Game1.pixelZoom / 2f;
+                foreach (IWeightedElement<int?> fishData in possibleFish) {
+                    // Skip trash
+                    if (fishData.Value == null)
+                        continue;
 
-                        // Get fish ID
-                        int fish = fishData.Value.Value;
+                    // Get fish ID
+                    int fish = fishData.Value.Value;
 
-                        // Don't draw hidden fish
-                        if (this.Api.IsHidden(fish))
-                            continue;
+                    // Don't draw hidden fish
+                    if (this.Api.IsHidden(fish))
+                        continue;
 
-                        // Draw fish icon
-                        Rectangle source = GameLocation.getSourceRectForObject(fish);
-                        batch.Draw(Game1.objectSpriteSheet, new Vector2(0, boxHeight), source, Color.White, 0.0f, Vector2.Zero, iconScale, SpriteEffects.None, 0.8F);
-                        lineHeight = Math.Max(lineHeight, source.Height * iconScale);
+                    // Draw fish icon
+                    Rectangle source = GameLocation.getSourceRectForObject(fish);
+                    batch.Draw(Game1.objectSpriteSheet, new Vector2(0, boxHeight), source, Color.White, 0.0f, Vector2.Zero, iconScale, SpriteEffects.None, 1F);
+                    lineHeight = Math.Max(lineHeight, source.Height * iconScale);
 
-                        // Draw fish information
-                        string chanceText = ModFishing.Translate("text.percent", fishChance * fishData.GetWeight() / totalWeight);
-                        string fishText = $"{this.Api.GetFishName(fish)} - {chanceText}";
-                        batch.DrawStringWithShadow(font, fishText, new Vector2(source.Width * iconScale, boxHeight), textColor, 0.8F);
-                        boxWidth = Math.Max(boxWidth, font.MeasureString(fishText).X + source.Width * iconScale);
+                    // Draw fish information
+                    string chanceText = ModFishing.Translate("text.percent", fishChance * fishData.GetWeight() / totalWeight);
+                    string fishText = $"{this.Api.GetFishName(fish)} - {chanceText}";
+                    batch.DrawStringWithShadow(font, fishText, new Vector2(source.Width * iconScale, boxHeight), textColor, 1F);
+                    boxWidth = Math.Max(boxWidth, font.MeasureString(fishText).X + source.Width * iconScale);
 
-                        // Update destY
-                        boxHeight += lineHeight;
-                    }
+                    // Update destY
+                    boxHeight += lineHeight;
                 }
-
-                // Draw the background rectangle
-                batch.Draw(ModCore.Instance.WhitePixel, new Rectangle(0, 0, (int) boxWidth, (int) boxHeight), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.75F);
-
-                // Debug info
-                //Point[] floodedTiles = Game1.currentLocation?.GetFloodedTiles(10).ToArray() ?? new Point[0];
-                StringBuilder text = new StringBuilder();
-                //text.AppendLine($"Hover Key: {Enum.GetName(typeof(Keys), ModCore.Instance.InputHelper._heldKey ?? Keys.None)}");
-                //text.AppendLine($"Time Pressed: {DateTime.UtcNow - ModCore.Instance.InputHelper._keyStart:g}");
-                //text.AppendLine($"Time Since Repeat: {DateTime.UtcNow - ModCore.Instance.InputHelper._lastRepeat:g}");
-                //text.AppendLine($"Flooded tile? {floodedTiles.Contains(new Point(Game1.player.getTileX(), Game1.player.getTileY()))}");
-                batch.DrawStringWithShadow(Game1.smallFont, text.ToString(), new Vector2(0, boxHeight), Color.White, 0.8F);
-
-                //foreach (Point floodedTile in floodedTiles) {
-                //    Rectangle rect = new Rectangle(floodedTile.X * Game1.tileSize - Game1.viewport.X, floodedTile.Y * Game1.tileSize - Game1.viewport.Y, Game1.tileSize, Game1.tileSize);
-                //    batch.FillRectangle(rect, new Color(0, 1F, 0F, 0.25F));
-                //}
-
-                // Done drawing HUD
-                batch.End();
             }
+
+            // Draw the background rectangle
+            batch.Draw(ModCore.Instance.WhitePixel, new Rectangle(0, 0, (int) boxWidth, (int) boxHeight), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.85F);
+
+            // Debug info
+            //Point[] floodedTiles = Game1.currentLocation?.GetFloodedTiles(10).ToArray() ?? new Point[0];
+            StringBuilder text = new StringBuilder();
+            //text.AppendLine($"Hover Key: {Enum.GetName(typeof(Keys), ModCore.Instance.InputHelper._heldKey ?? Keys.None)}");
+            //text.AppendLine($"Time Pressed: {DateTime.UtcNow - ModCore.Instance.InputHelper._keyStart:g}");
+            //text.AppendLine($"Time Since Repeat: {DateTime.UtcNow - ModCore.Instance.InputHelper._lastRepeat:g}");
+            //text.AppendLine($"Flooded tile? {floodedTiles.Contains(new Point(Game1.player.getTileX(), Game1.player.getTileY()))}");
+            batch.DrawStringWithShadow(Game1.smallFont, text.ToString(), new Vector2(0, boxHeight), Color.White, 0.8F);
+
+            //foreach (Point floodedTile in floodedTiles) {
+            //    Rectangle rect = new Rectangle(floodedTile.X * Game1.tileSize - Game1.viewport.X, floodedTile.Y * Game1.tileSize - Game1.viewport.Y, Game1.tileSize, Game1.tileSize);
+            //    batch.FillRectangle(rect, new Color(0, 1F, 0F, 0.25F));
+            //}
+
+            batch.End();
+            batch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
         }
         #endregion
 

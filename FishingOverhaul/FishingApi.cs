@@ -28,6 +28,8 @@ namespace TehPers.FishingOverhaul {
         private readonly Dictionary<Farmer, int> _streaks = new Dictionary<Farmer, int>();
         private readonly HashSet<int> _hidden = new HashSet<int>();
 
+        private bool _obsoleteWarning = false;
+
         public void SetFishChance(float? chance) {
             this._fishChance = chance;
         }
@@ -158,23 +160,28 @@ namespace TehPers.FishingOverhaul {
 
         [Obsolete]
         public void SetTrashWeight(int id, double weight) {
+            this.WarnObsolete();
             ITrashData data = this._trash.FirstOrDefault(t => t.PossibleIds.Contains(id));
             if (data is SpecificTrashData specificData) {
                 this.RemoveTrashData(specificData);
                 this.AddTrashData(new SpecificTrashData(specificData.PossibleIds, weight, specificData.Location, specificData.WaterType, specificData.Season, specificData.Weather, specificData.FishingLevel, specificData.MineLevel));
             } else if (data != null) {
                 throw new NotSupportedException();
+            } else {
+                this.AddTrashData(new SpecificTrashData(new[] { id }, weight, null));
             }
         }
 
         [Obsolete]
         public bool RemoveTrash(int id) {
+            this.WarnObsolete();
             ITrashData data = this._trash.FirstOrDefault(t => t.PossibleIds.Contains(id));
             return data != null && this.RemoveTrashData(data);
         }
 
         [Obsolete]
         public IEnumerable<IWeightedElement<int>> GetPossibleTrash() {
+            this.WarnObsolete();
             return this.GetTrashData().SelectMany(t => t.PossibleIds.ToWeighted(id => t.GetWeight()));
         }
 
@@ -319,6 +326,14 @@ namespace TehPers.FishingOverhaul {
 
         public bool IsHidden(int fish) {
             return this._hidden.Contains(fish);
+        }
+
+        private void WarnObsolete() {
+            if (this._obsoleteWarning)
+                return;
+
+            ModFishing.Instance.Monitor.Log("A mod is using an obsolete trash command! The Nuget package cannot be updated right now, so go to https://github.com/TehPers/StardewValleyMods/tree/2.0-dev/FishingOverhaulApi for the latest version of the API.");
+            this._obsoleteWarning = true;
         }
     }
 }
