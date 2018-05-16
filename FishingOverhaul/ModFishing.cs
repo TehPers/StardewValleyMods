@@ -8,15 +8,10 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core;
-using TehPers.Core.Api;
-using TehPers.Core.Api.Enums;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Helpers;
-using TehPers.FishingOverhaul.Api;
-using TehPers.FishingOverhaul.Api.Enums;
 using TehPers.FishingOverhaul.Configs;
 
 namespace TehPers.FishingOverhaul {

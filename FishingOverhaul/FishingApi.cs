@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using StardewModdingAPI;
 using StardewValley;
@@ -28,7 +27,7 @@ namespace TehPers.FishingOverhaul {
         private readonly Dictionary<Farmer, int> _streaks = new Dictionary<Farmer, int>();
         private readonly HashSet<int> _hidden = new HashSet<int>();
 
-        private bool _obsoleteWarning = false;
+        private bool _obsoleteWarning;
 
         public void SetFishChance(float? chance) {
             this._fishChance = chance;

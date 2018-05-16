@@ -215,7 +215,7 @@ namespace TehPers.FishingOverhaul {
                 const double num2 = 4.0;
                 const int num3 = 0;
                 const double num4 = 0.889999985694885;
-                spriteBatch1.Draw(mouseCursors1, position1, sourceRectangle1, color1, (float) num1, zero1, (float) num2, (SpriteEffects) num3, (float) num4);
+                spriteBatch1.Draw(mouseCursors1, position1, sourceRectangle1, color1, (float) num1, zero1, (float) num2, num3, (float) num4);
                 SpriteBatch spriteBatch2 = b;
                 Texture2D mouseCursors2 = Game1.mouseCursors;
                 Vector2 position2 = new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int) this._bobberBarPos.Value + 8) + this._barShake.Value + this._everythingShake.Value;
@@ -233,7 +233,7 @@ namespace TehPers.FishingOverhaul {
                 Vector2 scale = new Vector2(4f, this._bobberBarHeight.Value - 16);
                 const int num7 = 0;
                 const double num8 = 0.889999985694885;
-                spriteBatch2.Draw(mouseCursors2, position2, sourceRectangle2, color3, (float) num6, zero2, scale, (SpriteEffects) num7, (float) num8);
+                spriteBatch2.Draw(mouseCursors2, position2, sourceRectangle2, color3, (float) num6, zero2, scale, num7, (float) num8);
                 SpriteBatch spriteBatch3 = b;
                 Texture2D mouseCursors3 = Game1.mouseCursors;
                 Vector2 position3 = new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int) this._bobberBarPos.Value + this._bobberBarHeight.Value - 8) + this._barShake.Value + this._everythingShake.Value;
