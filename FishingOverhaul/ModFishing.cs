@@ -8,8 +8,10 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core;
+using TehPers.Core.Api;
 using TehPers.Core.Api.Enums;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Helpers;
@@ -46,17 +48,6 @@ namespace TehPers.FishingOverhaul {
             // Apply patches
             this.Harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
             this.Harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-            // Easter eggs I guess
-            this.Api.SetFishTraits(Objects.Diamond, new FishTraits {
-                Difficulty = 100,
-                MinSize = 1,
-                MaxSize = 3,
-                MotionType = FishMotionType.DART
-            });
-
-            this.Api.SetFishData("Town", Objects.Diamond, new FishData(0.1, new[] { new FishData.TimeInterval(600, 2600) }, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter));
-            this.Api.HideFish(Objects.Diamond);
 
             this.Overrider = new FishingRodOverrider();
             GraphicsEvents.OnPostRenderHudEvent += this.PostRenderHud;

@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingOverhaul", "FishingOverhaul\TehPers.FishingOverhaul.csproj", "{DA5D42EA-F894-4772-A42A-00CE10161136}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingOverhaul", "FishingOverhaul\FishingOverhaul.csproj", "{DA5D42EA-F894-4772-A42A-00CE10161136}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModUtilities", "ModUtilities\ModUtilities.csproj", "{FF76DF74-815F-4A56-89BC-50CEC68F16BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core", "Core\TehPers.Core.csproj", "{2D8D9C15-E910-42D8-8CC2-69DA52405D78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core", "Core\Core.csproj", "{2D8D9C15-E910-42D8-8CC2-69DA52405D78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShroomSpotter", "ShroomSpotter\ShroomSpotter.csproj", "{E03C0A09-A342-41F8-8E45-B871C13FB7B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingOverhaul.Api", "FishingOverhaul.Api\TehPers.FishingOverhaul.Api.csproj", "{6FD61B65-282D-4764-ABBD-DA2501EFCFF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingOverhaul.Api", "FishingOverhaul.Api\FishingOverhaul.Api.csproj", "{6FD61B65-282D-4764-ABBD-DA2501EFCFF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Api", "Core.Api\TehPers.Core.Api.csproj", "{437499C7-9E3C-41F7-A9A0-3D7815F3AC83}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Api", "Core.Api\Core.Api.csproj", "{437499C7-9E3C-41F7-A9A0-3D7815F3AC83}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VariableFishing", "VariableFishing\VariableFishing.csproj", "{12D92E0F-41E5-484C-B821-BA5C95DDEC97}"
 EndProject

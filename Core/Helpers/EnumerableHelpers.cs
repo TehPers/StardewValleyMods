@@ -14,6 +14,17 @@ namespace TehPers.Core.Helpers {
 
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source) => source.ToDictionary(kv => kv.Key, kv => kv.Value);
 
+        /// <summary>Swaps two elements in a list.</summary>
+        /// <typeparam name="T">The type of element in the list.</typeparam>
+        /// <param name="source">The list.</param>
+        /// <param name="first">The index of the first element.</param>
+        /// <param name="second">The index of the second element.</param>
+        public static void Swap<T>(this IList<T> source, int first, int second) {
+            T tmp = source[first];
+            source[first] = source[second];
+            source[second] = tmp;
+        }
+
         /// <summary>Retrieves a value from a <see cref="IDictionary{TKey,TValue}"/> with the given fallback value</summary>
         /// <typeparam name="TKey">The <see cref="IDictionary{TKey,TValue}"/>'s key type</typeparam>
         /// <typeparam name="TVal">The <see cref="IDictionary{TKey,TValue}"/>'s value type</typeparam>
