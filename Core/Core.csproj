@@ -47,9 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\MinHeap.cs" />
     <Compile Include="Configs\ConfigMain.cs" />
     <Compile Include="Enums\Alignment.cs" />
     <Compile Include="Helpers\EventHandlers\EventArgsKeyRepeated.cs" />
+    <Compile Include="Helpers\GraphHelpers.cs" />
     <Compile Include="Helpers\InputHelper.cs" />
     <Compile Include="Helpers\InputHelpers.cs" />
     <Compile Include="Helpers\Json\NetExposer.cs" />

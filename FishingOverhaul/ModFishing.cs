@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -13,6 +15,7 @@ using TehPers.Core;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Helpers;
 using TehPers.FishingOverhaul.Configs;
+using xTile.Tiles;
 
 namespace TehPers.FishingOverhaul {
     public class ModFishing : Mod {
@@ -46,6 +49,38 @@ namespace TehPers.FishingOverhaul {
 
             this.Overrider = new FishingRodOverrider();
             GraphicsEvents.OnPostRenderHudEvent += this.PostRenderHud;
+
+            Stack<Point> path = null;
+            ControlEvents.MouseChanged += (sender, e) => {
+                if (e.NewState.LeftButton != ButtonState.Pressed || e.PriorState.LeftButton != ButtonState.Released)
+                    return;
+
+                Farmer player = Game1.player;
+                if (player?.currentLocation == null)
+                    return;
+
+                Point mouseTilePos = new Point((e.NewPosition.X - Game1.viewport.X) / Game1.tileSize, (e.NewPosition.Y - Game1.viewport.Y) / Game1.tileSize);
+                path = GraphHelpers.FindPath(new[] { new Point(player.getTileX(), player.getTileY()) }, new[] { mouseTilePos }, GetNeighbors, p => Math.Abs(p.X - mouseTilePos.X) + Math.Abs(p.Y - mouseTilePos.Y));
+
+                IEnumerable<KeyValuePair<Point, double>> GetNeighbors(GraphHelpers.GraphNode<Point> node) {
+                    Point[] neighbors = { new Point(node.Value.X, node.Value.Y - 1), new Point(node.Value.X, node.Value.Y + 1), new Point(node.Value.X - 1, node.Value.Y), new Point(node.Value.X + 1, node.Value.Y) };
+
+                    return from neighbor in neighbors
+                           where player.currentLocation.isTileOnMap(neighbor.X, neighbor.Y)
+                           select new KeyValuePair<Point, double>(neighbor, 1D);
+                }
+            };
+            GraphicsEvents.OnPostRenderEvent += (sender, e) => {
+                if (path == null)
+                    return;
+
+                SpriteBatch batch = Game1.spriteBatch;
+                foreach (Point pathTile in path) {
+                    Rectangle rect = new Rectangle(pathTile.X * Game1.tileSize - Game1.viewport.X, pathTile.Y * Game1.tileSize - Game1.viewport.Y, Game1.tileSize, Game1.tileSize);
+                    batch.FillRectangle(rect, new Color(0, 1F, 0F, 0.25F));
+                }
+            };
+
             /*ControlEvents.KeyPressed += (sender, pressed) => {
                 if (pressed.KeyPressed == Keys.NumPad7) {
                     Menu menu = new Menu(Game1.viewport.Width / 6, Game1.viewport.Height / 6, 2 * Game1.viewport.Width / 3, 2 * Game1.viewport.Height / 3);

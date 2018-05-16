@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime;
-using System.Text;
-using System.Threading.Tasks;
 using TehPers.Core.Collections;
 
 namespace TehPers.Core.Helpers {
@@ -16,7 +12,7 @@ namespace TehPers.Core.Helpers {
         /// <param name="getHeuristic">A function which returns the estimated distance to a target, or null for no heuristic.</param>
         /// <param name="comparer">The equality comparer for <see cref="T"/>, or null to use the default one.</param>
         /// <returns>A stack containing the shortest path from a start to a target (including the start and target), or null if no path was found.</returns>
-        public static Stack<T> FindPath<T>(IEnumerable<T> starts, IEnumerable<T> targets, GetNeighbors<T> getNeighbors, Func<T, double> getHeuristic = null, IEqualityComparer<T> comparer = null) {
+        public static Stack<T> FindPath<T>(IEnumerable<T> starts, IEnumerable<T> targets, GetNeighbors<T> getNeighbors, GetHeuristic<T> getHeuristic = null, IEqualityComparer<T> comparer = null) {
             // Turn the targets into a hash set to speed up checking if things are in it later
             targets = targets.ToHashSet();
 
@@ -57,6 +53,8 @@ namespace TehPers.Core.Helpers {
         }
 
         public delegate IEnumerable<KeyValuePair<T, double>> GetNeighbors<T>(GraphNode<T> node);
+
+        public delegate double GetHeuristic<in T>(T node);
 
         public class GraphNode<T> {
             public GraphNode<T> Parent { get; }
