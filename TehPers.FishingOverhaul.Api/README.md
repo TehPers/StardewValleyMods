@@ -65,3 +65,7 @@ All calls to the API override any calculations performed by Teh's Fishing Overha
 - Set the chance of catching fish, finding treasure, or finding an unaware fish, overriding any calculations Teh's Fishing Overhaul does
 - Set/get fish names used by the mod
 - Hide fish from the fishing HUD and bobber bar
+- Fishing events including before the bobber bar appears, when the fish is caught, and when trash is caught
+
+# Suggestions
+- You may want to include TehPers.Core as well. It contains a lot of helpers and extension functions that you can use in your own mods. (It requires TehPers.Core.Api)

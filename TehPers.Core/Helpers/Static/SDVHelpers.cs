@@ -1,4 +1,6 @@
-﻿using TehPers.Core.Api.Enums;
+﻿using System;
+using StardewModdingAPI.Utilities;
+using TehPers.Core.Api.Enums;
 
 namespace TehPers.Core.Helpers.Static {
     public static class SDVHelpers {
@@ -18,6 +20,18 @@ namespace TehPers.Core.Helpers.Static {
         }
 
         public static Weather ToWeather(bool raining) => raining ? Weather.Rainy : Weather.Sunny;
+
+        public static Season GetSeason(this SDate date) {
+            if ("spring".Equals(date.Season, StringComparison.InvariantCultureIgnoreCase))
+                return Season.Spring;
+            if ("summer".Equals(date.Season, StringComparison.InvariantCultureIgnoreCase))
+                return Season.Summer;
+            if ("fall".Equals(date.Season, StringComparison.InvariantCultureIgnoreCase))
+                return Season.Fall;
+            if ("winter".Equals(date.Season, StringComparison.InvariantCultureIgnoreCase))
+                return Season.Winter;
+            return Season.All;
+        }
 
         public static WaterType? ToWaterType(int type) {
             switch (type) {

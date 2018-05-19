@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using TehPers.Core.Api.Enums;
 using TehPers.Core.Helpers.Json;
+using TehPers.Core.Helpers.Static;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Configs {
@@ -48,17 +50,17 @@ namespace TehPers.FishingOverhaul.Configs {
             }
         }
 
-        public bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level) {
+        public bool MeetsCriteria(int fish, WaterType waterType, SDate date, Weather weather, int time, int level) {
             // Note: HasFlag won't work because these are checking for an intersection, not for a single bit
             return (this.WaterType & waterType) > 0
-                   && (this.Season & season) > 0
+                   && (this.Season & date.GetSeason()) > 0
                    && (this.Weather & weather) > 0
                    && level >= this.MinLevel
                    && this.Times.Any(t => time >= t.Start && time < t.Finish);
         }
 
-        public bool MeetsCriteria(WaterType waterType, Season season, Weather weather, int time, int level, int? mineLevel) {
-            return this.MeetsCriteria(waterType, season, weather, time, level)
+        public bool MeetsCriteria(int fish, WaterType waterType, SDate date, Weather weather, int time, int level, int? mineLevel) {
+            return this.MeetsCriteria(fish, waterType, date, weather, time, level)
                    && (this.MineLevel == null || mineLevel == this.MineLevel);
         }
 
@@ -83,22 +85,6 @@ namespace TehPers.FishingOverhaul.Configs {
             public TimeInterval(int start, int finish) {
                 this.Start = start;
                 this.Finish = finish;
-            }
-
-            public override bool Equals(object obj) {
-                if (obj is TimeInterval interval)
-                    return this.Equals(interval);
-                return base.Equals(obj);
-            }
-
-            public bool Equals(TimeInterval other) {
-                return this.Start == other.Start && this.Finish == other.Finish;
-            }
-
-            public override int GetHashCode() {
-                unchecked {
-                    return (this.Start * 397) ^ this.Finish;
-                }
             }
         }
     }

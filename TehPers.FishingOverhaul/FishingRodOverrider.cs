@@ -1,15 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
+using StardewValley.Objects;
 using StardewValley.Tools;
 using TehPers.Core.Api.Enums;
-using Object = StardewValley.Object;
+using TehPers.Core.Helpers.Static;
+using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Configs;
+using SObject = StardewValley.Object;
 
 namespace TehPers.FishingOverhaul {
     internal class FishingRodOverrider {
@@ -30,7 +36,7 @@ namespace TehPers.FishingOverhaul {
 
             // Override the pullFishFromWater event (for trash)
             if (this._overridden.Add(rod))
-                this.OverridePullFishEvent(rod);
+                this.OverridePullFishEvent(rod, Game1.player);
 
             if (!rod.isFishing) {
                 this.OverridingCatch.Remove(rod);
@@ -49,11 +55,20 @@ namespace TehPers.FishingOverhaul {
 
             // Replace catch if it did
             if (catching) {
-                this.OnPullFromNibble(rod);
+                this.OnPullFromNibble(rod, Game1.player);
+            }
+
+            if (!Game1.IsMultiplayer || Game1.IsServer) {
+                // Replace the end function for the custom treasure
+                foreach (TemporaryAnimatedSprite anim in rod.animations) {
+                    if (anim.endFunction == rod.openTreasureMenuEndFunction) {
+                        anim.endFunction = extra => this.OpenTreasureEndFunction(rod, Game1.player, extra);
+                    }
+                }
             }
         }
 
-        private void OverridePullFishEvent(FishingRod rod) {
+        private void OverridePullFishEvent(FishingRod rod, Farmer user) {
             // Make sure the pullFishFromWaterEvent has a value (it should)
             if (!(this._pullFishField?.GetValue(rod) is NetEventBinary pullFishEvent))
                 return;
@@ -72,26 +87,25 @@ namespace TehPers.FishingOverhaul {
             }
 
             // Add a new event handler
-            pullFishEvent.AddReaderHandler(reader => this.DoPullFishFromWater(rod, reader));
+            pullFishEvent.AddReaderHandler(reader => this.DoPullFishFromWater(rod, user, reader));
         }
 
-        private void DoPullFishFromWater(FishingRod rod, BinaryReader reader) {
+        private void DoPullFishFromWater(FishingRod rod, Farmer user, BinaryReader reader) {
             // Check if this should be overridden
             if (this.OverridingCatch.Remove(rod)) {
                 // Call normal handler
                 this._doPullFishFromWater.Invoke(rod, new object[] { reader });
             } else {
                 // Override this catch (should be trash or something)
-                this.OnPullFromNibble(rod);
+                this.OnPullFromNibble(rod, user);
             }
         }
 
-        private void OnPullFromNibble(FishingRod rod) {
+        private void OnPullFromNibble(FishingRod rod, Farmer user) {
             // Make sure this rod doesn't get the pullFishFromWater event overridden when it shouldn't be
             this.OverridingCatch.Add(rod);
 
             // Get some info about the rod
-            Farmer user = ModFishing.Instance.Helper.Reflection.GetField<Farmer>(rod, "lastUser").GetValue();
             int clearWaterDistance = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "clearWaterDistance").GetValue();
             GameLocation location = user.currentLocation;
 
@@ -104,7 +118,7 @@ namespace TehPers.FishingOverhaul {
                 bool bubblyZone = false;
                 if (location.fishSplashPoint.Value != Point.Zero)
                     bubblyZone = new Rectangle(location.fishSplashPoint.X * 64, location.fishSplashPoint.Y * 64, 64, 64).Intersects(new Rectangle((int) rod.bobber.X - 80, (int) rod.bobber.Y - 80, 64, 64));
-                Object normalFish = location.getFish(rod.fishingNibbleAccumulator, rod.attachments[0]?.ParentSheetIndex ?? -1, clearWaterDistance + (bubblyZone ? 1 : 0), user, baitValue + (bubblyZone ? 0.4 : 0.0));
+                SObject normalFish = location.getFish(rod.fishingNibbleAccumulator, rod.attachments[0]?.ParentSheetIndex ?? -1, clearWaterDistance + (bubblyZone ? 1 : 0), user, baitValue + (bubblyZone ? 0.4 : 0.0));
 
                 // If so, select that fish
                 if (FishHelper.IsLegendary(normalFish.ParentSheetIndex)) {
@@ -127,7 +141,7 @@ namespace TehPers.FishingOverhaul {
             if (fish == null) {
                 // Secret note
                 if (user.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08) {
-                    Object unseenSecretNote = location.tryToCreateUnseenSecretNote(user);
+                    SObject unseenSecretNote = location.tryToCreateUnseenSecretNote(user);
                     rod.pullFishFromWater(unseenSecretNote.ParentSheetIndex, -1, 0, 0, false);
                     return;
                 }
@@ -135,14 +149,24 @@ namespace TehPers.FishingOverhaul {
                 // Trash
                 int? trash = FishHelper.GetRandomTrash(user);
                 if (trash.HasValue) {
+                    // Invoke event
+                    FishingEventArgs eventArgs = new FishingEventArgs(trash.Value, user, rod);
+                    ModFishing.Instance.Api.OnTrashCaught(eventArgs);
+                    trash = eventArgs.ParentSheetIndex;
+
                     rod.pullFishFromWater(trash.Value, -1, 0, 0, false);
                 } else {
                     ModFishing.Instance.Monitor.Log($"No possible trash found for {location.Name}, using stone instead. This is probably caused by another mod removing trash data.", LogLevel.Warn);
                     rod.pullFishFromWater(Objects.Stone, -1, 0, 0, false);
                 }
             } else {
+                // Invoke event
+                FishingEventArgs eventArgs = new FishingEventArgs(fish.Value, user, rod);
+                ModFishing.Instance.Api.OnBeforeFishCatching(eventArgs);
+                fish = eventArgs.ParentSheetIndex;
+
                 // Check if favBait should be set to true (still not sure what this does...)
-                Object fishObject = new Object(fish.Value, 1);
+                SObject fishObject = new SObject(fish.Value, 1);
                 if (Math.Abs(fishObject.Scale.X - 1.0) < 0.001)
                     rod.favBait = true;
 
@@ -158,7 +182,7 @@ namespace TehPers.FishingOverhaul {
             }
         }
 
-        public void StartMinigameEndFunction(FishingRod rod, Farmer user, int fish) {
+        private void StartMinigameEndFunction(FishingRod rod, Farmer user, int fish) {
             rod.isReeling = true;
             rod.hit = false;
 
@@ -188,6 +212,104 @@ namespace TehPers.FishingOverhaul {
             treasure &= user.fishCaught != null && user.fishCaught.Count > 1;
             treasure &= Game1.random.NextDouble() < ModFishing.Instance.Api.GetTreasureChance(user, rod);
             Game1.activeClickableMenu = new CustomBobberBar(user, fish, fishSize, treasure, rod.attachments[1]?.ParentSheetIndex ?? -1);
+        }
+
+        private void OpenTreasureEndFunction(FishingRod rod, Farmer user, int includeFish) {
+            ModFishing.Instance.Monitor.Log("Successfully replaced treasure", LogLevel.Trace);
+
+            ConfigMain.ConfigGlobalTreasure config = ModFishing.Instance.MainConfig.GlobalTreasureSettings;
+            int clearWaterDistance = 5;
+            //if (lastUser))
+            //    clearWaterDistance = FishingRodOverrides.ClearWaterDistances[this.lastUser];
+            //else
+            //    ModFishing.Instance.Monitor.Log("The bobber bar was not replaced. Fishing might not be overridden by this mod", LogLevel.Warn);
+
+            if (user.IsLocalPlayer) {
+                if (rod.attachments[0] != null) {
+                    --rod.attachments[0].Stack;
+                    if (rod.attachments[0].Stack <= 0) {
+                        rod.attachments[0] = null;
+                        Game1.showGlobalMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingRod.cs.14085"));
+                    }
+                }
+                if (rod.attachments[1] != null) {
+                    rod.attachments[1].Scale = new Vector2(rod.attachments[1].Scale.X, rod.attachments[1].Scale.Y - 0.05f);
+                    if (rod.attachments[1].Scale.Y <= 0.0) {
+                        rod.attachments[1] = null;
+                        Game1.showGlobalMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingRod.cs.14086"));
+                    }
+                }
+            }
+
+            int whichFish = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "whichFish").GetValue();
+            int fishQuality = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "fishQuality").GetValue();
+            user.gainExperience(5, 10 * (clearWaterDistance + 1));
+            rod.doneFishing(user, true);
+            user.completelyStopAnimatingOrDoingAction();
+
+            // REWARDS
+            List<Item> rewards = new List<Item>();
+            if (includeFish == 1)
+                rewards.Add(new SObject(whichFish, 1, false, -1, fishQuality));
+
+            List<ITreasureData> possibleLoot = new List<ITreasureData>(ModFishing.Instance.TreasureConfig.PossibleLoot)
+                .Where(treasure => treasure.IsValid(user)).ToList();
+
+            // Select rewards
+            float chance = 1f;
+            int streak = ModFishing.Instance.Api.GetStreak(user);
+            while (possibleLoot.Count > 0 && rewards.Count < config.MaxTreasureQuantity && Game1.random.NextDouble() <= chance) {
+                ITreasureData treasure = possibleLoot.Choose(Game1.random);
+
+                // Choose an ID for the treasure
+                IList<int> ids = treasure.PossibleIds();
+                int id = ids[Game1.random.Next(ids.Count)];
+
+                // Lost books have custom handling
+                if (id == Objects.LostBook) {
+                    if (user.archaeologyFound == null || !user.archaeologyFound.ContainsKey(102) || user.archaeologyFound[102][0] >= 21) {
+                        possibleLoot.Remove(treasure);
+                        continue;
+                    }
+                    Game1.showGlobalMessage("You found a lost book. The library has been expanded.");
+                }
+
+                // Create reward item
+                Item reward;
+                if (treasure.MeleeWeapon) {
+                    reward = new MeleeWeapon(id);
+                } else if (id >= Ring.ringLowerIndexRange && id <= Ring.ringUpperIndexRange) {
+                    reward = new Ring(id);
+                } else if (id >= 504 && id <= 513) {
+                    reward = new Boots(id);
+                } else {
+                    // Random quantity
+                    int count = Game1.random.Next(treasure.MinAmount, treasure.MaxAmount);
+
+                    reward = new SObject(Vector2.Zero, id, count);
+                }
+
+                // Add the reward
+                rewards.Add(reward);
+
+                // Check if this reward shouldn't be duplicated
+                if (!config.AllowDuplicateLoot || !treasure.AllowDuplicates)
+                    possibleLoot.Remove(treasure);
+
+                // Update chance
+                chance *= config.AdditionalLootChance + streak * config.StreakAdditionalLootChance;
+            }
+
+            // Add bait if no rewards were selected. NOTE: This should never happen
+            if (rewards.Count == 0) {
+                ModFishing.Instance.Monitor.Log("Could not find any valid loot for the treasure chest. Check your treasure.json?", LogLevel.Warn);
+                rewards.Add(new SObject(685, Game1.random.Next(2, 5) * 5));
+            }
+
+            // Show rewards GUI
+            Game1.activeClickableMenu = new ItemGrabMenu(rewards);
+            ((ItemGrabMenu) Game1.activeClickableMenu).source = 3;
+            user.completelyStopAnimatingOrDoingAction();
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Tools;
 using TehPers.Core.Api.Enums;
@@ -30,7 +31,7 @@ namespace TehPers.FishingOverhaul {
 
         public static int? GetRandomTrash(Farmer who) => FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who));
 
-        public static int? GetRandomTrash(Farmer who, string locationName, WaterType waterType, Season season, Weather weather, int time, int fishingLevel, int? mineLevel) => FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who, locationName, waterType, season, weather, time, fishingLevel, mineLevel));
+        public static int? GetRandomTrash(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel) => FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who, locationName, waterType, date, weather, time, fishingLevel, mineLevel));
 
         public static int? GetRandomTrash(IEnumerable<ITrashData> trashData) {
             trashData = trashData.ToArray();

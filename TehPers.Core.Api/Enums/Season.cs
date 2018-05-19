@@ -7,5 +7,8 @@ namespace TehPers.Core.Api.Enums {
         Summer = 2,
         Fall = 4,
         Winter = 8,
+
+        None = 0,
+        All = Season.Spring | Season.Summer | Season.Fall | Season.Winter
     }
 }

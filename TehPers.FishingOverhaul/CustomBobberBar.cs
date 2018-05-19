@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
+using StardewValley.Tools;
 using TehPers.Core;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Configs;
@@ -32,6 +33,7 @@ namespace TehPers.FishingOverhaul {
         private readonly ReflectedField<BobberBar, bool> _bossFish;
         private readonly ReflectedField<BobberBar, int> _motionType;
         private readonly ReflectedField<BobberBar, int> _fishSize;
+        private readonly ReflectedField<BobberBar, int> _whichFish;
 
         private readonly ReflectedField<BobberBar, Vector2> _barShake;
         private readonly ReflectedField<BobberBar, Vector2> _fishShake;
@@ -47,7 +49,7 @@ namespace TehPers.FishingOverhaul {
         private bool _notifiedFailOrSucceed;
         private readonly int _origStreak;
         private readonly int _origQuality;
-        private readonly int _whichFish;
+        private readonly int _origFish;
 
         public Farmer User;
         public bool Unaware { get; protected set; }
@@ -55,7 +57,7 @@ namespace TehPers.FishingOverhaul {
         public CustomBobberBar(Farmer user, int whichFish, float fishSize, bool treasure, int bobber) : base(whichFish, fishSize, treasure, bobber) {
             this.User = user;
             this._origStreak = ModFishing.Instance.Api.GetStreak(user);
-            this._whichFish = whichFish;
+            this._origFish = whichFish;
 
             /* Private field hooks */
             this._treasure = new ReflectedField<BobberBar, bool>(this, "treasure");
@@ -81,6 +83,7 @@ namespace TehPers.FishingOverhaul {
             this._bossFish = new ReflectedField<BobberBar, bool>(this, "bossFish");
             this._motionType = new ReflectedField<BobberBar, int>(this, "motionType");
             this._fishSize = new ReflectedField<BobberBar, int>(this, "fishSize");
+            this._whichFish = new ReflectedField<BobberBar, int>(this, "whichFish");
 
             this._barShake = new ReflectedField<BobberBar, Vector2>(this, "barShake");
             this._fishShake = new ReflectedField<BobberBar, Vector2>(this, "fishShake");
@@ -190,6 +193,14 @@ namespace TehPers.FishingOverhaul {
                         Game1.showGlobalMessage(ModFishing.Translate("text.keptStreak", this._origStreak));
                     ModFishing.Instance.Api.SetStreak(this.User, this._origStreak);
                 }
+
+                // Invoke fish caught event
+                int curFish = this._whichFish.Value;
+                FishingEventArgs eventArgs = new FishingEventArgs(curFish, this.User, this.User.CurrentTool as FishingRod);
+                ModFishing.Instance.Api.OnFishCaught(eventArgs);
+                if (eventArgs.ParentSheetIndex != curFish) {
+                    this._whichFish.Value = eventArgs.ParentSheetIndex;
+                }
             }
         }
 
@@ -275,8 +286,8 @@ namespace TehPers.FishingOverhaul {
 
                 // Draw the fish
                 Vector2 fishPos = new Vector2(this.xPositionOnScreen + 64 + 18, this.yPositionOnScreen + 12 + 24 + this._bobberPosition.Value) + this._fishShake.Value + this._everythingShake.Value;
-                if (ModFishing.Instance.MainConfig.ShowFish && !ModFishing.Instance.Api.IsHidden(this._whichFish)) {
-                    Rectangle fishSrc = GameLocation.getSourceRectForObject(this._whichFish);
+                if (ModFishing.Instance.MainConfig.ShowFish && !ModFishing.Instance.Api.IsHidden(this._origFish)) {
+                    Rectangle fishSrc = GameLocation.getSourceRectForObject(this._origFish);
                     b.Draw(Game1.objectSpriteSheet, fishPos, fishSrc, Color.White, 0.0f, new Vector2(10f, 10f), 2.25f, SpriteEffects.None, 0.88f);
                 } else {
                     Rectangle fishSrc = new Rectangle(614 + (this._bossFish.Value ? 20 : 0), 1840, 20, 20);

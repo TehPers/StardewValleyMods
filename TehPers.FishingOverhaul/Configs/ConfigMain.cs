@@ -14,8 +14,11 @@ namespace TehPers.FishingOverhaul.Configs {
         [Description("Whether this mod affects legendary fish as well.")]
         public bool CustomLegendaries { get; set; } = true;
 
-        [Description("Whether you can catch legendary fish multiple times (including Legend). This setting only matters if " + nameof(ConfigMain.CustomLegendaries) + " is true. Vanilla is false")]
+        [Description("Whether you can catch legendary fish multiple times (including Legend). This setting only matters if " + nameof(ConfigMain.CustomLegendaries) + " is true. False for vanilla")]
         public bool RecatchableLegendaries { get; set; } = true;
+
+        [Description("If legendary fish are recatchable, how many days you must wait before you can catch a particular legendary fish again. Set to 0 for no delay.")]
+        public int DaysBeforeLegendaryRecatchable { get; set; } = 28;
 
         [Description("Whether the fish should be shown while catching it. False for vanilla")]
         public bool ShowFish { get; set; } = true;

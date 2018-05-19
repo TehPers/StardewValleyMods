@@ -4,15 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FE4DD854-44E3-4DC3-84E1-A9555B4D4725}</ProjectGuid>
+    <ProjectGuid>{24B06186-F10F-4AB6-AAA9-4485D7456A44}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TehPers.FishingOverhaul.Api</RootNamespace>
-    <AssemblyName>TehPers.FishingOverhaul.Api</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>TehPers.MoreFish</RootNamespace>
+    <AssemblyName>TehPers.MoreFish</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ModUnitTests>True</ModUnitTests>
-    <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -45,27 +43,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\FishMotionType.cs" />
-    <Compile Include="FishingEventArgs.cs" />
-    <Compile Include="IFishData.cs" />
-    <Compile Include="IFishingApi.cs" />
-    <Compile Include="IFishTraits.cs" />
-    <Compile Include="ITrashData.cs" />
-    <Compile Include="ITreasureData.cs" />
+    <Compile Include="AssetEditor.cs" />
+    <Compile Include="FishData.cs" />
+    <Compile Include="FishTraits.cs" />
+    <Compile Include="ModFish.cs" />
+    <Compile Include="AddedFish.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
+    <Compile Include="TimeInterval.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj">
       <Project>{6BCD07BD-DD01-46A2-83D8-BCA7B4E22DE7}</Project>
       <Name>TehPers.Core.Api</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">
+      <Project>{3559A3F8-0FD3-42CC-8CBA-EB9AD9744780}</Project>
+      <Name>TehPers.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TehPers.FishingOverhaul.Api\TehPers.FishingOverhaul.Api.csproj">
+      <Project>{fe4dd854-44e3-4dc3-84e1-a9555b4d4725}</Project>
+      <Name>TehPers.FishingOverhaul.Api</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="i18n\default.json" />
+    <None Include="manifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\seahorse.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\seahorse2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

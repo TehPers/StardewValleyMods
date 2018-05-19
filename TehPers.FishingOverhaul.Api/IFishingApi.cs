@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Tools;
 using TehPers.Core.Api.Enums;
@@ -7,6 +8,15 @@ using TehPers.Core.Api.Weighted;
 
 namespace TehPers.FishingOverhaul.Api {
     public interface IFishingApi {
+        /// <summary>Invoked when a fish is hit, before the bobber bar appears.</summary>
+        event EventHandler<FishingEventArgs> BeforeFishCatching;
+
+        /// <summary>Invoked when a fish is caught, before the bobber bar is closed.</summary>
+        event EventHandler<FishingEventArgs> FishCaught;
+
+        /// <summary>Invoked when trash is caught, before the animation occurs.</summary>
+        event EventHandler<FishingEventArgs> TrashCaught; 
+
         /// <summary>Sets the chance of catching fish. This overrides any fish chance calculations done by the mod itself.</summary>
         /// <param name="chance">The new chance of catching fish, or null to remove any overrides.</param>
         void SetFishChance(float? chance);
@@ -107,23 +117,6 @@ namespace TehPers.FishingOverhaul.Api {
         /// <returns>An <see cref="IEnumerable{ITreasureData}"/> containing all the available treasure data.</returns>
         IEnumerable<ITreasureData> GetTreasureData();
 
-        /// <summary>Sets the weight of an item in the trash list. If the item isn't already in the list, it will be inserted.</summary>
-        /// <param name="id">The ID to assign the weight to.</param>
-        /// <param name="weight">The weight of the item in the trash list.</param>
-        [Obsolete("Use " + nameof(IFishingApi.AddTrashData) + " instead. Will be removed before the non-beta release of Teh's Fishing Overhaul, so don't use this.")]
-        void SetTrashWeight(int id, double weight);
-
-        /// <summary>Removes an item from the list of trash.</summary>
-        /// <param name="id">The ID to remove from the list of trash.</param>
-        /// <returns>True if the ID was removed, false if not.</returns>
-        [Obsolete("Use " + nameof(IFishingApi.RemoveTrashData) + " instead. Will be removed before the non-beta release of Teh's Fishing Overhaul, so don't use this.")]
-        bool RemoveTrash(int id);
-
-        /// <summary>Gets all the trash in the trash list with their associated weights.</summary>
-        /// <returns>An enumeration of the trash list.</returns>
-        [Obsolete("Use " + nameof(IFishingApi.GetTrashData) + " instead. Will be removed before the non-beta release of Teh's Fishing Overhaul, so don't use this.")]
-        IEnumerable<IWeightedElement<int>> GetPossibleTrash();
-
         /// <summary>Adds new trash data to the list of obtainable trash.</summary>
         /// <param name="data">The data to add as new trash.</param>
         /// <returns>True if added, false if it's a duplicate entry.</returns>
@@ -147,14 +140,14 @@ namespace TehPers.FishingOverhaul.Api {
         /// <param name="who">The farmer.</param>
         /// <param name="locationName">The name of the current location being fished in.</param>
         /// <param name="waterType">The type of water the <see cref="Farmer"/> is fishing in.</param>
-        /// <param name="season">The current season.</param>
+        /// <param name="date">The current date.</param>
         /// <param name="weather">The current weather.</param>
         /// <param name="time">The current time.</param>
         /// <param name="fishingLevel">The current <see cref="Farmer"/>'s fishing level.</param>
         /// <param name="mineLevel">The current level in the mine, or null if not in the mine.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> containing all the available trash data that meets the given criteria.</returns>
-        IEnumerable<ITrashData> GetTrashData(Farmer who, string locationName, WaterType waterType, Season season, Weather weather, int time, int fishingLevel, int? mineLevel);
-        
+        IEnumerable<ITrashData> GetTrashData(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel);
+
         /// <summary>Gets all the fish a <see cref="Farmer"/> can catch.</summary>
         /// <param name="who">The farmer.</param>
         /// <returns>All the fish that can be caught with their associated weights.</returns>
@@ -163,14 +156,14 @@ namespace TehPers.FishingOverhaul.Api {
         /// <summary>Gets all the fish a <see cref="Farmer"/> can catch under the given circumstances.</summary>
         /// <param name="who">The farmer.</param>
         /// <param name="locationName">The name of the <see cref="GameLocation"/>.</param>
-        /// <param name="water">The allowed types of water.</param>
-        /// <param name="season">The allowed seasons.</param>
-        /// <param name="weather">The allowed weathers.</param>
-        /// <param name="time">The allowed time. This should be between 0600 and 2600, where the first two digits represent the hour, and the second two digits represent the minute.</param>
+        /// <param name="water">The current water type.</param>
+        /// <param name="date">The current date.</param>
+        /// <param name="weather">The current weather.</param>
+        /// <param name="time">The current time. This should be between 0600 and 2600, where the first two digits represent the hour, and the second two digits represent the minute.</param>
         /// <param name="fishLevel">The allowed fishing level.</param>
         /// <param name="mineLevel">The current mine level, or null to ignore fish specific to certain levels in the mine.</param>
         /// <returns>All the fish that can be caught with their associated weights.</returns>
-        IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterType water, Season season, Weather weather, int time, int fishLevel, int? mineLevel = null);
+        IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterType water, SDate date, Weather weather, int time, int fishLevel, int? mineLevel = null);
 
         /// <summary>Gets the display name of a fish.</summary>
         /// <param name="fish">The ID of the fish to get the name of.</param>

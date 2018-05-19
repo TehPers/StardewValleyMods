@@ -6,11 +6,13 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Network;
 
 namespace TehPers.Core.Helpers.Static {
     public static class AssortedHelpers {
         private static readonly MethodInfo _genericCast = typeof(AssortedHelpers).GetMethod(nameof(AssortedHelpers.GenericCast), BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly Type[] _primitiveTypes = { typeof(bool), typeof(byte), typeof(char), typeof(DateTime), typeof(decimal), typeof(double), typeof(short), typeof(int), typeof(long), typeof(sbyte), typeof(float), typeof(string), typeof(ushort), typeof(uint), typeof(ulong) };
+        private static readonly Assembly _sdv = (Type.GetType("StardewValley.Game1, StardewValley") ?? Type.GetType("StardewValley.Game1, Stardew Valley"))?.Assembly;
 
         /// <summary>Safely casts an object to another type with a fallback if the cast fails</summary>
         /// <typeparam name="T">The type to cast to</typeparam>
@@ -91,6 +93,16 @@ namespace TehPers.Core.Helpers.Static {
                 TraceWriter = source.TraceWriter,
                 TypeNameAssemblyFormatHandling = source.TypeNameAssemblyFormatHandling
             };
+        }
+
+        /// <summary>Gets a type from the SDV assembly.</summary>
+        /// <param name="typeName">The name of the type. You may use <code>nameof</code> (which returns <see cref="Type.Name"/>) or a namespace qualified name (equivalent to <see cref="Type.FullName"/>).</param>
+        /// <returns>The <see cref="Type"/> with the given name, or <code>null</code> if not found.</returns>
+        /// <remarks>Try not to call this method too often. Cache the result somewhere if possible.</remarks>
+        public static Type GetSDVType(string typeName) {
+            // Search for the type
+            Type[] types = AssortedHelpers._sdv.GetTypes();
+            return types.FirstOrDefault(t => t.Name == typeName || t.FullName == typeName);
         }
 
         public static IEnumerable<Point> GetFloodedTiles(this GameLocation location, int? maxDistance) {

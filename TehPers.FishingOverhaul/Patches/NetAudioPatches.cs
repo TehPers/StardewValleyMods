@@ -4,8 +4,7 @@ using StardewValley.Network;
 using StardewValley.Tools;
 
 namespace TehPers.FishingOverhaul.Patches {
-    [HarmonyPatch(typeof(NetAudio))]
-    [HarmonyPatch(nameof(NetAudio.PlayLocal))]
+
     public class NetAudioPatches {
         public static bool Prefix(string audioName) {
             if (audioName == "FishHit" && Game1.player.CurrentTool is FishingRod rod && !ModFishing.Instance.Overrider.OverridingCatch.Contains(rod)) {

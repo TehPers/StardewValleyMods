@@ -1,33 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Network;
 using StardewValley.Tools;
 using TehPers.Core;
 using TehPers.Core.Api.Weighted;
-using TehPers.Core.Enums;
-using TehPers.Core.Helpers;
 using TehPers.Core.Helpers.Static;
-using TehPers.Core.Menus;
-using TehPers.Core.Menus.BoxModel;
-using TehPers.Core.Menus.Elements;
 using TehPers.FishingOverhaul.Configs;
-using xTile.Dimensions;
+using TehPers.FishingOverhaul.Patches;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace TehPers.FishingOverhaul {
     public class ModFishing : Mod {
         public static ModFishing Instance { get; private set; }
 
-        public FishingApi Api { get; }
+        public FishingApi Api { get; private set; }
         public ConfigMain MainConfig { get; private set; }
         public ConfigFish FishConfig { get; private set; }
         public ConfigFishTraits FishTraitsConfig { get; private set; }
@@ -38,16 +32,18 @@ namespace TehPers.FishingOverhaul {
         internal TehCoreApi CoreApi { get; }
 
         public ModFishing() {
-            this.Api = new FishingApi();
             this.CoreApi = TehCoreApi.Create(this);
         }
 
         public override void Entry(IModHelper helper) {
             ModFishing.Instance = this;
+            this.Api = new FishingApi();
 
+            // Make sure TehPers.Core isn't loaded as it's not needed anymore
             if (helper.ModRegistry.IsLoaded("TehPers.Core"))
                 this.Monitor.Log("Delete TehCore, it's not needed anymore. Your game will probably crash with it installed anyway.", LogLevel.Error);
 
+            // Load the configs
             this.LoadConfigs();
 
             // Make sure this mod is enabled
@@ -56,12 +52,13 @@ namespace TehPers.FishingOverhaul {
 
             // Apply patches
             this.Harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
-            this.Harmony.PatchAll(Assembly.GetExecutingAssembly());
+            Type targetType = AssortedHelpers.GetSDVType(nameof(NetAudio));
+            this.Harmony.Patch(targetType.GetMethod(nameof(NetAudio.PlayLocal)), new HarmonyMethod(typeof(NetAudioPatches).GetMethod(nameof(NetAudioPatches.Prefix))), null);
 
             this.Overrider = new FishingRodOverrider();
             GraphicsEvents.OnPostRenderHudEvent += this.PostRenderHud;
 
-            ControlEvents.KeyPressed += (sender, pressed) => {
+            /*ControlEvents.KeyPressed += (sender, pressed) => {
                 if (pressed.KeyPressed == Keys.NumPad7) {
                     Menu menu = new Menu(Game1.viewport.Width / 6, Game1.viewport.Height / 6, 2 * Game1.viewport.Width / 3, 2 * Game1.viewport.Height / 3);
 
@@ -80,7 +77,7 @@ namespace TehPers.FishingOverhaul {
 
                     Game1.activeClickableMenu = menu;
                 }
-            };
+            };*/
         }
 
         public override object GetApi() {

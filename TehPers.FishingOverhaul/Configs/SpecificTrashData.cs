@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using TehPers.Core.Api.Enums;
+using TehPers.Core.Helpers.Static;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Configs {
@@ -26,13 +28,13 @@ namespace TehPers.FishingOverhaul.Configs {
             this.MineLevel = mineLevel;
         }
 
-        public bool MeetsCriteria(Farmer who, string locationName, WaterType waterType, Season season, Weather weather, int time, int fishingLevel, int? mineLevel) {
+        public bool MeetsCriteria(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel) {
             return (this.Location == null || locationName == this.Location)
-                   && (waterType & this.WaterType) != 0
-                   && (season & this.Season) != 0
-                   && (weather & this.Weather) != 0
-                   && fishingLevel >= this.FishingLevel
-                   && (this.MineLevel == null || mineLevel == this.MineLevel);
+                   && (this.WaterType & waterType) != 0
+                   && (this.Season & date.GetSeason()) != 0
+                   && (this.Weather & weather) != 0
+                   && this.FishingLevel <= fishingLevel
+                   && (this.MineLevel == null || this.MineLevel == mineLevel);
         }
 
         public double GetWeight() {
