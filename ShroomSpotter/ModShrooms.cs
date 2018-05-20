@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -23,7 +21,8 @@ namespace ShroomSpotter {
         public override void Entry(IModHelper helper) {
             ModShrooms.Instance = this;
             this.Config = helper.ReadConfig<MainConfig>();
-            if (!this.Config.ModEnabled) return;
+            if (!this.Config.ModEnabled)
+                return;
 
             //this.Monitor.Log("It is *HIGHLY* recommended you install a Health Bars mod for enemies!", LogLevel.Info);
 
@@ -87,19 +86,19 @@ namespace ShroomSpotter {
             // Check if the mouse is over any of the days
             for (int day = 1; day <= 28; day++) {
                 ClickableTextureComponent component = calendarDays[day - 1];
-                if (component.bounds.Contains(Game1.getMouseX(), Game1.getMouseY())) {
-                    List<int> shrooms = this.GetShroomLayers(day - Game1.dayOfMonth);
+                if (!component.bounds.Contains(Game1.getMouseX(), Game1.getMouseY()))
+                    continue;
 
-                    // Add to the hover text for this day
-                    if (hoverText.Length > 0)
-                        hoverText += "\n";
-                    if (shrooms.Count > 0)
-                        hoverText += "Shrooms: " + string.Join(", ", shrooms);
-                    else
-                        hoverText += "No shrooms";
-                    hoverField.SetValue(hoverText);
-                    break;
-                }
+                // Add to the hover text for this day
+                List<int> shrooms = this.GetShroomLayers(day - Game1.dayOfMonth);
+                if (hoverText.Length > 0)
+                    hoverText += "\n";
+                if (shrooms.Any())
+                    hoverText += "Shrooms: " + string.Join(", ", shrooms);
+                else
+                    hoverText += "No shrooms";
+                hoverField.SetValue(hoverText);
+                break;
             }
         }
 
@@ -122,16 +121,15 @@ namespace ShroomSpotter {
 
             // Draw a shroom on each day shrooms can be found
             for (int day = 1; day <= 28; day++) {
-                ClickableTextureComponent component = calendarDays[day - 1];
-                List<int> shrooms = this.GetShroomLayers(day - Game1.dayOfMonth);
+                if (!this.GetShroomLayers(day - Game1.dayOfMonth).Any())
+                    continue;
 
                 // Draw a shroom if there should be one for this day
-                if (shrooms.Count > 0) {
-                    const int id = 422;
-                    Rectangle source = GameLocation.getSourceRectForObject(id);
-                    Vector2 dest = new Vector2(component.bounds.X, component.bounds.Y + 10f * Game1.pixelZoom);
-                    b.Draw(Game1.objectSpriteSheet, dest, source, Color.White, 0.0f, Vector2.Zero, Game1.pixelZoom / 2f, SpriteEffects.None, 1f);
-                }
+                const int id = 422;
+                ClickableTextureComponent component = calendarDays[day - 1];
+                Rectangle source = GameLocation.getSourceRectForObject(id);
+                Vector2 dest = new Vector2(component.bounds.X, component.bounds.Y + 10f * Game1.pixelZoom);
+                b.Draw(Game1.objectSpriteSheet, dest, source, Color.White, 0.0f, Vector2.Zero, Game1.pixelZoom / 2f, SpriteEffects.None, 1f);
             }
 
             // Redraw the hover text
