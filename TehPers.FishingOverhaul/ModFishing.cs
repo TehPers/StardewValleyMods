@@ -124,7 +124,6 @@ namespace TehPers.FishingOverhaul {
             SpriteBatch batch = Game1.spriteBatch;
             batch.End();
             batch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
-            //using (SpriteBatch batch = new SpriteBatch(Game1.graphics.GraphicsDevice)) {
 
             // Draw streak
             string streakText = ModFishing.Translate("text.streak", this.Api.GetStreak(Game1.player));
@@ -188,18 +187,10 @@ namespace TehPers.FishingOverhaul {
             batch.Draw(DrawHelpers.WhitePixel, new Rectangle(0, 0, (int) boxWidth, (int) boxHeight), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.85F);
 
             // Debug info
-            //Point[] floodedTiles = Game1.currentLocation?.GetFloodedTiles(10).ToArray() ?? new Point[0];
             StringBuilder text = new StringBuilder();
-            //text.AppendLine($"Hover Key: {Enum.GetName(typeof(Keys), ModCore.Instance.InputHelper._heldKey ?? Keys.None)}");
-            //text.AppendLine($"Time Pressed: {DateTime.UtcNow - ModCore.Instance.InputHelper._keyStart:g}");
-            //text.AppendLine($"Time Since Repeat: {DateTime.UtcNow - ModCore.Instance.InputHelper._lastRepeat:g}");
-            //text.AppendLine($"Flooded tile? {floodedTiles.Contains(new Point(Game1.player.getTileX(), Game1.player.getTileY()))}");
-            batch.DrawStringWithShadow(Game1.smallFont, text.ToString(), new Vector2(0, boxHeight), Color.White, 0.8F);
-
-            //foreach (Point floodedTile in floodedTiles) {
-            //    Rectangle rect = new Rectangle(floodedTile.X * Game1.tileSize - Game1.viewport.X, floodedTile.Y * Game1.tileSize - Game1.viewport.Y, Game1.tileSize, Game1.tileSize);
-            //    batch.FillRectangle(rect, new Color(0, 1F, 0F, 0.25F));
-            //}
+            if (text.Length > 0) {
+                batch.DrawStringWithShadow(Game1.smallFont, text.ToString(), new Vector2(0, boxHeight), Color.White, 0.8F);
+            }
 
             batch.End();
             batch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);

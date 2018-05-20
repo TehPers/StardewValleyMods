@@ -18,10 +18,10 @@ namespace TehPers.Core.Helpers.Json {
             this.FarmerId = farmer.UniqueMultiplayerID;
         }
 
-        public InventorySource(GameLocation location, Chest chest) {
+        public InventorySource(GameLocation location, Vector2 tileLocation) {
             this.Type = InventoryType.CHEST;
             this.LocationName = location.Name;
-            this.Position = chest.TileLocation;
+            this.Position = tileLocation;
             this.IsStructure = location.isStructure.Value;
         }
     }

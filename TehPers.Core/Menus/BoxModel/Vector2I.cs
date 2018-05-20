@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace TehPers.Core.Menus.BoxModel {
-    public struct Vector2I {
+    public struct Vector2I : IEquatable<Vector2I> {
         public int X { get; }
         public int Y { get; }
 
@@ -28,6 +28,22 @@ namespace TehPers.Core.Menus.BoxModel {
         public Vector2I Translate(int addX, int addY) => new Vector2I(this.X + addX, this.Y + addY);
 
         public Vector2 ToVector2() => new Vector2(this.X, this.Y);
+
+        public bool Equals(Vector2I other) {
+            return this.X == other.X && this.Y == other.Y;
+        }
+
+        public override bool Equals(object other) {
+            if (other is null)
+                return false;
+            return other is Vector2I otherVector && this.Equals(otherVector);
+        }
+
+        public override int GetHashCode() {
+            unchecked {
+                return (this.X * 397) ^ this.Y;
+            }
+        }
 
         public static Vector2I operator +(Vector2I a, Vector2I b) => new Vector2I(a.X + b.X, a.Y + b.Y);
         public static Vector2I operator -(Vector2I a, Vector2I b) => new Vector2I(a.X - b.X, a.Y - b.Y);
