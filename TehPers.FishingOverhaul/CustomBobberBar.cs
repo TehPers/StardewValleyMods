@@ -51,8 +51,8 @@ namespace TehPers.FishingOverhaul {
         private readonly int _origQuality;
         private readonly int _origFish;
 
-        public Farmer User;
-        public bool Unaware { get; protected set; }
+        public Farmer User { get; }
+        public bool Unaware { get; }
 
         public CustomBobberBar(Farmer user, int whichFish, float fishSize, bool treasure, int bobber) : base(whichFish, fishSize, treasure, bobber) {
             this.User = user;

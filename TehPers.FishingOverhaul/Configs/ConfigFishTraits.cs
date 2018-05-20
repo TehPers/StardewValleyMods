@@ -35,7 +35,7 @@ namespace TehPers.FishingOverhaul.Configs {
 
                     // Get motion type
                     string motionTypeName = data[2].ToLower();
-                    FishMotionType motionType = FishMotionType.MIXED;
+                    FishMotionType motionType;
                     switch (motionTypeName) {
                         case "mixed":
                             motionType = FishMotionType.MIXED;
@@ -51,6 +51,9 @@ namespace TehPers.FishingOverhaul.Configs {
                             break;
                         case "floater":
                             motionType = FishMotionType.FLOATER;
+                            break;
+                        default:
+                            motionType = FishMotionType.MIXED;
                             break;
                     }
 

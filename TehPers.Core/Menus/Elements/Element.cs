@@ -104,7 +104,7 @@ namespace TehPers.Core.Menus.Elements {
                 // Don't draw children that don't fit in this menu
                 if (childrenBounds.Height <= 0)
                     break;
-                
+
                 child.Draw(batch, childrenBounds);
                 Vector2I childSize = child.Size.ToAbsolute(childrenBounds.Size);
                 childrenBounds = new Rectangle2I(childrenBounds.X, childrenBounds.Y + childSize.Y, childrenBounds.Width, childrenBounds.Height - childSize.Y);
@@ -135,10 +135,10 @@ namespace TehPers.Core.Menus.Elements {
                     return this.OnLeftClick(mousePos, parentBounds);
                 case MouseButtons.RIGHT:
                     return this.OnRightClick(mousePos, parentBounds);
+                default:
+                    // Somehow not a right or left click
+                    return false;
             }
-
-            // Somehow not a right or left click
-            return false;
         }
 
         // <summary>Scroll the mouse over the component</summary>

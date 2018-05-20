@@ -61,7 +61,7 @@ namespace TehPers.Core.Helpers.Static {
             public double F => this.G + this.H;
             public double G { get; }
             public double H { get; }
-            public T Value;
+            public T Value { get; }
 
             public GraphNode(T value, GraphNode<T> parent, double g) {
                 this.Value = value;

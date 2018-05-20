@@ -11,14 +11,12 @@ using TehPers.Core.Helpers.Static;
 namespace TehPers.Core.Helpers {
     public class InputHelper {
         private readonly Func<string> _getClipboardRaw;
-
-        private TehCoreApi _api;
+        
         private Keys? _heldKey;
         private DateTime _keyStart;
         private DateTime _lastRepeat;
 
-        public InputHelper(TehCoreApi api) {
-            this._api = api;
+        public InputHelper() {
             // Clipboard
             try {
                 // Import winforms
@@ -32,7 +30,8 @@ namespace TehPers.Core.Helpers {
                     this._getClipboardRaw = (Func<string>) Delegate.CreateDelegate(typeof(Func<string>), getClipboardInfo);
                 }
             } catch {
-                api.Log("WinForms assembly could not be loaded. Clipboard actions will be disabled. (This is normal for Linux/Mac)", LogLevel.Warn);
+                // TODO: Better logging
+                Console.WriteLine("WinForms assembly could not be loaded. Clipboard actions will be disabled. (This is normal for Linux/Mac)", LogLevel.Warn);
             }
 
             // Keyboard input

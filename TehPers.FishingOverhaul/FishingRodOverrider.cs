@@ -194,6 +194,8 @@ namespace TehPers.FishingOverhaul {
                 case 3:
                     user.FarmerSprite.setCurrentSingleFrame(48, 32000, false, true);
                     break;
+                default:
+                    break;
             }
             user.FarmerSprite.PauseForSingleAnimation = true;
 

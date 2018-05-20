@@ -36,7 +36,7 @@ namespace TehPers.FishingOverhaul.Configs {
 
                 // Loop through each season (order matters)
                 for (int i = 0; i <= 3; i++) {
-                    Season s = Season.Spring | Season.Summer | Season.Fall | Season.Winter;
+                    Season s;
                     switch (i) {
                         case 0:
                             s = Season.Spring;
@@ -49,6 +49,9 @@ namespace TehPers.FishingOverhaul.Configs {
                             break;
                         case 3:
                             s = Season.Winter;
+                            break;
+                        default:
+                            s = Season.All;
                             break;
                     }
 

@@ -16,8 +16,8 @@ namespace ShroomSpotter {
     public class ModShrooms : Mod {
         public static ModShrooms Instance;
 
-        public MainConfig Config { get; set; }
-        public List<UpdateEvent> UpdateEvents = new List<UpdateEvent>();
+        public MainConfig Config { get; private set; }
+        public List<UpdateEvent> UpdateEvents { get; } = new List<UpdateEvent>();
         public delegate bool UpdateEvent();
 
         public override void Entry(IModHelper helper) {

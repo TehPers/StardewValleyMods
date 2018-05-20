@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using TehPers.Core.Enums;
@@ -40,22 +41,30 @@ namespace TehPers.Core.Menus.Elements {
 
             // Horizontal alignment
             switch (this.HorizontalAlignment) {
+                case Alignment.LEFT:
+                    break;
                 case Alignment.MIDDLE:
                     loc = loc.Translate((int) ((bounds.Size.X - textSize.X) / 2), 0);
                     break;
                 case Alignment.RIGHT:
                     loc = loc.Translate((int) (bounds.Size.X - textSize.X), 0);
                     break;
+                default:
+                    throw new NotSupportedException($"Unexpected vertical alignment {this.VerticalAlignment}");
             }
 
             // Vertical alignment
             switch (this.VerticalAlignment) {
+                case Alignment.TOP:
+                    break;
                 case Alignment.CENTER:
                     loc = loc.Translate(0, (int) ((bounds.Size.Y - textSize.Y) / 2));
                     break;
                 case Alignment.BOTTOM:
                     loc = loc.Translate(0, (int) (bounds.Size.Y - textSize.Y));
                     break;
+                default:
+                    throw new NotSupportedException($"Unexpected vertical alignment {this.VerticalAlignment}");
             }
 
             // Draw text

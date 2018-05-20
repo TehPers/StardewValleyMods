@@ -155,17 +155,6 @@ namespace TehPers.Core.Collections {
         public int Count => this._storage.Count;
         public bool IsReadOnly => ((ICollection<T>) this._storage).IsReadOnly;
 
-        public void WriteHeap(int root, string indent) {
-            if (root >= this.Count)
-                return;
-
-            this.WriteHeap(root * 2 + 2, indent + "    ");
-            Console.WriteLine("{0}{1}", indent, this._storage[root]);
-            this.WriteHeap(root * 2 + 1, indent + "    ");
-            if (root == 0)
-                Console.WriteLine("-----");
-        }
-
         /// <summary>Compares two elements together.</summary>
         /// <param name="a">The first element.</param>
         /// <param name="b">The second element.</param>
