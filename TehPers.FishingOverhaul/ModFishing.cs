@@ -11,10 +11,13 @@ using StardewValley;
 using StardewValley.Network;
 using StardewValley.Tools;
 using TehPers.Core;
+using TehPers.Core.Api.Enums;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Helpers.Static;
+using TehPers.Core.Items.Managers;
 using TehPers.FishingOverhaul.Configs;
 using TehPers.FishingOverhaul.Patches;
+using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace TehPers.FishingOverhaul {
@@ -38,6 +41,7 @@ namespace TehPers.FishingOverhaul {
         public override void Entry(IModHelper helper) {
             ModFishing.Instance = this;
             this.Api = new FishingApi();
+            CustomItemManager.SetManager(Objects.Coal, new CoalManager());
 
             // Make sure TehPers.Core isn't loaded as it's not needed anymore
             if (helper.ModRegistry.IsLoaded("TehPers.Core"))
@@ -102,7 +106,12 @@ namespace TehPers.FishingOverhaul {
             }, this.MainConfig.MinifyConfigs);
 
             // Not a config, but whatever
-            this.Api.AddTrashData(new DefaultTrashData());
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 1, "Beach")); // Seaweed
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 153 }, 1, "Farm", invertLocations: true)); // Green Algae
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "BugLand")); // White Algae
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "Sewers")); // White Algae
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "WitchSwamp")); // White Algae
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "UndergroundMines")); // White Algae
             this.Api.AddTrashData(new SpecificTrashData(new[] { 797 }, 0.01D, "Submarine")); // Pearl
             this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 0.99D, "Submarine")); // Seaweed
         }
@@ -133,9 +142,9 @@ namespace TehPers.FishingOverhaul {
 
             // Get info on all the possible fish
             IWeightedElement<int?>[] possibleFish = this.Api.GetPossibleFish(Game1.player).ToArray();
-            double totalWeight = possibleFish.SumWeights(); // Should always be 1
             possibleFish = possibleFish.Where(e => e.Value != null).ToArray();
-            double fishChance = possibleFish.SumWeights() / totalWeight;
+            double fishChance = possibleFish.SumWeights();
+            possibleFish = possibleFish.Take(5).ToArray();
 
             // Draw treasure chance
             string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", this.Api.GetTreasureChance(Game1.player, rod)));
@@ -150,9 +159,6 @@ namespace TehPers.FishingOverhaul {
             boxHeight += lineHeight;
 
             if (possibleFish.Any()) {
-                // Calculate total weigh of each possible fish (for percentages)
-                totalWeight = possibleFish.SumWeights();
-
                 // Draw info for each fish
                 const float iconScale = Game1.pixelZoom / 2f;
                 foreach (IWeightedElement<int?> fishData in possibleFish) {
@@ -173,7 +179,7 @@ namespace TehPers.FishingOverhaul {
                     lineHeight = Math.Max(lineHeight, source.Height * iconScale);
 
                     // Draw fish information
-                    string chanceText = ModFishing.Translate("text.percent", fishChance * fishData.GetWeight() / totalWeight);
+                    string chanceText = ModFishing.Translate("text.percent", fishChance * fishData.GetWeight());
                     string fishText = $"{this.Api.GetFishName(fish)} - {chanceText}";
                     batch.DrawStringWithShadow(font, fishText, new Vector2(source.Width * iconScale, boxHeight), textColor, 1F);
                     boxWidth = Math.Max(boxWidth, font.MeasureString(fishText).X + source.Width * iconScale);
@@ -202,5 +208,11 @@ namespace TehPers.FishingOverhaul {
             return string.Format(ModFishing.Instance.Helper.Translation.Get(key), formatArgs);
         }
         #endregion
+    }
+
+    public class CoalManager : CustomObjectManager {
+        public override string GetDescription(Object item, string vanillaResult) {
+            return "Success!";
+        }
     }
 }

@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>lib\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -71,6 +74,8 @@
     <Compile Include="Helpers\Static\MathHelpers.cs" />
     <Compile Include="Helpers\Static\SDVHelpers.cs" />
     <Compile Include="Helpers\Static\WeightedHelpers.cs" />
+    <Compile Include="Items\Managers\CustomItemManager.cs" />
+    <Compile Include="Items\Managers\CustomObjectManager.cs" />
     <Compile Include="Menus\BoxModel\BoxRectangle.cs" />
     <Compile Include="Menus\BoxModel\BoxVector.cs" />
     <Compile Include="Menus\BoxModel\OuterSize.cs" />

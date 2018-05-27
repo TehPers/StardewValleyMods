@@ -8,6 +8,7 @@ using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.Tools;
@@ -220,31 +221,21 @@ namespace TehPers.FishingOverhaul {
             ModFishing.Instance.Monitor.Log("Successfully replaced treasure", LogLevel.Trace);
 
             ConfigMain.ConfigGlobalTreasure config = ModFishing.Instance.MainConfig.GlobalTreasureSettings;
-            int clearWaterDistance = 5;
-            //if (lastUser))
-            //    clearWaterDistance = FishingRodOverrides.ClearWaterDistances[this.lastUser];
-            //else
-            //    ModFishing.Instance.Monitor.Log("The bobber bar was not replaced. Fishing might not be overridden by this mod", LogLevel.Warn);
+            int clearWaterDistance = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "clearWaterDistance")?.GetValue() ?? 5;
 
             if (user.IsLocalPlayer) {
-                if (rod.attachments[0] != null) {
-                    --rod.attachments[0].Stack;
-                    if (rod.attachments[0].Stack <= 0) {
-                        rod.attachments[0] = null;
-                        Game1.showGlobalMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingRod.cs.14085"));
-                    }
-                }
                 if (rod.attachments[1] != null) {
-                    rod.attachments[1].Scale = new Vector2(rod.attachments[1].Scale.X, rod.attachments[1].Scale.Y - 0.05f);
-                    if (rod.attachments[1].Scale.Y <= 0.0) {
-                        rod.attachments[1] = null;
-                        Game1.showGlobalMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingRod.cs.14086"));
-                    }
+                    // Modify tackle destroy rate
+                    const float vanillaDrain = 0.05F;
+                    float destroyRate = ModFishing.Instance.MainConfig.DifficultySettings.TackleDestroyRate;
+                    rod.attachments[1].Scale = new Vector2(rod.attachments[1].Scale.X, rod.attachments[1].Scale.Y + vanillaDrain * (1F - destroyRate));
                 }
             }
 
             int whichFish = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "whichFish").GetValue();
             int fishQuality = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "fishQuality").GetValue();
+
+            // Gain experience and call vanilla code for this
             user.gainExperience(5, 10 * (clearWaterDistance + 1));
             rod.doneFishing(user, true);
             user.completelyStopAnimatingOrDoingAction();

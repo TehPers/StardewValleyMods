@@ -28,14 +28,21 @@ namespace TehPers.Core.Helpers.Static {
 
         public static T Choose<T>(this IList<T> source) where T : IWeighted => source.Choose(new Random());
         public static T Choose<T>(this IList<T> source, Random rand) where T : IWeighted {
-            double totalWeight = source.Sum(entry => entry.GetWeight());
+            if (!source.Any())
+                throw new ArgumentException("Source must contain entries", nameof(source));
+
+            double totalWeight = source.SumWeights();
+            if (totalWeight == 0)
+                totalWeight = 1;
+
             double n = rand.NextDouble();
             foreach (T entry in source) {
                 double chance = entry.GetWeight() / totalWeight;
-                if (n < chance) return entry;
-                else n -= chance;
+                if (n < chance)
+                    return entry;
+                n -= chance;
             }
-            throw new ArgumentException("Enumerable must contain entries", nameof(source));
+            throw new ArgumentException("Enumerable must have a positive total weight", nameof(source));
         }
 
         public static IEnumerable<IWeightedElement<T>> ToWeighted<T>(this IDictionary<T, double> source) => source.ToWeighted(kv => kv.Value, kv => kv.Key);

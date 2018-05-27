@@ -60,7 +60,7 @@ namespace TehPers.FishingOverhaul {
 
         /// <inheritdoc />
         public float GetFishChance(Farmer who) {
-            return this._fishChance ?? FishHelper.GetRawFishChance(who);
+            return (this._fishChance ?? FishHelper.GetRawFishChance(who)).Clamp(0F, 1F);
         }
 
         /// <inheritdoc />

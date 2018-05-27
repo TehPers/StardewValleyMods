@@ -16,7 +16,7 @@ namespace TehPers.FishingOverhaul.Configs {
         }
 
         public double GetWeight() {
-            return 1;
+            return DefaultTrashData.MAX_TRASH_ID - DefaultTrashData.MIN_TRASH_ID;
         }
     }
 }
