@@ -10,6 +10,8 @@ namespace TehPers.Core.Items.Managers {
 
         public virtual string GetDescription(SObject item, string vanillaResult) => vanillaResult;
 
+        public virtual void ActionWhenBeingHeldPostfix(Farmer who) { }
+
         #region Static
         static CustomObjectManager() {
             CustomItemManager.ApplyPatches<CustomObjectManager>();

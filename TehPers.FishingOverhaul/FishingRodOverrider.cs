@@ -117,8 +117,10 @@ namespace TehPers.FishingOverhaul {
                 // Check if a legendary would be caught
                 double baitValue = rod.attachments[0]?.Price / 10.0 ?? 0.0;
                 bool bubblyZone = false;
-                if (location.fishSplashPoint.Value != Point.Zero)
+                if (!(location.fishSplashPoint is null) && location.fishSplashPoint.Value != Point.Zero)
                     bubblyZone = new Rectangle(location.fishSplashPoint.X * 64, location.fishSplashPoint.Y * 64, 64, 64).Intersects(new Rectangle((int) rod.bobber.X - 80, (int) rod.bobber.Y - 80, 64, 64));
+
+                // NotNull
                 SObject normalFish = location.getFish(rod.fishingNibbleAccumulator, rod.attachments[0]?.ParentSheetIndex ?? -1, clearWaterDistance + (bubblyZone ? 1 : 0), user, baitValue + (bubblyZone ? 0.4 : 0.0));
 
                 // If so, select that fish

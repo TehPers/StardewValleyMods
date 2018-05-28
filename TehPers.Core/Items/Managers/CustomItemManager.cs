@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using Harmony;
 using StardewValley;
@@ -17,7 +19,7 @@ namespace TehPers.Core.Items.Managers {
         protected static readonly HarmonyInstance harmonyInstance = HarmonyInstance.Create("TehPers.Core");
         private static readonly Dictionary<int, CustomItemManager> _managers = new Dictionary<int, CustomItemManager>();
 
-        
+
 
         #region Static
         static CustomItemManager() {
@@ -25,6 +27,9 @@ namespace TehPers.Core.Items.Managers {
         }
 
         protected static void ApplyPatches<TManager>() {
+            if (true)
+                return;
+
             // Apply patches
             Type originalType = AssortedHelpers.GetSDVType(nameof(StardewValley.Object));
             MethodInfo[] originalMethods = originalType.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
@@ -81,21 +86,45 @@ namespace TehPers.Core.Items.Managers {
             }
 
             public static void DelegatePostfix(HarmonyInstance instance, MethodInfo original, MethodInfo postfix) {
+                // Check the return types
                 if (original.ReturnType != typeof(TResult))
                     throw new ArgumentException($"Original method must have return type {typeof(TResult).Name}", nameof(original));
                 if (postfix.ReturnType != typeof(TResult))
                     throw new ArgumentException($"Postfix method must have return type {typeof(TResult).Name}", nameof(postfix));
 
-                ParameterInfo[] parameters = postfix.GetParameters();
-                if (parameters.Length != 2 || parameters[0].ParameterType != typeof(TInstance) || parameters[1].ParameterType != typeof(TResult))
-                    throw new ArgumentException($"Postfix must have two arguments: {typeof(TInstance).Name}, and {typeof(TResult).Name}", nameof(postfix));
+                // Get the parameter lists
+                ParameterInfo[] originalParams = original.GetParameters();
+                ParameterInfo[] patchParams = postfix.GetParameters();
 
-                HarmonyDelegator<TInstance, TResult>._postfixes[original] = postfix;
+                // Check the parameters in the postfix method
+                List<Type> expectedParams = new List<Type> { typeof(TInstance) };
+                if (typeof(TResult) != typeof(void))
+                    expectedParams.Add(typeof(TResult));
+                expectedParams.AddRange(originalParams.Select(p => p.ParameterType));
+                if (!patchParams.Select(p => p.ParameterType).SequenceEqual(expectedParams))
+                    throw new ArgumentException($"Postfix method must have the following signature: ({string.Join(", ", expectedParams.Select(t => t.Name))})", nameof(postfix));
+
+                // Get the signature for the delegator
+                List<ParameterExpression> delegatorParams = new List<ParameterExpression> { Expression.Parameter(typeof(TInstance).MakeByRefType(), "__instance") };
+                if (typeof(TResult) != typeof(void))
+                    delegatorParams.Add(Expression.Parameter(typeof(TResult).MakeByRefType(), "__result"));
+                delegatorParams.AddRange(originalParams.Select(p => Expression.Parameter(p.ParameterType, p.Name)));
+
+                // Create a delegator
+                // Expressions don't work because the compiled result has a closure argument
+                //Expression<Action> testExpression = () => Game1.showGlobalMessage("Success!");
+                //LambdaExpression expression = Expression.Lambda(testExpression.Body, delegatorParams);
+                //Delegate delegator = expression.Compile();
+
+                Type returnType = typeof(TResult) == typeof(void) ? null : typeof(TResult);
+                //DynamicMethod delegator = new DynamicMethod("PostfixDelegator", returnType, );
+
+                //HarmonyDelegator<TInstance, TResult>._postfixes[original] = postfix;
 
                 if (!HarmonyDelegator<TInstance, TResult>._postfixPatched) {
                     HarmonyDelegator<TInstance, TResult>._postfixPatched = true;
-                    instance.Patch(original, null, new HarmonyMethod(HarmonyDelegator<TInstance, TResult>._postfixDelegator));
-                    Chest.isPassable
+                    //instance.Patch(original, null, new HarmonyMethod(HarmonyDelegator<TInstance, TResult>._postfixDelegator));
+                    //instance.Patch(original, null, new HarmonyMethod(delegator.Method));
                 }
             }
 
