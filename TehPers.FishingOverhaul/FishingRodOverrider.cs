@@ -69,7 +69,7 @@ namespace TehPers.FishingOverhaul {
             }
         }
 
-        private void OverridePullFishEvent(FishingRod rod, Farmer user) {
+        private void OverridePullFishEvent(FishingRod rod) {
             // Make sure the pullFishFromWaterEvent has a value (it should)
             if (!(this._pullFishField?.GetValue(rod) is NetEventBinary pullFishEvent))
                 return;
@@ -88,7 +88,7 @@ namespace TehPers.FishingOverhaul {
             }
 
             // Add a new event handler
-            pullFishEvent.AddReaderHandler(reader => this.DoPullFishFromWater(rod, user, reader));
+            pullFishEvent.AddReaderHandler(reader => this.DoPullFishFromWater(rod, ModFishing.Instance.Helper.Reflection.GetField<Farmer>(rod, "lastUser").GetValue(), reader));
         }
 
         private void DoPullFishFromWater(FishingRod rod, Farmer user, BinaryReader reader) {

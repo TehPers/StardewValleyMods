@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Harmony;
 using Microsoft.Xna.Framework;
@@ -14,10 +13,10 @@ using TehPers.Core;
 using TehPers.Core.Api.Enums;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Helpers.Static;
-using TehPers.Core.Items.Managers;
+using TehPers.Core.Multiplayer;
 using TehPers.FishingOverhaul.Configs;
 using TehPers.FishingOverhaul.Patches;
-using Object = StardewValley.Object;
+using SObject = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace TehPers.FishingOverhaul {
@@ -41,7 +40,7 @@ namespace TehPers.FishingOverhaul {
         public override void Entry(IModHelper helper) {
             ModFishing.Instance = this;
             this.Api = new FishingApi();
-            CustomItemManager.SetManager(Objects.Coal, new CoalManager());
+            MultiplayerHelper.GetHelper(this).RegisterItem(Objects.Coal, new FishingRodManager());
 
             // Make sure TehPers.Core isn't loaded as it's not needed anymore
             if (helper.ModRegistry.IsLoaded("TehPers.Core"))
@@ -208,11 +207,5 @@ namespace TehPers.FishingOverhaul {
             return string.Format(ModFishing.Instance.Helper.Translation.Get(key), formatArgs);
         }
         #endregion
-    }
-
-    public class CoalManager : CustomObjectManager {
-        public override string GetDescription(Object item, string vanillaResult) {
-            return "Success!";
-        }
     }
 }

@@ -64,6 +64,7 @@
     <Compile Include="CustomBobberBar.cs" />
     <Compile Include="FishHelper.cs" />
     <Compile Include="FishingApi.cs" />
+    <Compile Include="FishingRodManager.cs" />
     <Compile Include="FishingRodOverrider.cs" />
     <Compile Include="ModFishing.cs" />
     <Compile Include="Patches\NetAudioPatches.cs" />
@@ -73,6 +74,10 @@
     <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj">
       <Project>{6bcd07bd-dd01-46a2-83d8-bca7b4e22de7}</Project>
       <Name>TehPers.Core.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TehPers.Core.Multiplayer\TehPers.Core.Multiplayer.csproj">
+      <Project>{6f1dd3d0-9ef5-4383-9121-26271052cff7}</Project>
+      <Name>TehPers.Core.Multiplayer</Name>
     </ProjectReference>
     <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">
       <Project>{3559a3f8-0fd3-42cc-8cba-eb9ad9744780}</Project>

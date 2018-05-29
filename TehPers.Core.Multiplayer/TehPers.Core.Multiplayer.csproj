@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3559A3F8-0FD3-42CC-8CBA-EB9AD9744780}</ProjectGuid>
+    <ProjectGuid>{6F1DD3D0-9EF5-4383-9121-26271052CFF7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TehPers.Core</RootNamespace>
-    <AssemblyName>TehPers.Core</AssemblyName>
+    <RootNamespace>TehPers.Core.Multiplayer</RootNamespace>
+    <AssemblyName>TehPers.Core.Multiplayer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ModUnitTests>True</ModUnitTests>
@@ -33,10 +33,11 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="0Harmony">
+      <HintPath>lib\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -48,49 +49,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\MinHeap.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Enums\Alignment.cs" />
-    <Compile Include="Enums\InventoryType.cs" />
-    <Compile Include="Enums\MouseButtons.cs" />
-    <Compile Include="Events\EventArgsKeyRepeated.cs" />
-    <Compile Include="Helpers\InputHelper.cs" />
-    <Compile Include="Helpers\JsonHelper.cs" />
-    <Compile Include="Helpers\Json\CustomItemData.cs" />
-    <Compile Include="Helpers\Json\DescriptiveJsonConverter.cs" />
-    <Compile Include="Helpers\Json\DescriptiveJsonWriter.cs" />
-    <Compile Include="Helpers\Json\InventorySource.cs" />
-    <Compile Include="Helpers\Json\JsonDescribeAttribute.cs" />
-    <Compile Include="Helpers\Json\NetConverter.cs" />
-    <Compile Include="Helpers\Json\NetExposer.cs" />
-    <Compile Include="Helpers\Static\AssortedHelpers.cs" />
-    <Compile Include="Helpers\Static\DrawHelpers.cs" />
-    <Compile Include="Helpers\Static\EnumerableHelpers.cs" />
-    <Compile Include="Helpers\Static\GraphHelpers.cs" />
-    <Compile Include="Helpers\Static\InputHelpers.cs" />
-    <Compile Include="Helpers\Static\MathHelpers.cs" />
-    <Compile Include="Helpers\Static\SDVHelpers.cs" />
-    <Compile Include="Helpers\Static\WeightedHelpers.cs" />
-    <Compile Include="Menus\BoxModel\BoxRectangle.cs" />
-    <Compile Include="Menus\BoxModel\BoxVector.cs" />
-    <Compile Include="Menus\BoxModel\OuterSize.cs" />
-    <Compile Include="Menus\BoxModel\Rectangle2I.cs" />
-    <Compile Include="Menus\BoxModel\Vector2I.cs" />
-    <Compile Include="Menus\ConfigMenuBuilder.cs" />
-    <Compile Include="Menus\Elements\Element.cs" />
-    <Compile Include="Menus\Elements\MenuElement.cs" />
-    <Compile Include="Menus\Elements\TextboxElement.cs" />
-    <Compile Include="Menus\Elements\TextElement.cs" />
-    <Compile Include="Menus\Menu.cs" />
+    <Compile Include="Items\DelegatorForAttribute.cs" />
+    <Compile Include="Items\ItemDelegator.cs" />
+    <Compile Include="Items\ItemManager.cs" />
+    <Compile Include="Harmony\PatchType.cs" />
+    <Compile Include="LoggingExtensions.cs" />
+    <Compile Include="Items\ObjectManager.cs" />
+    <Compile Include="MultiplayerHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReflectedField.cs" />
-    <Compile Include="TehCoreApi.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj">
-      <Project>{6bcd07bd-dd01-46a2-83d8-bca7b4e22de7}</Project>
-      <Name>TehPers.Core.Api</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -98,7 +64,16 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj">
+      <Project>{6bcd07bd-dd01-46a2-83d8-bca7b4e22de7}</Project>
+      <Name>TehPers.Core.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">
+      <Project>{3559a3f8-0fd3-42cc-8cba-eb9ad9744780}</Project>
+      <Name>TehPers.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0-beta-20180428\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
