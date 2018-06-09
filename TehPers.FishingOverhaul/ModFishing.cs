@@ -4,16 +4,15 @@ using System.Text;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.Tools;
 using TehPers.Core;
-using TehPers.Core.Api.Enums;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Helpers.Static;
-using TehPers.Core.Multiplayer;
 using TehPers.FishingOverhaul.Configs;
 using TehPers.FishingOverhaul.Patches;
 using SObject = StardewValley.Object;
@@ -40,7 +39,7 @@ namespace TehPers.FishingOverhaul {
         public override void Entry(IModHelper helper) {
             ModFishing.Instance = this;
             this.Api = new FishingApi();
-            MultiplayerHelper.GetHelper(this).RegisterItem(Objects.Coal, new FishingRodManager());
+            //TehMultiplayerApi.GetApi(this).RegisterItem(Objects.Coal, new FishingRodManager());
 
             // Make sure TehPers.Core isn't loaded as it's not needed anymore
             if (helper.ModRegistry.IsLoaded("TehPers.Core"))
@@ -58,8 +57,29 @@ namespace TehPers.FishingOverhaul {
             Type targetType = AssortedHelpers.GetSDVType(nameof(NetAudio));
             this.Harmony.Patch(targetType.GetMethod(nameof(NetAudio.PlayLocal)), new HarmonyMethod(typeof(NetAudioPatches).GetMethod(nameof(NetAudioPatches.Prefix))), null);
 
+            // Override fishing
             this.Overrider = new FishingRodOverrider();
+
+            // Events
             GraphicsEvents.OnPostRenderHudEvent += this.PostRenderHud;
+            ControlEvents.KeyPressed += (sender, e) => {
+                if (e.KeyPressed != Keys.F5)
+                    return;
+
+                this.Monitor.Log("Reloading configs...", LogLevel.Info);
+                this.LoadConfigs();
+                this.Monitor.Log("Done", LogLevel.Info);
+            };
+
+            // Additional trash data
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 1, "Beach")); // Seaweed
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 153 }, 1, "Farm", invertLocations: true)); // Green Algae
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "BugLand")); // White Algae
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "Sewers")); // White Algae
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "WitchSwamp")); // White Algae
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "UndergroundMines")); // White Algae
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 797 }, 0.01D, "Submarine")); // Pearl
+            this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 0.99D, "Submarine")); // Seaweed
 
             /*ControlEvents.KeyPressed += (sender, pressed) => {
                 if (pressed.KeyPressed == Keys.NumPad7) {
@@ -104,15 +124,8 @@ namespace TehPers.FishingOverhaul {
                 return config;
             }, this.MainConfig.MinifyConfigs);
 
-            // Not a config, but whatever
-            this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 1, "Beach")); // Seaweed
-            this.Api.AddTrashData(new SpecificTrashData(new[] { 153 }, 1, "Farm", invertLocations: true)); // Green Algae
-            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "BugLand")); // White Algae
-            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "Sewers")); // White Algae
-            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "WitchSwamp")); // White Algae
-            this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "UndergroundMines")); // White Algae
-            this.Api.AddTrashData(new SpecificTrashData(new[] { 797 }, 0.01D, "Submarine")); // Pearl
-            this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 0.99D, "Submarine")); // Seaweed
+            // Load config values
+            FishingRod.maxTackleUses = ModFishing.Instance.MainConfig.DifficultySettings.MaxTackleUses;
         }
 
         #region Events
@@ -143,7 +156,12 @@ namespace TehPers.FishingOverhaul {
             IWeightedElement<int?>[] possibleFish = this.Api.GetPossibleFish(Game1.player).ToArray();
             possibleFish = possibleFish.Where(e => e.Value != null).ToArray();
             double fishChance = possibleFish.SumWeights();
-            possibleFish = possibleFish.Take(5).ToArray();
+
+            // Limit the number of displayed fish
+            int trimmed = possibleFish.Length - 5;
+            if (trimmed > 0) {
+                possibleFish = possibleFish.Take(5).ToArray();
+            }
 
             // Draw treasure chance
             string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", this.Api.GetTreasureChance(Game1.player, rod)));
@@ -186,6 +204,11 @@ namespace TehPers.FishingOverhaul {
                     // Update destY
                     boxHeight += lineHeight;
                 }
+            }
+
+            if (trimmed > 0) {
+                batch.DrawStringWithShadow(font, $"+{trimmed}...", new Vector2(0, boxHeight), textColor, 1f);
+                boxHeight += lineHeight;
             }
 
             // Draw the background rectangle

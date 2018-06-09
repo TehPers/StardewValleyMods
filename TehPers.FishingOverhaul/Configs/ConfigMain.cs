@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using TehPers.Core.Helpers.Json;
 
 namespace TehPers.FishingOverhaul.Configs {
@@ -11,7 +12,7 @@ namespace TehPers.FishingOverhaul.Configs {
         [Description("Whether to make the config files as small as possible. This makes them really hard to edit!")]
         public bool MinifyConfigs { get; set; } = false;
 
-        [Description("Whether this mod affects legendary fish as well.")]
+        [Description("Whether this mod affects legendary fish as well. If this is false, then you should never be able to catch legendary fish multiple times.")]
         public bool CustomLegendaries { get; set; } = true;
 
         [Description("Whether you can catch legendary fish multiple times (including Legend). This setting only matters if " + nameof(ConfigMain.CustomLegendaries) + " is true. False for vanilla")]
@@ -70,8 +71,15 @@ namespace TehPers.FishingOverhaul.Configs {
             [Description("Affects how fast the treasure bar drains when the bobber isn't on the chest. 1.0 for vanilla")]
             public float TreasureDrainSpeed { get; set; } = 1.25F;
 
-            [Description("How fast the tackle is destroyed. For example, 0.5 to make tackle break half as fast, and 2.0 to make it break twice as fast. 1.0 for vanilla")]
-            public float TackleDestroyRate { get; set; } = 1.0F;
+            [Description("[Obsolete] Use " + nameof(ConfigDifficulty.MaxTackleUses) + " instead. Rate at which your tackle is destroyed. Setting this value does nothing.")]
+            [Obsolete("Use " + nameof(ConfigDifficulty.MaxTackleUses) + " instead")]
+            public float TackleDestroyRate {
+                get => 20F / this.MaxTackleUses;
+                set { }
+            }
+
+            [Description("How many times a tackle can be used before it breaks. 20 for vanilla")]
+            public int MaxTackleUses { get; set; } = 20;
         }
 
         [JsonDescribe]
@@ -93,6 +101,12 @@ namespace TehPers.FishingOverhaul.Configs {
 
             [Description("Whether all farm types should have fish. The default farm fish can be defined in fish.json. Vanilla is false")]
             public bool AllowFishOnAllFarms { get; set; } = false;
+
+            [Description("The minimum chance of catching a fish.")]
+            public float MinFishChance { get; set; } = 0;
+
+            [Description("The maximum chance of catching a fish.")]
+            public float MaxFishChance { get; set; } = 1;
         }
 
         [JsonDescribe]

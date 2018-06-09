@@ -198,5 +198,15 @@ namespace TehPers.FishingOverhaul.Api {
         /// <param name="fish">The ID of the fish.</param>
         /// <returns>True if the fish is hidden, false if otherwise.</returns>
         bool IsHidden(int fish);
+
+        /// <summary>Gets whether a fish is legendary.</summary>
+        /// <param name="fish">The ID of the fish.</param>
+        /// <returns>True if the fish is legendary, false if otherwise.</returns>
+        bool IsLegendary(int fish);
+
+        /// <summary>Sets whether a fish is legendary.</summary>
+        /// <param name="fish">The ID of the fish.</param>
+        /// <param name="legendary">True if the fish should be legendary, false if it should not be, null to remove overrides.</param>
+        void SetLegendary(int fish, bool? legendary);
     }
 }

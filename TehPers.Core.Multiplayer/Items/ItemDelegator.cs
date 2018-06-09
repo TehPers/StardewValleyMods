@@ -25,17 +25,17 @@ namespace TehPers.Core.Multiplayer.Items {
             return ItemDelegator._managers.TryGetValue(parentSheetIndex, out ItemManager manager) ? manager : null;
         }
 
-        internal static void SetManagerFor(int parentSheetIndex, ItemManager manager, MultiplayerHelper helper) {
-            if (ItemDelegator._conflictedMods.Contains(helper.Mod)) {
+        internal static void SetManagerFor(int parentSheetIndex, ItemManager manager, TehMultiplayerApi api) {
+            if (ItemDelegator._conflictedMods.Contains(api.Mod)) {
                 // Don't register managers for conflicted mods
-                helper.Mod.Monitor.PrefixedLog($"Skipped manager for {parentSheetIndex}", LogLevel.Trace);
+                api.Mod.Monitor.PrefixedLog($"Skipped manager for {parentSheetIndex}", LogLevel.Trace);
             } else if (ItemDelegator._conflictedKeys.Contains(parentSheetIndex)) {
                 // Conflict found
-                helper.Mod.Monitor.PrefixedLog($"Conflict found with item {parentSheetIndex}. Removing all items from conflicting mods...", LogLevel.Warn);
+                api.Mod.Monitor.PrefixedLog($"Conflict found with item {parentSheetIndex}. Removing all items from conflicting mods...", LogLevel.Warn);
                 ItemDelegator.BlacklistMod(manager.Owner);
             } else if (ItemDelegator._managers.TryGetValue(parentSheetIndex, out ItemManager conflict)) {
                 // Conflict found
-                helper.Mod.Monitor.PrefixedLog($"Conflict found with item {parentSheetIndex}. Removing all items from conflicting mods...", LogLevel.Warn);
+                api.Mod.Monitor.PrefixedLog($"Conflict found with item {parentSheetIndex}. Removing all items from conflicting mods...", LogLevel.Warn);
                 ItemDelegator.BlacklistMod(manager.Owner);
                 if (manager.Owner != conflict.Owner) {
                     ItemDelegator.BlacklistMod(conflict.Owner);

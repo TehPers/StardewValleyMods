@@ -55,7 +55,7 @@
     <Compile Include="Harmony\PatchType.cs" />
     <Compile Include="LoggingExtensions.cs" />
     <Compile Include="Items\ObjectManager.cs" />
-    <Compile Include="MultiplayerHelper.cs" />
+    <Compile Include="TehMultiplayerApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

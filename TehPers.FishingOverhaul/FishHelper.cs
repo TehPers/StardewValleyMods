@@ -50,8 +50,6 @@ namespace TehPers.FishingOverhaul {
 
         public static bool IsTrash(int id) => ModFishing.Instance.Api.GetTrashData().Any(t => t.PossibleIds.Contains(id));
 
-        public static bool IsLegendary(int fish) => fish == 159 || fish == 160 || fish == 163 || fish == 682 || fish == 775;
-
         public static float GetRawFishChance(SFarmer who) {
             ConfigMain.ConfigGlobalFish config = ModFishing.Instance.MainConfig.GlobalFishSettings;
 
