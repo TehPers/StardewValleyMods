@@ -1,9 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace TehPers.Core.Helpers.Static {
     public static class EnumerableHelpers {
+        /// <summary>Shuffles a list.</summary>
+        /// <typeparam name="T">The type of the elements of <see cref="source"/></typeparam>
+        /// <param name="source">An <see cref="IList{T}"/> to shuffle.</param>
+        public static void Shuffle<T>(this IList<T> source) => source.Shuffle(new Random());
+
+        /// <summary>Shuffles a list.</summary>
+        /// <typeparam name="T">The type of the elements of <see cref="source"/></typeparam>
+        /// <param name="source">An <see cref="IList{T}"/> to shuffle.</param>
+        /// <param name="rand">The <see cref="Random"/> to use while shuffling.</param>
+        public static void Shuffle<T>(this IList<T> source, Random rand) {
+            int n = source.Count;
+            while (n > 1) {
+                n--;
+                int k = rand.Next(n + 1);
+                T value = source[k];
+                source[k] = source[n];
+                source[n] = value;
+            }
+        }
+
         /// <summary>Creates a <see cref="HashSet{T}"/> from an <see cref="IEnumerable{T}"/>.</summary>
         /// <typeparam name="TSource">The type of the elements of <see cref="source"/></typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> to create a <see cref="HashSet{T}"/> from.</param>

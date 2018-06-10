@@ -5,18 +5,6 @@ using TehPers.Core.Api.Weighted;
 
 namespace TehPers.Core.Helpers.Static {
     public static class WeightedHelpers {
-        public static void Shuffle<T>(this IList<T> source) => source.Shuffle(new Random());
-        public static void Shuffle<T>(this IList<T> source, Random rand) {
-            int n = source.Count;
-            while (n > 1) {
-                n--;
-                int k = rand.Next(n + 1);
-                T value = source[k];
-                source[k] = source[n];
-                source[n] = value;
-            }
-        }
-
         public static T Choose<T>(this IDictionary<T, double> source) => source.Choose(new Random());
         public static T Choose<T>(this IDictionary<T, double> source, Random rand) => source.ToWeighted().Choose(rand);
 
