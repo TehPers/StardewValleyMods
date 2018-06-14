@@ -1,8 +1,18 @@
 ﻿# Installation
-**Until mid June, don't use package manager to install this package. Instead, compile it yourself. Currently I can't update the version on Nuget and it's obsolete.** When I'm able to update the package on Nuget again, you will be able to just use the `TehPers.FishingOverhaul.Api` prerelease package.
+Add the `TehPers.FishingOverhaul.Api` prerelease NuGet package to your project:
+
+**Package Manager:**
+```
+PM> Install-Package TehPers.FishingOverhaul.Api -Version 1.0.1-beta
+```
+
+**.NET CLI** - Note: .NET Core projects don't work with SMAPI
+```
+dotnet add package TehPers.FishingOverhaul.Api --version 1.0.1-beta
+```
 
 ## Compiling yourself
-Download or clone this repository and drag the `Core.Api` and `FishingOverhaul.Api` projects into your solution folder. In Visual Studio (or whatever IDE you use), add those projects to your solution. Then, add them both as references to your project.
+Download or clone this repository and drag the `TehPers.Core.Api` and `TehPers.FishingOverhaul.Api` projects into your solution folder. In Visual Studio (or whatever IDE you use), add those projects to your solution. Then, add them both as references to your project. Additionally, you can add `TehPers.Core` to your solution if you'd like to use the helpers contained in there.
 
 # Using the API
 Add an event handler for `GameEvents.FirstUpdateTick` which attempts to load the API from `TehPers.FishingOverhaul`:
@@ -53,7 +63,7 @@ ITrashData trashData;
 api.AddTrashData(trashData);
 ```
 
-The Nuget package has obsolete functions for setting the trash chances and removing trash and such. It is recommended that you do not use those and instead include TehPers.FishingOverhaul.Api and TehPers.Core.Api in your solution, then reference them from your projects.
+The Nuget package has obsolete functions for setting the trash chances and removing trash and such. **Do not use those functions.** Instead, you **must** include `TehPers.FishingOverhaul.Api` and `TehPers.Core.Api` in your solution, then reference them from your projects.
 
 # Feature list
 All calls to the API override any calculations performed by Teh's Fishing Overhaul and any configs settings in it. The API allows developers to:
@@ -68,4 +78,4 @@ All calls to the API override any calculations performed by Teh's Fishing Overha
 - Fishing events including before the bobber bar appears, when the fish is caught, and when trash is caught
 
 # Suggestions
-- You may want to include TehPers.Core as well. It contains a lot of helpers and extension functions that you can use in your own mods. (It requires TehPers.Core.Api)
+- You may want to include `TehPers.Core` as well. It contains a lot of helpers and extension functions that you can use in your own mods. (It requires `TehPers.Core.Api`)
