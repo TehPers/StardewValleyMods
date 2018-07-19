@@ -36,7 +36,7 @@ namespace TehPers.Core.Helpers.Static {
         public static IEnumerable<IWeightedElement<T>> ToWeighted<T>(this IDictionary<T, double> source) => source.ToWeighted(kv => kv.Value, kv => kv.Key);
         public static IEnumerable<IWeightedElement<T>> ToWeighted<T>(this IEnumerable<T> source, Func<T, double> weightSelector) => source.ToWeighted(weightSelector, e => e);
         public static IEnumerable<IWeightedElement<TEntry>> ToWeighted<TSource, TEntry>(this IEnumerable<TSource> source, Func<TSource, double> weightSelector, Func<TSource, TEntry> elementSelector) {
-            return source.Select(e => new WeightedElement<TEntry>(elementSelector(e), weightSelector(e)));
+            return source.Select(e => new WeightedElement<TEntry>(elementSelector(e), weightSelector(e))).ToArray();
         }
 
         public static IEnumerable<IWeightedElement<T>> Normalize<T>(this IEnumerable<T> source) where T : IWeighted => source.NormalizeTo(1D);
@@ -47,7 +47,7 @@ namespace TehPers.Core.Helpers.Static {
             double totalWeight = source.SumWeights();
             if (totalWeight == 0)
                 totalWeight = 1;
-            return source.Select(e => new WeightedElement<T>(e, weight * e.GetWeight() / totalWeight));
+            return source.Select(e => new WeightedElement<T>(e, weight * e.GetWeight() / totalWeight)).ToArray();
         }
 
         public static IEnumerable<IWeightedElement<T>> Normalize<T>(this IEnumerable<IWeightedElement<T>> source) => source.NormalizeTo(1D);
@@ -58,7 +58,7 @@ namespace TehPers.Core.Helpers.Static {
             double totalWeight = source.SumWeights();
             if (totalWeight == 0)
                 totalWeight = 1;
-            return source.Select(e => new WeightedElement<T>(e.Value, weight * e.GetWeight() / totalWeight));
+            return source.Select(e => new WeightedElement<T>(e.Value, weight * e.GetWeight() / totalWeight)).ToArray();
         }
 
         public static double SumWeights<T>(this IEnumerable<T> source) where T : IWeighted => source.Sum(e => e.GetWeight());

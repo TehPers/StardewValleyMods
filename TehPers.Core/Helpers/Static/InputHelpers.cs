@@ -193,7 +193,11 @@ namespace TehPers.Core.Helpers.Static {
             return InputHelpers.ShiftPressed() ^ InputHelpers.CapsToggled();
         }
 
+#if WINDOWS // TODO
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true, CallingConvention = CallingConvention.Winapi)]
         public static extern short GetKeyState(int keyCode);
+#else
+        public static short GetKeyState(int keyCode) => 0;
+#endif
     }
 }

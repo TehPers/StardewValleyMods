@@ -35,9 +35,9 @@ namespace TehPers.Core.Helpers {
             }
 
             // Keyboard input
-            ControlEvents.KeyPressed += this.KeyPressed;
-            ControlEvents.KeyReleased += this.KeyReleased;
-            GameEvents.UpdateTick += this.UpdateTick;
+            //ControlEvents.KeyPressed += this.KeyPressed;
+            //ControlEvents.KeyReleased += this.KeyReleased;
+            //GameEvents.UpdateTick += this.UpdateTick;
         }
 
         public string GetClipboardText() {

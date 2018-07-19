@@ -30,14 +30,11 @@ namespace TehPers.FishingOverhaul {
 
         internal FishingRodOverrider Overrider { get; set; }
         internal HarmonyInstance Harmony { get; private set; }
-        internal TehCoreApi CoreApi { get; }
-
-        public ModFishing() {
-            this.CoreApi = TehCoreApi.Create(this);
-        }
+        internal TehCoreApi CoreApi { get; private set; }
 
         public override void Entry(IModHelper helper) {
             ModFishing.Instance = this;
+            this.CoreApi = TehCoreApi.Create(this);
             this.Api = new FishingApi();
             //TehMultiplayerApi.GetApi(this).RegisterItem(Objects.Coal, new FishingRodManager());
 
@@ -71,7 +68,8 @@ namespace TehPers.FishingOverhaul {
                 this.Monitor.Log("Done", LogLevel.Info);
             };
 
-            // Additional trash data
+            // Trash data
+            this.Api.AddTrashData(new DefaultTrashData());
             this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 1, "Beach")); // Seaweed
             this.Api.AddTrashData(new SpecificTrashData(new[] { 153 }, 1, "Farm", invertLocations: true)); // Green Algae
             this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "BugLand")); // White Algae

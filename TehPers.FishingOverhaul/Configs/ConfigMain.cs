@@ -18,7 +18,7 @@ namespace TehPers.FishingOverhaul.Configs {
         [Description("Whether you can catch legendary fish multiple times (including Legend). This setting only matters if " + nameof(ConfigMain.CustomLegendaries) + " is true. False for vanilla")]
         public bool RecatchableLegendaries { get; set; } = true;
 
-        [Description("If legendary fish are recatchable, how many days you must wait before you can catch a particular legendary fish again. Set to 0 for no delay.")]
+        [Description("WIP, doesn't work yet - If legendary fish are recatchable, how many days you must wait before you can catch a particular legendary fish again. Set to 0 for no delay.")]
         public int DaysBeforeLegendaryRecatchable { get; set; } = 28;
 
         [Description("Whether the fish should be shown while catching it. False for vanilla")]
@@ -70,14 +70,7 @@ namespace TehPers.FishingOverhaul.Configs {
 
             [Description("Affects how fast the treasure bar drains when the bobber isn't on the chest. 1.0 for vanilla")]
             public float TreasureDrainSpeed { get; set; } = 1.25F;
-
-            [Description("[Obsolete] Use " + nameof(ConfigDifficulty.MaxTackleUses) + " instead. Rate at which your tackle is destroyed. Setting this value does nothing.")]
-            [Obsolete("Use " + nameof(ConfigDifficulty.MaxTackleUses) + " instead")]
-            public float TackleDestroyRate {
-                get => 20F / this.MaxTackleUses;
-                set { }
-            }
-
+            
             [Description("How many times a tackle can be used before it breaks. 20 for vanilla")]
             public int MaxTackleUses { get; set; } = 20;
         }
