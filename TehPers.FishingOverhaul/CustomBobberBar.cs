@@ -129,7 +129,6 @@ namespace TehPers.FishingOverhaul {
             // Increase the user's perfect streak (this will be dropped to 0 if they don't get a perfect catch)
             if (this._origStreak >= config.StreakSettings.StreakForIncreasedQuality)
                 this._sparkleText.Value = new SparklingText(Game1.dialogueFont, ModFishing.Translate("text.streak", this._origStreak), Color.Yellow, Color.White);
-            ModFishing.Instance.Api.SetStreak(user, this._origStreak + 1);
         }
 
         public override void update(GameTime time) {
@@ -178,17 +177,26 @@ namespace TehPers.FishingOverhaul {
 
             // Check if done fishing
             distanceFromCatching = this._distanceFromCatching.Value;
+            if (this._notifiedFailOrSucceed)
+                return;
+
             if (distanceFromCatching <= 0.0) {
                 // Failed to catch fish
-                if (!this._notifiedFailOrSucceed && treasure) {
+                this._notifiedFailOrSucceed = true;
+
+                if (treasure) {
                     this._notifiedFailOrSucceed = true;
-                    if (this._origStreak >= ModFishing.Instance.MainConfig.StreakSettings.StreakForIncreasedQuality)
+                    if (this._origStreak >= ModFishing.Instance.MainConfig.StreakSettings.StreakForIncreasedQuality) {
                         Game1.showGlobalMessage(ModFishing.Translate("text.lostStreak", this._origStreak));
+                    }
                 }
             } else if (distanceFromCatching >= 1.0) {
                 // Succeeded in catching the fish
-                if (!this._notifiedFailOrSucceed && !perfect && treasure && treasureCaught) {
-                    this._notifiedFailOrSucceed = true;
+                this._notifiedFailOrSucceed = true;
+
+                if (perfect) {
+                    ModFishing.Instance.Api.SetStreak(this.User, this._origStreak + 1);
+                } else if (treasure && treasureCaught) {
                     if (this._origStreak >= ModFishing.Instance.MainConfig.StreakSettings.StreakForIncreasedQuality)
                         Game1.showGlobalMessage(ModFishing.Translate("text.keptStreak", this._origStreak));
                     ModFishing.Instance.Api.SetStreak(this.User, this._origStreak);
