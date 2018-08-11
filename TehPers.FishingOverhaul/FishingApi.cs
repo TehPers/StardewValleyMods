@@ -12,6 +12,7 @@ using TehPers.Core.Api.Weighted;
 using TehPers.Core.Helpers;
 using TehPers.Core.Helpers.Static;
 using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Api.Overridables;
 using TehPers.FishingOverhaul.Configs;
 
 namespace TehPers.FishingOverhaul {
@@ -45,7 +46,7 @@ namespace TehPers.FishingOverhaul {
                 this._fishNames[fishData.Key] = contentData.Length > 13 ? contentData[13] : contentData[0];
             }
         }
-
+        
         /// <inheritdoc />
         public event EventHandler<FishingEventArgs> BeforeFishCatching;
 

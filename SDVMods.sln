@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.MoreFish", "TehPers
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Multiplayer", "TehPers.Core.Multiplayer\TehPers.Core.Multiplayer.csproj", "{6F1DD3D0-9EF5-4383-9121-26271052CFF7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingProgression", "TehPers.FishingProgression\TehPers.FishingProgression.csproj", "{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,18 @@ Global
 		{6F1DD3D0-9EF5-4383-9121-26271052CFF7}.Release-3.5|Any CPU.Build.0 = Release|Any CPU
 		{6F1DD3D0-9EF5-4383-9121-26271052CFF7}.Release-4.7.1|Any CPU.ActiveCfg = Release|Any CPU
 		{6F1DD3D0-9EF5-4383-9121-26271052CFF7}.Release-4.7.1|Any CPU.Build.0 = Release|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Debug-3.5|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Debug-3.5|Any CPU.Build.0 = Debug|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Debug-4.7.1|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Debug-4.7.1|Any CPU.Build.0 = Debug|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Release-3.5|Any CPU.ActiveCfg = Release|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Release-3.5|Any CPU.Build.0 = Release|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Release-4.7.1|Any CPU.ActiveCfg = Release|Any CPU
+		{1A63ED5A-D4DA-492E-AABF-0A8303D0AC1B}.Release-4.7.1|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

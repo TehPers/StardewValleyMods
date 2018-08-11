@@ -15,7 +15,7 @@ namespace TehPers.FishingOverhaul.Api {
         event EventHandler<FishingEventArgs> FishCaught;
 
         /// <summary>Invoked when trash is caught, before the animation occurs.</summary>
-        event EventHandler<FishingEventArgs> TrashCaught; 
+        event EventHandler<FishingEventArgs> TrashCaught;
 
         /// <summary>Sets the chance of catching fish. This overrides any fish chance calculations done by the mod itself.</summary>
         /// <param name="chance">The new chance of catching fish, or null to remove any overrides.</param>
