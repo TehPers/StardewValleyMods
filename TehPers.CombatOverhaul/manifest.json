@@ -1,0 +1,11 @@
+﻿{
+    "Name": "Teh's Combat Overhaul - Core",
+    "Author": "TehPers",
+    "Version": "1.0.0-beta",
+    "Description": "A complete overhaul of vanilla combat with an API for other mods.",
+    "UniqueID": "TehPers.CombatOverhaul",
+    "EntryDll": "TehPers.CombatOverhaul.dll",
+    "MinimumApiVersion": "2.6",
+    "UpdateKeys": [],
+    "Dependencies": []
+}

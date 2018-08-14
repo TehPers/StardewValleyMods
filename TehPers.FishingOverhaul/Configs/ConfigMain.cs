@@ -73,6 +73,9 @@ namespace TehPers.FishingOverhaul.Configs {
             
             [Description("How many times a tackle can be used before it breaks. 20 for vanilla")]
             public int MaxTackleUses { get; set; } = 20;
+
+            [Description("Determines whether a perfect catch is required to get gold quality (or above) fish. True means you can only get normal or silver quality fish on non-perfect catches. False for vanilla")]
+            public bool PreventGoldOnNormalCatch { get; set; } = true;
         }
 
         [JsonDescribe]

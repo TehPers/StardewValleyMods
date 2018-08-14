@@ -225,7 +225,8 @@ namespace TehPers.FishingOverhaul {
 
         #region Static Helpers
         public static string Translate(string key, params object[] formatArgs) {
-            return string.Format(ModFishing.Instance.Helper.Translation.Get(key), formatArgs);
+            Translation translation = ModFishing.Instance.Helper.Translation.Get(key);
+            return translation.HasValue() ? string.Format(translation.ToString(), formatArgs) : key;
         }
         #endregion
     }

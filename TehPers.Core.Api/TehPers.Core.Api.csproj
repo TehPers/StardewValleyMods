@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\FacingDirection.cs" />
     <Compile Include="Enums\Objects.cs" />
     <Compile Include="Enums\Season.cs" />
     <Compile Include="Enums\WaterType.cs" />
