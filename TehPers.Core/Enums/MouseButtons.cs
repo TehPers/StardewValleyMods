@@ -1,7 +1,10 @@
-﻿namespace TehPers.Core.Enums {
+﻿using System;
+
+namespace TehPers.Core.Enums {
+    [Flags]
     public enum MouseButtons {
-        LEFT,
-        RIGHT,
-        MIDDLE
+        LEFT = 0b1,
+        RIGHT = 0b10,
+        MIDDLE = 0b100
     }
 }

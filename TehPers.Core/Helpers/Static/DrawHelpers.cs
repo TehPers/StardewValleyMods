@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
@@ -157,8 +158,22 @@ namespace TehPers.Core.Helpers.Static {
         /// <param name="depth">The depth of the string.</param>
         /// <param name="shadowDepth">The depth of the shadow.</param>
         public static void DrawStringWithShadow(this SpriteBatch batch, SpriteFont font, string text, Vector2 position, Color color, float depth = 0F, float shadowDepth = 0.005F) {
-            batch.DrawString(font, text, position + Vector2.One * Game1.pixelZoom / 2f, Color.Black, 0F, Vector2.Zero, Vector2.One, SpriteEffects.None, shadowDepth);
-            batch.DrawString(font, text, position, color, 0F, Vector2.Zero, Vector2.One, SpriteEffects.None, depth);
+            batch.DrawStringWithShadow(font, text, position, color, Color.Black, Vector2.One, depth, shadowDepth);
+        }
+
+        /// <summary>Draws a string with a shadow behind it.</summary>
+        /// <param name="batch">The batch to draw with.</param>
+        /// <param name="font">The font the text should use.</param>
+        /// <param name="text">The string to draw.</param>
+        /// <param name="position">The position of the string.</param>
+        /// <param name="color">The color of the string. The shadow is black.</param>
+        /// <param name="shadowColor">The color of the shadow.</param>
+        /// <param name="scale">The amount to scale the size of the string by.</param>
+        /// <param name="depth">The depth of the string.</param>
+        /// <param name="shadowDepth">The depth of the shadow.</param>
+        public static void DrawStringWithShadow(this SpriteBatch batch, SpriteFont font, string text, Vector2 position, Color color, Color shadowColor, Vector2 scale, float depth, float shadowDepth) {
+            batch.DrawString(font, text, position + Vector2.One * Game1.pixelZoom * scale / 2f, shadowColor, 0F, Vector2.Zero, scale, SpriteEffects.None, shadowDepth);
+            batch.DrawString(font, text, position, color, 0F, Vector2.Zero, scale, SpriteEffects.None, depth);
         }
 
         /// <summary>Draws a speech bubble over a <see cref="Character"/>.</summary>
@@ -171,6 +186,58 @@ namespace TehPers.Core.Helpers.Static {
             if (style == 0)
                 local += new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2));
             SpriteText.drawStringWithScrollCenteredAt(Game1.spriteBatch, text, (int) local.X, (int) local.Y, "", 1F, (int) color.PackedValue, 1, (float) (who.getTileY() * 64 / 10000.0 + 1.0 / 1000.0 + who.getTileX() / 10000.0));
+        }
+
+        /// <summary>Executes some code with a given scissor rectangle (drawing will be limited to the rectangle)</summary>
+        /// <param name="batch">The <see cref="SpriteBatch"/> being used for drawing calls</param>
+        /// <param name="scissorRect">The rectangle to limit drawing to</param>
+        /// <param name="action">The function to execute with the given scissor rectangle</param>
+        /// <param name="respectExistingScissor">Whether to limit the new scissor rectangle to a subrectangle of the current scissor rectangle</param>
+        public static void WithScissorRect(this SpriteBatch batch, Rectangle2 scissorRect, Action<SpriteBatch> action, bool respectExistingScissor = true) {
+            // Stop the old drawing code
+            batch.End();
+
+            // Keep track of the old scissor rectangle (this needs to come after End() so they're applied to the GraphicsDevice)
+            Rectangle2 oldScissor = batch.GraphicsDevice.ScissorRectangle;
+            BlendState oldBlendState = batch.GraphicsDevice.BlendState;
+            DepthStencilState oldStencilState = batch.GraphicsDevice.DepthStencilState;
+            RasterizerState oldRasterizerState = batch.GraphicsDevice.RasterizerState;
+
+            // Trim current scissor to the existing one if necessary
+            if (respectExistingScissor)
+                scissorRect = scissorRect.Intersection(oldScissor) ?? new Rectangle2(0, 0, 0, 0);
+
+            // Draw with the new scissor rectangle
+            using (RasterizerState rasterizerState = new RasterizerState { ScissorTestEnable = true }) {
+                batch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, rasterizerState);
+
+                // Set scissor rectangle
+                batch.GraphicsDevice.ScissorRectangle = scissorRect;
+
+                // Perform the action
+                action(batch);
+
+                // Draw the batch
+                batch.End();
+            }
+
+            // Reset scissor rectangle
+            batch.GraphicsDevice.ScissorRectangle = oldScissor;
+
+            // Return to last state
+            batch.Begin(SpriteSortMode.BackToFront, oldBlendState, SamplerState.PointClamp, oldStencilState, oldRasterizerState);
+        }
+
+        /// <summary>Multiplies two colors together, returning the third resulting color.</summary>
+        /// <param name="first">The first color.</param>
+        /// <param name="second">The second color.</param>
+        /// <returns>A third color where each component is the product of the same component of the two colors being multiplied.</returns>
+        public static Color Multiply(this Color first, Color second) {
+            float r = (float) first.R * second.R / byte.MaxValue;
+            float g = (float) first.G * second.G / byte.MaxValue;
+            float b = (float) first.B * second.B / byte.MaxValue;
+            float a = (float) first.A * second.A / byte.MaxValue;
+            return new Color(r, g, b, a);
         }
     }
 }

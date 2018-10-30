@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using TehPers.Core.Api.Enums;
-using TehPers.Core.Helpers.Json;
+using TehPers.Core.Json.Serialization;
 
 namespace TehPers.FishingOverhaul.Configs {
 

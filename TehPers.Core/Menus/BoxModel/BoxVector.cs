@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace TehPers.Core.Menus.BoxModel {
-    public struct BoxVector : IEquatable<BoxVector> {
+    public readonly struct BoxVector : IEquatable<BoxVector> {
         public static BoxVector Zero { get; } = new BoxVector(0, 0, 0, 0);
         public static BoxVector Fill { get; } = new BoxVector(0, 0, 1, 1);
 

@@ -77,11 +77,28 @@ namespace TehPers.Core.Helpers.Static {
             }
         }
 
+        /// <summary>Tries to get a value out of a dictionary. If it fails, uses a factory function to generate a new value, returning that instead and adding it to the dictionary.</summary>
+        /// <typeparam name="TKey">The type of key.</typeparam>
+        /// <typeparam name="TValue">The type of value.</typeparam>
+        /// <param name="source">The source dictionary.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="factory">A function which returns a value to put in the dictionary if the key doesn't exist.</param>
+        /// <returns>The existing item with the given key in the source dictionary, or the factory-generated value if the key doesn't already exist.</returns>
+        public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, Func<TValue> factory) {
+            if (source.TryGetValue(key, out TValue value)) {
+                return value;
+            }
+
+            value = factory();
+            source.Add(key, value);
+            return value;
+        }
+
         /// <summary>Creates a new string containing one string repeated any number of times.</summary>
         /// <param name="input">The string to repeat</param>
         /// <param name="count">How many times to repeat it</param>
         /// <returns><see cref="input"/> repeated <see cref="count"/> times</returns>
-        /// <remarks>Based on this SO answer: https://stackoverflow.com/a/3754626/8430206 </remarks>
+        /// <remarks>Based on this SO answer: https://stackoverflow.com/a/3754626</remarks>
         public static string Repeat(this string input, int count) {
             if (string.IsNullOrEmpty(input))
                 return string.Empty;
@@ -93,6 +110,15 @@ namespace TehPers.Core.Helpers.Static {
 
             return builder.ToString();
 
+        }
+
+        /// <summary>Wraps this object instance into an <see cref="IEnumerable{T}"/> consisting of a single item.</summary>
+        /// <typeparam name="T">Type of the object.</typeparam>
+        /// <param name="item">The instance that will be wrapped.</param>
+        /// <returns>An IEnumerable&lt;T&gt; consisting of a single item.</returns>
+        /// <remarks>Based on this SO question: https://stackoverflow.com/q/1577822</remarks>
+        public static IEnumerable<T> Yield<T>(this T item) {
+            yield return item;
         }
     }
 }

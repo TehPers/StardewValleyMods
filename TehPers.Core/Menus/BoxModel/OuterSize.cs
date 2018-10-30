@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace TehPers.Core.Menus.BoxModel {
-    public struct OuterSize : IEquatable<OuterSize> {
+    public readonly struct OuterSize : IEquatable<OuterSize> {
         public static OuterSize Zero { get; } = new OuterSize(0);
 
         /// <summary>Absolute size on the left</summary>

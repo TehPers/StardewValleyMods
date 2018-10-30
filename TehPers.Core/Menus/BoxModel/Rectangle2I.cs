@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 
 namespace TehPers.Core.Menus.BoxModel {
-    public struct Rectangle2I : IEquatable<Rectangle2I> {
+    public readonly struct Rectangle2I : IEquatable<Rectangle2I> {
         /// <summary>The top, left point of this rectangle.</summary>
         public Vector2I Location { get; }
         /// <summary>The size of this rectangle.</summary>
@@ -19,7 +19,7 @@ namespace TehPers.Core.Menus.BoxModel {
             this.Size = size;
         }
 
-        public bool Contains(Vector2I location) {
+        public bool Contains(in Vector2I location) {
             Vector2I bottomRight = this.Location + this.Size;
             return this.Location.X <= location.X && this.Location.Y <= location.Y && bottomRight.X > location.X && bottomRight.Y > location.Y;
         }

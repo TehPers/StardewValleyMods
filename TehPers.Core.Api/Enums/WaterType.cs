@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace TehPers.Core.Api.Enums {
-    /// <summary>The different possible types of bodies of water. To cast to an integer for use in the game, use <see cref="SDVHelpers.ToInt(WaterType)"/></summary>
+    /// <summary>The different possible types of bodies of water.</summary>
     [Flags]
     public enum WaterType : byte {
         /** <summary>Game ID is 1</summary> **/

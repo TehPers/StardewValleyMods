@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using TehPers.Core.Helpers.Json;
+using TehPers.Core.Json.Serialization;
 
 namespace TehPers.FishingOverhaul.Configs {
 
@@ -26,6 +26,12 @@ namespace TehPers.FishingOverhaul.Configs {
 
         [Description("Whether or not to show current streak, chance for treasure, chance for each fish, etc. while fishing.")]
         public bool ShowFishingData { get; set; } = true;
+
+        [Description("The X coordinate of the top left corner of the fishing HUD.")]
+        public int HudTopLeftX { get; set; } = 0;
+
+        [Description("The Y coordinate of the top left corner of the fishing HUD.")]
+        public int HudTopLeftY { get; set; } = 0;
 
         [Description("Settings for streaks.")]
         public ConfigStreak StreakSettings { get; set; } = new ConfigStreak();

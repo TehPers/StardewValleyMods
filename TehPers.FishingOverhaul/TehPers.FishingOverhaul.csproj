@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D6FB713F-ED16-4E8E-80A3-91D539BDE32A}</ProjectGuid>
+    <ProjectGuid>{B0BECB8F-DB4B-4A41-84C0-9DAFEDE2BD12}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TehPers.FishingOverhaul</RootNamespace>
     <AssemblyName>TehPers.FishingOverhaul</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -23,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,11 +33,11 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>lib\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.1.2.0.1\lib\net45\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -69,20 +71,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj">
-      <Project>{6bcd07bd-dd01-46a2-83d8-bca7b4e22de7}</Project>
-      <Name>TehPers.Core.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">
-      <Project>{3559a3f8-0fd3-42cc-8cba-eb9ad9744780}</Project>
-      <Name>TehPers.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TehPers.FishingOverhaul.Api\TehPers.FishingOverhaul.Api.csproj">
-      <Project>{fe4dd854-44e3-4dc3-84e1-a9555b4d4725}</Project>
-      <Name>TehPers.FishingOverhaul.Api</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="i18n\default.json" />
     <None Include="i18n\pt.json" />
     <None Include="manifest.json">
@@ -91,14 +79,36 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
+    <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj">
+      <Project>{63f341d5-2440-4d3f-a11d-0d60fc0d67bd}</Project>
+      <Name>TehPers.Core.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TehPers.Core.Gui\TehPers.Core.Gui.csproj">
+      <Project>{70F21DE3-7C43-45F8-96C0-6398D9420CF6}</Project>
+      <Name>TehPers.Core.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TehPers.Core.Json\TehPers.Core.Json.csproj">
+      <Project>{D3F1F7BB-D094-4FD2-A417-2A824A20440A}</Project>
+      <Name>TehPers.Core.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">
+      <Project>{7b58714f-e332-4973-ab71-dc1dbe52de29}</Project>
+      <Name>TehPers.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TehPers.FishingOverhaul.Api\TehPers.FishingOverhaul.Api.csproj">
+      <Project>{cb430e93-7b42-4fc8-b7b0-f0b13a3ab790}</Project>
+      <Name>TehPers.FishingOverhaul.Api</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
+  <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Pathoschild.Stardew.ModBuildConfig.2.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets'))" />
+    <Error Condition="!Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets'))" />
   </Target>
 </Project>

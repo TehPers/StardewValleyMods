@@ -10,9 +10,14 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.Tools;
-using TehPers.Core;
 using TehPers.Core.Api.Weighted;
+using TehPers.Core.Gui;
+using TehPers.Core.Gui.Components;
+using TehPers.Core.Gui.Units.Base;
+using TehPers.Core.Gui.Units.SDV;
 using TehPers.Core.Helpers.Static;
+using TehPers.Core.Json;
+using TehPers.Core.Rewrite;
 using TehPers.FishingOverhaul.Configs;
 using TehPers.FishingOverhaul.Patches;
 using SObject = StardewValley.Object;
@@ -30,11 +35,9 @@ namespace TehPers.FishingOverhaul {
 
         internal FishingRodOverrider Overrider { get; set; }
         internal HarmonyInstance Harmony { get; private set; }
-        internal TehCoreApi CoreApi { get; private set; }
 
         public override void Entry(IModHelper helper) {
             ModFishing.Instance = this;
-            this.CoreApi = TehCoreApi.Create(this);
             this.Api = new FishingApi();
             //TehMultiplayerApi.GetApi(this).RegisterItem(Objects.Coal, new FishingRodManager());
 
@@ -79,6 +82,8 @@ namespace TehPers.FishingOverhaul {
             this.Api.AddTrashData(new SpecificTrashData(new[] { 797 }, 0.01D, "Submarine")); // Pearl
             this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 0.99D, "Submarine")); // Seaweed
 
+            this.LoadGuis();
+
             /*ControlEvents.KeyPressed += (sender, pressed) => {
                 if (pressed.KeyPressed == Keys.NumPad7) {
                     Menu menu = new Menu(Game1.viewport.Width / 6, Game1.viewport.Height / 6, 2 * Game1.viewport.Width / 3, 2 * Game1.viewport.Height / 3);
@@ -106,16 +111,18 @@ namespace TehPers.FishingOverhaul {
         }
 
         private void LoadConfigs() {
+            IJsonApi jsonApi = this.GetCoreApi().GetJsonApi();
+
             // Load configs
-            this.MainConfig = this.CoreApi.JsonHelper.ReadOrCreate<ConfigMain>("config.json", this.Helper);
-            this.TreasureConfig = this.CoreApi.JsonHelper.ReadOrCreate<ConfigTreasure>("treasure.json", this.Helper, this.MainConfig.MinifyConfigs);
-            this.FishConfig = this.CoreApi.JsonHelper.ReadOrCreate("fish.json", this.Helper, () => {
+            this.MainConfig = jsonApi.ReadOrCreate<ConfigMain>("config.json");
+            this.TreasureConfig = jsonApi.ReadOrCreate<ConfigTreasure>("treasure.json", this.MainConfig.MinifyConfigs);
+            this.FishConfig = jsonApi.ReadOrCreate("fish.json", () => {
                 // Populate fish data
                 ConfigFish config = new ConfigFish();
                 config.PopulateData();
                 return config;
             }, this.MainConfig.MinifyConfigs);
-            this.FishTraitsConfig = this.CoreApi.JsonHelper.ReadOrCreate("fishTraits.json", this.Helper, () => {
+            this.FishTraitsConfig = jsonApi.ReadOrCreate("fishTraits.json", () => {
                 // Populate fish traits data
                 ConfigFishTraits config = new ConfigFishTraits();
                 config.PopulateData();
@@ -124,6 +131,29 @@ namespace TehPers.FishingOverhaul {
 
             // Load config values
             FishingRod.maxTackleUses = ModFishing.Instance.MainConfig.DifficultySettings.MaxTackleUses;
+        }
+
+        private void LoadGuis() {
+            IGuiApi guiApi = this.GetCoreApi().GetGuiApi();
+
+            ControlEvents.KeyReleased += (sender, pressed) => {
+                if (pressed.KeyPressed != Keys.Y) {
+                    return;
+                }
+
+                MenuComponent menu = new MenuComponent {
+                    Location = GuiVectors.Centered,
+                    Size = new ResponsiveVector2<GuiInfo>(new PercentParentUnit(0.75f), new PercentParentUnit(0.75f))
+                };
+
+                menu.AddChild(new LabelComponent(menu) {
+                    Location = new ResponsiveVector2<GuiInfo>(GuiVectors.Centered.X, GuiVectors.SameAsParent.Y),
+                    Scale = Vector2.One * 2f,
+                    Text = "Internet Exploder 11"
+                });
+
+                Game1.activeClickableMenu = guiApi.ConvertMenu(menu);
+            };
         }
 
         #region Events
@@ -137,7 +167,8 @@ namespace TehPers.FishingOverhaul {
             // Draw the fishing GUI to the screen
             float boxWidth = 0;
             float lineHeight = font.LineSpacing;
-            float boxHeight = 0;
+            Vector2 boxTopLeft = new Vector2(this.MainConfig.HudTopLeftX, this.MainConfig.HudTopLeftY);
+            Vector2 boxBottomLeft = boxTopLeft;
 
             // Setup the sprite batch
             SpriteBatch batch = Game1.spriteBatch;
@@ -146,9 +177,9 @@ namespace TehPers.FishingOverhaul {
 
             // Draw streak
             string streakText = ModFishing.Translate("text.streak", this.Api.GetStreak(Game1.player));
-            batch.DrawStringWithShadow(font, streakText, Vector2.Zero, textColor, 1f);
+            batch.DrawStringWithShadow(font, streakText, boxBottomLeft, textColor, 1f);
             boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
-            boxHeight += lineHeight;
+            boxBottomLeft += new Vector2(0, lineHeight);
 
             // Get info on all the possible fish
             IWeightedElement<int?>[] possibleFish = this.Api.GetPossibleFish(Game1.player).ToArray();
@@ -163,15 +194,15 @@ namespace TehPers.FishingOverhaul {
 
             // Draw treasure chance
             string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", this.Api.GetTreasureChance(Game1.player, rod)));
-            batch.DrawStringWithShadow(font, treasureText, new Vector2(0, boxHeight), textColor, 1f);
+            batch.DrawStringWithShadow(font, treasureText, boxBottomLeft, textColor, 1f);
             boxWidth = Math.Max(boxWidth, font.MeasureString(treasureText).X);
-            boxHeight += lineHeight;
+            boxBottomLeft += new Vector2(0, lineHeight);
 
             // Draw trash chance
             string trashText = ModFishing.Translate("text.trash", ModFishing.Translate("text.percent", 1f - fishChance));
-            batch.DrawStringWithShadow(font, trashText, new Vector2(0, boxHeight), textColor, 1f);
+            batch.DrawStringWithShadow(font, trashText, boxBottomLeft, textColor, 1f);
             boxWidth = Math.Max(boxWidth, font.MeasureString(trashText).X);
-            boxHeight += lineHeight;
+            boxBottomLeft += new Vector2(0, lineHeight);
 
             if (possibleFish.Any()) {
                 // Draw info for each fish
@@ -190,32 +221,32 @@ namespace TehPers.FishingOverhaul {
 
                     // Draw fish icon
                     Rectangle source = GameLocation.getSourceRectForObject(fish);
-                    batch.Draw(Game1.objectSpriteSheet, new Vector2(0, boxHeight), source, Color.White, 0.0f, Vector2.Zero, iconScale, SpriteEffects.None, 1F);
+                    batch.Draw(Game1.objectSpriteSheet, boxBottomLeft, source, Color.White, 0.0f, Vector2.Zero, iconScale, SpriteEffects.None, 1F);
                     lineHeight = Math.Max(lineHeight, source.Height * iconScale);
 
                     // Draw fish information
                     string chanceText = ModFishing.Translate("text.percent", fishChance * fishData.GetWeight());
                     string fishText = $"{this.Api.GetFishName(fish)} - {chanceText}";
-                    batch.DrawStringWithShadow(font, fishText, new Vector2(source.Width * iconScale, boxHeight), textColor, 1F);
+                    batch.DrawStringWithShadow(font, fishText, boxBottomLeft + new Vector2(source.Width * iconScale, 0), textColor, 1F);
                     boxWidth = Math.Max(boxWidth, font.MeasureString(fishText).X + source.Width * iconScale);
 
                     // Update destY
-                    boxHeight += lineHeight;
+                    boxBottomLeft += new Vector2(0, lineHeight);
                 }
             }
 
             if (trimmed > 0) {
-                batch.DrawStringWithShadow(font, $"+{trimmed}...", new Vector2(0, boxHeight), textColor, 1f);
-                boxHeight += lineHeight;
+                batch.DrawStringWithShadow(font, $"+{trimmed}...", boxBottomLeft, textColor, 1f);
+                boxBottomLeft += new Vector2(0, lineHeight);
             }
 
             // Draw the background rectangle
-            batch.Draw(DrawHelpers.WhitePixel, new Rectangle(0, 0, (int) boxWidth, (int) boxHeight), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.85F);
+            batch.Draw(DrawHelpers.WhitePixel, new Rectangle((int) boxTopLeft.X, (int) boxTopLeft.Y, (int) boxWidth, (int) boxBottomLeft.Y), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.85F);
 
             // Debug info
             StringBuilder text = new StringBuilder();
             if (text.Length > 0) {
-                batch.DrawStringWithShadow(Game1.smallFont, text.ToString(), new Vector2(0, boxHeight), Color.White, 0.8F);
+                batch.DrawStringWithShadow(Game1.smallFont, text.ToString(), boxBottomLeft, Color.White, 0.8F);
             }
 
             batch.End();

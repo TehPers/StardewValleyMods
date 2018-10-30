@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
-using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Network;
 
 namespace TehPers.Core.Helpers.Static {
     public static class AssortedHelpers {
@@ -20,19 +17,6 @@ namespace TehPers.Core.Helpers.Static {
         /// <param name="fallback">The fallback value if the cast fails</param>
         /// <returns>If the cast succeeds, <see cref="o"/> as <see cref="T"/>, otherwise <see cref="fallback"/></returns>
         public static T As<T>(this object o, T fallback = default(T)) => o is T t ? t : fallback;
-
-        /// <summary>Tries to parse a JSON file and returns null if it fails.</summary>
-        /// <typeparam name="TModel">The type of object to parse into</typeparam>
-        /// <param name="helper">The <see cref="IModHelper"/> associated with the mod</param>
-        /// <param name="file">The file to read</param>
-        /// <returns>A <see cref="TModel"/> if successfully parsed, else null</returns>
-        public static TModel TryReadJsonFile<TModel>(this IModHelper helper, string file) where TModel : class {
-            try {
-                return helper.ReadJsonFile<TModel>(file);
-            } catch (Exception) {
-                return null;
-            }
-        }
 
         /// <summary>Super slow way of casting things to other types. Target type only needs to be known at runtime.</summary>
         /// <param name="obj">The object to cast.</param>
@@ -59,40 +43,6 @@ namespace TehPers.Core.Helpers.Static {
 
         private static TDest GenericCast<TSource, TDest>(TSource obj) where TSource : TDest {
             return obj;
-        }
-
-        public static JsonSerializerSettings Clone(this JsonSerializerSettings source) {
-            return new JsonSerializerSettings {
-                CheckAdditionalContent = source.CheckAdditionalContent,
-                ConstructorHandling = source.ConstructorHandling,
-                Context = source.Context,
-                ContractResolver = source.ContractResolver,
-                Converters = new List<JsonConverter>(source.Converters),
-                Culture = source.Culture,
-                DateFormatHandling = source.DateFormatHandling,
-                DateFormatString = source.DateFormatString,
-                DateParseHandling = source.DateParseHandling,
-                DateTimeZoneHandling = source.DateTimeZoneHandling,
-                DefaultValueHandling = source.DefaultValueHandling,
-                Error = source.Error,
-                EqualityComparer = source.EqualityComparer,
-                Formatting = source.Formatting,
-                FloatFormatHandling = source.FloatFormatHandling,
-                FloatParseHandling = source.FloatParseHandling,
-                MaxDepth = source.MaxDepth,
-                MetadataPropertyHandling = source.MetadataPropertyHandling,
-                MissingMemberHandling = source.MissingMemberHandling,
-                NullValueHandling = source.NullValueHandling,
-                ObjectCreationHandling = source.ObjectCreationHandling,
-                PreserveReferencesHandling = source.PreserveReferencesHandling,
-                ReferenceLoopHandling = source.ReferenceLoopHandling,
-                ReferenceResolverProvider = source.ReferenceResolverProvider,
-                SerializationBinder = source.SerializationBinder,
-                StringEscapeHandling = source.StringEscapeHandling,
-                TypeNameHandling = source.TypeNameHandling,
-                TraceWriter = source.TraceWriter,
-                TypeNameAssemblyFormatHandling = source.TypeNameAssemblyFormatHandling
-            };
         }
 
         /// <summary>Gets a type from the SDV assembly.</summary>

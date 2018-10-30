@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using StardewValley;
-using TehPers.Core.Helpers.Json;
+using TehPers.Core.Json.Serialization;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Configs {

@@ -4,8 +4,8 @@ using System.ComponentModel;
 using StardewModdingAPI;
 using TehPers.Core.Api.Enums;
 using TehPers.Core.Helpers;
-using TehPers.Core.Helpers.Json;
 using TehPers.Core.Helpers.Static;
+using TehPers.Core.Json.Serialization;
 
 namespace TehPers.FishingOverhaul.Configs {
 

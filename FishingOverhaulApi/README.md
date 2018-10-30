@@ -1,2 +1,0 @@
-# Usage
-**Don't use the `TehPers.FishingOverhaul.Api` package.** The package is outdated and I cannot update it currently. Instead, go to [the new API location](https://github.com/TehPers/StardewValleyMods/tree/2.0-dev/TehPers.FishingOverhaul.Api/) and add the API projects to your solution.
