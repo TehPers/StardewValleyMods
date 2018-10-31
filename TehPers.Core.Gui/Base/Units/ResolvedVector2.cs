@@ -1,4 +1,4 @@
-﻿namespace TehPers.Core.Gui.Units.Base {
+﻿namespace TehPers.Core.Gui.Base.Units {
     public readonly struct ResolvedVector2 {
         public float X { get; }
         public float Y { get; }

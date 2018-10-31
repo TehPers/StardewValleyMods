@@ -1,6 +1,6 @@
-﻿using TehPers.Core.Gui.Units.Base;
+﻿using TehPers.Core.Gui.Base.Units;
 
-namespace TehPers.Core.Gui.Units.SDV {
+namespace TehPers.Core.Gui.SDV.Units {
     public class PixelUnits : IUnit<GuiInfo> {
         /// <inheritdoc />
         public float Quantity { get; }

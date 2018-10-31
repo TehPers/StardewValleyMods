@@ -2,11 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TehPers.Core.Enums;
-using TehPers.Core.Gui.Units;
-using TehPers.Core.Gui.Units.Base;
-using TehPers.Core.Gui.Units.SDV;
+using TehPers.Core.Gui.Base.Units;
+using TehPers.Core.Gui.SDV.Units;
 
-namespace TehPers.Core.Gui.Components {
+namespace TehPers.Core.Gui.Base.Components {
     public interface IGuiComponent {
         /// <summary>The location of this component.</summary>
         ResponsiveVector2<GuiInfo> Location { get; }

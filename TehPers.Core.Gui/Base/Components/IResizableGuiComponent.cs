@@ -1,7 +1,7 @@
-﻿using TehPers.Core.Gui.Units.Base;
-using TehPers.Core.Gui.Units.SDV;
+﻿using TehPers.Core.Gui.Base.Units;
+using TehPers.Core.Gui.SDV.Units;
 
-namespace TehPers.Core.Gui.Components {
+namespace TehPers.Core.Gui.Base.Components {
     public interface IResizableGuiComponent : IGuiComponent {
         /// <inheritdoc cref="IGuiComponent.Location"/>
         new ResponsiveVector2<GuiInfo> Location { get; set; }

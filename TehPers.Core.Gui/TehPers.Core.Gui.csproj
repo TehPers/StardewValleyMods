@@ -51,30 +51,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Components\IGuiComponent.cs" />
-    <Compile Include="Components\GuiComponent.cs" />
-    <Compile Include="Components\IResizableGuiComponent.cs" />
-    <Compile Include="Components\LabelComponent.cs" />
-    <Compile Include="Components\MenuComponent.cs" />
-    <Compile Include="Units\SDV\GuiInfo.cs" />
-    <Compile Include="Units\SDV\IGuiUnit.cs" />
-    <Compile Include="Units\SDV\PercentParentSizeUnit.cs" />
-    <Compile Include="Units\SDV\PercentSizeUnit.cs" />
-    <Compile Include="Components\ResizableGuiComponent.cs" />
+    <Compile Include="Base\Components\IGuiComponent.cs" />
+    <Compile Include="SDV\Components\GuiComponent.cs" />
+    <Compile Include="Base\Components\IResizableGuiComponent.cs" />
+    <Compile Include="SDV\Components\LabelComponent.cs" />
+    <Compile Include="SDV\Components\MenuComponent.cs" />
+    <Compile Include="SDV\Units\GuiInfo.cs" />
+    <Compile Include="SDV\Units\IGuiUnit.cs" />
+    <Compile Include="SDV\Units\PercentParentSizeUnit.cs" />
+    <Compile Include="SDV\Units\PercentSizeUnit.cs" />
+    <Compile Include="SDV\Components\ResizableGuiComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GuiApi.cs" />
     <Compile Include="GuiClickableMenu.cs" />
     <Compile Include="IGuiApi.cs" />
-    <Compile Include="Units\Base\ResolvedVector2.cs" />
-    <Compile Include="Units\Base\ResponsiveUnit.cs" />
-    <Compile Include="Units\Base\ResponsiveVector2.cs" />
-    <Compile Include="Units\Base\IUnit.cs" />
-    <Compile Include="Units\SDV\PercentParentUnit.cs" />
-    <Compile Include="Units\SDV\PixelUnits.cs" />
+    <Compile Include="Base\Units\ResolvedVector2.cs" />
+    <Compile Include="Base\Units\ResponsiveUnit.cs" />
+    <Compile Include="Base\Units\ResponsiveVector2.cs" />
+    <Compile Include="Base\Units\IUnit.cs" />
+    <Compile Include="SDV\Units\PercentParentUnit.cs" />
+    <Compile Include="SDV\Units\PixelUnits.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Units\Base\UnitExtensions.cs" />
-    <Compile Include="Units\SDV\ResponsiveGuiUnit.cs" />
-    <Compile Include="Units\SDV\GuiVectors.cs" />
+    <Compile Include="Base\Units\UnitExtensions.cs" />
+    <Compile Include="SDV\Units\GuiUnits.cs" />
+    <Compile Include="SDV\Units\GuiVectors.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">

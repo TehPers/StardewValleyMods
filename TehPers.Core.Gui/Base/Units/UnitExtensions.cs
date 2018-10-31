@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace TehPers.Core.Gui.Units.Base {
+namespace TehPers.Core.Gui.Base.Units {
     public static class UnitExtensions {
 
         /// <summary>Condenses the units down to as few instances of <see cref="IUnit"/> as possible by adding them together.</summary>

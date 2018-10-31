@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TehPers.Core.Enums;
-using TehPers.Core.Gui.Units;
-using TehPers.Core.Gui.Units.Base;
-using TehPers.Core.Gui.Units.SDV;
+using TehPers.Core.Gui.Base.Components;
+using TehPers.Core.Gui.Base.Units;
+using TehPers.Core.Gui.SDV.Units;
 using TehPers.Core.Helpers.Static;
 
-namespace TehPers.Core.Gui.Components {
+namespace TehPers.Core.Gui.SDV.Components {
     public abstract class GuiComponent : IGuiComponent {
         private readonly HashSet<IGuiComponent> _children;
 
@@ -20,16 +19,16 @@ namespace TehPers.Core.Gui.Components {
         public virtual ResponsiveVector2<GuiInfo> Size { get; protected set; } = GuiVectors.SameAsParent;
 
         /// <summary>Distance between the top border of this component and the top of the rectangle children will be drawn in.</summary>
-        protected virtual ResponsiveGuiUnit PaddingTop { get; } = ResponsiveGuiUnit.Zero;
+        protected virtual ResponsiveUnit<GuiInfo> PaddingTop { get; } = GuiUnits.Zero;
 
         /// <summary>Distance between the bottom border of this component and the top of the rectangle children will be drawn in.</summary>
-        protected virtual ResponsiveGuiUnit PaddingBottom { get; } = ResponsiveGuiUnit.Zero;
+        protected virtual ResponsiveUnit<GuiInfo> PaddingBottom { get; } = GuiUnits.Zero;
 
         /// <summary>Distance between the left border of this component and the top of the rectangle children will be drawn in.</summary>
-        protected virtual ResponsiveGuiUnit PaddingLeft { get; } = ResponsiveGuiUnit.Zero;
+        protected virtual ResponsiveUnit<GuiInfo> PaddingLeft { get; } = GuiUnits.Zero;
 
         /// <summary>Distance between the right border of this component and the top of the rectangle children will be drawn in.</summary>
-        protected virtual ResponsiveGuiUnit PaddingRight { get; } = ResponsiveGuiUnit.Zero;
+        protected virtual ResponsiveUnit<GuiInfo> PaddingRight { get; } = GuiUnits.Zero;
 
         /// <inheritdoc />
         public virtual IGuiComponent Parent { get; }
@@ -53,9 +52,6 @@ namespace TehPers.Core.Gui.Components {
             // Calculate the child bounds
             ResolvedVector2 childBoundsLoc = new ResolvedVector2(resolvedLocation.X + resolvedPaddingLeft, resolvedLocation.Y + resolvedPaddingTop);
             ResolvedVector2 childBoundsSize = new ResolvedVector2(resolvedSize.X - resolvedPaddingLeft - resolvedPaddingRight, resolvedSize.Y - resolvedPaddingTop - resolvedPaddingBottom);
-
-            // TODO: Debug
-            //batch.Draw(DrawHelpers.WhitePixel, new Rectangle((int) childBoundsLoc.X, (int) childBoundsLoc.Y, (int) childBoundsSize.X, (int) childBoundsSize.Y), null, Color.Red, 0, Vector2.Zero, SpriteEffects.None, this.GetGlobalDepth(0));
 
             // Draw children
             foreach (IGuiComponent child in this.Children) {

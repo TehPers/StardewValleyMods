@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using TehPers.Core.Gui.Units.Base;
-using TehPers.Core.Gui.Units.SDV;
+using TehPers.Core.Gui.Base.Components;
+using TehPers.Core.Gui.Base.Units;
+using TehPers.Core.Gui.SDV.Units;
 using TehPers.Core.Helpers.Static;
-using xTile.Dimensions;
 
-namespace TehPers.Core.Gui.Components {
+namespace TehPers.Core.Gui.SDV.Components {
     public sealed class LabelComponent : ResizableGuiComponent {
         private SpriteFont _font = Game1.smallFont;
         private Vector2 _charSize = Game1.smallFont.MeasureString("X");

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TehPers.Core.Gui.Units.Base;
-
-namespace TehPers.Core.Gui.Units.SDV {
+﻿namespace TehPers.Core.Gui.SDV.Units {
     public class GuiInfo {
         /// <summary>The resolved units of the parent component of the same type along the same axis.</summary>
         public float ParentUnits { get; }

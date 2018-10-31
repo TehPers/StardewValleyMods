@@ -1,4 +1,4 @@
-﻿namespace TehPers.Core.Gui.Units.Base {
+﻿namespace TehPers.Core.Gui.Base.Units {
     public interface IUnit<TResolutionInfo> {
         /// <summary>The quantity of this unit.</summary>
         float Quantity { get; }

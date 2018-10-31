@@ -1,28 +1,28 @@
-﻿using TehPers.Core.Gui.Units.Base;
+﻿using TehPers.Core.Gui.Base.Units;
 
-namespace TehPers.Core.Gui.Units.SDV {
-    public class PercentSizeUnit : IGuiUnit {
+namespace TehPers.Core.Gui.SDV.Units {
+    public class PercentParentSizeUnit : IGuiUnit {
         /// <inheritdoc />
         public float Quantity { get; }
 
-        public PercentSizeUnit(float quantity) {
+        public PercentParentSizeUnit(float quantity) {
             this.Quantity = quantity;
         }
 
         /// <inheritdoc />
         public float Resolve(GuiInfo info) {
-            return this.Quantity * info.ResolvedSize;
+            return this.Quantity * info.ParentSize;
         }
 
         /// <inheritdoc />
         public IUnit<GuiInfo> Negate() {
-            return new PercentSizeUnit(-this.Quantity);
+            return new PercentParentSizeUnit(-this.Quantity);
         }
 
         /// <inheritdoc />
         public bool TryAdd(IUnit<GuiInfo> other, out IUnit<GuiInfo> sum) {
-            if (other is PercentSizeUnit) {
-                sum = new PercentSizeUnit(this.Quantity + other.Quantity);
+            if (other is PercentParentSizeUnit) {
+                sum = new PercentParentSizeUnit(this.Quantity + other.Quantity);
                 return true;
             }
 
@@ -32,7 +32,7 @@ namespace TehPers.Core.Gui.Units.SDV {
 
         /// <inheritdoc />
         public IUnit<GuiInfo> Multiply(float scalar) {
-            return new PercentSizeUnit(this.Quantity * scalar);
+            return new PercentParentSizeUnit(this.Quantity * scalar);
         }
     }
 }

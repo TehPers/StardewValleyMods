@@ -2,7 +2,7 @@
 using System.Linq;
 using TehPers.Core.Helpers.Static;
 
-namespace TehPers.Core.Gui.Units.Base {
+namespace TehPers.Core.Gui.Base.Units {
     public class ResponsiveVector2<TResolutionInfo> {
         public ResponsiveUnit<TResolutionInfo> X { get; }
         public ResponsiveUnit<TResolutionInfo> Y { get; }

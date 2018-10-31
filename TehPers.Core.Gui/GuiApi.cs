@@ -1,5 +1,5 @@
 ﻿using StardewValley.Menus;
-using TehPers.Core.Gui.Components;
+using TehPers.Core.Gui.Base.Components;
 
 namespace TehPers.Core.Gui {
     internal class GuiApi : IGuiApi {

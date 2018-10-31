@@ -4,9 +4,9 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using TehPers.Core.Enums;
-using TehPers.Core.Gui.Components;
-using TehPers.Core.Gui.Units.Base;
-using TehPers.Core.Gui.Units.SDV;
+using TehPers.Core.Gui.Base.Components;
+using TehPers.Core.Gui.Base.Units;
+using TehPers.Core.Gui.SDV.Units;
 using TehPers.Core.Helpers.Static;
 
 namespace TehPers.Core.Gui {

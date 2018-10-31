@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using TehPers.Core.Gui.Units.Base;
-using TehPers.Core.Gui.Units.SDV;
+using TehPers.Core.Gui.Base.Components;
+using TehPers.Core.Gui.Base.Units;
+using TehPers.Core.Gui.SDV.Units;
 
-namespace TehPers.Core.Gui.Components {
+namespace TehPers.Core.Gui.SDV.Components {
     public abstract class ResizableGuiComponent : GuiComponent, IResizableGuiComponent {
         protected ResizableGuiComponent() { }
         protected ResizableGuiComponent(IGuiComponent parent) : base(parent) { }

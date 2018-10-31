@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using TehPers.Core.Helpers.Static;
 
-namespace TehPers.Core.Gui.Units.Base {
+namespace TehPers.Core.Gui.Base.Units {
     public class ResponsiveUnit<TResolutionInfo> {
         private readonly ImmutableArray<IUnit<TResolutionInfo>> _units;
 

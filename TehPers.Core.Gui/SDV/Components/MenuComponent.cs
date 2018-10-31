@@ -2,24 +2,25 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using TehPers.Core.Enums;
-using TehPers.Core.Gui.Units.Base;
-using TehPers.Core.Gui.Units.SDV;
+using TehPers.Core.Gui.Base.Components;
+using TehPers.Core.Gui.Base.Units;
+using TehPers.Core.Gui.SDV.Units;
 using TehPers.Core.Helpers.Static;
 
-namespace TehPers.Core.Gui.Components {
+namespace TehPers.Core.Gui.SDV.Components {
     public class MenuComponent : ResizableGuiComponent {
 
         /// <inheritdoc />
-        protected override ResponsiveGuiUnit PaddingTop => new ResponsiveGuiUnit(new PixelUnits(Game1.tileSize));
+        protected override ResponsiveUnit<GuiInfo> PaddingTop => new ResponsiveUnit<GuiInfo>(new PixelUnits(Game1.tileSize));
 
         /// <inheritdoc />
-        protected override ResponsiveGuiUnit PaddingBottom => new ResponsiveGuiUnit(new PixelUnits(Game1.tileSize));
+        protected override ResponsiveUnit<GuiInfo> PaddingBottom => new ResponsiveUnit<GuiInfo>(new PixelUnits(Game1.tileSize));
 
         /// <inheritdoc />
-        protected override ResponsiveGuiUnit PaddingLeft => new ResponsiveGuiUnit(new PixelUnits(Game1.tileSize));
+        protected override ResponsiveUnit<GuiInfo> PaddingLeft => new ResponsiveUnit<GuiInfo>(new PixelUnits(Game1.tileSize));
 
         /// <inheritdoc />
-        protected override ResponsiveGuiUnit PaddingRight => new ResponsiveGuiUnit(new PixelUnits(Game1.tileSize));
+        protected override ResponsiveUnit<GuiInfo> PaddingRight => new ResponsiveUnit<GuiInfo>(new PixelUnits(Game1.tileSize));
 
         public MenuComponent() { }
         public MenuComponent(IGuiComponent parent) : base(parent) { }
