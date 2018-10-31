@@ -325,7 +325,7 @@ namespace TehPers.FishingOverhaul {
             }).ToWeighted(kv => kv.Value.GetWeight(who), kv => (int?) kv.Key);
 
             // Include trash
-            IWeightedElement<int?>[] trash = { new WeightedElement<int?>(null, 1) };
+            IEnumerable<IWeightedElement<int?>> trash = new WeightedElement<int?>(null, 1).Yield();
 
             // Combine fish with trash
             return fish.NormalizeTo(fishChance).Concat(trash.NormalizeTo(1 - fishChance));

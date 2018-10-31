@@ -12,9 +12,9 @@ using StardewValley.Network;
 using StardewValley.Tools;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Gui;
-using TehPers.Core.Gui.Components;
-using TehPers.Core.Gui.Units.Base;
-using TehPers.Core.Gui.Units.SDV;
+using TehPers.Core.Gui.Base.Units;
+using TehPers.Core.Gui.SDV.Components;
+using TehPers.Core.Gui.SDV.Units;
 using TehPers.Core.Helpers.Static;
 using TehPers.Core.Json;
 using TehPers.Core.Rewrite;
@@ -182,13 +182,12 @@ namespace TehPers.FishingOverhaul {
             boxBottomLeft += new Vector2(0, lineHeight);
 
             // Get info on all the possible fish
-            IWeightedElement<int?>[] possibleFish = this.Api.GetPossibleFish(Game1.player).ToArray();
-            possibleFish = possibleFish.Where(e => e.Value != null).ToArray();
+            IWeightedElement<int?>[] possibleFish = this.Api.GetPossibleFish(Game1.player).Where(e => e.Value != null).ToArray();
             double fishChance = possibleFish.SumWeights();
 
             // Limit the number of displayed fish
             int trimmed = possibleFish.Length - 5;
-            if (trimmed > 0) {
+            if (trimmed > 1) {
                 possibleFish = possibleFish.Take(5).ToArray();
             }
 
@@ -225,7 +224,7 @@ namespace TehPers.FishingOverhaul {
                     lineHeight = Math.Max(lineHeight, source.Height * iconScale);
 
                     // Draw fish information
-                    string chanceText = ModFishing.Translate("text.percent", fishChance * fishData.GetWeight());
+                    string chanceText = ModFishing.Translate("text.percent", fishData.GetWeight());
                     string fishText = $"{this.Api.GetFishName(fish)} - {chanceText}";
                     batch.DrawStringWithShadow(font, fishText, boxBottomLeft + new Vector2(source.Width * iconScale, 0), textColor, 1F);
                     boxWidth = Math.Max(boxWidth, font.MeasureString(fishText).X + source.Width * iconScale);
