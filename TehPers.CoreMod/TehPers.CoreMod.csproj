@@ -4,16 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CC850ADC-AA20-482F-8623-D760B7ABD318}</ProjectGuid>
+    <ProjectGuid>{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TehPers.Core.Items</RootNamespace>
-    <AssemblyName>TehPers.Core.Items</AssemblyName>
+    <RootNamespace>TehPers.CoreMod</RootNamespace>
+    <AssemblyName>TehPers.CoreMod</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
-    <EnableModDeploy>False</EnableModDeploy>
-    <EnableModZip>False</EnableModZip>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -25,8 +23,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
     <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,7 +33,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
@@ -43,6 +40,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,36 +51,60 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Managed\ApiManagedObject.cs" />
-    <Compile Include="Delegators\DrawingDelegator.cs" />
-    <Compile Include="Delegators\ItemDelegator.cs" />
-    <Compile Include="GuidExtensions.cs" />
-    <Compile Include="Managed\IApiManagedObject.cs" />
-    <Compile Include="IItemApi.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="ItemApi.cs" />
-    <Compile Include="Managed\IStackableObject.cs" />
+    <Compile Include="Api\CSharpX\Collections\ArrayX.cs" />
+    <Compile Include="Api\CSharpX\Collections\CollectionExtensions.cs" />
+    <Compile Include="Api\CSharpX\Collections\IArrayLike.cs" />
+    <Compile Include="Api\CSharpX\Collections\Index.cs" />
+    <Compile Include="Api\CSharpX\Collections\IReadonlyArrayLike.cs" />
+    <Compile Include="Api\CSharpX\Collections\IReadonlySliceable.cs" />
+    <Compile Include="Api\CSharpX\Collections\ISliceable.cs" />
+    <Compile Include="Api\CSharpX\Collections\ISliceableList.cs" />
+    <Compile Include="Api\CSharpX\Collections\ListX.cs" />
+    <Compile Include="Api\CSharpX\Collections\Range.cs" />
+    <Compile Include="Api\CSharpX\Collections\ReadonlySlice.cs" />
+    <Compile Include="Api\CSharpX\Collections\Slice.cs" />
+    <Compile Include="Api\CSharpX\Matching\MatchAllOperator.cs" />
+    <Compile Include="Api\CSharpX\Matching\MatchExtensions.cs" />
+    <Compile Include="Api\CSharpX\Matching\MatchOperator.cs" />
+    <Compile Include="Api\Drawing\TextureInformation.cs" />
+    <Compile Include="Internal\Items\ItemApi.cs" />
+    <Compile Include="Api\Structs\SDateTime.cs" />
+    <Compile Include="Api\Structs\STimeSpan.cs" />
+    <Compile Include="Internal\Drawing\DrawingDelegator.cs" />
+    <Compile Include="Internal\Drawing\DrawingInfo.cs" />
+    <Compile Include="Api\Drawing\IDrawingInfo.cs" />
+    <Compile Include="Api\Items\BuffDescription.cs" />
+    <Compile Include="Api\Items\Category.cs" />
+    <Compile Include="Api\Items\IModObject.cs" />
+    <Compile Include="Internal\Items\ItemDelegator.cs" />
+    <Compile Include="Api\Items\ModFood.cs" />
+    <Compile Include="Api\Items\ModObject.cs" />
+    <Compile Include="Api\Static\Enums\Objects.cs" />
+    <Compile Include="Api\Static\Enums\Season.cs" />
+    <Compile Include="Api\Static\Enums\WaterType.cs" />
+    <Compile Include="Api\Static\Enums\Weather.cs" />
+    <Compile Include="Api\Static\Extensions\DrawingExtensions.cs" />
+    <Compile Include="Api\Static\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Api\Items\IItemApi.cs" />
+    <Compile Include="Api\Static\Extensions\EnumExtensions.cs" />
+    <Compile Include="CoreApi.cs" />
+    <Compile Include="Internal\Drawing\DrawingApi.cs" />
+    <Compile Include="Api\ICoreApi.cs" />
+    <Compile Include="Api\Drawing\IDrawingApi.cs" />
+    <Compile Include="Internal\Items\ItemsAssetEditor.cs" />
+    <Compile Include="ModCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="manifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TehPers.Core.Multiplayer\TehPers.Core.Multiplayer.csproj">
-      <Project>{2606D282-9772-4214-9120-2575DEC9296A}</Project>
-      <Name>TehPers.Core.Multiplayer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">
-      <Project>{7B58714F-E332-4973-AB71-DC1DBE52DE29}</Project>
-      <Name>TehPers.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Rework\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

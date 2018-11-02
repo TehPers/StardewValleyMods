@@ -38,6 +38,9 @@
     <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.1.2.0.1\lib\net45\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,6 +53,8 @@
   <ItemGroup>
     <Compile Include="Collections\MinHeap.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Drawing\DrawingDelegator.cs" />
+    <Compile Include="Drawing\DrawingInfo.cs" />
     <Compile Include="Enums\Alignment.cs" />
     <Compile Include="Enums\MouseButtons.cs" />
     <Compile Include="Events\EventArgsKeyRepeated.cs" />

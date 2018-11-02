@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using StardewModdingAPI;
+using TehPers.Core.Drawing;
 using TehPers.Core.Helpers.Static;
 
 namespace TehPers.Core.Rewrite {
@@ -10,6 +12,8 @@ namespace TehPers.Core.Rewrite {
         /// <param name="owner">The mod that owns the API being requested.</param>
         /// <returns>An instance of <see cref="ITehCoreApi"/> that is unique for this mod.</returns>
         public static ITehCoreApi GetCoreApi(this IMod owner) {
+            DrawingDelegator.PatchIfNeeded();
+
             return ModExtensions._apiRegistry.GetOrAdd(owner, () => {
                 TehCoreApi2 core = new TehCoreApi2(owner);
                 core.Log("Core", "Core API created", LogLevel.Debug);

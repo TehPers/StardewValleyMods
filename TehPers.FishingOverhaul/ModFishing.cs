@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Harmony;
 using Microsoft.Xna.Framework;
@@ -10,6 +11,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.Tools;
+using TehPers.Core.Api.Enums;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Gui;
 using TehPers.Core.Gui.Base.Units;
@@ -82,7 +84,7 @@ namespace TehPers.FishingOverhaul {
             this.Api.AddTrashData(new SpecificTrashData(new[] { 797 }, 0.01D, "Submarine")); // Pearl
             this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 0.99D, "Submarine")); // Seaweed
 
-            this.LoadGuis();
+            // this.LoadGuis();
 
             /*ControlEvents.KeyPressed += (sender, pressed) => {
                 if (pressed.KeyPressed == Keys.NumPad7) {

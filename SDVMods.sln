@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Gui", "TehPers
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.DependencyResolver", "TehPers.DependencyResolver\TehPers.DependencyResolver.csproj", "{DE1D8F58-F37E-4E4D-B28E-D595BFA13E38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.CoreMod", "TehPers.CoreMod\TehPers.CoreMod.csproj", "{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Logistics", "TehPers.Logistics\TehPers.Logistics.csproj", "{2A35037B-B4D5-4645-AF10-AAF1E93139A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +85,14 @@ Global
 		{DE1D8F58-F37E-4E4D-B28E-D595BFA13E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE1D8F58-F37E-4E4D-B28E-D595BFA13E38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE1D8F58-F37E-4E4D-B28E-D595BFA13E38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A35037B-B4D5-4645-AF10-AAF1E93139A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A35037B-B4D5-4645-AF10-AAF1E93139A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A35037B-B4D5-4645-AF10-AAF1E93139A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A35037B-B4D5-4645-AF10-AAF1E93139A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

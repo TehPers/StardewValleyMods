@@ -9,8 +9,8 @@
   "UpdateKeys": [ "Nexus:866" ],
   "Dependencies": [
     {
-      "UniqueID": "TehPers.DependencyResolver",
-      "IsRequired": false
+      "UniqueID": "TehPers.CoreMod",
+      "IsRequired": true
     }
   ]
 }
