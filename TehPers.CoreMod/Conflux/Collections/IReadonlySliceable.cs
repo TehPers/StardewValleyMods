@@ -1,4 +1,4 @@
-﻿namespace TehPers.CoreMod.Api.CSharpX.Collections {
+﻿namespace TehPers.CoreMod.Conflux.Collections {
     public interface IReadonlySliceable<T> : IReadonlyArrayLike<T> {
         /// <summary>Selects a range of elements.</summary>
         /// <param name="range">The range to select. Either use a <see cref="Range"/> object, or use the syntax <c>(start, end)</c>. <see cref="ValueTuple"/> is required for the second syntax.</param>

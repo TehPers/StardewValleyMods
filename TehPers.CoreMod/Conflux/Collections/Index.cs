@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TehPers.CoreMod.Api.CSharpX.Collections {
+namespace TehPers.CoreMod.Conflux.Collections {
     public readonly struct Index {
         private readonly int _value;
 

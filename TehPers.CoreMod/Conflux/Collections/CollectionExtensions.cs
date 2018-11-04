@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TehPers.CoreMod.Api.CSharpX.Collections {
+namespace TehPers.CoreMod.Conflux.Collections {
     public static class CollectionExtensions {
         public static Slice<T> Slice<T>(this IList<T> source, Index start, Index end) => source.Slice(new Range(start, end));
         public static Slice<T> Slice<T>(this IList<T> source, Range range) {

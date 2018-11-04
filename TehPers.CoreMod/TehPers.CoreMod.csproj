@@ -51,21 +51,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\CSharpX\Collections\ArrayX.cs" />
-    <Compile Include="Api\CSharpX\Collections\CollectionExtensions.cs" />
-    <Compile Include="Api\CSharpX\Collections\IArrayLike.cs" />
-    <Compile Include="Api\CSharpX\Collections\Index.cs" />
-    <Compile Include="Api\CSharpX\Collections\IReadonlyArrayLike.cs" />
-    <Compile Include="Api\CSharpX\Collections\IReadonlySliceable.cs" />
-    <Compile Include="Api\CSharpX\Collections\ISliceable.cs" />
-    <Compile Include="Api\CSharpX\Collections\ISliceableList.cs" />
-    <Compile Include="Api\CSharpX\Collections\ListX.cs" />
-    <Compile Include="Api\CSharpX\Collections\Range.cs" />
-    <Compile Include="Api\CSharpX\Collections\ReadonlySlice.cs" />
-    <Compile Include="Api\CSharpX\Collections\Slice.cs" />
-    <Compile Include="Api\CSharpX\Matching\MatchAllOperator.cs" />
-    <Compile Include="Api\CSharpX\Matching\MatchExtensions.cs" />
-    <Compile Include="Api\CSharpX\Matching\MatchOperator.cs" />
+    <Compile Include="Conflux\Collections\ArrayX.cs" />
+    <Compile Include="Conflux\Collections\CollectionExtensions.cs" />
+    <Compile Include="Conflux\Collections\IArrayLike.cs" />
+    <Compile Include="Conflux\Collections\Index.cs" />
+    <Compile Include="Conflux\Collections\IReadonlyArrayLike.cs" />
+    <Compile Include="Conflux\Collections\IReadonlySliceable.cs" />
+    <Compile Include="Conflux\Collections\ISliceable.cs" />
+    <Compile Include="Conflux\Collections\ISliceableList.cs" />
+    <Compile Include="Conflux\Collections\ListX.cs" />
+    <Compile Include="Conflux\Collections\Range.cs" />
+    <Compile Include="Conflux\Collections\ReadonlySlice.cs" />
+    <Compile Include="Conflux\Collections\Slice.cs" />
+    <Compile Include="Conflux\Matching\MatchAllOperator.cs" />
+    <Compile Include="Conflux\Matching\MatchExtensions.cs" />
+    <Compile Include="Conflux\Matching\MatchOperator.cs" />
     <Compile Include="Api\Drawing\TextureInformation.cs" />
     <Compile Include="Internal\Items\ItemApi.cs" />
     <Compile Include="Api\Structs\SDateTime.cs" />
@@ -87,7 +87,7 @@
     <Compile Include="Api\Static\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Api\Items\IItemApi.cs" />
     <Compile Include="Api\Static\Extensions\EnumExtensions.cs" />
-    <Compile Include="CoreApi.cs" />
+    <Compile Include="Internal\CoreApi.cs" />
     <Compile Include="Internal\Drawing\DrawingApi.cs" />
     <Compile Include="Api\ICoreApi.cs" />
     <Compile Include="Api\Drawing\IDrawingApi.cs" />

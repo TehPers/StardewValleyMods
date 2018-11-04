@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TehPers.CoreMod.Api.CSharpX.Collections {
+namespace TehPers.CoreMod.Conflux.Collections {
     public interface IReadonlyArrayLike<T> : IEnumerable<T> {
         /// <summary>The number of elements.</summary>
         int Length { get; }

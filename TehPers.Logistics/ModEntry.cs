@@ -7,6 +7,7 @@ using StardewValley;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Conflux.Collections;
 using TehPers.Logistics.Items;
 using SObject = StardewValley.Object;
 
@@ -16,20 +17,12 @@ namespace TehPers.Logistics {
 
             // Register an event for the first update tick to handle all core API calls
             GameEvents.FirstUpdateTick += (sender, e) => {
-                if (helper.ModRegistry.GetApi<Func<IMod, ICoreApi>>("TehPers.CoreMod") is Func<IMod, ICoreApi> coreApiFactory) {
+                if (helper.ModRegistry.GetApi("TehPers.CoreMod") is Func<IMod, ICoreApi> coreApiFactory) {
                     // Create core API
                     ICoreApi coreApi = coreApiFactory(this);
 
                     // Register custom machines
                     this.RegisterMachines(coreApi);
-                }
-            };
-
-            // TODO: debug
-            ControlEvents.KeyPressed += (sender, pressed) => {
-                if (pressed.KeyPressed == Keys.NumPad3) {
-                    SObject machine = new SObject(Vector2.Zero, 1950, false);
-                    Game1.player.addItemToInventory(machine);
                 }
             };
         }
@@ -42,6 +35,14 @@ namespace TehPers.Logistics {
             TextureInformation textureInfo = new TextureInformation(coreApi.Drawing.WhitePixel, null, Color.Blue);
             StoneConverterMachine stoneConverter = new StoneConverterMachine(this, "stoneConverter", textureInfo);
             itemApi.Register("stoneConverter", stoneConverter);
+
+            // TODO: debug
+            ControlEvents.KeyPressed += (sender, pressed) => {
+                if (pressed.KeyPressed == Keys.NumPad3 && itemApi.TryGetIndex("stoneConverter", out int index)) {
+                    SObject machine = new SObject(Vector2.Zero, index, false);
+                    Game1.player.addItemToInventory(machine);
+                }
+            };
 
             this.Monitor.Log("Done");
         }

@@ -1,21 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace TehPers.CoreMod.Api.CSharpX.Collections {
-    public readonly struct Slice<T> : ISliceable<T> {
+namespace TehPers.CoreMod.Conflux.Collections {
+    public readonly struct ReadonlySlice<T> : IReadonlySliceable<T> {
         private readonly ISliceable<T> _source;
         private readonly int _start;
         public int Length { get; }
 
-        public Slice(ISliceable<T> source, Range range) : this(source, range.Start, range.End) { }
-        public Slice(ISliceable<T> source, Index start, Index end) {
+        public ReadonlySlice(ISliceable<T> source, Range range) : this(source, range.Start, range.End) { }
+        public ReadonlySlice(ISliceable<T> source, Index start, Index end) {
             this._source = source;
             this._start = start.Resolve(source);
             this.Length = end.Resolve(source) - this._start;
         }
 
-        public Slice(ISliceable<T> source) : this(source, 0, source.Length) { }
-        public Slice(ISliceable<T> source, int start, int length) {
+        public ReadonlySlice(ISliceable<T> source) : this(source, 0, source.Length) { }
+        public ReadonlySlice(ISliceable<T> source, int start, int length) {
             this._source = source;
             this._start = start;
             this.Length = length;
@@ -34,24 +34,15 @@ namespace TehPers.CoreMod.Api.CSharpX.Collections {
         }
 
         /// <inheritdoc cref="IArrayLike{T}"/> />
-        public T this[Index index] {
-            get => this._source[index.Resolve(this)];
-            set => this._source[index.Resolve(this)] = value;
-        }
+        public T this[Index index] => this._source[index.Resolve(this)];
 
         /// <inheritdoc />
-        public Slice<T> this[Range range] {
+        public ReadonlySlice<T> this[Range range] {
             get {
                 int rangeStart = range.Start.Resolve(this);
                 int rangeLength = range.End.Resolve(this) - rangeStart;
-                return new Slice<T>(this._source, this._start + rangeStart, rangeLength);
+                return new ReadonlySlice<T>(this._source, this._start + rangeStart, rangeLength);
             }
-        }
-
-        ReadonlySlice<T> IReadonlySliceable<T>.this[Range range] => this[range];
-
-        public static implicit operator ReadonlySlice<T>(Slice<T> source) {
-            return new ReadonlySlice<T>(source._source, source._start, source.Length);
         }
     }
 }

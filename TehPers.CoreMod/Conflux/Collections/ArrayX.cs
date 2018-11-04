@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace TehPers.CoreMod.Api.CSharpX.Collections {
+namespace TehPers.CoreMod.Conflux.Collections {
     public class ArrayX<T> : ISliceable<T> {
         private readonly T[] _source;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using StardewValley;
+using TehPers.CoreMod.Api.CSharpX.Matching;
 using TehPers.CoreMod.Api.Static.Enums;
 using TehPers.CoreMod.Api.Static.Extensions;
 
@@ -22,20 +23,12 @@ namespace TehPers.CoreMod.Api.Structs {
         public int Year => (int) this.TotalYears + 1;
 
         /// <summary>The number of elapsed seasons in the year.</summary>
-        public Season Season {
-            get {
-                switch ((int) this.TotalSeasons % 4) {
-                    case 1:
-                        return Season.Summer;
-                    case 2:
-                        return Season.Fall;
-                    case 3:
-                        return Season.Winter;
-                    default:
-                        return Season.Spring;
-                }
-            }
-        }
+        public Season Season => ((int) this.TotalSeasons % 4).Match<int, Season>()
+            .When(0, Season.Spring)
+            .When(1, Season.Summer)
+            .When(2, Season.Fall)
+            .When(3, Season.Winter)
+            .ElseThrow();
 
         /// <summary>The number of elapsed days in the season.</summary>
         public int DayOfSeason => (int) this.TotalDays % 28 + 1;
@@ -47,21 +40,12 @@ namespace TehPers.CoreMod.Api.Structs {
         public int MinutesOfDay => this.TotalMinutes % 2400;
 
         public SDateTime(int years, Season season, int days = 0, int minutes = 0) {
-            int seasons;
-            switch (season) {
-                case Season.Summer:
-                    seasons = 1;
-                    break;
-                case Season.Fall:
-                    seasons = 2;
-                    break;
-                case Season.Winter:
-                    seasons = 3;
-                    break;
-                default:
-                    seasons = 0;
-                    break;
-            }
+            int seasons = season.Match<Season, int>()
+                .When(Season.Spring, 0)
+                .When(Season.Summer, 1)
+                .When(Season.Fall, 2)
+                .When(Season.Winter, 3)
+                .ElseThrow();
 
             this.TotalMinutes = minutes + days * 2400 + seasons * 28 * 2400 + years * 4 * 28 * 2400;
         }

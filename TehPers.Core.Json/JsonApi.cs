@@ -77,6 +77,7 @@ namespace TehPers.Core.Json {
 
                 // Serialize
                 JsonSerializer.CreateDefault(jsonSettings).Serialize(writer, model);
+                writer.Flush();
             }
         }
 

@@ -1,4 +1,4 @@
-﻿namespace TehPers.CoreMod.Api.CSharpX.Collections {
+﻿namespace TehPers.CoreMod.Conflux.Collections {
     public interface IArrayLike<T> : IReadonlyArrayLike<T> {
         /// <summary>Selects an element.</summary>
         /// <param name="index">The index of the element to select.</param>

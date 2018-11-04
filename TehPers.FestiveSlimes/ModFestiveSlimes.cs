@@ -1,29 +1,63 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Monsters;
-using TehPers.FestiveSlimes.Drawing;
-using TehPers.FestiveSlimes.Items;
+using TehPers.CoreMod.Api;
+using TehPers.CoreMod.Api.Items;
+using BuffDescription = TehPers.CoreMod.Api.Items.BuffDescription;
+using Category = TehPers.CoreMod.Api.Items.Category;
 using SObject = StardewValley.Object;
+using TextureInformation = TehPers.CoreMod.Api.Drawing.TextureInformation;
 
 namespace TehPers.FestiveSlimes {
     public class ModFestiveSlimes : Mod {
         public static ModFestiveSlimes Instance { get; private set; }
         public MonsterAssetLoader MonsterAssets { get; private set; }
+        private static ICoreApi _coreApi;
 
         public override void Entry(IModHelper helper) {
-            this.Monitor.Log("Rustling Jimmies...");
             ModFestiveSlimes.Instance = this;
 
-            // Add asset editor for custom items
-            this.Helper.Content.AssetEditors.Add(new ItemsAssetEditor());
+            GameEvents.FirstUpdateTick += (sender, args) => {
+                if (helper.ModRegistry.GetApi("TehPers.CoreMod") is Func<IMod, ICoreApi> coreFactory) {
+                    ModFestiveSlimes._coreApi = coreFactory(this);
+                    this.InitializeMod();
+                } else {
+                    this.Monitor.Log("Failed to get core API. This mod will be disabled.", LogLevel.Error);
+                }
+            };
+        }
 
+        private void InitializeMod() {
+            this.Monitor.Log("Rustling Jimmies...");
+
+            // Replace slimes
+            this.ReplaceSlimes();
+
+            // Add custom items
+            this.AddItems();
+
+            this.Monitor.Log("Done!");
+        }
+
+        private void AddItems() {
+            // Add candy to the game
+            TextureInformation candyTextureInfo = TextureInformation.FromAssetFile(this.Helper.Content, "assets/candy.png", null, Color.Red);
+            BuffDescription candyBuffs = new BuffDescription(TimeSpan.FromMinutes(2.5)) {
+                Speed = 1
+            };
+            ModFestiveSlimes._coreApi.Items.Register("candy", new ModFood(this, "candy", 20, 5, Category.Trash, candyTextureInfo, false, candyBuffs));
+        }
+
+        private void ReplaceSlimes() {
             // Add asset loader for custom slime textures
             this.MonsterAssets = new MonsterAssetLoader(this);
             this.Helper.Content.AssetLoaders.Add(this.MonsterAssets);
@@ -35,7 +69,7 @@ namespace TehPers.FestiveSlimes {
             SaveEvents.AfterLoad += (sender, args) => this.CheckSeason(ref greenSlime, ref bigSlime);
 
             // Prevent slimes from being tinted when the texture is replaced
-            DrawingDelegator.AddOverride(info => {
+            ModFestiveSlimes._coreApi.Drawing.AddOverride(info => {
                 if (!this.MonsterAssets.Replaced) {
                     return;
                 }
@@ -57,8 +91,6 @@ namespace TehPers.FestiveSlimes {
             target = typeof(Monster).GetMethod(nameof(Monster.getExtraDropItems), BindingFlags.Public | BindingFlags.Instance);
             replacement = typeof(ModFestiveSlimes).GetMethod(nameof(ModFestiveSlimes.Monster_GetExtraDropItemsPostfix), BindingFlags.NonPublic | BindingFlags.Static);
             harmony.Patch(target, postfix: new HarmonyMethod(replacement));
-
-            this.Monitor.Log("Done!");
         }
 
         private void CheckSeason(ref Texture2D greenSlime, ref Texture2D bigSlime) {
@@ -73,8 +105,8 @@ namespace TehPers.FestiveSlimes {
                 return;
             }
 
-            if (Game1.random.NextDouble() < 0.25) {
-                __result.Add(new SObject(Vector2.Zero, ModItems.CANDY_INDEX, 1));
+            if (Game1.random.NextDouble() < 0.25 && ModFestiveSlimes._coreApi.Items.TryGetIndex("candy", out int candyIndex)) {
+                __result.Add(new SObject(Vector2.Zero, candyIndex, 1));
             }
         }
 
@@ -88,12 +120,14 @@ namespace TehPers.FestiveSlimes {
                 return;
             }
 
-            if (Game1.random.NextDouble() < 0.5) {
-                __result.Add(new SObject(Vector2.Zero, ModItems.CANDY_INDEX, 1));
-            }
+            if (ModFestiveSlimes._coreApi.Items.TryGetIndex("candy", out int candyIndex)) {
+                if (Game1.random.NextDouble() < 0.5) {
+                    __result.Add(new SObject(Vector2.Zero, candyIndex, 1));
+                }
 
-            if (Game1.random.NextDouble() < 0.25) {
-                __result.Add(new SObject(Vector2.Zero, ModItems.CANDY_INDEX, 1));
+                if (Game1.random.NextDouble() < 0.25) {
+                    __result.Add(new SObject(Vector2.Zero, candyIndex, 1));
+                }
             }
         }
     }

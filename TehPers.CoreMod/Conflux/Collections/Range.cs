@@ -1,4 +1,4 @@
-﻿namespace TehPers.CoreMod.Api.CSharpX.Collections {
+﻿namespace TehPers.CoreMod.Conflux.Collections {
     public readonly struct Range {
         /// <summary>The start of this range.</summary>
         public Index Start { get; }

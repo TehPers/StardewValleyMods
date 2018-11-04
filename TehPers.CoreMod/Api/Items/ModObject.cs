@@ -45,7 +45,7 @@ namespace TehPers.CoreMod.Api.Items {
             return $"{displayName}/{this.Cost}/{this.Edibility}/{this.Category}/{displayName}/{description}";
         }
 
-        public string GetDataSource() {
+        public virtual string GetDataSource() {
             return this.Category.DataSource;
         }
 

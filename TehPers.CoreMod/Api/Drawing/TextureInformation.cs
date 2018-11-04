@@ -16,10 +16,10 @@ namespace TehPers.CoreMod.Api.Drawing {
             this.Tint = tint;
         }
 
-        public static TextureInformation FromAssetFile(IContentHelper helper, string relativePath) => TextureInformation.FromAssetFile(helper, relativePath, null, Color.White);
-        public static TextureInformation FromAssetFile(IContentHelper helper, string relativePath, Rectangle? sourceRectangle) => TextureInformation.FromAssetFile(helper, relativePath, sourceRectangle, Color.White);
-        public static TextureInformation FromAssetFile(IContentHelper helper, string relativePath, Rectangle? sourceRectangle, Color tint) {
-            Texture2D texture = helper.Load<Texture2D>($"assets/{relativePath}");
+        public static TextureInformation FromAssetFile(IContentHelper helper, string path) => TextureInformation.FromAssetFile(helper, path, null, Color.White);
+        public static TextureInformation FromAssetFile(IContentHelper helper, string path, Rectangle? sourceRectangle) => TextureInformation.FromAssetFile(helper, path, sourceRectangle, Color.White);
+        public static TextureInformation FromAssetFile(IContentHelper helper, string path, Rectangle? sourceRectangle, Color tint) {
+            Texture2D texture = helper.Load<Texture2D>(path);
             return new TextureInformation(texture, sourceRectangle, tint);
         }
     }

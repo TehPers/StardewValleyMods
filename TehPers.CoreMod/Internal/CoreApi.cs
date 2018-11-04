@@ -6,7 +6,7 @@ using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Internal.Drawing;
 using TehPers.CoreMod.Internal.Items;
 
-namespace TehPers.CoreMod {
+namespace TehPers.CoreMod.Internal {
     internal class CoreApi : ICoreApi {
         private readonly Lazy<IDrawingApi> _drawing;
         private readonly Lazy<IItemApi> _items;

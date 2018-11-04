@@ -50,15 +50,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Drawing\DrawingDelegator.cs" />
-    <Compile Include="Drawing\DrawingInfo.cs" />
-    <Compile Include="Items\BuffDescription.cs" />
-    <Compile Include="Items\Category.cs" />
-    <Compile Include="Items\FoodDescription.cs" />
-    <Compile Include="Items\IItemDescription.cs" />
-    <Compile Include="Items\ItemDescription.cs" />
-    <Compile Include="Items\ModItems.cs" />
-    <Compile Include="Items\TextureInformation.cs" />
     <Compile Include="ModFestiveSlimes.cs" />
     <Compile Include="MonsterAssetLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -82,13 +73,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">
-      <Project>{7b58714f-e332-4973-ab71-dc1dbe52de29}</Project>
-      <Name>TehPers.Core</Name>
-    </ProjectReference>
+    <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
+    <ProjectReference Include="..\TehPers.CoreMod\TehPers.CoreMod.csproj">
+      <Project>{5da9f3a3-cffb-4960-b94c-f1df74fd89a5}</Project>
+      <Name>TehPers.CoreMod</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
