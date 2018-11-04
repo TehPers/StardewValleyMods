@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\Drawing\ITextureSourceInfo.cs" />
+    <Compile Include="Internal\Drawing\TextureSourceInfo.cs" />
     <Compile Include="Conflux\Collections\ArrayX.cs" />
     <Compile Include="Conflux\Collections\CollectionExtensions.cs" />
     <Compile Include="Conflux\Collections\IArrayLike.cs" />
@@ -92,6 +94,7 @@
     <Compile Include="Api\ICoreApi.cs" />
     <Compile Include="Api\Drawing\IDrawingApi.cs" />
     <Compile Include="Internal\Items\ItemsAssetEditor.cs" />
+    <Compile Include="Internal\Items\TextureAssetTracker.cs" />
     <Compile Include="ModCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

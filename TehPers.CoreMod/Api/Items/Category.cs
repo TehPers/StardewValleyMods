@@ -3,12 +3,20 @@
         public int Index { get; }
         public string Name { get; }
         public string DataSource { get; }
+        public string TextureSource { get; }
+        public int TileWidth { get; }
+        public int TileHeight { get; }
 
-        public Category(int index, string name, string dataSource = "Data/ObjectInformation") {
+        public Category(int index, string name, string dataSource, string textureSource, int tileWidth, int tileHeight) {
             this.Index = index;
             this.Name = name;
             this.DataSource = dataSource;
+            this.TextureSource = textureSource;
+            this.TileWidth = tileWidth;
+            this.TileHeight = tileHeight;
         }
+
+        public Category(int index, string name) : this(index, name, "Data/ObjectInformation", "Maps/springobjects", 16, 16) {}
 
         public override string ToString() {
             return string.IsNullOrEmpty(this.Name) ? this.Index.ToString() : $"{this.Name} {this.Index}";
@@ -21,7 +29,7 @@
         public static Category Milk { get; } = new Category(-6, "Basic");
         public static Category Cooking { get; } = new Category(-7, "Cooking");
         public static Category Crafting { get; } = new Category(-8, "Crafting");
-        public static Category BigCraftable { get; } = new Category(-9, "Crafting", "Data/BigCraftablesInformation");
+        public static Category BigCraftable { get; } = new Category(-9, "Crafting", "Data/BigCraftablesInformation", "TileSheets/Craftables", 16, 32);
         public static Category Mineral { get; } = new Category(-12, "Minerals");
         public static Category Meat { get; } = new Category(-14, null);
         public static Category Metal { get; } = new Category(-15, "Basic");

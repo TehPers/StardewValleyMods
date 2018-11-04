@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Static.Extensions;
@@ -14,12 +14,12 @@ namespace TehPers.CoreMod.Internal.Items {
         private static readonly Dictionary<int, string> _indexToKey = new Dictionary<int, string>();
         private static bool _drawingOverridden = false;
 
-        public const int STARTING_INDEX = 850;
+        public const int STARTING_INDEX = 100000;
         public static IEnumerable<string> RegisteredKeys => ItemDelegator._modObjects.Keys;
 
-        public static bool Register(string key, IModObject description) {
-            ItemDelegator.OverrideDrawingIfNeeded();
-            return object.Equals(ItemDelegator._modObjects.GetOrAdd(key, () => description), description);
+        public static bool Register(string key, IModObject objectManager, TextureAssetTracker tracker) {
+            ItemDelegator.OverrideDrawingIfNeeded(tracker);
+            return object.Equals(ItemDelegator._modObjects.GetOrAdd(key, () => objectManager), objectManager);
         }
 
         public static bool TryGetIndex(string key, out int index) {
@@ -123,24 +123,45 @@ namespace TehPers.CoreMod.Internal.Items {
             }
         }
 
-        private static void OverrideDrawingIfNeeded() {
+        private static void OverrideDrawingIfNeeded(TextureAssetTracker tracker) {
             if (ItemDelegator._drawingOverridden) {
                 return;
             }
             ItemDelegator._drawingOverridden = true;
-            
+
             DrawingDelegator.AddOverride(info => {
-                // TODO: allow ovverring other texture sources, like TileSheets/Craftables
-                if (info.Texture != Game1.objectSpriteSheet) {
+                // Make sure that only a portion of the texture is being drawn
+                if (!info.SourceRectangle.HasValue) {
                     return;
                 }
 
-                int index = DrawingDelegator.GetIndexForSourceRectangle(info.SourceRectangle ?? default);
-                if (!ItemDelegator._indexToKey.TryGetValue(index, out string key) || !ItemDelegator._modObjects.TryGetValue(key, out IModObject modObject)) {
+                // Try to get the tracked texture name
+                if (!tracker.TryGetTracked(info.Texture, out string textureName)) {
                     return;
                 }
 
-                modObject.OverrideTexture(info);
+                // Get the items that override this texture
+                var possibleMatches = from obj in ItemDelegator._modObjects.Values
+                                      let source = obj.GetTextureSource()
+                                      where tracker.NormalizeAssetName(source.TextureName) == textureName
+                                      let index = DrawingDelegator.GetIndexForSourceRectangle(info.SourceRectangle ?? default, source.TileWidth, source.TileHeight)
+                                      select new { Index = index, ModObject = obj };
+
+                foreach (var possibleMatch in possibleMatches) {
+                    // Try to get the key of the mod object associated with this index
+                    if (!ItemDelegator._indexToKey.TryGetValue(possibleMatch.Index, out string key)) {
+                        continue;
+                    }
+
+                    // Try to get the mod object associated with this key
+                    if (!ItemDelegator._modObjects.TryGetValue(key, out IModObject modObject)) {
+                        continue;
+                    }
+
+                    // Override the drawing call
+                    modObject.OverrideTexture(info);
+                    return;
+                }
             });
         }
     }

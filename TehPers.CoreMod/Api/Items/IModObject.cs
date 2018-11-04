@@ -15,6 +15,10 @@ namespace TehPers.CoreMod.Api.Items {
         /// <returns>The name of the data file this object's entry should be added to.</returns>
         string GetDataSource();
 
+        /// <summary>Gets information about what to patch to correctly draw this object.</summary>
+        /// <returns>Information about this object's normal source texture.</returns>
+        ITextureSourceInfo GetTextureSource();
+
         /// <summary>Overrides the drawing information to properly draw the object.</summary>
         /// <param name="info">The drawing information that should be updated.</param>
         void OverrideTexture(IDrawingInfo info);

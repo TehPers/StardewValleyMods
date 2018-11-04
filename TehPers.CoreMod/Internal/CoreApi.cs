@@ -8,6 +8,7 @@ using TehPers.CoreMod.Internal.Items;
 
 namespace TehPers.CoreMod.Internal {
     internal class CoreApi : ICoreApi {
+        private readonly TextureAssetTracker _tracker;
         private readonly Lazy<IDrawingApi> _drawing;
         private readonly Lazy<IItemApi> _items;
 
@@ -15,10 +16,11 @@ namespace TehPers.CoreMod.Internal {
         public IDrawingApi Drawing => this._drawing.Value;
         public IItemApi Items => this._items.Value;
 
-        public CoreApi(IMod owner) {
+        public CoreApi(IMod owner, TextureAssetTracker tracker) {
+            this._tracker = tracker;
             this.Owner = owner;
             this._drawing = new Lazy<IDrawingApi>(() => new DrawingApi(this));
-            this._items = new Lazy<IItemApi>(() => new ItemApi(this));
+            this._items = new Lazy<IItemApi>(() => new ItemApi(this, tracker));
         }
     }
 }

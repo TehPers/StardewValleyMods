@@ -1,6 +1,7 @@
 ﻿using StardewModdingAPI;
 using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Static.Extensions;
+using TehPers.CoreMod.Internal.Drawing;
 
 namespace TehPers.CoreMod.Api.Items {
     public class ModObject : IModObject {
@@ -45,8 +46,14 @@ namespace TehPers.CoreMod.Api.Items {
             return $"{displayName}/{this.Cost}/{this.Edibility}/{this.Category}/{displayName}/{description}";
         }
 
-        public virtual string GetDataSource() {
+        /// <inheritdoc />
+        public string GetDataSource() {
             return this.Category.DataSource;
+        }
+
+        /// <inheritdoc />
+        public ITextureSourceInfo GetTextureSource() {
+            return new TextureSourceInfo(this.Category.TextureSource, this.Category.TileWidth, this.Category.TileHeight);
         }
 
         /// <inheritdoc />
@@ -54,7 +61,7 @@ namespace TehPers.CoreMod.Api.Items {
             info.SetSource(this.TextureInfo.Texture, this.TextureInfo.SourceRectangle);
 
             // Multiply tint colors
-            info.SetTint(info.Tint.Multiply(this.TextureInfo.Tint));
+            info.AddTint(this.TextureInfo.Tint);
         }
     }
 }

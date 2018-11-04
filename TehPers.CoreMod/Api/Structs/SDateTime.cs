@@ -76,7 +76,7 @@ namespace TehPers.CoreMod.Api.Structs {
 
         public static SDateTime operator +(SDateTime first, STimeSpan second) => new SDateTime(0, 0, 0, first.TotalMinutes + second.TotalMinutes);
         public static SDateTime operator -(SDateTime first, STimeSpan second) => new SDateTime(0, 0, 0, first.TotalMinutes - second.TotalMinutes);
-        public static SDateTime operator -(SDateTime first, SDateTime second) => new SDateTime(0, 0, 0, first.TotalMinutes - second.TotalMinutes);
+        public static STimeSpan operator -(SDateTime first, SDateTime second) => new STimeSpan(first.TotalMinutes - second.TotalMinutes);
         public static bool operator >(SDateTime first, SDateTime second) => first.CompareTo(second) > 0;
         public static bool operator >=(SDateTime first, SDateTime second) => first.CompareTo(second) >= 0;
         public static bool operator <(SDateTime first, SDateTime second) => first.CompareTo(second) < 0;
