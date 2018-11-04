@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace TehPers.CoreMod.Api.CSharpX.Matching {
+namespace TehPers.CoreMod.Conflux.Matching {
     public readonly ref struct MatchOperator<TSource, TResult> {
         private readonly TSource _source;
         private readonly TResult _result;

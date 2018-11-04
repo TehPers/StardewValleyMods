@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TehPers.CoreMod.Api.CSharpX.Matching {
+namespace TehPers.CoreMod.Conflux.Matching {
     public readonly ref struct MatchAllOperator<TSource, TResult> {
         private readonly IEnumerable<(TSource source, TResult result, bool matched)> _source;
 

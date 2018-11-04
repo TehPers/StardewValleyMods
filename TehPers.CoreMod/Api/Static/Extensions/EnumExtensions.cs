@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StardewModdingAPI.Utilities;
-using TehPers.CoreMod.Api.CSharpX.Matching;
 using TehPers.CoreMod.Api.Static.Enums;
+using TehPers.CoreMod.Conflux.Matching;
 
 namespace TehPers.CoreMod.Api.Static.Extensions {
     public static class EnumExtensions {

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace TehPers.CoreMod.Api.CSharpX.Matching {
+namespace TehPers.CoreMod.Conflux.Matching {
     public static class MatchExtensions {
 
         /// <summary>Maps this value to another value through matching operators.</summary>

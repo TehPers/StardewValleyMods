@@ -1,8 +1,8 @@
 ﻿using System;
 using StardewValley;
-using TehPers.CoreMod.Api.CSharpX.Matching;
 using TehPers.CoreMod.Api.Static.Enums;
 using TehPers.CoreMod.Api.Static.Extensions;
+using TehPers.CoreMod.Conflux.Matching;
 
 namespace TehPers.CoreMod.Api.Structs {
     public readonly struct SDateTime : IComparable<SDateTime> {
