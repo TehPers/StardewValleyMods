@@ -27,21 +27,8 @@ namespace TehPers.CoreMod.Internal.Items {
             return globalKey;
         }
 
-        public int? GetIndex(string key) {
-            if (ItemDelegator.TryGetIndex(key, out int localIndex)) {
-                return localIndex;
-            }
-
-            return ItemDelegator.TryGetIndex(this.LocalToGlobal(key), out int index) ? index : (int?) null;
-        }
-
         public bool TryGetIndex(string key, out int index) {
-            if (ItemDelegator.TryGetIndex(key, out int localIndex)) {
-                index = localIndex;
-                return true;
-            }
-
-            return ItemDelegator.TryGetIndex(this.LocalToGlobal(key), out index);
+            return ItemDelegator.TryGetIndex(key, out index) || ItemDelegator.TryGetIndex(this.LocalToGlobal(key), out index);
         }
 
         public IEnumerable<string> GetRegisteredKeys() {

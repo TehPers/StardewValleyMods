@@ -53,7 +53,7 @@ namespace TehPers.CoreMod.Api.Items {
 
         /// <inheritdoc />
         public ITextureSourceInfo GetTextureSource() {
-            return new TextureSourceInfo(this.Category.TextureSource, this.Category.TileWidth, this.Category.TileHeight);
+            return this.Category.TextureInfo;
         }
 
         /// <inheritdoc />

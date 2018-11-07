@@ -14,7 +14,6 @@ using SObject = StardewValley.Object;
 namespace TehPers.Logistics {
     public class ModEntry : Mod {
         public override void Entry(IModHelper helper) {
-
             // Register an event for the first update tick to handle all core API calls
             GameEvents.FirstUpdateTick += (sender, e) => {
                 if (helper.ModRegistry.GetApi("TehPers.CoreMod") is Func<IMod, ICoreApi> coreApiFactory) {
@@ -44,11 +43,13 @@ namespace TehPers.Logistics {
                 }
             };
 
+            GraphicsEvents.OnPreRenderHudEvent += (sender, args) => {
+                if (Game1.currentLocation != null && Game1.player?.ActiveObject != null) {
+                    Game1.drawPlayerHeldObject(Game1.player);
+                }
+            };
+
             this.Monitor.Log("Done");
         }
-    }
-
-    internal static class MachineDelegator {
-        private static bool _patched = false;
     }
 }

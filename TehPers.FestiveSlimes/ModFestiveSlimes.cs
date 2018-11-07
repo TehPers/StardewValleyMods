@@ -45,12 +45,6 @@ namespace TehPers.FestiveSlimes {
             // Add custom items
             this.AddItems();
 
-            ControlEvents.KeyReleased += (sender, pressed) => {
-                if (ModFestiveSlimes._coreApi.Items.TryGetIndex("candy", out int index)) {
-                    Game1.player.addItemToInventory(new SObject(Vector2.Zero, index, 1));
-                }
-            };
-
             this.Monitor.Log("Done!");
         }
 

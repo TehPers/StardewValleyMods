@@ -8,13 +8,7 @@ namespace TehPers.CoreMod.Api.Items {
         /// <returns>The global key associated with the type of object registered.</returns>
         string Register(string localKey, IModObject objectManager);
 
-        /// <summary>Gets the index associated with a particular key.</summary>
-        /// <param name="key">The local or global key of the type of object to get the index of.</param>
-        /// <returns>The index associated with the given key, or <c>null</c> if not found.</returns>
-        /// <remarks>Checks if it matches a local key, then check for a global key.</remarks>
-        int? GetIndex(string key);
-
-        /// <summary>Tries to get the index associated with a particular key.</summary>
+        /// <summary>Tries to get the index associated with a particular key. An item might not have an index even if it is registered for several reasons: the player might not be in game yet, the host has disabled the item, or not all players have the item registered.</summary>
         /// <param name="key">The local or global key of the type of object to get the index of.</param>
         /// <param name="index">The index associated with the given key.</param>
         /// <returns>True if the key is registered and an index was found, false otherwise.</returns>

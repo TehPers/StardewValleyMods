@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Static.Extensions;
 using TehPers.CoreMod.Internal.Drawing;
@@ -64,7 +67,7 @@ namespace TehPers.CoreMod.Internal.Items {
             // Check for any items in the save that aren't registered
             string[] notRegistered = saveIds.Keys.Except(ItemDelegator._keyToIndex.Keys).ToArray();
             if (notRegistered.Any()) {
-                mod.Monitor.Log("Some items were detected in the save, but not registed:", LogLevel.Warn);
+                mod.Monitor.Log("Some items were detected in the save, but not registered:", LogLevel.Warn);
 
                 foreach (string missingKey in notRegistered) {
                     mod.Monitor.Log($" - {missingKey}", LogLevel.Warn);
@@ -131,7 +134,7 @@ namespace TehPers.CoreMod.Internal.Items {
 
             DrawingDelegator.AddOverride(info => {
                 // Make sure that only a portion of the texture is being drawn
-                if (!info.SourceRectangle.HasValue) {
+                if (!(info.SourceRectangle is Rectangle sourceRectangle)) {
                     return;
                 }
 
@@ -141,20 +144,22 @@ namespace TehPers.CoreMod.Internal.Items {
                 }
 
                 // Get the items that override this texture
-                var possibleMatches = from obj in ItemDelegator._modObjects.Values
-                                      let source = obj.GetTextureSource()
-                                      where tracker.NormalizeAssetName(source.TextureName) == textureName
-                                      let index = DrawingDelegator.GetIndexForSourceRectangle(info.SourceRectangle ?? default, source.TileWidth, source.TileHeight)
-                                      select new { Index = index, ModObject = obj };
+                foreach (IModObject modObject in ItemDelegator._modObjects.Values) {
+                    ITextureSourceInfo textureInfo = modObject.GetTextureSource();
+                    if (!string.Equals(textureInfo.TextureName, textureName, StringComparison.OrdinalIgnoreCase)) {
+                        continue;
+                    }
 
-                foreach (var possibleMatch in possibleMatches) {
+                    // Get the index for this source rectangle
+                    int index = textureInfo.GetIndexFromUV(sourceRectangle.X, sourceRectangle.Y);
+
                     // Try to get the key of the mod object associated with this index
-                    if (!ItemDelegator._indexToKey.TryGetValue(possibleMatch.Index, out string key)) {
+                    if (!ItemDelegator._indexToKey.TryGetValue(index, out string key)) {
                         continue;
                     }
 
                     // Try to get the mod object associated with this key
-                    if (!ItemDelegator._modObjects.TryGetValue(key, out IModObject modObject)) {
+                    if (!ItemDelegator._modObjects.TryGetValue(key, out IModObject obj) || obj != modObject) {
                         continue;
                     }
 

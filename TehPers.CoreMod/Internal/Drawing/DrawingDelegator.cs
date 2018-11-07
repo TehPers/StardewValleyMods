@@ -117,7 +117,7 @@ namespace TehPers.CoreMod.Internal.Drawing {
             Rectangle sourceBounds = sourceRectangle ?? texture.Bounds;
             Vector2 scaleVector = new Vector2((float) destinationRectangle.Width / sourceBounds.Width, (float) destinationRectangle.Height / sourceBounds.Height);
             return !DrawingDelegator.DrawReplaced(texture, sourceRectangle, color, scaleVector, info => {
-                Rectangle dest = new Rectangle(destinationRectangle.X, destinationRectangle.Y, (int) (sourceBounds.Width * info.Scale.X), (int) (sourceBounds.Height * info.Scale.Y));
+                Rectangle dest = new Rectangle(destinationRectangle.X, destinationRectangle.Y, (int) info.Scale.X, (int) info.Scale.Y);
                 Vector2 newOrigin = new Vector2(origin.X * scaleVector.X / info.Scale.X, origin.Y * scaleVector.Y / info.Scale.Y);
                 __instance.Draw(info.Texture, dest, info.SourceRectangle, info.Tint, rotation, newOrigin, effects, layerDepth);
             });
@@ -166,13 +166,6 @@ namespace TehPers.CoreMod.Internal.Drawing {
 
             // Return whether it was handled
             return true;
-        }
-
-        public static int GetIndexForSourceRectangle(Rectangle sourceRectangle, int tileWidth = 16, int tileHeight = 16) {
-            int x = sourceRectangle.X / tileWidth;
-            int y = sourceRectangle.Y / tileHeight;
-            int w = Game1.objectSpriteSheet.Width / tileWidth;
-            return y * w + x;
         }
 
         public static Rectangle GetSourceRectangleForIndex(int index, int tileWidth = 16, int tileHeight = 16) {

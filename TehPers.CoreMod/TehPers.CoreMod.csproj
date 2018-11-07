@@ -52,7 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\Drawing\ITextureSourceInfo.cs" />
-    <Compile Include="Internal\Drawing\TextureSourceInfo.cs" />
+    <Compile Include="Internal\Drawing\CraftablesTextureInfo.cs" />
+    <Compile Include="Internal\Drawing\SpringObjectsTextureInfo.cs" />
     <Compile Include="Conflux\Collections\ArrayX.cs" />
     <Compile Include="Conflux\Collections\CollectionExtensions.cs" />
     <Compile Include="Conflux\Collections\IArrayLike.cs" />
