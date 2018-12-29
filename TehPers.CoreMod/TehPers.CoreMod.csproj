@@ -38,11 +38,14 @@
     <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lib.Harmony.1.2.0.1\lib\net45\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    <Reference Include="Sprache, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sprache.2.2.0\lib\net45\Sprache.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,51 +54,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\Drawing\ITextureSourceInfo.cs" />
-    <Compile Include="Internal\Drawing\CraftablesTextureInfo.cs" />
-    <Compile Include="Internal\Drawing\SpringObjectsTextureInfo.cs" />
-    <Compile Include="Conflux\Collections\ArrayX.cs" />
-    <Compile Include="Conflux\Collections\CollectionExtensions.cs" />
-    <Compile Include="Conflux\Collections\IArrayLike.cs" />
-    <Compile Include="Conflux\Collections\Index.cs" />
-    <Compile Include="Conflux\Collections\IReadonlyArrayLike.cs" />
-    <Compile Include="Conflux\Collections\IReadonlySliceable.cs" />
-    <Compile Include="Conflux\Collections\ISliceable.cs" />
-    <Compile Include="Conflux\Collections\ISliceableList.cs" />
-    <Compile Include="Conflux\Collections\ListX.cs" />
-    <Compile Include="Conflux\Collections\Range.cs" />
-    <Compile Include="Conflux\Collections\ReadonlySlice.cs" />
-    <Compile Include="Conflux\Collections\Slice.cs" />
-    <Compile Include="Conflux\Matching\MatchAllOperator.cs" />
-    <Compile Include="Conflux\Matching\MatchExtensions.cs" />
-    <Compile Include="Conflux\Matching\MatchOperator.cs" />
-    <Compile Include="Api\Drawing\TextureInformation.cs" />
-    <Compile Include="Internal\Items\ItemApi.cs" />
-    <Compile Include="Api\Structs\SDateTime.cs" />
-    <Compile Include="Api\Structs\STimeSpan.cs" />
-    <Compile Include="Internal\Drawing\DrawingDelegator.cs" />
-    <Compile Include="Internal\Drawing\DrawingInfo.cs" />
-    <Compile Include="Api\Drawing\IDrawingInfo.cs" />
-    <Compile Include="Api\Items\BuffDescription.cs" />
-    <Compile Include="Api\Items\Category.cs" />
-    <Compile Include="Api\Items\IModObject.cs" />
-    <Compile Include="Internal\Items\ItemDelegator.cs" />
-    <Compile Include="Api\Items\ModFood.cs" />
-    <Compile Include="Api\Items\ModObject.cs" />
-    <Compile Include="Api\Static\Enums\Objects.cs" />
-    <Compile Include="Api\Static\Enums\Season.cs" />
-    <Compile Include="Api\Static\Enums\WaterType.cs" />
-    <Compile Include="Api\Static\Enums\Weather.cs" />
-    <Compile Include="Api\Static\Extensions\DrawingExtensions.cs" />
-    <Compile Include="Api\Static\Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Api\Items\IItemApi.cs" />
-    <Compile Include="Api\Static\Extensions\EnumExtensions.cs" />
-    <Compile Include="Internal\CoreApi.cs" />
-    <Compile Include="Internal\Drawing\DrawingApi.cs" />
-    <Compile Include="Api\ICoreApi.cs" />
-    <Compile Include="Api\Drawing\IDrawingApi.cs" />
-    <Compile Include="Internal\Items\ItemsAssetEditor.cs" />
-    <Compile Include="Internal\Items\TextureAssetTracker.cs" />
+    <Compile Include="Drawing\CraftablesTextureInfo.cs" />
+    <Compile Include="Drawing\SpringObjectsTextureInfo.cs" />
+    <Compile Include="Items\ItemApi.cs" />
+    <Compile Include="Drawing\DrawingDelegator.cs" />
+    <Compile Include="Drawing\DrawingInfo.cs" />
+    <Compile Include="Items\ItemDelegator.cs" />
+    <Compile Include="CoreApi.cs" />
+    <Compile Include="Drawing\DrawingApi.cs" />
+    <Compile Include="Items\ItemsAssetEditor.cs" />
+    <Compile Include="Items\Machines\LocationPosition.cs" />
+    <Compile Include="Items\TextureAssetTracker.cs" />
+    <Compile Include="Items\Machines\MachineDelegator.cs" />
+    <Compile Include="Items\Machines\MachineInformation.cs" />
     <Compile Include="ModCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -108,7 +79,12 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\TehPers.CoreMod.Api\TehPers.CoreMod.Api.csproj">
+      <Project>{debf868c-fb0b-4b20-ba7f-afacf17c85aa}</Project>
+      <Name>TehPers.CoreMod.Api</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

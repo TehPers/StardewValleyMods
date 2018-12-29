@@ -48,16 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Items\ModCraftable.cs" />
     <Compile Include="StoneConverterMachine.cs" />
-    <Compile Include="Machines\IMachineInformation.cs" />
-    <Compile Include="Machines\IMachine.cs" />
     <Compile Include="Items\ModItems.cs" />
-    <Compile Include="Machines\ItemRequest.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SDateTime.cs" />
-    <Compile Include="STimeSpan.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="i18n\default.json" />
@@ -70,6 +64,10 @@
     <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\TehPers.CoreMod.Api\TehPers.CoreMod.Api.csproj">
+      <Project>{DEBF868C-FB0B-4B20-BA7F-AFACF17C85AA}</Project>
+      <Name>TehPers.CoreMod.Api</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TehPers.CoreMod\TehPers.CoreMod.csproj">
       <Project>{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5}</Project>
       <Name>TehPers.CoreMod</Name>

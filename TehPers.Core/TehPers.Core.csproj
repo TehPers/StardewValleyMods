@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\ImmutableArray.cs" />
+    <Compile Include="Collections\ImmutableExtensions.cs" />
     <Compile Include="Collections\MinHeap.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Drawing\DrawingDelegator.cs" />

@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using Harmony;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Static.Extensions;
+using TehPers.CoreMod.Drawing;
 using TehPers.CoreMod.Internal;
-using TehPers.CoreMod.Internal.Drawing;
-using TehPers.CoreMod.Internal.Items;
+using TehPers.CoreMod.Items;
+using TehPers.CoreMod.Items.Machines;
 using SObject = StardewValley.Object;
 
 namespace TehPers.CoreMod {
     public class ModCore : Mod {
         private readonly Dictionary<IMod, ICoreApi> _coreApis = new Dictionary<IMod, ICoreApi>();
-        private TextureAssetTracker _tracker;
 
         public ModCore() {
             // Patch needs to happen in constructor otherwise it doesn't work with Better Artisan Good Icons for some reason.
             // If that mod patches SObject.drawWhenHeld before this mod patches SpriteBatch.Draw, then the items don't appear
             // in the farmer's hands when held.
             DrawingDelegator.PatchIfNeeded();
+
+            // Also do other patches here because why not
+            MachineDelegator.PatchIfNeeded();
         }
 
         public override void Entry(IModHelper helper) {
@@ -33,8 +31,11 @@ namespace TehPers.CoreMod {
             helper.Content.AssetEditors.Add(assetEditor);
 
             // Create texture asset tracker
-            this._tracker = new TextureAssetTracker(helper.Content);
-            helper.Content.AssetEditors.Add(this._tracker);
+            TextureAssetTracker tracker = new TextureAssetTracker(helper.Content);
+            helper.Content.AssetEditors.Add(tracker);
+
+            // Start overriding item draw calls
+            ItemDelegator.OverrideDrawingIfNeeded(tracker);
 
             SaveEvents.AfterLoad += (sender, args) => {
                 // Load all the key <-> index mapping for this save
@@ -57,11 +58,9 @@ namespace TehPers.CoreMod {
             this.Monitor.Log("Core mod loaded!", LogLevel.Info);
         }
 
-        private static void EmptyPatch() { }
-
         public override object GetApi() {
             // TODO: encapsulate in new type
-            return new Func<IMod, ICoreApi>(mod => this._coreApis.GetOrAdd(mod, () => new CoreApi(mod, this._tracker)));
+            return new Func<IMod, ICoreApi>(mod => this._coreApis.GetOrAdd(mod, () => new CoreApi(mod)));
         }
     }
 }

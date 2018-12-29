@@ -1,19 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Items.Machines;
 using TehPers.CoreMod.Api.Static.Enums;
 using TehPers.CoreMod.Api.Static.Extensions;
-using TehPers.Logistics.Items;
-using TehPers.Logistics.Machines;
+using TehPers.CoreMod.Api.Structs;
+using Object = StardewValley.Object;
 
 namespace TehPers.Logistics {
     public class StoneConverterMachine : ModCraftable, IMachine {
         public StoneConverterMachine(IMod owner, string rawName, TextureInformation textureInfo) : base(owner, rawName, 500, textureInfo) { }
 
-        public IEnumerable<IEnumerable<ItemRequest>> Accept(IMachineInformation machineInfo, IEnumerable<ItemRequest> items, Vector2 inputTile, out MachineAction doAccept) {
+        public void AfterDraw(IMachineInformation machineInformation, SpriteBatch spriteBatch, int x, int y) { }
+
+        public IEnumerable<IEnumerable<ObjectRequest>> Accept(IMachineInformation machineInfo, IEnumerable<ObjectRequest> items, Vector2 inputTile, out MachineAction doAccept) {
             State state = machineInfo.GetState<State>();
 
             // Check if already processing
@@ -23,19 +29,19 @@ namespace TehPers.Logistics {
             }
 
             // Get all available stone
-            IEnumerable<ItemRequest> stone = items.Where(i => i.Item.ParentSheetIndex == Objects.Stone);
+            IEnumerable<ObjectRequest> stone = items.Where(i => i.Item.ParentSheetIndex == Objects.Stone);
 
             // Create requests for up to 100 stone
-            List<ItemRequest> requests = new List<ItemRequest>();
+            List<ObjectRequest> requests = new List<ObjectRequest>();
             int remaining = 100;
-            foreach (ItemRequest request in stone) {
+            foreach (ObjectRequest request in stone) {
                 // Create a new request for stone
                 if (request.Quantity <= remaining) {
                     // Requests are structs, so it's fine to just pass it around like this
                     requests.Add(request);
                     remaining -= request.Quantity;
                 } else {
-                    requests.Add(new ItemRequest(request.Item, remaining));
+                    requests.Add(new ObjectRequest(request.Item, remaining));
                     remaining = 0;
                 }
 
@@ -57,7 +63,7 @@ namespace TehPers.Logistics {
             return null;
         }
 
-        public IEnumerable<IEnumerable<ItemRequest>> Eject(IMachineInformation machineInfo, IEnumerable<ItemRequest> items, Vector2 outputTile, out MachineAction doEject) {
+        public IEnumerable<IEnumerable<ObjectRequest>> Eject(IMachineInformation machineInfo, IEnumerable<ObjectRequest> items, Vector2 outputTile, out MachineAction doEject) {
             State state = machineInfo.GetState<State>();
 
             // Check if not done
@@ -70,12 +76,18 @@ namespace TehPers.Logistics {
             doEject = payload => state.Processing = false;
 
             // Return a new diamond payload
-            return new ItemRequest(new Object(Vector2.Zero, Objects.Diamond, 1)).Yield().Yield();
+            return new ObjectRequest(new Object(Vector2.Zero, Objects.Diamond, 1)).Yield().Yield();
         }
+
+        public void Placed(IMachineInformation machineInfo) {
+            machineInfo.SetState(new State());
+        }
+
+        public void Removed(IMachineInformation machineInfo) { }
 
         public void UpdateTick(IMachineInformation machineInfo) { }
 
-        public IEnumerable<ItemRequest> InsertItem(IMachineInformation machineInfo, Item heldItem, IEnumerable<Item> inventory, Farmer source, out MachineAction doInsert) {
+        public IEnumerable<ObjectRequest> InsertItem(IMachineInformation machineInfo, Object heldObject, IEnumerable<Item> inventory, Farmer source, out Action doInsert) {
             State state = machineInfo.GetState<State>();
 
             // Check if already processing
@@ -85,15 +97,15 @@ namespace TehPers.Logistics {
             }
 
             // Check if enough stone is being held
-            if (heldItem.ParentSheetIndex == Objects.Stone && heldItem.Stack >= 100) {
+            if (heldObject.ParentSheetIndex == Objects.Stone) {
                 // If stone is actually inserted into the machine, make sure to update the state
-                doInsert = payload => {
+                doInsert = () => {
                     state.Processing = true;
                     state.StartTime = SDateTime.Now;
                 };
 
                 // Request 100 stone
-                return new ItemRequest(heldItem, 100).Yield();
+                return new ObjectRequest(heldObject, 100).Yield();
             }
 
             // Don't request anything
@@ -101,20 +113,22 @@ namespace TehPers.Logistics {
             return null;
         }
 
-        public IEnumerable<ItemRequest> RemoveItem(IMachineInformation machineInfo, Farmer source, out MachineAction doRemove) {
+        public IEnumerable<ObjectRequest> RemoveItem(IMachineInformation machineInfo, Farmer source, out Action doRemove) {
             State state = machineInfo.GetState<State>();
 
-            // Check if not done
-            if (!(state.Processing && (SDateTime.Now - state.StartTime).TotalMinutes >= 60)) {
-                doRemove = default;
-                return null;
+            // Check if done
+            int elapsedMinutes = (SDateTime.Now - state.StartTime).TotalMinutes;
+            if (state.Processing && elapsedMinutes >= 60) {
+                // When the payload is removed from this machine, update the state
+                doRemove = () => state.Processing = false;
+
+                // Return a single diamond payload that this machine can provide
+                return new ObjectRequest(new Object(Vector2.Zero, Objects.Diamond, 1)).Yield();
             }
 
             // If the machine actually ejects something, make sure to update the state of the machine
-            doRemove = payload => state.Processing = false;
-
-            // Return a new diamond payload
-            return new ItemRequest(new Object(Vector2.Zero, Objects.Diamond, 1)).Yield();
+            doRemove = default;
+            return null;
         }
 
         public class State {

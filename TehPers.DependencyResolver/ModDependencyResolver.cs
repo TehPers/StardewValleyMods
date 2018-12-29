@@ -39,7 +39,7 @@ namespace TehPers.DependencyResolver {
                 // Check if the assembly has a manifest associated with it
                 AssemblyName assemblyName = assembly.GetName();
                 this.Monitor.Log($" - Found potential mod {assemblyName.Name}", LogLevel.Trace);
-                IManifest manifest = helper.ModRegistry.GetAll().FirstOrDefault(m => string.Equals(m.EntryDll, $"{assemblyName.Name}.dll", StringComparison.OrdinalIgnoreCase));
+                IManifest manifest = helper.ModRegistry.GetAll().FirstOrDefault(m => string.Equals(m.Manifest.EntryDll, $"{assemblyName.Name}.dll", StringComparison.OrdinalIgnoreCase))?.Manifest;
 
                 if (manifest == null) {
                     this.Monitor.Log($"    - No manifest was found for it. Skipping...", LogLevel.Trace);

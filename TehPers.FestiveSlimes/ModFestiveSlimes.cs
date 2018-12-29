@@ -105,8 +105,8 @@ namespace TehPers.FestiveSlimes {
                 return;
             }
 
-            if (Game1.random.NextDouble() < 0.25 && ModFestiveSlimes._coreApi.Items.TryGetIndex("candy", out int candyIndex)) {
-                __result.Add(new SObject(Vector2.Zero, candyIndex, 1));
+            if (Game1.random.NextDouble() < 0.25 && ModFestiveSlimes._coreApi.Items.TryGetInformation("candy", out IObjectInformation candyInfo) && candyInfo.Index is int index) {
+                __result.Add(new SObject(Vector2.Zero, index, 1));
             }
         }
 
@@ -120,13 +120,13 @@ namespace TehPers.FestiveSlimes {
                 return;
             }
 
-            if (ModFestiveSlimes._coreApi.Items.TryGetIndex("candy", out int candyIndex)) {
+            if (ModFestiveSlimes._coreApi.Items.TryGetInformation("candy", out IObjectInformation candyInfo) && candyInfo.Index is int index) {
                 if (Game1.random.NextDouble() < 0.5) {
-                    __result.Add(new SObject(Vector2.Zero, candyIndex, 1));
+                    __result.Add(new SObject(Vector2.Zero, index, 1));
                 }
 
                 if (Game1.random.NextDouble() < 0.25) {
-                    __result.Add(new SObject(Vector2.Zero, candyIndex, 1));
+                    __result.Add(new SObject(Vector2.Zero, index, 1));
                 }
             }
         }

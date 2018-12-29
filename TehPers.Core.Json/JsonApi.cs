@@ -31,8 +31,7 @@ namespace TehPers.Core.Json {
         }
 
         private void AddSmapiConverters(IModHelper helper) {
-            // object smapiJsonHelper = helper.Data.GetType().GetField("JsonHelper", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(helper.Data);
-            object smapiJsonHelper = helper.GetType().GetField("JsonHelper", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(helper);
+            object smapiJsonHelper = helper.Data.GetType().GetField("JsonHelper", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(helper.Data);
             object jsonSettings = smapiJsonHelper?.GetType().GetProperty("JsonSettings", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(smapiJsonHelper);
             if (jsonSettings is JsonSerializerSettings smapiSettings) {
                 // Add all the converters SMAPI uses to this API's serializer settings
