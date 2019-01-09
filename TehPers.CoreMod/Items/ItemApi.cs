@@ -5,10 +5,10 @@ using TehPers.CoreMod.Api.Items;
 
 namespace TehPers.CoreMod.Items {
     internal class ItemApi : IItemApi {
-        private readonly ICoreApi _coreApi;
+        private readonly IApiHelper _coreApiHelper;
 
-        public ItemApi(ICoreApi coreApi) {
-            this._coreApi = coreApi;
+        public ItemApi(IApiHelper coreApiHelper) {
+            this._coreApiHelper = coreApiHelper;
         }
 
         public string Register(string localKey, IModObject objectManager) {
@@ -37,7 +37,7 @@ namespace TehPers.CoreMod.Items {
         }
 
         private string LocalToGlobal(string localKey) {
-            return $"{this._coreApi.Owner.ModManifest.UniqueID}:{localKey}";
+            return $"{this._coreApiHelper.Owner.ModManifest.UniqueID}:{localKey}";
         }
     }
 }

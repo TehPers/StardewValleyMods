@@ -26,8 +26,8 @@ namespace TehPers.FishingOverhaul {
         private readonly HashSet<FishingRod> _overridden = new HashSet<FishingRod>();
         public readonly HashSet<FishingRod> OverridingCatch = new HashSet<FishingRod>();
 
-        public FishingRodOverrider() {
-            GameEvents.UpdateTick += this.Update;
+        public FishingRodOverrider(IMod mod) {
+            mod.Helper.Events.GameLoop.UpdateTicked += this.Update;
         }
 
         private void Update(object sender, EventArgs e) {
@@ -239,7 +239,7 @@ namespace TehPers.FishingOverhaul {
 
             ConfigMain.ConfigGlobalTreasure config = ModFishing.Instance.MainConfig.GlobalTreasureSettings;
             int clearWaterDistance = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "clearWaterDistance")?.GetValue() ?? 5;
-            
+
             int whichFish = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "whichFish").GetValue();
             int fishQuality = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "fishQuality").GetValue();
 

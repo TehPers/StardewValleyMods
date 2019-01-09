@@ -4,8 +4,8 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
-using TehPers.CoreMod.Api.Static.Extensions;
 using TehPers.CoreMod.Drawing;
 
 namespace TehPers.CoreMod.Items {
@@ -140,9 +140,9 @@ namespace TehPers.CoreMod.Items {
                 }
 
                 // Add all entries for it
-                IAssetDataForDictionary<int, string> dataSource = asset.AsDictionary<int, string>();
+                IDictionary<int, string> dataSource = asset.AsDictionary<int, string>().Data;
                 foreach (var entry in dataGroup) {
-                    dataSource.Set(entry.Index, entry.ModObject.GetRawInformation());
+                    dataSource[entry.Index] = entry.ModObject.GetRawInformation();
                 }
             }
         }
@@ -166,6 +166,8 @@ namespace TehPers.CoreMod.Items {
             }
             ItemDelegator._drawingOverridden = true;
 
+            // TODO
+            /*
             DrawingDelegator.AddOverride(info => {
                 // Make sure that only a portion of the texture is being drawn
                 if (!(info.SourceRectangle is Rectangle sourceRectangle)) {
@@ -194,6 +196,7 @@ namespace TehPers.CoreMod.Items {
                     return;
                 }
             });
+            */
         }
 
         private class ObjectInformation : IObjectInformation {

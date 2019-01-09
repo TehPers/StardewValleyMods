@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
@@ -33,11 +30,7 @@ namespace TehPers.Logistics {
             TextureInformation textureInfo = new TextureInformation(Game1.bigCraftableSpriteSheet, new Rectangle(16 * 3, 32 * 2, 16, 32));
             StoneConverterMachine stoneConverter = new StoneConverterMachine(this, "stoneConverter", textureInfo);
             itemApi.Register("stoneConverter", stoneConverter);
-
-            (int x, string y) blah = (12, "hi");
-
-            (int, string, double, float, double, double, float, double, object) x = default;
-
+            
             // TODO: debug
             this.Helper.Events.Input.ButtonPressed += (sender, args) => {
                 if (args.Button == SButton.NumPad3 && itemApi.TryGetInformation("stoneConverter", out IObjectInformation info) && info.Index is int index) {

@@ -14,6 +14,11 @@ namespace TehPers.CoreMod.Api.Conflux.Collections {
             this.End = end;
         }
 
+        public void Deconstruct(out Index start, out Index end) {
+            start = this.Start;
+            end = this.End;
+        }
+
         /// <summary>Creates a new range.</summary>
         /// <param name="start">The starting index.</param>
         /// <param name="end">The ending index.</param>
@@ -42,9 +47,9 @@ namespace TehPers.CoreMod.Api.Conflux.Collections {
             return new Range(0, new Index(0, true));
         }
 
-        /*public static implicit operator Range((int Start, int End) range) {
+        public static implicit operator Range((int Start, int End) range) {
             return new Range(range.Start, range.End);
-        }*/
+        }
 
         /// <inheritdoc />
         public IEnumerator<int> GetEnumerator() {

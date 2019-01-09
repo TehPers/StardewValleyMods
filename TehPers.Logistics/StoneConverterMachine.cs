@@ -6,10 +6,9 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Items.Machines;
-using TehPers.CoreMod.Api.Static.Enums;
-using TehPers.CoreMod.Api.Static.Extensions;
 using TehPers.CoreMod.Api.Structs;
 using Object = StardewValley.Object;
 

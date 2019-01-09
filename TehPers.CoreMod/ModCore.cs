@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using TehPers.CoreMod.Api;
-using TehPers.CoreMod.Api.Static.Extensions;
+using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Drawing;
-using TehPers.CoreMod.Internal;
 using TehPers.CoreMod.Items;
 using TehPers.CoreMod.Items.Machines;
 using SObject = StardewValley.Object;
@@ -37,7 +36,7 @@ namespace TehPers.CoreMod {
             // Start overriding item draw calls
             ItemDelegator.OverrideDrawingIfNeeded(tracker);
 
-            SaveEvents.AfterLoad += (sender, args) => {
+            this.Helper.Events.GameLoop.SaveLoaded += (sender, args) => {
                 // Load all the key <-> index mapping for this save
                 ItemDelegator.ReloadIndexes(this); ;
 
@@ -45,12 +44,12 @@ namespace TehPers.CoreMod {
                 ItemDelegator.Invalidate(this);
             };
 
-            SaveEvents.AfterSave += (sender, args) => {
+            this.Helper.Events.GameLoop.Saved += (sender, args) => {
                 // Save indexes for the save
                 ItemDelegator.SaveIndexes(this);
             };
 
-            SaveEvents.AfterReturnToTitle += (sender, args) => {
+            this.Helper.Events.GameLoop.ReturnedToTitle += (sender, args) => {
                 // Clear all indexes when not in a save
                 ItemDelegator.ClearIndexes(this);
             };

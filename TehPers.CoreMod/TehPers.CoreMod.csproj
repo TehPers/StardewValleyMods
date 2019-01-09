@@ -38,6 +38,9 @@
     <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lib.Harmony.1.2.0.1\lib\net45\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Sprache, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Sprache.2.2.0\lib\net45\Sprache.dll</HintPath>
     </Reference>
@@ -54,8 +57,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Drawing\CraftablesTextureInfo.cs" />
-    <Compile Include="Drawing\SpringObjectsTextureInfo.cs" />
+    <Compile Include="Drawing\ReadonlyDrawingInfo.cs" />
+    <Compile Include="Drawing\TextureDrawingHelper.cs" />
+    <Compile Include="Drawing\TextureTracker.cs" />
+    <Compile Include="Extensions\ApiExtensions.cs" />
+    <Compile Include="ApiHelper.cs" />
+    <Compile Include="ContentPacks\RecipeParser.cs" />
     <Compile Include="Items\ItemApi.cs" />
     <Compile Include="Drawing\DrawingDelegator.cs" />
     <Compile Include="Drawing\DrawingInfo.cs" />
@@ -67,6 +74,11 @@
     <Compile Include="Items\TextureAssetTracker.cs" />
     <Compile Include="Items\Machines\MachineDelegator.cs" />
     <Compile Include="Items\Machines\MachineInformation.cs" />
+    <Compile Include="Json\JsonApi.cs" />
+    <Compile Include="Json\DescriptiveJsonConverter.cs" />
+    <Compile Include="Json\DescriptiveJsonWriter.cs" />
+    <Compile Include="Json\NetConverter.cs" />
+    <Compile Include="Json\NetExposer.cs" />
     <Compile Include="ModCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

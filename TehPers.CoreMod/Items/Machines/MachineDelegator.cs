@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI.Events;
 using StardewValley;
+using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Items.Machines;
-using TehPers.CoreMod.Api.Static.Extensions;
 using SObject = StardewValley.Object;
 
 namespace TehPers.CoreMod.Items.Machines {

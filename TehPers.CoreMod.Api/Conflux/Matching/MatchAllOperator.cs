@@ -17,6 +17,12 @@ namespace TehPers.CoreMod.Api.Conflux.Matching {
         /// <returns>A <see cref="MatchAllOperator{TSource,TResult}"/> to complete the operation with.</returns>
         public MatchAllOperator<TSource, TResult> When(TSource @case, TResult output) => this.When(item => object.Equals(item, @case), _ => output);
 
+        /// <summary>Transforms the source if it matches a specific case.</summary>
+        /// <param name="case">The value which the source must match.</param>
+        /// <param name="outputFactory">The function which returns the value to transform the source into if it matches.</param>
+        /// <returns>A <see cref="MatchAllOperator{TSource,TResult}"/> to complete the operation with.</returns>
+        public MatchAllOperator<TSource, TResult> When(TSource @case, Func<TResult> outputFactory) => this.When(item => object.Equals(item, @case), _ => outputFactory());
+
         /// <summary>Transforms the source if it matches a predicate.</summary>
         /// <param name="predicate">The predicate which returns true if the source matches.</param>
         /// <param name="output">The value to transform the source into.</param>

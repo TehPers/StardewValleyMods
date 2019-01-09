@@ -55,6 +55,11 @@ namespace TehPers.FishingOverhaul {
 
             // Calculate chance
             float chance = config.FishBaseChance;
+            // float chance2 = chance + who.FishingLevel * config.FishLevelEffect;
+            // float chance3 = chance2 + who.LuckLevel * config.FishLuckLevelEffect;
+            // float chance4 = chance3 + (float) Game1.dailyLuck * config.FishDailyLuckEffect;
+            // float actualChance = chance4 + ModFishing.Instance.Api.GetStreak(who) * config.FishStreakEffect;
+
             chance += who.FishingLevel * config.FishLevelEffect;
             chance += who.LuckLevel * config.FishLuckLevelEffect;
             chance += (float) Game1.dailyLuck * config.FishDailyLuckEffect;

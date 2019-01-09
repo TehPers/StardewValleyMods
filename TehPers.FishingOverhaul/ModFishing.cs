@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Harmony;
 using Microsoft.Xna.Framework;
@@ -11,7 +10,6 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.Tools;
-using TehPers.Core.Api.Enums;
 using TehPers.Core.Api.Weighted;
 using TehPers.Core.Gui;
 using TehPers.Core.Gui.Base.Units;
@@ -60,12 +58,12 @@ namespace TehPers.FishingOverhaul {
             this.Harmony.Patch(targetType.GetMethod(nameof(NetAudio.PlayLocal)), new HarmonyMethod(typeof(NetAudioPatches).GetMethod(nameof(NetAudioPatches.Prefix))), null);
 
             // Override fishing
-            this.Overrider = new FishingRodOverrider();
+            this.Overrider = new FishingRodOverrider(this);
 
             // Events
-            GraphicsEvents.OnPostRenderHudEvent += this.PostRenderHud;
-            ControlEvents.KeyPressed += (sender, e) => {
-                if (e.KeyPressed != Keys.F5)
+            this.Helper.Events.Display.RenderedHud += this.PostRenderHud;
+            this.Helper.Events.Input.ButtonPressed += (sender, e) => {
+                if (e.Button != SButton.F5)
                     return;
 
                 this.Monitor.Log("Reloading configs...", LogLevel.Info);
@@ -138,8 +136,8 @@ namespace TehPers.FishingOverhaul {
         private void LoadGuis() {
             IGuiApi guiApi = this.GetCoreApi().GetGuiApi();
 
-            ControlEvents.KeyReleased += (sender, pressed) => {
-                if (pressed.KeyPressed != Keys.Y) {
+            this.Helper.Events.Input.ButtonReleased += (sender, pressed) => {
+                if (pressed.Button != SButton.Y) {
                     return;
                 }
 

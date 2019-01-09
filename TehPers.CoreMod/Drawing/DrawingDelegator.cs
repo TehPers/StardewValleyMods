@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mime;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Extensions;
 
 namespace TehPers.CoreMod.Drawing {
     internal static class DrawingDelegator {
         private static bool _patched = false;
-        private static readonly List<Action<IDrawingInfo>> _overrides = new List<Action<IDrawingInfo>>();
+        private static readonly ConditionalWeakTable<Texture2D, HashSet<TextureDrawingHelper>> _textureHelpers = new ConditionalWeakTable<Texture2D, HashSet<TextureDrawingHelper>>();
         private static bool _drawing = false;
 
         public static void PatchIfNeeded() {
-            if (DrawingDelegator._patched) {
-                return;
-            }
+            if (DrawingDelegator._patched) return;
             DrawingDelegator._patched = true;
 
-            HarmonyInstance harmony = HarmonyInstance.Create("TehPers.Core.Items.DrawingDelegator");
+            HarmonyInstance harmony = HarmonyInstance.Create("TehPers.CoreMod.DrawingDelegator");
             Type targetType = typeof(SpriteBatch);
 
             // Draw(Texture2D texture, Vector2 position, Color color)
@@ -52,19 +54,22 @@ namespace TehPers.CoreMod.Drawing {
             replacement = typeof(DrawingDelegator).GetMethod(nameof(DrawingDelegator.DrawPrefix6), BindingFlags.NonPublic | BindingFlags.Static);
             harmony.Patch(target, new HarmonyMethod(replacement));
 
-            // Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth)
             // Draw(Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth)
             target = targetType.GetMethod(nameof(SpriteBatch.Draw), new[] { typeof(Texture2D), typeof(Rectangle), typeof(Rectangle?), typeof(Color), typeof(float), typeof(Vector2), typeof(SpriteEffects), typeof(float) });
             replacement = typeof(DrawingDelegator).GetMethod(nameof(DrawingDelegator.DrawPrefix7), BindingFlags.NonPublic | BindingFlags.Static);
             harmony.Patch(target, new HarmonyMethod(replacement));
         }
 
-        public static void AddOverride(Action<IDrawingInfo> overrider) {
-            DrawingDelegator._overrides.Add(overrider);
-        }
+        public static void AddTextureHelper(Texture2D texture, TextureDrawingHelper helper) {
+            // Try to get the set of helpers
+            if (!DrawingDelegator._textureHelpers.TryGetValue(texture, out HashSet<TextureDrawingHelper> helpers)) {
+                // Create a new entry in the table if one doesn't exist
+                helpers = new HashSet<TextureDrawingHelper>();
+                DrawingDelegator._textureHelpers.Add(texture, helpers);
+            }
 
-        public static bool RemoveOverride(Action<IDrawingInfo> overrider) {
-            return DrawingDelegator._overrides.Remove(overrider);
+            // Add the helper to the list
+            helpers.Add(helper);
         }
 
         #region Patches
@@ -126,34 +131,33 @@ namespace TehPers.CoreMod.Drawing {
 
         private static bool DrawReplaced(Texture2D texture, in Rectangle? sourceRectangle, in Color tint, in Vector2 scale, NativeDraw nativeDraw) {
             // Don't override if currently patching
-            if (DrawingDelegator._drawing) {
-                return false;
-            }
+            if (DrawingDelegator._drawing) return false;
+
+            // Check if any helpers have been registered for this texture
+            if (!DrawingDelegator._textureHelpers.TryGetValue(texture, out HashSet<TextureDrawingHelper> helpers)) return false;
 
             // Create the drawing info object
             Action resetSignal = null;
             DrawingInfo info = new DrawingInfo(texture, sourceRectangle, tint, scale, nativeDraw, signal => resetSignal = signal);
 
             // Check if any overrides handle this drawing info
-            Action<IDrawingInfo> handler = null;
-            foreach (Action<IDrawingInfo> overrider in DrawingDelegator._overrides) {
+            IEnumerable<EventHandler<IDrawingInfo>> overriders = helpers.SelectMany(helper => helper.GetDrawingHandlers());
+            bool modified = false;
+            foreach (EventHandler<IDrawingInfo> overrider in overriders) {
                 // Set the drawing info's Modified property to false, then execute the overrider
                 resetSignal();
-                overrider(info);
+                overrider(null, info);
 
                 // Check if modified
-                if (info.Modified) {
-                    handler = overrider;
-                }
+                if (info.Modified) modified = true;
 
                 // Check if should continue propagating
-                if (!info.Propagate || info.Cancelled) {
-                    break;
-                }
+                if (!info.Propagate || info.Cancelled) break;
             }
 
             // Check if any handlers modified the drawing info
-            if (handler == null) {
+            if (!modified) {
+                RaiseAfterDrawn();
                 return false;
             }
 
@@ -162,10 +166,18 @@ namespace TehPers.CoreMod.Drawing {
                 DrawingDelegator._drawing = true;
                 nativeDraw(info);
                 DrawingDelegator._drawing = false;
+                RaiseAfterDrawn();
             }
 
             // Return whether it was handled
             return true;
+
+            void RaiseAfterDrawn() {
+                ReadonlyDrawingInfo finalInfo = new ReadonlyDrawingInfo(info);
+                foreach (EventHandler<IReadonlyDrawingInfo> handler in helpers.SelectMany(helper => helper.GetDrawnHandlers())) {
+                    handler(null, finalInfo);
+                }
+            }
         }
 
         public static Rectangle GetSourceRectangleForIndex(int index, int tileWidth = 16, int tileHeight = 16) {

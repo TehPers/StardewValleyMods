@@ -12,7 +12,7 @@ namespace TehPers.Core.Helpers.Static {
         public static T Choose<T>(this IEnumerable<T> source, Random rand) where T : IWeighted => source.ToList().Choose(rand);
 
         public static T Choose<T>(this IEnumerable<IWeightedElement<T>> source) => source.Choose(new Random());
-        public static T Choose<T>(this IEnumerable<IWeightedElement<T>> source, Random rand) => ((WeightedElement<T>) ((IEnumerable<IWeighted>) source).Choose(rand)).Value;
+        public static T Choose<T>(this IEnumerable<IWeightedElement<T>> source, Random rand) => ((IWeightedElement<T>) ((IEnumerable<IWeighted>) source).Choose(rand)).Value;
 
         public static T Choose<T>(this IList<T> source) where T : IWeighted => source.Choose(new Random());
         public static T Choose<T>(this IList<T> source, Random rand) where T : IWeighted {
@@ -20,8 +20,8 @@ namespace TehPers.Core.Helpers.Static {
                 throw new ArgumentException("Source must contain entries", nameof(source));
 
             double totalWeight = source.SumWeights();
-            if (totalWeight == 0)
-                totalWeight = 1;
+            if (Math.Abs(totalWeight) < double.Epsilon * 10)
+                throw new ArgumentException("Source must have a non-zero total weight", nameof(source));
 
             double n = rand.NextDouble();
             foreach (T entry in source) {
@@ -30,7 +30,8 @@ namespace TehPers.Core.Helpers.Static {
                     return entry;
                 n -= chance;
             }
-            throw new ArgumentException("Enumerable must have a positive total weight", nameof(source));
+
+            throw new ArgumentException("Source should contain positively weighted entries", nameof(source));
         }
 
         public static IEnumerable<IWeightedElement<T>> ToWeighted<T>(this IDictionary<T, double> source) => source.ToWeighted(kv => kv.Value, kv => kv.Key);

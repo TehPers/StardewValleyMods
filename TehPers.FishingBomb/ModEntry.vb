@@ -14,7 +14,7 @@ Public Class ModEntry
     Public Const BOMB As Integer = 287
 
     Public Overrides Sub Entry(helper As IModHelper)
-        AddHandler GameEvents.FirstUpdateTick, AddressOf RegisterApiEvents
+        AddHandler helper.Events.GameLoop.GameLaunched, AddressOf RegisterApiEvents
     End Sub
 
     Private Sub RegisterApiEvents(sender As Object, args As EventArgs)

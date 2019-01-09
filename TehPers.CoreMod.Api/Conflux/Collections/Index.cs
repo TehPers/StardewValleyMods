@@ -33,5 +33,9 @@ namespace TehPers.CoreMod.Api.Conflux.Collections {
         public static implicit operator Index(int value) {
             return value < 0 ? new Index(~value, true) : new Index(value, false);
         }
+
+        public static implicit operator int(Index index) {
+            return index.FromEnd ? -index.Value : index.Value;
+        }
     }
 }
