@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Drawing;
@@ -20,11 +22,10 @@ namespace TehPers.CoreMod {
             DrawingDelegator.PatchIfNeeded();
 
             // Also do other patches here because why not
-            MachineDelegator.PatchIfNeeded();
+            MachineDelegator.PatchIfNeeded(this);
         }
 
         public override void Entry(IModHelper helper) {
-
             // Add asset loader for custom items
             ItemsAssetEditor assetEditor = new ItemsAssetEditor();
             helper.Content.AssetEditors.Add(assetEditor);
@@ -34,32 +35,23 @@ namespace TehPers.CoreMod {
             helper.Content.AssetEditors.Add(tracker);
 
             // Start overriding item draw calls
-            ItemDelegator.OverrideDrawingIfNeeded(tracker);
+            ICoreApi coreApi = this.GetOrCreateCoreApi(this);
+            ItemDelegator.OverrideDrawingIfNeeded(coreApi.Drawing, tracker);
 
-            this.Helper.Events.GameLoop.SaveLoaded += (sender, args) => {
-                // Load all the key <-> index mapping for this save
-                ItemDelegator.ReloadIndexes(this); ;
-
-                // Reload object data
-                ItemDelegator.Invalidate(this);
-            };
-
-            this.Helper.Events.GameLoop.Saved += (sender, args) => {
-                // Save indexes for the save
-                ItemDelegator.SaveIndexes(this);
-            };
-
-            this.Helper.Events.GameLoop.ReturnedToTitle += (sender, args) => {
-                // Clear all indexes when not in a save
-                ItemDelegator.ClearIndexes(this);
-            };
+            // Register events for the item delegator
+            ItemDelegator.RegisterMultiplayerEvents(this);
+            ItemDelegator.RegisterSaveEvents(this);
 
             this.Monitor.Log("Core mod loaded!", LogLevel.Info);
         }
 
         public override object GetApi() {
             // TODO: encapsulate in new type
-            return new Func<IMod, ICoreApi>(mod => this._coreApis.GetOrAdd(mod, () => new CoreApi(mod)));
+            return new Func<IMod, ICoreApi>(this.GetOrCreateCoreApi);
+        }
+
+        private ICoreApi GetOrCreateCoreApi(IMod mod) {
+            return this._coreApis.GetOrAdd(mod, () => new CoreApi(mod));
         }
     }
 }

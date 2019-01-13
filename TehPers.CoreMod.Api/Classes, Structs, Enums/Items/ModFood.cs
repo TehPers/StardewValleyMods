@@ -12,8 +12,8 @@ namespace TehPers.CoreMod.Api.Items {
             this.Buffs = buffs;
         }
 
-        public override string GetRawInformation() {
-            return $"{base.GetRawInformation()}/{(this.IsDrink ? "drink" : "food")}/{this.Buffs.GetRawBuffInformation()}/{this.Buffs.Duration}";
+        public override string GetRawObjectInformation() {
+            return $"{base.GetRawObjectInformation()}/{(this.IsDrink ? "drink" : "food")}/{this.Buffs.GetRawBuffInformation()}/{this.Buffs.Duration}";
         }
     }
 }

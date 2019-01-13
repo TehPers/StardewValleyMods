@@ -76,9 +76,10 @@
     <Compile Include="Conflux\Responsive\SelectResponsiveOperator.cs" />
     <Compile Include="Conflux\Responsive\WhereResponsiveOperator.cs" />
     <Compile Include="Classes, Structs, Enums\Drawing\CraftablesTextureInfo.cs" />
+    <Compile Include="Interfaces\Drawing\IDrawingInfo.cs" />
+    <Compile Include="Interfaces\Drawing\IReadonlyDrawingInfo.cs" />
     <Compile Include="Interfaces\Drawing\ITextureDrawingHelper.cs" />
     <Compile Include="Interfaces\Drawing\ITextureHelper.cs" />
-    <Compile Include="Interfaces\Drawing\IDrawingInfo.cs" />
     <Compile Include="Interfaces\Drawing\ITextureSourceInfo.cs" />
     <Compile Include="Classes, Structs, Enums\Drawing\SpringObjectsTextureInfo.cs" />
     <Compile Include="Classes, Structs, Enums\Drawing\TextureInformation.cs" />

@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Teh's Festive Slimes",
   "Author": "TehPers",
-  "Version": "2.0.0-beta",
+  "Version": "2.0.1",
   "Description": "Replaces slimes during the fall.",
   "UniqueID": "TehPers.FestiveSlimes",
   "EntryDll": "TehPers.FestiveSlimes.dll",
@@ -9,7 +9,8 @@
   "UpdateKeys": [ "Nexus:2990" ],
   "Dependencies": [
     {
-      "UniqueID": "TehPers.CoreMod"
+      "UniqueID": "TehPers.CoreMod",
+      "MinimumVersion": "0.1.0"
     }
   ]
 }

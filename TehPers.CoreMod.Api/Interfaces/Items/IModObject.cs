@@ -9,7 +9,7 @@ namespace TehPers.CoreMod.Api.Items {
 
         /// <summary>Gets the raw information that should be added to Data\ObjectInformation.</summary>
         /// <returns>The raw information string.</returns>
-        string GetRawInformation();
+        string GetRawObjectInformation();
 
         /// <summary>Gets the data file this object's raw information should be added to.</summary>
         /// <returns>The name of the data file this object's entry should be added to.</returns>

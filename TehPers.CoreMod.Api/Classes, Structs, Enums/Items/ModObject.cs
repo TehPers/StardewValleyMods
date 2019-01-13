@@ -27,8 +27,8 @@ namespace TehPers.CoreMod.Api.Items {
 
         public IMod Owner { get; }
 
-        public ModObject(IMod owner, string rawName, int cost, Category category, TextureInformation textureInfo) : this(owner, rawName, cost, category, textureInfo, -300) { }
-        public ModObject(IMod owner, string rawName, int cost, Category category, TextureInformation textureInfo, int edibility) {
+        public ModObject(IMod owner, string rawName, int cost, Category category, in TextureInformation textureInfo) : this(owner, rawName, cost, category, textureInfo, -300) { }
+        public ModObject(IMod owner, string rawName, int cost, Category category, in TextureInformation textureInfo, int edibility) {
             this.Owner = owner;
             this.RawName = rawName;
             this.Cost = cost;
@@ -38,7 +38,7 @@ namespace TehPers.CoreMod.Api.Items {
         }
 
         /// <inheritdoc />
-        public virtual string GetRawInformation() {
+        public virtual string GetRawObjectInformation() {
             Translation displayName = this.Owner.Helper.Translation.Get($"item.{this.RawName}").Default($"item.{this.RawName}");
             Translation description = this.Owner.Helper.Translation.Get($"item.{this.RawName}.description").Default("No description available.");
             return $"{displayName}/{this.Cost}/{this.Edibility}/{this.Category}/{displayName}/{description}";

@@ -233,5 +233,25 @@ namespace TehPers.CoreMod.Api.Extensions {
             float a = (float) first.A * second.A / byte.MaxValue;
             return new Color(r, g, b, a);
         }
+
+        /// <summary>Deconstructor for <see cref="Vector2"/>.</summary>
+        /// <param name="source">The source vector.</param>
+        /// <param name="x">The x-coordinate of the source vector.</param>
+        /// <param name="y">The y-coordinate of the source vector.</param>
+        public static void Deconstruct(this Vector2 source, out float x, out float y) {
+            x = source.X;
+            y = source.Y;
+        }
+
+        public static void Deconstruct(this Rectangle source, out int x, out int y, out int width, out int height) {
+            x = source.X;
+            y = source.Y;
+            width = source.Width;
+            height = source.Height;
+        }
+
+        public static void Deconstruct(this Color source, out uint packed) {
+            packed = source.PackedValue;
+        }
     }
 }

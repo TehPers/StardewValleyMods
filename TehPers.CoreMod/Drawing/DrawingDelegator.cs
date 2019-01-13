@@ -74,78 +74,51 @@ namespace TehPers.CoreMod.Drawing {
 
         #region Patches
         private static bool DrawPrefix1(SpriteBatch __instance, Texture2D texture, Vector2 position, Color color) {
-            return !DrawingDelegator.DrawReplaced(texture, null, color, Vector2.One, info => {
-                __instance.Draw(info.Texture, position, info.SourceRectangle, info.Tint, 0, Vector2.Zero, info.Scale, SpriteEffects.None, 0);
-            });
+            return !DrawingDelegator.DrawReplaced(new DrawingInfo(__instance, texture, null, position, color, Vector2.Zero, 0, SpriteEffects.None, 0));
         }
 
         private static bool DrawPrefix2(SpriteBatch __instance, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color) {
-            return !DrawingDelegator.DrawReplaced(texture, sourceRectangle, color, Vector2.One, info => {
-                __instance.Draw(info.Texture, position, info.SourceRectangle, info.Tint, 0, Vector2.Zero, info.Scale, SpriteEffects.None, 0);
-            });
+            return !DrawingDelegator.DrawReplaced(new DrawingInfo(__instance, texture, sourceRectangle, position, color, Vector2.Zero, 0, SpriteEffects.None, 0));
         }
 
         private static bool DrawPrefix3(SpriteBatch __instance, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth) {
-            Vector2 scaleVector = new Vector2(scale, scale);
-            return !DrawingDelegator.DrawReplaced(texture, sourceRectangle, color, scaleVector, info => {
-                Vector2 newOrigin = new Vector2(origin.X * scaleVector.X / info.Scale.X, origin.Y * scaleVector.Y / info.Scale.Y);
-                __instance.Draw(info.Texture, position, info.SourceRectangle, info.Tint, rotation, newOrigin, info.Scale, effects, layerDepth);
-            });
+            DrawingInfo info = new DrawingInfo(__instance, texture, sourceRectangle, position, color, origin, rotation, effects, layerDepth);
+            info.SetScale(scale);
+            return !DrawingDelegator.DrawReplaced(info);
         }
 
         private static bool DrawPrefix4(SpriteBatch __instance, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth) {
-            return !DrawingDelegator.DrawReplaced(texture, sourceRectangle, color, scale, info => {
-                Vector2 newOrigin = new Vector2(origin.X * scale.X / info.Scale.X, origin.Y * scale.Y / info.Scale.Y);
-                __instance.Draw(info.Texture, position, info.SourceRectangle, info.Tint, rotation, newOrigin, info.Scale, effects, layerDepth);
-            });
+            DrawingInfo info = new DrawingInfo(__instance, texture, sourceRectangle, position, color, origin, rotation, effects, layerDepth);
+            info.SetScale(scale);
+            return !DrawingDelegator.DrawReplaced(info);
         }
 
         private static bool DrawPrefix5(SpriteBatch __instance, Texture2D texture, Rectangle destinationRectangle, Color color) {
-            Rectangle sourceBounds = texture.Bounds;
-            Vector2 scaleVector = new Vector2((float) destinationRectangle.Width / sourceBounds.Width, (float) destinationRectangle.Height / sourceBounds.Height);
-            return !DrawingDelegator.DrawReplaced(texture, null, color, scaleVector, info => {
-                Rectangle dest = new Rectangle(destinationRectangle.X, destinationRectangle.Y, (int) (sourceBounds.Width * info.Scale.X), (int) (sourceBounds.Height * info.Scale.Y));
-                __instance.Draw(info.Texture, dest, info.SourceRectangle, info.Tint);
-            });
+            return !DrawingDelegator.DrawReplaced(new DrawingInfo(__instance, texture, null, destinationRectangle, color, Vector2.Zero, 0, SpriteEffects.None, 0));
         }
 
         private static bool DrawPrefix6(SpriteBatch __instance, Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color) {
-            Rectangle sourceBounds = sourceRectangle ?? texture.Bounds;
-            Vector2 scaleVector = new Vector2((float) destinationRectangle.Width / sourceBounds.Width, (float) destinationRectangle.Height / sourceBounds.Height);
-            return !DrawingDelegator.DrawReplaced(texture, sourceRectangle, color, scaleVector, info => {
-                Rectangle dest = new Rectangle(destinationRectangle.X, destinationRectangle.Y, (int) (sourceBounds.Width * info.Scale.X), (int) (sourceBounds.Height * info.Scale.Y));
-                __instance.Draw(info.Texture, dest, info.SourceRectangle, info.Tint);
-            });
+            return !DrawingDelegator.DrawReplaced(new DrawingInfo(__instance, texture, sourceRectangle, destinationRectangle, color, Vector2.Zero, 0, SpriteEffects.None, 0));
         }
 
         private static bool DrawPrefix7(SpriteBatch __instance, Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth) {
-            Rectangle sourceBounds = sourceRectangle ?? texture.Bounds;
-            Vector2 scaleVector = new Vector2((float) destinationRectangle.Width / sourceBounds.Width, (float) destinationRectangle.Height / sourceBounds.Height);
-            return !DrawingDelegator.DrawReplaced(texture, sourceRectangle, color, scaleVector, info => {
-                Rectangle dest = new Rectangle(destinationRectangle.X, destinationRectangle.Y, (int) info.Scale.X, (int) info.Scale.Y);
-                Vector2 newOrigin = new Vector2(origin.X * scaleVector.X / info.Scale.X, origin.Y * scaleVector.Y / info.Scale.Y);
-                __instance.Draw(info.Texture, dest, info.SourceRectangle, info.Tint, rotation, newOrigin, effects, layerDepth);
-            });
+            return !DrawingDelegator.DrawReplaced(new DrawingInfo(__instance, texture, sourceRectangle, destinationRectangle, color, origin, rotation, effects, layerDepth));
         }
         #endregion
-
-        private static bool DrawReplaced(Texture2D texture, in Rectangle? sourceRectangle, in Color tint, in Vector2 scale, NativeDraw nativeDraw) {
+        
+        private static bool DrawReplaced(DrawingInfo info) {
             // Don't override if currently patching
             if (DrawingDelegator._drawing) return false;
 
             // Check if any helpers have been registered for this texture
-            if (!DrawingDelegator._textureHelpers.TryGetValue(texture, out HashSet<TextureDrawingHelper> helpers)) return false;
-
-            // Create the drawing info object
-            Action resetSignal = null;
-            DrawingInfo info = new DrawingInfo(texture, sourceRectangle, tint, scale, nativeDraw, signal => resetSignal = signal);
+            if (!DrawingDelegator._textureHelpers.TryGetValue(info.Texture, out HashSet<TextureDrawingHelper> helpers)) return false;
 
             // Check if any overrides handle this drawing info
             IEnumerable<EventHandler<IDrawingInfo>> overriders = helpers.SelectMany(helper => helper.GetDrawingHandlers());
             bool modified = false;
             foreach (EventHandler<IDrawingInfo> overrider in overriders) {
                 // Set the drawing info's Modified property to false, then execute the overrider
-                resetSignal();
+                info.Reset();
                 overrider(null, info);
 
                 // Check if modified
@@ -164,7 +137,7 @@ namespace TehPers.CoreMod.Drawing {
             // Call the native draw code if not cancelled
             if (!info.Cancelled) {
                 DrawingDelegator._drawing = true;
-                nativeDraw(info);
+                info.Draw();
                 DrawingDelegator._drawing = false;
                 RaiseAfterDrawn();
             }

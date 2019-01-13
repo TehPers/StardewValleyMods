@@ -18,6 +18,8 @@ namespace TehPers.FestiveSlimes {
     public class ModFestiveSlimes : Mod {
         public static ModFestiveSlimes Instance { get; private set; }
         public static ICoreApi CoreApi;
+        private static Texture2D _greenSlimeWinterHat;
+        private static Texture2D _bigSlimeWinterHat;
         private Season _lastSeason;
 
         public override void Entry(IModHelper helper) {
@@ -35,6 +37,8 @@ namespace TehPers.FestiveSlimes {
 
         private void InitializeMod() {
             this.Monitor.Log("Rustling Jimmies...");
+            this.Monitor.Log("If this mod is being updated from version 1, then remove all candy from your save before loading it!", LogLevel.Warn);
+            this.Monitor.Log("Otherwise, unexpected behavior could occur, including possibly crashes.", LogLevel.Warn);
 
             // Replace slimes
             this.ReplaceSlimes();
@@ -47,47 +51,51 @@ namespace TehPers.FestiveSlimes {
 
         private void AddItems() {
             // Add candy to the game
-            TextureInformation candyTextureInfo = TextureInformation.FromAssetFile(this.Helper.Content, "assets/candy.png", null, Color.Red);
+            TextureInformation candyTextureInfo = TextureInformation.FromAssetFile(this.Helper.Content, "assets/items/candy.png", null, Color.Red);
             BuffDescription candyBuffs = new BuffDescription(TimeSpan.FromMinutes(2.5), speed: 1);
             ModFestiveSlimes.CoreApi.Items.Register("candy", new ModFood(this, "candy", 20, 5, Category.Trash, candyTextureInfo, false, candyBuffs));
         }
 
         private void ReplaceSlimes() {
             // Add seasonal textures
-            // this.Helper.Content.AssetLoaders.Add(new SlimeLoader(this, "Green Slime"));
-            // this.Helper.Content.AssetLoaders.Add(new SlimeLoader(this, "Big Slime"));
-
-            // Add seasonal hats
-            // this.Helper.Content.AssetEditors.Add(new SlimeHatEditor(this, "Green Slime"));
-            // this.Helper.Content.AssetEditors.Add(new SlimeHatEditor(this, "Big Slime"));
+            this.Helper.Content.AssetLoaders.Add(new SlimeLoader(this, "Green Slime"));
+            this.Helper.Content.AssetLoaders.Add(new SlimeLoader(this, "Big Slime"));
 
             // Make sure to check if the season has changed and invalidate the textures if needed at the start of each day
-            // this.Helper.Events.GameLoop.Saved += (sender, args) => this.CheckSeason();
-            // this.Helper.Events.GameLoop.SaveLoaded += (sender, args) => this.CheckSeason();
+            this.Helper.Events.GameLoop.Saved += (sender, args) => this.CheckSeason();
+            this.Helper.Events.GameLoop.SaveLoaded += (sender, args) => this.CheckSeason();
 
             // Register texture events for green slimes
+            ModFestiveSlimes._greenSlimeWinterHat = this.Helper.Content.Load<Texture2D>(@"assets\Green Slime\hats\winter.png");
             ITextureDrawingHelper textureHelper = ModFestiveSlimes.CoreApi.Drawing.GetTextureHelper("Characters/Monsters/Green Slime");
-            textureHelper.Drawing += (sender, info) => {
-                info.SetTint(Color.White);
-            };
+            textureHelper.Drawing += this.RemoveSlimeTint;
 
             // Register texture events for big slimes
+            ModFestiveSlimes._bigSlimeWinterHat = this.Helper.Content.Load<Texture2D>(@"assets\Big Slime\hats\winter.png");
             textureHelper = ModFestiveSlimes.CoreApi.Drawing.GetTextureHelper("Characters/Monsters/Big Slime");
-            textureHelper.Drawing += (sender, info) => {
-                info.SetTint(Color.White);
-            };
+            textureHelper.Drawing += this.RemoveSlimeTint;
 
             // Add additional drops to slimes
             HarmonyInstance harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
-            // Green slime
+            // Green slime - drops
             MethodInfo target = typeof(GreenSlime).GetMethod(nameof(GreenSlime.getExtraDropItems), BindingFlags.Public | BindingFlags.Instance);
             MethodInfo replacement = typeof(ModFestiveSlimes).GetMethod(nameof(ModFestiveSlimes.GreenSlime_GetExtraDropItemsPostfix), BindingFlags.NonPublic | BindingFlags.Static);
             harmony.Patch(target, postfix: new HarmonyMethod(replacement));
 
-            // Big slime
+            // Green slime - drawing
+            target = typeof(GreenSlime).GetMethod(nameof(GreenSlime.draw), new[] { typeof(SpriteBatch) });
+            replacement = typeof(ModFestiveSlimes).GetMethod(nameof(ModFestiveSlimes.GreenSlime_DrawPostfix), BindingFlags.NonPublic | BindingFlags.Static);
+            harmony.Patch(target, postfix: new HarmonyMethod(replacement));
+
+            // Big slime - drops
             target = typeof(Monster).GetMethod(nameof(Monster.getExtraDropItems), BindingFlags.Public | BindingFlags.Instance);
             replacement = typeof(ModFestiveSlimes).GetMethod(nameof(ModFestiveSlimes.Monster_GetExtraDropItemsPostfix), BindingFlags.NonPublic | BindingFlags.Static);
+            harmony.Patch(target, postfix: new HarmonyMethod(replacement));
+
+            // Big slime - drawing
+            target = typeof(BigSlime).GetMethod(nameof(Monster.draw), new[] { typeof(SpriteBatch) });
+            replacement = typeof(ModFestiveSlimes).GetMethod(nameof(ModFestiveSlimes.BigSlime_DrawPostfix), BindingFlags.NonPublic | BindingFlags.Static);
             harmony.Patch(target, postfix: new HarmonyMethod(replacement));
 
             // TODO: Debug
@@ -109,6 +117,13 @@ namespace TehPers.FestiveSlimes {
             };
         }
 
+        private void RemoveSlimeTint(object sender, IDrawingInfo info) {
+            if (SDateTime.Today.Season == Season.Fall) {
+                // Remove tint
+                info.SetTint(Color.White);
+            }
+        }
+
         private void CheckSeason() {
             // Check if the season changed
             Season season = SDateTime.Today.Season;
@@ -119,6 +134,20 @@ namespace TehPers.FestiveSlimes {
 
             // Update the tracked season
             this._lastSeason = season;
+        }
+
+        // void draw(SpriteBatch b)
+        private static void GreenSlime_DrawPostfix(GreenSlime __instance, SpriteBatch b) {
+            if (SDateTime.Today.Season == Season.Winter) {
+                b.Draw(ModFestiveSlimes._greenSlimeWinterHat, __instance.getLocalPosition(Game1.viewport) + new Vector2(32f, __instance.GetBoundingBox().Height / 2f + __instance.yOffset), __instance.Sprite.SourceRect, Color.White, 0.0f, new Vector2(8f, 16f), 4f * Math.Max(0.2f, __instance.Scale - (float) (0.400000005960464 * (__instance.ageUntilFullGrown.Value / 120000.0))), SpriteEffects.None, Math.Max(0.0f, __instance.drawOnTop ? 0.991f : __instance.getStandingY() / 10000f + 5f / 10000f));
+            }
+        }
+
+        // void draw(SpriteBatch b)
+        private static void BigSlime_DrawPostfix(BigSlime __instance, SpriteBatch b) {
+            if (SDateTime.Today.Season == Season.Winter) {
+                b.Draw(ModFestiveSlimes._bigSlimeWinterHat, __instance.getLocalPosition(Game1.viewport) + new Vector2(56f, 16 + __instance.yJumpOffset), __instance.Sprite.SourceRect, Color.White, 0.0f, new Vector2(16f, 16f), 4f * Math.Max(0.2f, __instance.Scale), __instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0.0f, __instance.drawOnTop ? 0.991f : (float) (__instance.getStandingY() / 10000.0 + 2.0 / 1000.0)));
+            }
         }
 
         // List<Item> GreenSlime.getExtraDropItems()

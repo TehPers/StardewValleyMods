@@ -12,7 +12,8 @@ namespace TehPers.CoreMod.Api.Items {
             this.Fragility = fragility;
         }
 
-        public override string GetRawInformation() {
+        /// <inheritdoc />
+        public override string GetRawObjectInformation() {
             Translation displayName = this.Owner.Helper.Translation.Get($"item.{this.RawName}").Default($"item.{this.RawName}");
             Translation description = this.Owner.Helper.Translation.Get($"item.{this.RawName}.description").Default("No description available.");
             return $"{displayName}/{this.Cost}/{this.Edibility}/{this.Category}/{description}/{(this.CanSetOutdoors ? "true" : "false")}/{(this.CanSetIndoors ? "true" : "false")}/{this.Fragility}/{displayName}";

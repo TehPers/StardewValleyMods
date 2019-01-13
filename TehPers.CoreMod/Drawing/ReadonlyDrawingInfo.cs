@@ -4,23 +4,31 @@ using TehPers.CoreMod.Api.Drawing;
 
 namespace TehPers.CoreMod.Drawing {
     internal class ReadonlyDrawingInfo : IReadonlyDrawingInfo {
-        public Vector2 Scale { get; }
-        public Rectangle? SourceRectangle { get; }
         public Texture2D Texture { get; }
+        public Rectangle? SourceRectangle { get; }
+        public Rectangle Destination { get; }
         public Color Tint { get; }
-
-        public ReadonlyDrawingInfo(Vector2 scale, Rectangle? sourceRectangle, Texture2D texture, Color tint) {
-            this.Scale = scale;
-            this.SourceRectangle = sourceRectangle;
-            this.Texture = texture;
-            this.Tint = tint;
-        }
+        public SpriteBatch Batch { get; }
+        public Vector2 Origin { get; }
+        public float Rotation { get; }
+        public SpriteEffects Effects { get; }
+        public float Depth { get; }
 
         public ReadonlyDrawingInfo(IReadonlyDrawingInfo info) {
-            this.Scale = info.Scale;
-            this.SourceRectangle = info.SourceRectangle;
             this.Texture = info.Texture;
+            this.SourceRectangle = info.SourceRectangle;
+            this.Destination = info.Destination;
             this.Tint = info.Tint;
+            this.Batch = info.Batch;
+            this.Origin = info.Origin;
+            this.Rotation = info.Rotation;
+            this.Effects = info.Effects;
+            this.Depth = info.Depth;
+        }
+
+        public Vector2 GetScale() {
+            Rectangle source = this.SourceRectangle ?? this.Texture.Bounds;
+            return new Vector2((float) this.Destination.Width / source.Width, (float) this.Destination.Height / source.Height);
         }
     }
 }

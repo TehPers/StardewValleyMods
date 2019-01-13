@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="ModFestiveSlimes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SlimeLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\raw\Big Slime.pdn" />
@@ -86,10 +87,6 @@
     <ProjectReference Include="..\TehPers.CoreMod.Api\TehPers.CoreMod.Api.csproj">
       <Project>{DEBF868C-FB0B-4B20-BA7F-AFACF17C85AA}</Project>
       <Name>TehPers.CoreMod.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TehPers.CoreMod\TehPers.CoreMod.csproj">
-      <Project>{5da9f3a3-cffb-4960-b94c-f1df74fd89a5}</Project>
-      <Name>TehPers.CoreMod</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

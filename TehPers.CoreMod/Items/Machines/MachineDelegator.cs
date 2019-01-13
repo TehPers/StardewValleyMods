@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using TehPers.CoreMod.Api.Extensions;
@@ -19,7 +20,7 @@ namespace TehPers.CoreMod.Items.Machines {
 
         private static readonly Dictionary<LocationPosition, IMachineInformation> _trackedMachines = new Dictionary<LocationPosition, IMachineInformation>();
 
-        public static void PatchIfNeeded() {
+        public static void PatchIfNeeded(IMod mod) {
             if (MachineDelegator._patched) {
                 return;
             }
@@ -45,7 +46,7 @@ namespace TehPers.CoreMod.Items.Machines {
             harmony.Patch(target, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
 
             // Track changes in game locations
-            LocationEvents.ObjectsChanged += (sender, changed) => {
+            mod.Helper.Events.World.ObjectListChanged += (sender, changed) => {
                 // Create new states for added machines
                 foreach (KeyValuePair<Vector2, SObject> addedKV in changed.Added) {
                     // Check if the object added was a registered machine

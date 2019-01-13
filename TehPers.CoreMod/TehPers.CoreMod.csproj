@@ -57,6 +57,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Drawing\DrawingInfo.cs" />
+    <Compile Include="Drawing\IDrawingInfoInternal.cs" />
+    <Compile Include="Drawing\ITextureTrackerInternal.cs" />
     <Compile Include="Drawing\ReadonlyDrawingInfo.cs" />
     <Compile Include="Drawing\TextureDrawingHelper.cs" />
     <Compile Include="Drawing\TextureTracker.cs" />
@@ -65,7 +68,6 @@
     <Compile Include="ContentPacks\RecipeParser.cs" />
     <Compile Include="Items\ItemApi.cs" />
     <Compile Include="Drawing\DrawingDelegator.cs" />
-    <Compile Include="Drawing\DrawingInfo.cs" />
     <Compile Include="Items\ItemDelegator.cs" />
     <Compile Include="CoreApi.cs" />
     <Compile Include="Drawing\DrawingApi.cs" />

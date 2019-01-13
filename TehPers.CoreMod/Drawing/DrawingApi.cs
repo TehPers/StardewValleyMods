@@ -22,11 +22,14 @@ namespace TehPers.CoreMod.Drawing {
 
         private readonly IApiHelper _coreApiHelper;
         private readonly Dictionary<GameAssetLocation, TextureDrawingHelper> _textureHelpers = new Dictionary<GameAssetLocation, TextureDrawingHelper>();
+        private readonly TextureTracker _textureTracker;
 
         public Texture2D WhitePixel => DrawingApi._whitePixel.Value;
 
         public DrawingApi(IApiHelper coreApiHelper) {
             this._coreApiHelper = coreApiHelper;
+            this._textureTracker = new TextureTracker(this);
+            coreApiHelper.Owner.Helper.Content.AssetEditors.Add(this._textureTracker);
         }
 
         public ITextureDrawingHelper GetTextureHelper(GameAssetLocation gameAsset) {
@@ -38,21 +41,10 @@ namespace TehPers.CoreMod.Drawing {
             helper = new TextureDrawingHelper(this);
             this._textureHelpers.Add(gameAsset, helper);
 
-            // Bind it to the texture
-            RegisterTextureHelper();
-
-            // TODO: Keep updating it whenever the asset is invalidated
+            // Start tracking changes to the asset, and register the helper with the DrawingDelegator
+            this._textureTracker.AddHelper(gameAsset, helper);
 
             return helper;
-
-            void RegisterTextureHelper() {
-                Texture2D texture = gameAsset.Source.Match<ContentSource, Texture2D>()
-                    .When(ContentSource.GameContent, () => Game1.content.Load<Texture2D>(gameAsset.Path))
-                    .When(ContentSource.ModFolder, () => this._coreApiHelper.Owner.Helper.Content.Load<Texture2D>(gameAsset.Path))
-                    .ElseThrow();
-
-                DrawingDelegator.AddTextureHelper(texture, helper);
-            }
         }
     }
 }

@@ -42,15 +42,17 @@ namespace TehPers.FishingOverhaul {
             //TehMultiplayerApi.GetApi(this).RegisterItem(Objects.Coal, new FishingRodManager());
 
             // Make sure TehPers.Core isn't loaded as it's not needed anymore
-            if (helper.ModRegistry.IsLoaded("TehPers.Core"))
+            if (helper.ModRegistry.IsLoaded("TehPers.Core")) {
                 this.Monitor.Log("Delete TehCore, it's not needed anymore. Your game will probably crash with it installed anyway.", LogLevel.Error);
+            }
 
             // Load the configs
             this.LoadConfigs();
 
             // Make sure this mod is enabled
-            if (!this.MainConfig.ModEnabled)
+            if (!this.MainConfig.ModEnabled) {
                 return;
+            }
 
             // Apply patches
             this.Harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);

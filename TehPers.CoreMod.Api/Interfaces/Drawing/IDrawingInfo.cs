@@ -2,20 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TehPers.CoreMod.Api.Drawing {
-    public interface IReadonlyDrawingInfo {
-        /// <summary>The amount to scale the source by when drawing the texture.</summary>
-        Vector2 Scale { get; }
-
-        /// <summary>The rectangle on the source texture representing the area to be drawn, or <c>null</c> if the whole source texture should be drawn.</summary>
-        Rectangle? SourceRectangle { get; }
-
-        /// <summary>The source texture to draw from.</summary>
-        Texture2D Texture { get; }
-
-        /// <summary>The color being applied to the texture while drawing. The formula used depends on the state of the <see cref="SpriteBatch"/>, but usually this color is multiplied by the source to calculate the destination color.</summary>
-        Color Tint { get; }
-    }
-
     public interface IDrawingInfo : IReadonlyDrawingInfo {
         /// <summary>True if the original drawing call has been cancelled.</summary>
         bool Cancelled { get; }
@@ -33,7 +19,7 @@ namespace TehPers.CoreMod.Api.Drawing {
         /// <summary>Prevents this drawing information from being drawn.</summary>
         void Cancel();
 
-        /// <summary>Immediately draws the texture and prevents the <see cref="Core.Drawing.DrawingDelegator"/> from drawing it.</summary>
+        /// <summary>Immediately draws the texture and prevents the texture from being automatically drawn after propagation. This also prevents the current draw call from propagating further.</summary>
         void DrawAndCancel();
 
         /// <summary>Sets the scaling of the source image.</summary>
@@ -49,9 +35,29 @@ namespace TehPers.CoreMod.Api.Drawing {
         /// <param name="sourceRectangle">The new source rectangle.</param>
         void SetSource(Texture2D texture, Rectangle? sourceRectangle);
 
+        /// <summary>Sets the destination rectangle for the texture.</summary>
+        /// <param name="destination">The new destination rectangle.</param>
+        void SetDestination(Rectangle destination);
+
+        /// <summary>Sets the rotational and scaling origin for the texture. Any scaling or rotating of the texture will be centered about the given vector.</summary>
+        /// <param name="origin">The new rotational and scaling origin.</param>
+        void SetOrigin(Vector2 origin);
+
+        /// <summary>Sets the rotation of the texture on the destination.</summary>
+        /// <param name="rotation">The new rotation.</param>
+        void SetRotation(float rotation);
+
         /// <summary>Sets the tint color.</summary>
         /// <param name="tint">The new tint color.</param>
         void SetTint(Color tint);
+
+        /// <summary>Sets the sprite effects for the texture, which include flipping it horizontally and vertically when drawn.</summary>
+        /// <param name="effects">The new effects to apply to the texture.</param>
+        void SetEffects(SpriteEffects effects);
+
+        /// <summary>Sets the depth the texture will be drawn at, which determines draw order in some draw batches.</summary>
+        /// <param name="depth">The new depth for the texture to be drawn at.</param>
+        void SetDepth(float depth);
 
         /// <summary>Prevents any other drawing overriders from handling this draw call afterwards.</summary>
         void StopPropagating();
