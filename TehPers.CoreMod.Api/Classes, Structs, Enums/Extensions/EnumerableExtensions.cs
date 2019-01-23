@@ -30,9 +30,15 @@ namespace TehPers.CoreMod.Api.Extensions {
         /// <param name="source">An <see cref="IEnumerable{T}"/> to create a <see cref="HashSet{T}"/> from.</param>
         /// <returns>A <see cref="HashSet{T}"/> that contains values of type <see cref="TSource"/> selected from the input sequence.</returns>
         /// <remarks>In framework versions 4.7.2+, this method can be removed</remarks>
-        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source) => new HashSet<TSource>(source.ToArray());
+        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source) => source.ToHashSet(EqualityComparer<TSource>.Default);
 
-        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source) => source.ToDictionary(kv => kv.Key, kv => kv.Value);
+        /// <summary>Creates a <see cref="HashSet{T}"/> from an <see cref="IEnumerable{T}"/>.</summary>
+        /// <typeparam name="TSource">The type of the elements of <see cref="source"/></typeparam>
+        /// <param name="source">An <see cref="IEnumerable{T}"/> to create a <see cref="HashSet{T}"/> from.</param>
+        /// <param name="comparer">The comparer for the hash set.</param>
+        /// <returns>A <see cref="HashSet{T}"/> that contains values of type <see cref="TSource"/> selected from the input sequence.</returns>
+        /// <remarks>In framework versions 4.7.2+, this method can be removed</remarks>
+        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer) => new HashSet<TSource>(source.ToArray(), comparer);
 
         /// <summary>Swaps two elements in a list.</summary>
         /// <typeparam name="T">The type of element in the list.</typeparam>

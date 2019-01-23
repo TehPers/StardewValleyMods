@@ -1,20 +1,18 @@
 ﻿using TehPers.CoreMod.Api.Drawing;
 
 namespace TehPers.CoreMod.Api.Items {
-    public class Category {
+    public readonly struct Category {
         public int Index { get; }
         public string Name { get; }
         public string DataSource { get; }
-        public ITextureSourceInfo TextureInfo { get; set; }
 
-        public Category(int index, string name, string dataSource, ITextureSourceInfo textureInfo) {
+        public Category(int index, string name, string dataSource) {
             this.Index = index;
             this.Name = name;
             this.DataSource = dataSource;
-            this.TextureInfo = textureInfo;
         }
 
-        public Category(int index, string name) : this(index, name, "Data/ObjectInformation", SpringObjectsTextureInfo.Value) { }
+        public Category(int index, string name) : this(index, name, "Data/ObjectInformation") { }
 
         public override string ToString() {
             return string.IsNullOrEmpty(this.Name) ? this.Index.ToString() : $"{this.Name} {this.Index}";
@@ -27,7 +25,7 @@ namespace TehPers.CoreMod.Api.Items {
         public static Category Milk { get; } = new Category(-6, "Basic");
         public static Category Cooking { get; } = new Category(-7, "Cooking");
         public static Category Crafting { get; } = new Category(-8, "Crafting");
-        public static Category BigCraftable { get; } = new Category(-9, "Crafting", "Data/BigCraftablesInformation", CraftablesTextureInfo.Value);
+        public static Category BigCraftable { get; } = new Category(-9, "Crafting", "Data/BigCraftablesInformation");
         public static Category Mineral { get; } = new Category(-12, "Minerals");
         public static Category Meat { get; } = new Category(-14, null);
         public static Category Metal { get; } = new Category(-15, "Basic");

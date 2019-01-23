@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StardewValley;
 using TehPers.CoreMod.Api.Drawing;
-using TehPers.CoreMod.Api.Extensions;
 
 namespace TehPers.CoreMod.Drawing {
     internal static class DrawingDelegator {
         private static bool _patched = false;
-        private static readonly ConditionalWeakTable<Texture2D, HashSet<TextureDrawingHelper>> _textureHelpers = new ConditionalWeakTable<Texture2D, HashSet<TextureDrawingHelper>>();
+        private static readonly ConditionalWeakTable<Texture2D, HashSet<ITrackedTextureInternal>> _trackedTextures = new ConditionalWeakTable<Texture2D, HashSet<ITrackedTextureInternal>>();
         private static bool _drawing = false;
 
         public static void PatchIfNeeded() {
@@ -60,16 +57,16 @@ namespace TehPers.CoreMod.Drawing {
             harmony.Patch(target, new HarmonyMethod(replacement));
         }
 
-        public static void AddTextureHelper(Texture2D texture, TextureDrawingHelper helper) {
+        public static void AddTrackedTexture(Texture2D texture, ITrackedTextureInternal trackedTexture) {
             // Try to get the set of helpers
-            if (!DrawingDelegator._textureHelpers.TryGetValue(texture, out HashSet<TextureDrawingHelper> helpers)) {
+            if (!DrawingDelegator._trackedTextures.TryGetValue(texture, out HashSet<ITrackedTextureInternal> helpers)) {
                 // Create a new entry in the table if one doesn't exist
-                helpers = new HashSet<TextureDrawingHelper>();
-                DrawingDelegator._textureHelpers.Add(texture, helpers);
+                helpers = new HashSet<ITrackedTextureInternal>();
+                DrawingDelegator._trackedTextures.Add(texture, helpers);
             }
 
             // Add the helper to the list
-            helpers.Add(helper);
+            helpers.Add(trackedTexture);
         }
 
         #region Patches
@@ -105,16 +102,16 @@ namespace TehPers.CoreMod.Drawing {
             return !DrawingDelegator.DrawReplaced(new DrawingInfo(__instance, texture, sourceRectangle, destinationRectangle, color, origin, rotation, effects, layerDepth));
         }
         #endregion
-        
+
         private static bool DrawReplaced(DrawingInfo info) {
             // Don't override if currently patching
             if (DrawingDelegator._drawing) return false;
 
-            // Check if any helpers have been registered for this texture
-            if (!DrawingDelegator._textureHelpers.TryGetValue(info.Texture, out HashSet<TextureDrawingHelper> helpers)) return false;
+            // Check if this texture is being tracked
+            if (!DrawingDelegator._trackedTextures.TryGetValue(info.Texture, out HashSet<ITrackedTextureInternal> trackedTextures)) return false;
 
-            // Check if any overrides handle this drawing info
-            IEnumerable<EventHandler<IDrawingInfo>> overriders = helpers.SelectMany(helper => helper.GetDrawingHandlers());
+            // Check if any overrides handle this drawing call
+            IEnumerable<EventHandler<IDrawingInfo>> overriders = trackedTextures.SelectMany(helper => helper.GetDrawingHandlers());
             bool modified = false;
             foreach (EventHandler<IDrawingInfo> overrider in overriders) {
                 // Set the drawing info's Modified property to false, then execute the overrider
@@ -147,16 +144,10 @@ namespace TehPers.CoreMod.Drawing {
 
             void RaiseAfterDrawn() {
                 ReadonlyDrawingInfo finalInfo = new ReadonlyDrawingInfo(info);
-                foreach (EventHandler<IReadonlyDrawingInfo> handler in helpers.SelectMany(helper => helper.GetDrawnHandlers())) {
+                foreach (EventHandler<IReadonlyDrawingInfo> handler in trackedTextures.SelectMany(helper => helper.GetDrawnHandlers())) {
                     handler(null, finalInfo);
                 }
             }
         }
-
-        public static Rectangle GetSourceRectangleForIndex(int index, int tileWidth = 16, int tileHeight = 16) {
-            return Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, index, tileWidth, tileHeight);
-        }
-
-        internal delegate void NativeDraw(IDrawingInfo info);
     }
 }

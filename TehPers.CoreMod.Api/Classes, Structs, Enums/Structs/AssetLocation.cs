@@ -3,38 +3,49 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using StardewModdingAPI;
+using StardewValley;
+using TehPers.CoreMod.Api.Conflux.Collections;
 using TehPers.CoreMod.Api.Conflux.Matching;
 
 namespace TehPers.CoreMod.Api.Structs {
-    public readonly struct GameAssetLocation : IEquatable<GameAssetLocation>, IComparable<GameAssetLocation> {
+    public readonly struct AssetLocation : IEquatable<AssetLocation> {
         public string Path { get; }
+        public ContentSource Source { get; }
 
-        public GameAssetLocation(string path) {
-            this.Path = GameAssetLocation.Normalize(path);
+        public AssetLocation(string path, ContentSource source) {
+            this.Source = source;
+            this.Path = AssetLocation.Normalize(path);
         }
 
         public T Load<T>(IContentHelper contentHelper) {
-            return contentHelper.Load<T>(this.Path, ContentSource.GameContent);
+            switch (this.Source) {
+                case ContentSource.GameContent:
+                    return Game1.content.Load<T>(this.Path);
+                case ContentSource.ModFolder:
+                    return contentHelper.Load<T>(this.Path);
+                default:
+                    throw new InvalidOperationException($"Could not load from content source: {this.Source}");
+            }
         }
 
         public override bool Equals(object obj) {
-            return obj is GameAssetLocation other && this.Equals(other);
+            return obj is AssetLocation other && this.Equals(other);
         }
 
-        public bool Equals(GameAssetLocation other) {
-            return string.Equals(this.Path, other.Path, StringComparison.OrdinalIgnoreCase);
+        public bool Equals(AssetLocation other) {
+            return this.Source == other.Source && string.Equals(this.Path, other.Path, StringComparison.OrdinalIgnoreCase);
         }
 
         public override int GetHashCode() {
-            return this.Path?.GetHashCode() ?? 0;
-        }
-
-        public int CompareTo(GameAssetLocation other) {
-            return string.Compare(this.Path, other.Path, StringComparison.OrdinalIgnoreCase);
+            return unchecked(((this.Path?.GetHashCode() ?? 0) * 397) ^ (int) this.Source);
         }
 
         #region Static
         public static IEnumerable<string> GetParts(string path) {
+            if (path == null) {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             return path.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries)
                 .Aggregate(ImmutableStack<string>.Empty, (parts, part) => {
                     return part.Match<string, ImmutableStack<string>>()
@@ -49,11 +60,7 @@ namespace TehPers.CoreMod.Api.Structs {
         }
 
         public static string Normalize(string path) {
-            return string.Join("\\", GameAssetLocation.GetParts(path));
-        }
-
-        public static implicit operator GameAssetLocation(string path) {
-            return new GameAssetLocation(path);
+            return string.Join("\\", AssetLocation.GetParts(path));
         }
         #endregion
     }

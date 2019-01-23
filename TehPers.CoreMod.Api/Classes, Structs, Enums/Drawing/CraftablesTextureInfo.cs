@@ -1,6 +1,8 @@
-﻿using StardewValley;
+﻿using System;
+using StardewValley;
 
 namespace TehPers.CoreMod.Api.Drawing {
+    [Obsolete]
     internal class CraftablesTextureInfo : ITextureSourceInfo {
         /// <inheritdoc />
         public string TextureName { get; } = @"TileSheets\Craftables";

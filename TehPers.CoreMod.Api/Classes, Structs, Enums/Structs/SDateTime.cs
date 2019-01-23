@@ -89,9 +89,9 @@ namespace TehPers.CoreMod.Api.Structs {
         }
 
         /// <summary>The current date and time.</summary>
-        public static SDateTime Now => SDateTime.FromDateAndTime(Game1.year, Game1.currentSeason.GetSeason() ?? Season.Spring, Game1.dayOfMonth, Game1.timeOfDay);
+        public static SDateTime Now => SDateTime.FromDateAndTime(Game1.year, Game1.currentSeason?.GetSeason() ?? Season.Spring, Game1.dayOfMonth, Game1.timeOfDay);
 
         /// <summary>The current date.</summary>
-        public static SDateTime Today => new SDateTime(Game1.year, Game1.currentSeason.GetSeason() ?? Season.Spring, Game1.dayOfMonth);
+        public static SDateTime Today => new SDateTime(Game1.year, Game1.currentSeason?.GetSeason() ?? Season.Spring, Game1.dayOfMonth);
     }
 }

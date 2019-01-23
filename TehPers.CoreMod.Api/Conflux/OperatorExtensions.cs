@@ -1,24 +1,8 @@
 ﻿using System;
 using System.Linq;
 
-namespace TehPers.CoreMod.Api.Conflux.Matching2 {
+namespace TehPers.CoreMod.Api.Conflux {
     public static class OperatorExtensions {
-
-        public static TResult Switch<TSource, TResult>(this TSource source, params (Func<TSource, Either<bool, TSource>> condition, Func<TSource, TResult> resultFactory)[] cases) {
-            if (cases.FirstOrDefault(@case => Matches(@case.condition)).resultFactory is Func<TResult> f) {
-                return f();
-            }
-
-            bool Matches(Func<TSource, Either<bool, TSource>> condition) {
-                return condition(source).Case(
-                    predicate => predicate,
-                    item => object.Equals(source, item)
-                );
-            }
-
-            return default;
-        }
-
         public static TResult Forward<TSource, TResult>(this TSource source, Func<TSource, TResult> f) => f(source);
         public static void Forward<TSource>(this TSource source, Action<TSource> f) => f(source);
     }

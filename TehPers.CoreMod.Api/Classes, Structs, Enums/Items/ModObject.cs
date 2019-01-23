@@ -1,11 +1,13 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
+using TehPers.CoreMod.Api.ContentLoading;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Drawing.Sprites;
 
 namespace TehPers.CoreMod.Api.Items {
     public class ModObject : IModObject {
-
-        /// <summary>Information about how to render this object.</summary>
-        protected virtual TextureInformation TextureInfo { get; }
+        /// <summary>This object's translation helper.</summary>
+        protected ICoreTranslationHelper TranslationHelper { get; }
 
         /// <summary>The raw name of this object.</summary>
         protected virtual string RawName { get; }
@@ -25,22 +27,26 @@ namespace TehPers.CoreMod.Api.Items {
         /// <summary>Amount of health that is restored when this is consumed.</summary>
         protected float HealthRestored => this.EnergyRestored * 0.45F;
 
-        public IMod Owner { get; }
+        /// <summary>The sprite for this item.</summary>
+        public virtual ISprite Sprite { get; }
 
-        public ModObject(IMod owner, string rawName, int cost, Category category, in TextureInformation textureInfo) : this(owner, rawName, cost, category, textureInfo, -300) { }
-        public ModObject(IMod owner, string rawName, int cost, Category category, in TextureInformation textureInfo, int edibility) {
-            this.Owner = owner;
+        /// <summary>The color to tint the item's sprite when drawn.</summary>
+        public virtual Color Tint { get; set; } = Color.White;
+
+        public ModObject(ICoreTranslationHelper translationHelper, ISprite sprite, string rawName, int cost, Category category) : this(translationHelper, sprite, rawName, cost, category, -300) { }
+        public ModObject(ICoreTranslationHelper translationHelper, ISprite sprite, string rawName, int cost, Category category, int edibility) {
+            this.TranslationHelper = translationHelper;
             this.RawName = rawName;
             this.Cost = cost;
             this.Edibility = edibility;
+            this.Sprite = sprite;
             this.Category = category;
-            this.TextureInfo = textureInfo;
         }
 
         /// <inheritdoc />
         public virtual string GetRawObjectInformation() {
-            Translation displayName = this.Owner.Helper.Translation.Get($"item.{this.RawName}").Default($"item.{this.RawName}");
-            Translation description = this.Owner.Helper.Translation.Get($"item.{this.RawName}.description").Default("No description available.");
+            ICoreTranslation displayName = this.TranslationHelper.Get($"item.{this.RawName}").WithDefault($"item.{this.RawName}");
+            ICoreTranslation description = this.TranslationHelper.Get($"item.{this.RawName}.description").WithDefault("No description available.");
             return $"{displayName}/{this.Cost}/{this.Edibility}/{this.Category}/{displayName}/{description}";
         }
 
@@ -50,16 +56,9 @@ namespace TehPers.CoreMod.Api.Items {
         }
 
         /// <inheritdoc />
-        public ITextureSourceInfo GetTextureSource() {
-            return this.Category.TextureInfo;
-        }
-
-        /// <inheritdoc />
-        public virtual void OverrideTexture(IDrawingInfo info) {
-            info.SetSource(this.TextureInfo.Texture, this.TextureInfo.SourceRectangle);
-
-            // Multiply tint colors
-            info.AddTint(this.TextureInfo.Tint);
+        public virtual void OverrideDraw(IDrawingInfo info) {
+            info.SetSource(this.Sprite.ParentSheet.TrackedTexture.CurrentTexture, this.Sprite.SourceRectangle);
+            info.AddTint(this.Tint);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace TehPers.CoreMod.Api.Items {
         /// <summary>The <see cref="IModObject"/> that handles instances of this type of object.</summary>
         IModObject Manager { get; }
 
-        /// <summary>The global key this type of object is registered as.</summary>
-        string Key { get; }
+        /// <summary>The key this type of object is registered as.</summary>
+        ItemKey Key { get; }
     }
 }

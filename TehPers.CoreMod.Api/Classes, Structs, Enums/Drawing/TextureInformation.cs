@@ -1,8 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 
 namespace TehPers.CoreMod.Api.Drawing {
+    [Obsolete]
     public readonly struct TextureInformation {
         public Texture2D Texture { get; }
         public Rectangle? SourceRectangle { get; }

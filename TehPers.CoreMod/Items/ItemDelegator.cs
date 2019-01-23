@@ -1,35 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Structs;
-using TehPers.CoreMod.Drawing;
 
 namespace TehPers.CoreMod.Items {
     internal static class ItemDelegator {
-        private static readonly Dictionary<string, ObjectInformation> _registry = new Dictionary<string, ObjectInformation>();
+        private static readonly Dictionary<ItemKey, ObjectInformation> _registry = new Dictionary<ItemKey, ObjectInformation>();
         private static readonly Dictionary<int, ObjectInformation> _indexRegistry = new Dictionary<int, ObjectInformation>();
+        private static readonly Regex _legacyKeyRegex = new Regex("^(?<modId>[^:]+):(?<localKey>.*)$");
         private static bool _drawingOverridden = false;
 
         public const int STARTING_INDEX = 100000;
         public static IEnumerable<IObjectInformation> RegisteredObjects => ItemDelegator._registry.Values;
 
-        public static bool Register(string key, IModObject objectManager) {
+        public static bool Register(ItemKey key, ISpriteSheet parentSheet, IModObject objectManager) {
             if (ItemDelegator._registry.ContainsKey(key)) {
                 return false;
             }
 
-            ItemDelegator._registry.Add(key, new ObjectInformation(key, objectManager));
+            // Add the item to the item registry
+            ObjectInformation objectInformation = new ObjectInformation(key, objectManager);
+            ItemDelegator._registry.Add(key, objectInformation);
+
+            // Override when the item is drawn
+            parentSheet.Drawing += (sender, info) => {
+                if (parentSheet.GetIndex(info.SourceRectangle?.X ?? 0, info.SourceRectangle?.Y ?? 0) == objectInformation.Index) {
+                    objectManager.OverrideDraw(info);
+                }
+            };
+
             return true;
         }
 
-        public static bool TryGetInformation(string key, out IObjectInformation info) {
-            if (ItemDelegator._registry.TryGetValue(key, out var objectInfo)) {
+        public static bool TryGetInformation(ItemKey key, out IObjectInformation info) {
+            if (ItemDelegator._registry.TryGetValue(key, out ObjectInformation objectInfo)) {
                 info = objectInfo;
                 return true;
             }
@@ -39,7 +51,7 @@ namespace TehPers.CoreMod.Items {
         }
 
         public static bool TryGetInformation(int index, out IObjectInformation info) {
-            if (ItemDelegator._indexRegistry.TryGetValue(index, out var objectInfo)) {
+            if (ItemDelegator._indexRegistry.TryGetValue(index, out ObjectInformation objectInfo)) {
                 info = objectInfo;
                 return true;
             }
@@ -60,15 +72,15 @@ namespace TehPers.CoreMod.Items {
             ItemDelegator._indexRegistry.Clear();
         }
 
-        public static void ReloadIndexes(IMod mod, Dictionary<string, int> saveIds) {
+        public static void ReloadIndexes(IMod mod, Dictionary<ItemKey, int> saveIds) {
             // Load indexes for mod items for this save
             mod.Monitor.Log("Assigning indexes...", LogLevel.Debug);
 
-            // Get all registered object keys
-            HashSet<string> registeredKeys = new HashSet<string>(ItemDelegator._registry.Keys);
+            // Get all registered global object keys
+            HashSet<ItemKey> registeredKeys = new HashSet<ItemKey>(ItemDelegator._registry.Keys);
 
             // Assign indexes based on the saved data
-            foreach (KeyValuePair<string, int> kv in saveIds) {
+            foreach (KeyValuePair<ItemKey, int> kv in saveIds) {
                 // Check if the key exists and is removed
                 if (!registeredKeys.Remove(kv.Key)) continue;
 
@@ -81,18 +93,19 @@ namespace TehPers.CoreMod.Items {
             if (registeredKeys.Any()) {
                 mod.Monitor.Log("New items detected, adding indexes for them:", LogLevel.Info);
                 int highestIndex = ItemDelegator.STARTING_INDEX.Yield().Concat(saveIds.Values).Max();
-                foreach (string key in registeredKeys) {
+                foreach (ItemKey key in registeredKeys) {
                     mod.Monitor.Log($" - {key} assigned new index {highestIndex + 1}");
                     ItemDelegator._registry[key].SetIndex(++highestIndex, ItemDelegator._indexRegistry);
                 }
             }
 
             // Check for any items in the save that aren't registered
-            string[] notRegistered = saveIds.Keys.Except(ItemDelegator._registry.Keys).ToArray();
+            // TODO: Lock these IDs from being assigned to anything so existing (broken) items with those IDs aren't treated as different items suddenly
+            ItemKey[] notRegistered = saveIds.Keys.Except(ItemDelegator._registry.Keys).ToArray();
             if (notRegistered.Any()) {
                 mod.Monitor.Log("Some items were detected in the save, but not registered:", LogLevel.Warn);
 
-                foreach (string missingKey in notRegistered) {
+                foreach (ItemKey missingKey in notRegistered) {
                     mod.Monitor.Log($" - {missingKey}", LogLevel.Warn);
                 }
 
@@ -103,14 +116,39 @@ namespace TehPers.CoreMod.Items {
         public static void ReloadIndexes(IMod mod) {
             // Load indexes for mod items for this save
             mod.Monitor.Log("Loading indexes from save...", LogLevel.Trace);
-            Dictionary<string, int> saveIds = mod.Helper.Data.ReadSaveData<Dictionary<string, int>>("indexes") ?? new Dictionary<string, int>();
+
+            // Try to load the custom indexes
+            if (!(mod.Helper.Data.ReadSaveData<Dictionary<ItemKey, int>>("indexes2") is Dictionary<ItemKey, int> saveIds)) {
+                saveIds = new Dictionary<ItemKey, int>();
+
+                // Try to load legacy indexes
+                if (mod.Helper.Data.ReadSaveData<Dictionary<string, int>>("indexes") is Dictionary<string, int> legacyIds) {
+                    // Try to convert each legacy key into a new key
+                    foreach (KeyValuePair<string, int> kv in legacyIds) {
+                        Match match = ItemDelegator._legacyKeyRegex.Match(kv.Key);
+                        if (match.Success) {
+                            // Get info about the owner of the mod
+                            IModInfo owner = mod.Helper.ModRegistry.Get(match.Groups["modId"].Value);
+                            if (owner != null) {
+                                // Create the item key and add it to the save IDs
+                                saveIds.Add(new ItemKey(owner.Manifest, match.Groups["localKey"].Value), kv.Value);
+                            } else {
+                                mod.Monitor.Log($"Error parsing legacy key \"{kv.Key}\". No mod with unique ID \"{match.Groups["modId"].Value}\" was found. A new index will be assigned to items with this key, which may cause issues with existing save files.", LogLevel.Warn);
+                            }
+                        } else {
+                            mod.Monitor.Log($"Error parsing legacy key \"{kv.Key}\". A new index will be assigned to items with this key, which may cause issues with existing save files.", LogLevel.Warn);
+                        }
+                    }
+                }
+            }
+
             ItemDelegator.ReloadIndexes(mod, saveIds);
         }
 
-        public static Dictionary<string, int> GetIndexDictionary() {
+        public static Dictionary<ItemKey, int> GetIndexDictionary() {
             // Add all registered objects to a dictionary
-            Dictionary<string, int> indexes = new Dictionary<string, int>();
-            foreach (KeyValuePair<string, ObjectInformation> kv in ItemDelegator._registry) {
+            Dictionary<ItemKey, int> indexes = new Dictionary<ItemKey, int>();
+            foreach (KeyValuePair<ItemKey, ObjectInformation> kv in ItemDelegator._registry) {
                 if (kv.Value.Index is int index) {
                     indexes.Add(kv.Key, index);
                 }
@@ -123,7 +161,7 @@ namespace TehPers.CoreMod.Items {
             mod.Monitor.Log("Saving mod indexes...", LogLevel.Trace);
 
             // Save the dictionary
-            mod.Helper.Data.WriteSaveData("indexes", ItemDelegator.GetIndexDictionary());
+            mod.Helper.Data.WriteSaveData("indexes2", ItemDelegator.GetIndexDictionary());
 
             mod.Monitor.Log("Done!", LogLevel.Trace);
         }
@@ -140,7 +178,7 @@ namespace TehPers.CoreMod.Items {
                 if (args.Type == "indexes") {
                     // Process new item information
                     mod.Monitor.Log("Received item information from host", LogLevel.Info);
-                    ItemDelegator.ReloadIndexes(mod, args.ReadAs<Dictionary<string, int>>());
+                    ItemDelegator.ReloadIndexes(mod, args.ReadAs<Dictionary<ItemKey, int>>());
                 }
             };
 
@@ -229,59 +267,27 @@ namespace TehPers.CoreMod.Items {
             }
             ItemDelegator._drawingOverridden = true;
 
-            ITextureDrawingHelper helper = drawingApi.GetTextureHelper(new GameAssetLocation("Maps/springobjects"));
-            helper.Drawing += (sender, info) => {
-                // Make sure that only a portion of the texture is being drawn
-                if (!(info.SourceRectangle is Rectangle sourceRectangle)) {
-                    return;
-                }
-
-                // Get the items that override this texture
-                foreach (ObjectInformation objectInfo in ItemDelegator._indexRegistry.Values) {
-                    ITextureSourceInfo textureInfo = objectInfo.Manager.GetTextureSource();
-
-                    // Make sure the index of the object matches the source region
-                    if (objectInfo.Index != textureInfo.GetIndexFromUV(sourceRectangle.X, sourceRectangle.Y)) {
-                        continue;
-                    }
-
-                    // Override the drawing call
-                    objectInfo.Manager.OverrideTexture(info);
-                    return;
-                }
-            };
-        }
-
-        private class ObjectInformation : IObjectInformation {
-            /// <inheritdoc />
-            public int? Index { get; private set; }
-
-            /// <inheritdoc />
-            public IModObject Manager { get; }
-
-            /// <inheritdoc />
-            public string Key { get; }
-
-            public ObjectInformation(string key, IModObject manager, int? index = null) {
-                this.Key = key;
-                this.Manager = manager;
-                this.Index = index;
-            }
-
-            internal void SetIndex(int index, IDictionary<int, ObjectInformation> indexDict) {
-                if (this.Index is int curIndex) {
-                    indexDict.Remove(curIndex);
-                }
-
-                indexDict.Add(index, this);
-                this.Index = index;
-            }
-
-            internal void RemoveIndex(IDictionary<int, ObjectInformation> indexDict) {
-                if (this.Index is int curIndex) {
-                    indexDict.Remove(curIndex);
-                }
-            }
+            // ITrackedTexture helper = drawingApi.GetTrackedTexture(new AssetLocation("Maps/springobjects", ContentSource.GameContent));
+            // helper.Drawing += (sender, info) => {
+            //     // Make sure that only a portion of the texture is being drawn
+            //     if (!(info.SourceRectangle is Rectangle sourceRectangle)) {
+            //         return;
+            //     }
+            // 
+            //     // TODO: Get the items that override this texture
+            //     foreach (ObjectInformation objectInfo in ItemDelegator._indexRegistry.Values) {
+            //         // ITextureSourceInfo textureInfo = objectInfo.Manager.GetSprite();
+            //         // 
+            //         // // Make sure the index of the object matches the source region
+            //         // if (objectInfo.Index != textureInfo.GetIndexFromUV(sourceRectangle.X, sourceRectangle.Y)) {
+            //         //     continue;
+            //         // }
+            //         // 
+            //         // // Override the drawing call
+            //         // objectInfo.Manager.OverrideTexture(info);
+            //         // return;
+            //     }
+            // };
         }
     }
 }

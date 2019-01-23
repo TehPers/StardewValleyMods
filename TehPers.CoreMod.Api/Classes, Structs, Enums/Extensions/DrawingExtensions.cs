@@ -243,15 +243,13 @@ namespace TehPers.CoreMod.Api.Extensions {
             y = source.Y;
         }
 
-        public static void Deconstruct(this Rectangle source, out int x, out int y, out int width, out int height) {
+        /// <summary>Deconstructor for <see cref="Point"/>.</summary>
+        /// <param name="source">The source point.</param>
+        /// <param name="x">The x-coordinate of the source point.</param>
+        /// <param name="y">The y-coordinate of the source point.</param>
+        public static void Deconstruct(this Point source, out int x, out int y) {
             x = source.X;
             y = source.Y;
-            width = source.Width;
-            height = source.Height;
-        }
-
-        public static void Deconstruct(this Color source, out uint packed) {
-            packed = source.PackedValue;
         }
     }
 }

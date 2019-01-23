@@ -9,6 +9,7 @@ using StardewValley;
 using StardewValley.Monsters;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Environment;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Structs;
@@ -28,14 +29,14 @@ namespace TehPers.FestiveSlimes {
             this.Helper.Events.GameLoop.GameLaunched += (sender, args) => {
                 if (helper.ModRegistry.GetApi("TehPers.CoreMod") is Func<IMod, ICoreApi> coreFactory) {
                     ModFestiveSlimes.CoreApi = coreFactory(this);
-                    this.InitializeMod();
+                    this.InitializeMod(ModFestiveSlimes.CoreApi);
                 } else {
                     this.Monitor.Log("Failed to get core API. This mod will be disabled.", LogLevel.Error);
                 }
             };
         }
 
-        private void InitializeMod() {
+        private void InitializeMod(ICoreApi coreApi) {
             this.Monitor.Log("Rustling Jimmies...");
             this.Monitor.Log("If this mod is being updated from version 1, then remove all candy from your save before loading it!", LogLevel.Warn);
             this.Monitor.Log("Otherwise, unexpected behavior could occur, including possibly crashes.", LogLevel.Warn);
@@ -44,16 +45,25 @@ namespace TehPers.FestiveSlimes {
             this.ReplaceSlimes();
 
             // Add custom items
-            this.AddItems();
+            this.AddItems(coreApi);
 
             this.Monitor.Log("Done!");
         }
+            
+        private void AddItems(ICoreApi coreApi) {
+            // Create a sprite for the candy which points to the main custom item sprite sheet
+            ISprite candySprite = coreApi.Items.CreateSprite(this.Helper.Content.Load<Texture2D>("assets/items/candy.png"));
 
-        private void AddItems() {
-            // Add candy to the game
-            TextureInformation candyTextureInfo = TextureInformation.FromAssetFile(this.Helper.Content, "assets/items/candy.png", null, Color.Red);
+            // Set the buffs for the candy
             BuffDescription candyBuffs = new BuffDescription(TimeSpan.FromMinutes(2.5), speed: 1);
-            ModFestiveSlimes.CoreApi.Items.Register("candy", new ModFood(this, "candy", 20, 5, Category.Trash, candyTextureInfo, false, candyBuffs));
+
+            // Create the candy object manager
+            ModFood candy = new ModFood(this, candySprite, "candy", 20, 5, Category.Trash, false, candyBuffs) {
+                Tint = Color.Red
+            };
+
+            // Register the candy with the core API to add it as an object in the game
+            coreApi.Items.Register("candy", coreApi.Drawing.CraftableSpriteSheet, candy);
         }
 
         private void ReplaceSlimes() {
@@ -67,13 +77,13 @@ namespace TehPers.FestiveSlimes {
 
             // Register texture events for green slimes
             ModFestiveSlimes._greenSlimeWinterHat = this.Helper.Content.Load<Texture2D>(@"assets\Green Slime\hats\winter.png");
-            ITextureDrawingHelper textureHelper = ModFestiveSlimes.CoreApi.Drawing.GetTextureHelper("Characters/Monsters/Green Slime");
-            textureHelper.Drawing += this.RemoveSlimeTint;
+            ITrackedTexture trackedTexture = ModFestiveSlimes.CoreApi.Drawing.GetTrackedTexture(new AssetLocation("Characters/Monsters/Green Slime", ContentSource.GameContent));
+            trackedTexture.Drawing += this.RemoveSlimeTint;
 
             // Register texture events for big slimes
             ModFestiveSlimes._bigSlimeWinterHat = this.Helper.Content.Load<Texture2D>(@"assets\Big Slime\hats\winter.png");
-            textureHelper = ModFestiveSlimes.CoreApi.Drawing.GetTextureHelper("Characters/Monsters/Big Slime");
-            textureHelper.Drawing += this.RemoveSlimeTint;
+            trackedTexture = ModFestiveSlimes.CoreApi.Drawing.GetTrackedTexture(new AssetLocation("Characters/Monsters/Big Slime", ContentSource.GameContent));
+            trackedTexture.Drawing += this.RemoveSlimeTint;
 
             // Add additional drops to slimes
             HarmonyInstance harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
@@ -97,24 +107,6 @@ namespace TehPers.FestiveSlimes {
             target = typeof(BigSlime).GetMethod(nameof(Monster.draw), new[] { typeof(SpriteBatch) });
             replacement = typeof(ModFestiveSlimes).GetMethod(nameof(ModFestiveSlimes.BigSlime_DrawPostfix), BindingFlags.NonPublic | BindingFlags.Static);
             harmony.Patch(target, postfix: new HarmonyMethod(replacement));
-
-            // TODO: Debug
-            this.Helper.Events.Input.ButtonReleased += (sender, args) => {
-                if (args.Button == SButton.OemSemicolon) {
-                    Game1.currentLocation.addCharacter(new GreenSlime(Game1.player.Position, Color.Red));
-                }
-                if (args.Button == SButton.L) {
-                    Game1.currentLocation.addCharacter(new BigSlime(Game1.player.Position, 0));
-                }
-            };
-
-            this.Helper.Events.Display.RenderedWorld += (sender, args) => {
-                if (Game1.currentLocation != null) {
-                    foreach (NPC character in Game1.currentLocation?.characters) {
-                        character.draw(args.SpriteBatch);
-                    }
-                }
-            };
         }
 
         private void RemoveSlimeTint(object sender, IDrawingInfo info) {
@@ -152,7 +144,7 @@ namespace TehPers.FestiveSlimes {
 
         // List<Item> GreenSlime.getExtraDropItems()
         private static void GreenSlime_GetExtraDropItemsPostfix(ref List<Item> __result) {
-            if (SDateTime.Today.Season == Season.Fall && Game1.random.NextDouble() < 0.25 && ModFestiveSlimes.CoreApi.Items.TryGetInformation("candy", out IObjectInformation candyInfo) && candyInfo.Index is int index) {
+            if (SDateTime.Today.Season == Season.Fall && Game1.random.NextDouble() < 0.25 && ModFestiveSlimes.CoreApi.Items.TryGetIndex("candy", out int index)) {
                 __result.Add(new SObject(Vector2.Zero, index, 1));
             }
         }
@@ -163,7 +155,7 @@ namespace TehPers.FestiveSlimes {
                 return;
             }
 
-            if (SDateTime.Today.Season == Season.Fall && ModFestiveSlimes.CoreApi.Items.TryGetInformation("candy", out IObjectInformation candyInfo) && candyInfo.Index is int index) {
+            if (SDateTime.Today.Season == Season.Fall && ModFestiveSlimes.CoreApi.Items.TryGetIndex("candy", out int index)) {
                 if (Game1.random.NextDouble() < 0.5) {
                     __result.Add(new SObject(Vector2.Zero, index, 1));
                 }

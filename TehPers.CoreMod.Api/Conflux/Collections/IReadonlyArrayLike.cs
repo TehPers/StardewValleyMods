@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace TehPers.CoreMod.Api.Conflux.Collections {
-    public interface IReadonlyArrayLike<T> : IEnumerable<T> {
+    public interface IReadonlyArrayLike<out T> : IEnumerable<T> {
         /// <summary>The number of elements.</summary>
         int Length { get; }
 

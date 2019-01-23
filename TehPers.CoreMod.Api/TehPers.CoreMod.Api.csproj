@@ -35,15 +35,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -53,7 +48,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes, Structs, Enums\ContentPacks\Tokens\TokenValue.cs" />
+    <Compile Include="Classes, Structs, Enums\Structs\SColor.cs" />
+    <Compile Include="Interfaces\ContentLoading\ICoreTranslation.cs" />
+    <Compile Include="Interfaces\ContentLoading\ICoreTranslationHelper.cs" />
+    <Compile Include="Interfaces\ContentPacks\IContentPackValue.cs" />
+    <Compile Include="Interfaces\ContentPacks\IContext.cs" />
+    <Compile Include="Interfaces\ContentPacks\IContextSpecific.cs" />
+    <Compile Include="Interfaces\ContentPacks\Tokens\IToken.cs" />
+    <Compile Include="Interfaces\ContentPacks\Tokens\ITokenHelper.cs" />
+    <Compile Include="Interfaces\Drawing\ITextureEvents.cs" />
+    <Compile Include="Interfaces\Drawing\Sprites\ISprite.cs" />
     <Compile Include="Classes, Structs, Enums\Extensions\NumberExtensions.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\ItemKey.cs" />
     <Compile Include="Conflux\Collections\ArrayX.cs" />
     <Compile Include="Conflux\Collections\CollectionExtensions.cs" />
     <Compile Include="Conflux\Collections\IArrayLike.cs" />
@@ -66,7 +73,7 @@
     <Compile Include="Conflux\Collections\Range.cs" />
     <Compile Include="Conflux\Collections\ReadonlySlice.cs" />
     <Compile Include="Conflux\Collections\Slice.cs" />
-    <Compile Include="Conflux\Matching2\OperatorExtensions.cs" />
+    <Compile Include="Conflux\OperatorExtensions.cs" />
     <Compile Include="Conflux\Matching\MatchAllOperator.cs" />
     <Compile Include="Conflux\Matching\MatchExtensions.cs" />
     <Compile Include="Conflux\Matching\MatchOperator.cs" />
@@ -78,11 +85,19 @@
     <Compile Include="Classes, Structs, Enums\Drawing\CraftablesTextureInfo.cs" />
     <Compile Include="Interfaces\Drawing\IDrawingInfo.cs" />
     <Compile Include="Interfaces\Drawing\IReadonlyDrawingInfo.cs" />
-    <Compile Include="Interfaces\Drawing\ITextureDrawingHelper.cs" />
-    <Compile Include="Interfaces\Drawing\ITextureHelper.cs" />
+    <Compile Include="Interfaces\Drawing\ITrackedTexture.cs" />
+    <Compile Include="Interfaces\Drawing\IDrawingApi.cs" />
     <Compile Include="Interfaces\Drawing\ITextureSourceInfo.cs" />
     <Compile Include="Classes, Structs, Enums\Drawing\SpringObjectsTextureInfo.cs" />
     <Compile Include="Classes, Structs, Enums\Drawing\TextureInformation.cs" />
+    <Compile Include="Interfaces\ICoreApiFactory.cs" />
+    <Compile Include="Interfaces\ICoreApiInitializer.cs" />
+    <Compile Include="Interfaces\Items\IItemApi.cs" />
+    <Compile Include="Interfaces\Drawing\Sprites\ISpriteSheet.cs" />
+    <Compile Include="Interfaces\ContentLoading\IContentSource.cs" />
+    <Compile Include="Classes, Structs, Enums\ContentLoading\ModContentSource.cs" />
+    <Compile Include="Classes, Structs, Enums\ContentLoading\GameContentSource.cs" />
+    <Compile Include="Classes, Structs, Enums\ContentLoading\ContentPackContentSource.cs" />
     <Compile Include="System\Runtime\CompilerServices\TupleElementNamesAttribute.cs" />
     <Compile Include="System\ValueTuple.cs">
       <DependentUpon>ValueTuple.tt</DependentUpon>
@@ -93,7 +108,6 @@
     <Compile Include="Interfaces\ICoreApi.cs" />
     <Compile Include="Classes, Structs, Enums\Items\BuffDescription.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Category.cs" />
-    <Compile Include="Interfaces\Items\IItemApi.cs" />
     <Compile Include="Interfaces\Items\IModObject.cs" />
     <Compile Include="Interfaces\Items\IObjectInformation.cs" />
     <Compile Include="Interfaces\Items\Machines\IMachine.cs" />
@@ -113,15 +127,9 @@
     <Compile Include="Classes, Structs, Enums\Extensions\DrawingExtensions.cs" />
     <Compile Include="Classes, Structs, Enums\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Classes, Structs, Enums\Extensions\EnumExtensions.cs" />
-    <Compile Include="Classes, Structs, Enums\Structs\GameAssetLocation.cs" />
+    <Compile Include="Classes, Structs, Enums\Structs\AssetLocation.cs" />
     <Compile Include="Classes, Structs, Enums\Structs\SDateTime.cs" />
     <Compile Include="Classes, Structs, Enums\Structs\STimeSpan.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\analyzers\dotnet\cs\StardewModdingAPI.ModBuildConfig.Analyzer.dll" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -129,12 +137,16 @@
   <ItemGroup>
     <Content Include="System\ValueTuple.tt" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig">
+      <Version>2.2.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Collections.Immutable">
+      <Version>1.5.0</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Pathoschild.Stardew.ModBuildConfig.2.2.0\build\Pathoschild.Stardew.ModBuildConfig.targets'))" />
-  </Target>
 </Project>

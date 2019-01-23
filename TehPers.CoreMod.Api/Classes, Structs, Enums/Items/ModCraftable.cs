@@ -1,5 +1,7 @@
 ﻿using StardewModdingAPI;
+using TehPers.CoreMod.Api.ContentLoading;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Drawing.Sprites;
 
 namespace TehPers.CoreMod.Api.Items {
     public class ModCraftable : ModObject {
@@ -7,15 +9,15 @@ namespace TehPers.CoreMod.Api.Items {
         public virtual bool CanSetIndoors => true;
         public virtual int Fragility { get; }
 
-        public ModCraftable(IMod owner, string rawName, int cost, TextureInformation textureInfo) : this(owner, rawName, cost, textureInfo, 0) { }
-        public ModCraftable(IMod owner, string rawName, int cost, TextureInformation textureInfo, int fragility) : base(owner, rawName, cost, Category.BigCraftable, textureInfo, -300) {
+        public ModCraftable(ICoreTranslationHelper translationHelper, string rawName, int cost) : this(translationHelper, rawName, cost, 0) { }
+        public ModCraftable(ICoreTranslationHelper translationHelper, string rawName, int cost, int fragility) : base(translationHelper, null, rawName, cost, Category.BigCraftable, -300) {
             this.Fragility = fragility;
         }
 
         /// <inheritdoc />
         public override string GetRawObjectInformation() {
-            Translation displayName = this.Owner.Helper.Translation.Get($"item.{this.RawName}").Default($"item.{this.RawName}");
-            Translation description = this.Owner.Helper.Translation.Get($"item.{this.RawName}.description").Default("No description available.");
+            string displayName = this.TranslationHelper.Get($"item.{this.RawName}").WithDefault($"item.{this.RawName}").ToString();
+            string description = this.TranslationHelper.Get($"item.{this.RawName}.description").WithDefault("No description available.").ToString();
             return $"{displayName}/{this.Cost}/{this.Edibility}/{this.Category}/{description}/{(this.CanSetOutdoors ? "true" : "false")}/{(this.CanSetIndoors ? "true" : "false")}/{this.Fragility}/{displayName}";
         }
     }

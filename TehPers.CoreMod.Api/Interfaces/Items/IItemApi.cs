@@ -1,29 +1,47 @@
-﻿using System.Collections.Generic;
-using StardewValley;
+﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using TehPers.CoreMod.Api.Conflux.Collections;
+using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Drawing.Sprites;
 
 namespace TehPers.CoreMod.Api.Items {
     public interface IItemApi {
-        /// <summary>Registers a new type of object with a key.</summary>
-        /// <param name="localKey">The unique local key for this type of object. Key must be unique within your mod. The local key provided here will be used to create a global key.</param>
-        /// <param name="objectManager">The <see cref="IModObject"/> that will handle this type of object.</param>
-        /// <returns>The global key associated with the type of object registered.</returns>
-        string Register(string localKey, IModObject objectManager);
+        /// <summary>Registers a new item with the game.</summary>
+        /// <param name="localKey">The local key for this item, unique within your mod.</param>
+        /// <param name="parentSheet">The sprite sheet the object would normally be drawn from. This determines the class of item it is. <seealso cref="IDrawingApi"/> has references to some commonly used sprite sheets, like <seealso cref="IDrawingApi.ObjectSpriteSheet"/>.</param>
+        /// <param name="objectManager">The object's manager.</param>
+        /// <returns>The key for the item once registered.</returns>
+        ItemKey Register(string localKey, ISpriteSheet parentSheet, IModObject objectManager);
 
-        /// <summary>Tries to get the information associated with a particular key.</summary>
-        /// <param name="key">The local or global key of the type of object to get the information of.</param>
-        /// <param name="objectInformation">The information associated with the given key.</param>
-        /// <returns>True if the key is registered and information was found, false otherwise.</returns>
-        /// <remarks>Checks if it matches a local key, then check for a global key.</remarks>
-        bool TryGetInformation(string key, out IObjectInformation objectInformation);
+        /// <summary>Tries to get the manager for a registered item from its key.</summary>
+        /// <param name="localKey">The local key for the item.</param>
+        /// <param name="manager">The manager for the item, if found.</param>
+        /// <returns>True if successful, false otherwise.</returns>
+        bool TryGetObjectManager(string localKey, out IModObject manager);
 
-        /// <summary>Tries to get the information associated with a particular index.</summary>
-        /// <param name="index">The <see cref="Item.ParentSheetIndex"/> assigned to the type of object to get the information of.</param>
-        /// <param name="objectInformation">The information associated with the given key.</param>
-        /// <returns>True if the key is registered and information was found, false otherwise.</returns>
-        bool TryGetInformation(int index, out IObjectInformation objectInformation);
+        /// <summary>Tries to get the manager for a registered item from its key.</summary>
+        /// <param name="key">The key for the item.</param>
+        /// <param name="manager">The manager for the item, if found.</param>
+        /// <returns>True if successful, false otherwise.</returns>
+        bool TryGetObjectManager(ItemKey key, out IModObject manager);
 
-        /// <summary>Gets all registered objects.</summary>
-        /// <returns>Every registered object's information, even ones from other mods.</returns>
-        IEnumerable<IObjectInformation> GetRegisteredObjects();
+        /// <summary>Tries to get the index for a registered item from its key.</summary>
+        /// <param name="localKey">The local key for the item.</param>
+        /// <param name="index">The index of the item in its parent sheet, if found.</param>
+        /// <returns>True if successful, false otherwise.</returns>
+        bool TryGetIndex(string localKey, out int index);
+
+        /// <summary>Tries to get the index for a registered item from its key.</summary>
+        /// <param name="key">The key for the item.</param>
+        /// <param name="index">The index of the item in its parent sheet, if found.</param>
+        /// <returns>True if successful, false otherwise.</returns>
+        bool TryGetIndex(ItemKey key, out int index);
+
+        /// <summary>Creates an item sprite on a dynamically-generated sprite sheet to improve drawing performance. This will cause the sprite to be copied onto a sprite sheet built specifically for custom items.</summary>
+        /// <param name="texture">The texture containing the item's sprite.</param>
+        /// <param name="sourceRectangle">The source rectangle for the item's sprite.</param>
+        /// <returns>A sprite object pointing to your item's sprite on the dynamically-created sprite sheet.</returns>
+        ISprite CreateSprite(Texture2D texture, Rectangle? sourceRectangle = null);
     }
 }

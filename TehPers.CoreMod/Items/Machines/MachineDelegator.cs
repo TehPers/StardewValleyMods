@@ -20,7 +20,7 @@ namespace TehPers.CoreMod.Items.Machines {
 
         private static readonly Dictionary<LocationPosition, IMachineInformation> _trackedMachines = new Dictionary<LocationPosition, IMachineInformation>();
 
-        public static void PatchIfNeeded(IMod mod) {
+        public static void PatchIfNeeded() {
             if (MachineDelegator._patched) {
                 return;
             }
@@ -44,7 +44,9 @@ namespace TehPers.CoreMod.Items.Machines {
             prefix = typeof(MachineDelegator).GetMethod(nameof(MachineDelegator.CheckForActionPrefix), BindingFlags.NonPublic | BindingFlags.Static);
             postfix = typeof(MachineDelegator).GetMethod(nameof(MachineDelegator.CheckForActionPostfix), BindingFlags.NonPublic | BindingFlags.Static);
             harmony.Patch(target, new HarmonyMethod(prefix), new HarmonyMethod(postfix));
+        }
 
+        public static void RegisterEvents(IMod mod) {
             // Track changes in game locations
             mod.Helper.Events.World.ObjectListChanged += (sender, changed) => {
                 // Create new states for added machines
@@ -116,6 +118,8 @@ namespace TehPers.CoreMod.Items.Machines {
         }
 
         private static bool CheckForActionPrefix(SObject __instance, ref CheckForActionState __state, ref bool __result, Farmer who, bool justCheckingForActivity) {
+            return true;
+
             if (who?.ActiveObject != null) {
                 // Try to get the object's machine state
                 if (!MachineDelegator.TryGetMachineState(__instance, Game1.currentLocation, out IMachine machine, out IMachineInformation state)) {
@@ -220,7 +224,7 @@ namespace TehPers.CoreMod.Items.Machines {
 
             // Check what changed
             int removedCount;
-            if (__instance.heldObject.Value == null || __instance.heldObject.Value.ParentSheetIndex != __state.Held.ParentSheetIndex) {
+            if (__instance.heldObject?.Value == null || __instance.heldObject.Value.ParentSheetIndex != __state.Held.ParentSheetIndex) {
                 removedCount = __state.Stack;
             } else {
                 removedCount = __state.Stack - __instance.heldObject.Value.Stack;

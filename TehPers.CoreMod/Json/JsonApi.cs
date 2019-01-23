@@ -5,6 +5,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using TehPers.CoreMod.Api;
+using TehPers.CoreMod.Api.ContentLoading;
 using TehPers.CoreMod.Api.Json;
 
 namespace TehPers.CoreMod.Json {
@@ -94,9 +95,9 @@ namespace TehPers.CoreMod.Json {
             }
         }
 
-        public TModel ReadJson<TModel>(string path) where TModel : class => this.ReadJson<TModel>(path, null);
-        public TModel ReadJson<TModel>(string path, Action<JsonSerializerSettings> settings) where TModel : class {
-            string fullPath = Path.Combine(this._coreApi.Owner.Helper.DirectoryPath, path);
+        public TModel ReadJson<TModel>(string path) where TModel : class => this.ReadJson<TModel>(path, this.GetModContentSource(), null);
+        public TModel ReadJson<TModel>(string path, IContentSource source, Action<JsonSerializerSettings> settings) where TModel : class {
+            string fullPath = Path.Combine(source.Path, path);
 
             // Validate path
             if (string.IsNullOrWhiteSpace(fullPath))
@@ -110,16 +111,20 @@ namespace TehPers.CoreMod.Json {
             }
         }
 
-        public TModel ReadOrCreate<TModel>(string path, bool minify = false) where TModel : class, new() => this.ReadOrCreate(path, null, Activator.CreateInstance<TModel>, minify);
-        public TModel ReadOrCreate<TModel>(string path, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class, new() => this.ReadOrCreate(path, settings, Activator.CreateInstance<TModel>, minify);
-        public TModel ReadOrCreate<TModel>(string path, Func<TModel> modelFactory, bool minify = false) where TModel : class => this.ReadOrCreate(path, null, modelFactory, minify);
-        public TModel ReadOrCreate<TModel>(string path, Action<JsonSerializerSettings> settings, Func<TModel> modelFactory, bool minify = false) where TModel : class {
-            TModel model = this.ReadJson<TModel>(path, settings);
+        public TModel ReadOrCreate<TModel>(string path, bool minify = false) where TModel : class, new() => this.ReadOrCreate(path, this.GetModContentSource(), null, () => new TModel(), minify);
+        public TModel ReadOrCreate<TModel>(string path, IContentSource source, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class, new() => this.ReadOrCreate(path, source, settings, () => new TModel(), minify);
+        public TModel ReadOrCreate<TModel>(string path, Func<TModel> modelFactory, bool minify = false) where TModel : class => this.ReadOrCreate(path, this.GetModContentSource(), null, modelFactory, minify);
+        public TModel ReadOrCreate<TModel>(string path, IContentSource source, Action<JsonSerializerSettings> settings, Func<TModel> modelFactory, bool minify = false) where TModel : class {
+            TModel model = this.ReadJson<TModel>(path, source, settings);
             if (model == null) {
                 model = modelFactory();
                 this.WriteJson(path, model, settings, minify);
             }
             return model;
+        }
+
+        private IContentSource GetModContentSource() {
+            return new ModContentSource(this._coreApi.Owner.Helper);
         }
 
         private static JsonSerializerSettings CloneSettings(JsonSerializerSettings source) {

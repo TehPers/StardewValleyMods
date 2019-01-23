@@ -2,6 +2,6 @@
 
 namespace TehPers.CoreMod.Drawing {
     internal interface ITextureTrackerInternal {
-        void AddHelper(GameAssetLocation textureLocation, TextureDrawingHelper helper);
+        void AddHelper(AssetLocation textureLocation, TrackedTexture trackedTexture);
     }
 }
