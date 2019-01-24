@@ -1,7 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
+using TehPers.CoreMod.Api.Conflux.Matching;
 
 namespace TehPers.CoreMod.Api.Structs {
-    public readonly struct SColor {
+    public readonly struct SColor : IEquatable<SColor>, IEquatable<Color> {
         public uint PackedValue { get; }
         public byte A => unchecked((byte) (this.PackedValue >> 24));
         public byte R => unchecked((byte) (this.PackedValue >> 16));
@@ -14,6 +16,29 @@ namespace TehPers.CoreMod.Api.Structs {
         public SColor(byte r, byte g, byte b, byte a) : this((uint) (a << 24) + (uint) (r << 16) + (uint) (g << 8) + b) { }
         public SColor(uint packedValue) {
             this.PackedValue = packedValue;
+        }
+
+        public bool Equals(SColor other) {
+            return this.PackedValue == other.PackedValue;
+        }
+
+        public bool Equals(Color other) {
+            return this.A == other.A && this.R == other.R && this.G == other.G && this.B == other.B;
+        }
+
+        public override bool Equals(object obj) {
+            return obj.Match<object, bool>()
+                .When<Color>(this.Equals)
+                .When<SColor>(this.Equals)
+                .Else(false);
+        }
+
+        public override int GetHashCode() {
+            return (int) this.PackedValue;
+        }
+
+        public override string ToString() {
+            return $"#{this.PackedValue:x8}";
         }
 
         public static implicit operator Color(in SColor source) {

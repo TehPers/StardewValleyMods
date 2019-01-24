@@ -16,7 +16,7 @@ using TehPers.CoreMod.Api.Extensions;
 
 namespace TehPers.CoreMod.Drawing.Sprites {
     internal class DynamicSpriteSheet : SpriteSheetBase {
-        private readonly ModCore _coreMod;
+        private readonly IMod _coreMod;
         private readonly ITrackedTextureInternal _trackedTexture;
         private readonly List<MoveableSprite> _sprites = new List<MoveableSprite>();
         private bool _dirty = false;
@@ -24,7 +24,7 @@ namespace TehPers.CoreMod.Drawing.Sprites {
 
         public override ITrackedTexture TrackedTexture => this.GetTrackedTexture();
 
-        public DynamicSpriteSheet(ModCore coreMod) {
+        public DynamicSpriteSheet(IMod coreMod) {
             this._coreMod = coreMod;
             Texture2D initialTexture = new Texture2D(Game1.graphics.GraphicsDevice, 16, 16);
             this._trackedTexture = new TrackedTexture(initialTexture);

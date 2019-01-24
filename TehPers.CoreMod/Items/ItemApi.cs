@@ -1,64 +1,43 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
+using StardewValley;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Items.ItemProviders;
 using TehPers.CoreMod.Drawing.Sprites;
+using TehPers.CoreMod.Items.ItemProviders;
 
 namespace TehPers.CoreMod.Items {
     internal class ItemApi : IItemApi {
         private readonly IApiHelper _coreApiHelper;
-        private readonly DynamicSpriteSheet _customItemSpriteSheet;
+        private readonly ItemDelegator2 _itemDelegator;
 
-        public ItemApi(IApiHelper coreApiHelper, DynamicSpriteSheet customItemSpriteSheet) {
+        public IDefaultItemProviders DefaultItemProviders { get; }
+
+        public ItemApi(IApiHelper coreApiHelper, ItemDelegator2 itemDelegator) {
             this._coreApiHelper = coreApiHelper;
-            this._customItemSpriteSheet = customItemSpriteSheet;
+            this._itemDelegator = itemDelegator;
+            this.DefaultItemProviders = new DefaultItemProviders(coreApiHelper, itemDelegator);
         }
 
-        public ItemKey Register(string localKey, ISpriteSheet parentSheet, IModObject objectManager) {
-            // Create the item key
-            ItemKey key = new ItemKey(this._coreApiHelper.Owner, localKey);
-
-            // Register the item
-            if (!ItemDelegator.Register(key, parentSheet, objectManager)) {
-                this._coreApiHelper.Log($"Attempted to register the same key twice: {key}");
-            }
-
-            // Return the key
-            return key;
+        public bool TryCreate(string localKey, out Item item) {
+            return this.TryCreate(new ItemKey(this._coreApiHelper.Owner, localKey), out item);
         }
 
-        public bool TryGetObjectManager(string localKey, out IModObject manager) {
-            return this.TryGetObjectManager(new ItemKey(this._coreApiHelper.Owner, localKey), out manager);
+        public bool TryCreate(ItemKey key, out Item item) {
+            return this._itemDelegator.TryCreate(key, out item);
         }
 
-        public bool TryGetObjectManager(ItemKey key, out IModObject manager) {
-            if (ItemDelegator.TryGetInformation(key, out IObjectInformation info)) {
-                manager = info.Manager;
-                return true;
-            }
-
-            manager = default;
-            return false;
-        }
-
-        public bool TryGetIndex(string localKey, out int index) {
-            return this.TryGetIndex(new ItemKey(this._coreApiHelper.Owner, localKey), out index);
-        }
-
-        public bool TryGetIndex(ItemKey key, out int index) {
-            if (ItemDelegator.TryGetInformation(key, out IObjectInformation info) && info.Index is int storedIndex) {
-                index = storedIndex;
-                return true;
-            }
-
-            index = default;
-            return false;
+        public void AddProvider(Func<IItemDelegator, IItemProvider> providerFactory) {
+            this._itemDelegator.AddProvider(providerFactory);
+            this._coreApiHelper.Log("Item provider registered", LogLevel.Trace);
         }
 
         public ISprite CreateSprite(Texture2D texture, Rectangle? sourceRectangle = null) {
-            return this._customItemSpriteSheet.Add(this._coreApiHelper, texture, sourceRectangle ?? texture.Bounds);
+            return this._itemDelegator.CustomItemSpriteSheet.Add(this._coreApiHelper, texture, sourceRectangle ?? texture.Bounds);
         }
     }
 }

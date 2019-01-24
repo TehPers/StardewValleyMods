@@ -6,7 +6,7 @@ namespace TehPers.CoreMod.Api.Items {
         /// <summary>The mod which owns the item type identified by this key.</summary>
         public string OwnerId { get; }
 
-        /// <summary>The local name of this key. It uniquely identifies an item type registered by the <see cref="Owner"/>.</summary>
+        /// <summary>The local name of this key. It uniquely identifies an item type registered by its owner.</summary>
         public string LocalKey { get; }
 
         /// <summary>The global name of this key. It uniquely identifies an item type registered through Teh's Core Mod.</summary>

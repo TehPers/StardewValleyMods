@@ -27,8 +27,8 @@ namespace TehPers.FestiveSlimes {
             ModFestiveSlimes.Instance = this;
 
             this.Helper.Events.GameLoop.GameLaunched += (sender, args) => {
-                if (helper.ModRegistry.GetApi("TehPers.CoreMod") is Func<IMod, ICoreApi> coreFactory) {
-                    ModFestiveSlimes.CoreApi = coreFactory(this);
+                if (helper.ModRegistry.GetApi<ICoreApiFactory>("TehPers.CoreMod") is ICoreApiFactory coreFactory) {
+                    ModFestiveSlimes.CoreApi = coreFactory.GetApi(this);
                     this.InitializeMod(ModFestiveSlimes.CoreApi);
                 } else {
                     this.Monitor.Log("Failed to get core API. This mod will be disabled.", LogLevel.Error);
@@ -49,7 +49,7 @@ namespace TehPers.FestiveSlimes {
 
             this.Monitor.Log("Done!");
         }
-            
+
         private void AddItems(ICoreApi coreApi) {
             // Create a sprite for the candy which points to the main custom item sprite sheet
             ISprite candySprite = coreApi.Items.CreateSprite(this.Helper.Content.Load<Texture2D>("assets/items/candy.png"));
@@ -58,12 +58,12 @@ namespace TehPers.FestiveSlimes {
             BuffDescription candyBuffs = new BuffDescription(TimeSpan.FromMinutes(2.5), speed: 1);
 
             // Create the candy object manager
-            ModFood candy = new ModFood(this, candySprite, "candy", 20, 5, Category.Trash, false, candyBuffs) {
+            ModFood candy = new ModFood(coreApi, candySprite, "candy", 20, 5, Category.Trash, false, candyBuffs) {
                 Tint = Color.Red
             };
 
             // Register the candy with the core API to add it as an object in the game
-            coreApi.Items.Register("candy", coreApi.Drawing.CraftableSpriteSheet, candy);
+            coreApi.Items.DefaultItemProviders.ObjectProvider.Register("candy", candy);
         }
 
         private void ReplaceSlimes() {
@@ -144,8 +144,9 @@ namespace TehPers.FestiveSlimes {
 
         // List<Item> GreenSlime.getExtraDropItems()
         private static void GreenSlime_GetExtraDropItemsPostfix(ref List<Item> __result) {
-            if (SDateTime.Today.Season == Season.Fall && Game1.random.NextDouble() < 0.25 && ModFestiveSlimes.CoreApi.Items.TryGetIndex("candy", out int index)) {
-                __result.Add(new SObject(Vector2.Zero, index, 1));
+            if (SDateTime.Today.Season == Season.Fall && Game1.random.NextDouble() < 0.25 && ModFestiveSlimes.CoreApi.Items.TryCreate("candy", out Item candy)) {
+                //__result.Add(new SObject(Vector2.Zero, index, 1));
+                __result.Add(candy);
             }
         }
 
@@ -155,14 +156,19 @@ namespace TehPers.FestiveSlimes {
                 return;
             }
 
-            if (SDateTime.Today.Season == Season.Fall && ModFestiveSlimes.CoreApi.Items.TryGetIndex("candy", out int index)) {
-                if (Game1.random.NextDouble() < 0.5) {
-                    __result.Add(new SObject(Vector2.Zero, index, 1));
-                }
+            // Check if fall
+            if (SDateTime.Today.Season != Season.Fall) {
+                return;
+            }
 
-                if (Game1.random.NextDouble() < 0.25) {
-                    __result.Add(new SObject(Vector2.Zero, index, 1));
-                }
+            // Try to add a candy (50% chance)
+            if (Game1.random.NextDouble() < 0.5 && ModFestiveSlimes.CoreApi.Items.TryCreate("candy", out Item candy)) {
+                __result.Add(candy);
+            }
+
+            // Try to add a candy (25% chance)
+            if (Game1.random.NextDouble() < 0.25 && ModFestiveSlimes.CoreApi.Items.TryCreate("candy", out candy)) {
+                __result.Add(candy);
             }
         }
     }

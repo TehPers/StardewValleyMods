@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using StardewModdingAPI;
@@ -145,7 +146,7 @@ namespace TehPers.CoreMod.ContentPacks {
                 };
 
                 // Register the object
-                ItemDelegator.Register(key, this._api.Drawing.ObjectSpriteSheet, objectManager);
+                this._api.Items.DefaultItemProviders.ObjectProvider.Register(key, objectManager);
             }
         }
 

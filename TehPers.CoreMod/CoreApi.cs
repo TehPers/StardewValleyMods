@@ -9,7 +9,6 @@ using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Json;
 using TehPers.CoreMod.ContentLoading;
 using TehPers.CoreMod.Drawing;
-using TehPers.CoreMod.Drawing.Sprites;
 using TehPers.CoreMod.Items;
 using TehPers.CoreMod.Json;
 
@@ -24,10 +23,10 @@ namespace TehPers.CoreMod {
         public IItemApi Items => this._items.Value;
         public IJsonApi Json => this._json.Value;
 
-        public CoreApi(IMod owner, DynamicSpriteSheet customItemSpriteSheet) {
+        public CoreApi(IMod owner, ItemDelegator2 itemDelegator) {
             this.Owner = owner;
             this._drawing = new Lazy<IDrawingApi>(() => new DrawingApi(new ApiHelper(this, "Drawing")));
-            this._items = new Lazy<IItemApi>(() => new ItemApi(new ApiHelper(this, "Items"), customItemSpriteSheet));
+            this._items = new Lazy<IItemApi>(() => new ItemApi(new ApiHelper(this, "Items"), itemDelegator));
             this._json = new Lazy<IJsonApi>(() => new JsonApi(new ApiHelper(this, "Json")));
         }
 

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using TehPers.CoreMod.Api.Conflux.Matching;
-using TehPers.CoreMod.ContentPacks.Tokens.Parsing;
 
 namespace TehPers.CoreMod.ContentPacks.Data {
     internal class ContentPackData {

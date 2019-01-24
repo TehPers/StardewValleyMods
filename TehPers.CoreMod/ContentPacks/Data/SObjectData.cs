@@ -8,6 +8,8 @@ namespace TehPers.CoreMod.ContentPacks.Data {
         /// <summary>The path to the sprite relative to the current content pack.</summary>
         public string Sprite { get; set; } = null;
 
+        public SRectangle? FromArea { get; set; } = null;
+
         /// <summary>The color to tint the sprite.</summary>
         public SColor Tint { get; set; } = Color.White;
 

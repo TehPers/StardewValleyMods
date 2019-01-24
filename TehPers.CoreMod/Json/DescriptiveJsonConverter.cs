@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Json;
 
 namespace TehPers.CoreMod.Json {
@@ -43,21 +44,21 @@ namespace TehPers.CoreMod.Json {
 
             // Write the object
             writer.WriteStartObject();
-            foreach (KeyValuePair<string, JToken> jsonProperty in (IDictionary<string, JToken>) token) {
+            foreach ((string property, JToken valueToken) in (IDictionary<string, JToken>) token) {
                 // Write the property's description
-                if (descriptions.TryGetValue(jsonProperty.Key, out string description)) {
+                if (descriptions.TryGetValue(property, out string description)) {
                     writer.WritePropertyComment(description);
                 }
 
                 // Write the property's name
-                writer.WritePropertyName(jsonProperty.Key);
+                writer.WritePropertyName(property);
 
-                if (childrenValues.TryGetValue(jsonProperty.Key, out object childValue)) {
+                if (childrenValues.TryGetValue(property, out object childValue)) {
                     // Write the child object
                     serializer.Serialize(writer, childValue);
                 } else {
                     // Write the value
-                    jsonProperty.Value.WriteTo(writer, serializer.Converters.ToArray());
+                    valueToken.WriteTo(writer, serializer.Converters.ToArray());
                 }
             }
             writer.WriteEndObject();

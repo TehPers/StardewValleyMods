@@ -47,37 +47,39 @@ namespace TehPers.CoreMod.Items.Machines {
         }
 
         public static void RegisterEvents(IMod mod) {
+            throw new NotImplementedException();
+
             // Track changes in game locations
-            mod.Helper.Events.World.ObjectListChanged += (sender, changed) => {
-                // Create new states for added machines
-                foreach (KeyValuePair<Vector2, SObject> addedKV in changed.Added) {
-                    // Check if the object added was a registered machine
-                    if (!(ItemDelegator.TryGetInformation(addedKV.Value.ParentSheetIndex, out IObjectInformation info) && info.Manager is IMachine machine)) {
-                        continue;
-                    }
-
-                    // Start tracking the state of the machine
-                    IMachineInformation state = new MachineInformation(changed.Location, addedKV.Key);
-                    MachineDelegator._trackedMachines[new LocationPosition(changed.Location, addedKV.Key)] = state;
-
-                    // Signal the machine's manager
-                    machine.Placed(state);
-                }
-
-                // Remove tracked states for removed objects
-                foreach (KeyValuePair<Vector2, SObject> removedKV in changed.Removed) {
-                    // Try to get the object's machine state
-                    if (!MachineDelegator.TryGetMachineState(removedKV.Value, changed.Location, out IMachine machine, out IMachineInformation state)) {
-                        return;
-                    }
-
-                    // Stop tracking the state of the machine
-                    MachineDelegator._trackedMachines.Remove(new LocationPosition(changed.Location, removedKV.Key));
-
-                    // Signal the machine's manager
-                    machine.Removed(state);
-                }
-            };
+            // mod.Helper.Events.World.ObjectListChanged += (sender, changed) => {
+            //     // Create new states for added machines
+            //     foreach ((Vector2 position, SObject addedObject) in changed.Added) {
+            //         // Check if the object added was a registered machine
+            //         if (!(ItemDelegator.TryGetInformation(addedObject.ParentSheetIndex, out IObjectInformation info) && info.Manager is IMachine machine)) {
+            //             continue;
+            //         }
+            // 
+            //         // Start tracking the state of the machine
+            //         IMachineInformation state = new MachineInformation(changed.Location, position);
+            //         MachineDelegator._trackedMachines[new LocationPosition(changed.Location, position)] = state;
+            // 
+            //         // Signal the machine's manager
+            //         machine.Placed(state);
+            //     }
+            // 
+            //     // Remove tracked states for removed objects
+            //     foreach ((Vector2 position, SObject removedObject) in changed.Removed) {
+            //         // Try to get the object's machine state
+            //         if (!MachineDelegator.TryGetMachineState(removedObject, changed.Location, out IMachine machine, out IMachineInformation state)) {
+            //             return;
+            //         }
+            // 
+            //         // Stop tracking the state of the machine
+            //         MachineDelegator._trackedMachines.Remove(new LocationPosition(changed.Location, position));
+            // 
+            //         // Signal the machine's manager
+            //         machine.Removed(state);
+            //     }
+            // };
         }
 
         private static void UpdateWhenCurrentLocationPrefix(GameLocation __instance) {
@@ -191,14 +193,14 @@ namespace TehPers.CoreMod.Items.Machines {
                     // Check if the request failed
                     if (failed) {
                         // Revert changes to the player's inventory
-                        foreach (KeyValuePair<Item, int> kv in originalStacks) {
-                            kv.Key.Stack = kv.Value;
+                        foreach ((Item item, int quantity) in originalStacks) {
+                            item.Stack = quantity;
                         }
                     } else {
                         // Remove empty stacks from the player's inventory
-                        foreach (KeyValuePair<Item, int> kv in originalStacks) {
-                            if (kv.Key.Stack == 0) {
-                                who.removeItemFromInventory(kv.Key);
+                        foreach ((Item item, _) in originalStacks) {
+                            if (item.Stack == 0) {
+                                who.removeItemFromInventory(item);
                             }
                         }
 
@@ -248,18 +250,20 @@ namespace TehPers.CoreMod.Items.Machines {
         }
 
         private static bool TryGetMachineState(SObject obj, GameLocation location, out IMachine machine, out IMachineInformation state) {
-            // Check if this object is a registered machine
-            if (ItemDelegator.TryGetInformation(obj.ParentSheetIndex, out IObjectInformation info) && info.Manager is IMachine manager) {
-                // Check if the machine's state is being tracked here
-                if (MachineDelegator._trackedMachines.TryGetValue(new LocationPosition(location, obj.TileLocation), out state)) {
-                    machine = manager;
-                    return true;
-                }
-            }
+            throw new NotImplementedException();
 
-            machine = default;
-            state = default;
-            return false;
+            // Check if this object is a registered machine
+            // if (ItemDelegator.TryGetInformation(obj.ParentSheetIndex, out IObjectInformation info) && info.Manager is IMachine manager) {
+            //     // Check if the machine's state is being tracked here
+            //     if (MachineDelegator._trackedMachines.TryGetValue(new LocationPosition(location, obj.TileLocation), out state)) {
+            //         machine = manager;
+            //         return true;
+            //     }
+            // }
+            // 
+            // machine = default;
+            // state = default;
+            // return false;
         }
 
         private class CheckForActionState {
