@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Microsoft.Xna.Framework;
 using TehPers.CoreMod.Api.Conflux.Matching;
 
@@ -38,7 +39,7 @@ namespace TehPers.CoreMod.Api.Structs {
         }
 
         public override string ToString() {
-            return $"#{this.PackedValue:x8}";
+            return $"{{{{R:{this.R} G:{this.G} B:{this.B} A:{this.A}}}}}";
         }
 
         public static implicit operator Color(in SColor source) {
@@ -47,6 +48,46 @@ namespace TehPers.CoreMod.Api.Structs {
 
         public static implicit operator SColor(Color source) {
             return new SColor(source.R, source.G, source.B, source.A);
+        }
+
+        public static SColor operator +(in SColor first, in SColor second) {
+            byte r = (byte) Math.Min(byte.MaxValue, first.R + second.R);
+            byte g = (byte) Math.Min(byte.MaxValue, first.G + second.G);
+            byte b = (byte) Math.Min(byte.MaxValue, first.B + second.B);
+            byte a = (byte) Math.Min(byte.MaxValue, first.A + second.A);
+            return new SColor(r, g, b, a);
+        }
+
+        public static SColor operator -(in SColor first, in SColor second) {
+            byte r = (byte) Math.Max(byte.MinValue, first.R - second.R);
+            byte g = (byte) Math.Max(byte.MinValue, first.G - second.G);
+            byte b = (byte) Math.Max(byte.MinValue, first.B - second.B);
+            byte a = (byte) Math.Max(byte.MinValue, first.A - second.A);
+            return new SColor(r, g, b, a);
+        }
+
+        public static SColor operator *(in SColor first, in SColor second) {
+            float r = (first.R / 255f) * (second.R / 255f);
+            float g = (first.G / 255f) * (second.G / 255f);
+            float b = (first.B / 255f) * (second.B / 255f);
+            float a = (first.A / 255f) * (second.A / 255f);
+            return new SColor(r, g, b, a);
+        }
+
+        public static SColor operator /(in SColor first, in SColor second) {
+            float r = (float) first.R * byte.MaxValue / second.R;
+            float g = (float) first.G * byte.MaxValue / second.G;
+            float b = (float) first.B * byte.MaxValue / second.B;
+            float a = (float) first.A * byte.MaxValue / second.A;
+            return new SColor(r, g, b, a);
+        }
+
+        public static bool operator ==(in SColor first, in SColor second) {
+            return first.Equals(second);
+        }
+
+        public static bool operator !=(in SColor first, in SColor second) {
+            return !first.Equals(second);
         }
     }
 }

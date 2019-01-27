@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.Drawing {
     internal class ReadonlyDrawingInfo : IReadonlyDrawingInfo {
         public Texture2D Texture { get; }
-        public Rectangle? SourceRectangle { get; }
-        public Rectangle Destination { get; }
-        public Color Tint { get; }
+        public SRectangle? SourceRectangle { get; }
+        public SRectangle Destination { get; }
+        public SColor Tint { get; }
         public SpriteBatch Batch { get; }
         public Vector2 Origin { get; }
         public float Rotation { get; }
@@ -27,7 +28,7 @@ namespace TehPers.CoreMod.Drawing {
         }
 
         public Vector2 GetScale() {
-            Rectangle source = this.SourceRectangle ?? this.Texture.Bounds;
+            SRectangle source = this.SourceRectangle ?? this.Texture.Bounds;
             return new Vector2((float) this.Destination.Width / source.Width, (float) this.Destination.Height / source.Height);
         }
     }

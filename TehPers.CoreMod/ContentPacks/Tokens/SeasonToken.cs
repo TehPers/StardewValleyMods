@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Configuration;
 using StardewModdingAPI;
-using StardewValley;
 using TehPers.CoreMod.Api.ContentPacks;
 using TehPers.CoreMod.Api.ContentPacks.Tokens;
 using TehPers.CoreMod.Api.Environment;
@@ -26,12 +24,12 @@ namespace TehPers.CoreMod.ContentPacks.Tokens {
             }
         }
 
-        public TokenValue GetValue(ITokenHelper helper, string[] arguments) {
+        public string GetValue(ITokenHelper helper, string[] arguments) {
             if (arguments.Any()) {
                 throw new ArgumentException("Season token doesn't accept any arguments.");
             }
 
-            return Context.IsWorldReady ? new TokenValue(SDateTime.Today.Season.GetName()) : new TokenValue();
+            return Context.IsWorldReady ? SDateTime.Today.Season.GetName() : "null";
         }
         public bool IsValidInContext(IContext context) {
             return context.CanChange;

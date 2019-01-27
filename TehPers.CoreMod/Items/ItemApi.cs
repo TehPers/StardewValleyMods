@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -13,11 +14,11 @@ using TehPers.CoreMod.Items.ItemProviders;
 namespace TehPers.CoreMod.Items {
     internal class ItemApi : IItemApi {
         private readonly IApiHelper _coreApiHelper;
-        private readonly ItemDelegator2 _itemDelegator;
+        private readonly ItemDelegator _itemDelegator;
 
         public IDefaultItemProviders DefaultItemProviders { get; }
 
-        public ItemApi(IApiHelper coreApiHelper, ItemDelegator2 itemDelegator) {
+        public ItemApi(IApiHelper coreApiHelper, ItemDelegator itemDelegator) {
             this._coreApiHelper = coreApiHelper;
             this._itemDelegator = itemDelegator;
             this.DefaultItemProviders = new DefaultItemProviders(coreApiHelper, itemDelegator);
@@ -27,8 +28,23 @@ namespace TehPers.CoreMod.Items {
             return this.TryCreate(new ItemKey(this._coreApiHelper.Owner, localKey), out item);
         }
 
+        public bool TryParseKey(string source, out ItemKey key) {
+            return this._itemDelegator.TryParseKey(source, out key);
+        }
+
         public bool TryCreate(ItemKey key, out Item item) {
-            return this._itemDelegator.TryCreate(key, out item);
+            foreach (IItemProvider provider in this._itemDelegator.GetItemProviders()) {
+                if (provider.TryCreate(key, out item)) {
+                    return true;
+                }
+            }
+
+            item = default;
+            return false;
+        }
+
+        public bool IsInstanceOf(ItemKey key, Item item) {
+            return this._itemDelegator.GetItemProviders().Any(provider => provider.IsInstanceOf(key, item));
         }
 
         public void AddProvider(Func<IItemDelegator, IItemProvider> providerFactory) {

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.Drawing.Sprites {
     internal class SpriteSheet : SpriteSheetBase {
@@ -37,11 +38,11 @@ namespace TehPers.CoreMod.Drawing.Sprites {
             return y * this._widthInTiles + x;
         }
 
-        private Rectangle GetSourceRectangleFromIndex(int index) {
+        private SRectangle GetSourceRectangleFromIndex(int index) {
             int sheetWidth = this.TrackedTexture.CurrentTexture.Width;
             int u = index * this._spriteWidth % sheetWidth;
             int v = index * this._spriteWidth / sheetWidth * this._spriteHeight;
-            return new Rectangle(u, v, this._spriteWidth, this._spriteHeight);
+            return new SRectangle(u, v, this._spriteWidth, this._spriteHeight);
         }
     }
 }

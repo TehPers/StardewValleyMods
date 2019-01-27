@@ -60,6 +60,14 @@ namespace TehPers.CoreMod.Api.Structs {
             return new SRectangle(source.X, source.Y, source.Width, source.Height);
         }
 
+        public static bool operator ==(in SRectangle first, in SRectangle second) {
+            return first.Equals(second);
+        }
+
+        public static bool operator !=(in SRectangle first, in SRectangle second) {
+            return !first.Equals(second);
+        }
+
         public static SRectangle Empty => new SRectangle();
     }
 }

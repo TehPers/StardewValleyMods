@@ -8,11 +8,11 @@ using TehPers.CoreMod.Drawing.Sprites;
 using TehPers.CoreMod.Items;
 
 namespace TehPers.CoreMod {
-    internal class CoreApiFactory : ICoreApiFactory {
+    public class CoreApiFactory : ICoreApiFactory {
         private readonly Dictionary<IMod, ICoreApi> _coreApis = new Dictionary<IMod, ICoreApi>();
-        private readonly ItemDelegator2 _itemDelegator;
+        private readonly ItemDelegator _itemDelegator;
 
-        public CoreApiFactory(ItemDelegator2 itemDelegator) {
+        internal CoreApiFactory(ItemDelegator itemDelegator) {
             this._itemDelegator = itemDelegator;
         }
 

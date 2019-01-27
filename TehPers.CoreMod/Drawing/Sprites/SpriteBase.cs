@@ -4,12 +4,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Drawing.Sprites;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.Drawing.Sprites {
     internal abstract class SpriteBase : ISprite {
         public int Index { get; }
         public ISpriteSheet ParentSheet { get; }
-        public abstract Rectangle? SourceRectangle { get; }
+        public abstract SRectangle? SourceRectangle { get; }
+        public int U => this.SourceRectangle?.X ?? 0;
+        public int V => this.SourceRectangle?.Y ?? 0;
         public int Width => this.SourceRectangle?.Width ?? this.ParentSheet.TrackedTexture.CurrentTexture.Width;
         public int Height => this.SourceRectangle?.Height ?? this.ParentSheet.TrackedTexture.CurrentTexture.Height;
 

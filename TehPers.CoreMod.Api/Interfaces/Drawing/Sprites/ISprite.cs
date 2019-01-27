@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.Api.Drawing.Sprites {
     public interface ISprite : ITextureEvents {
@@ -11,7 +12,13 @@ namespace TehPers.CoreMod.Api.Drawing.Sprites {
         ISpriteSheet ParentSheet { get; }
 
         /// <summary>The source rectangle for this sprite from the parent sheet.</summary>
-        Rectangle? SourceRectangle { get; }
+        SRectangle? SourceRectangle { get; }
+
+        /// <summary>The x-coordinate of the top-left corner of this sprite.</summary>
+        int U { get; }
+
+        /// <summary>The y-coordinate of the top-left corner of this sprite.</summary>
+        int V { get; }
 
         /// <summary>The width of this sprite.</summary>
         int Width { get; }

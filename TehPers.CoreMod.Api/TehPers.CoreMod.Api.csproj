@@ -50,13 +50,19 @@
   <ItemGroup>
     <Compile Include="Classes, Structs, Enums\ContentPacks\Tokens\TokenValue.cs" />
     <Compile Include="Classes, Structs, Enums\Extensions\DeconstructorExtensions.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\ModWeapon.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\WeaponType.cs" />
+    <Compile Include="Interfaces\Items\IItemComparer.cs" />
+    <Compile Include="Interfaces\Items\IItemCreator.cs" />
+    <Compile Include="Interfaces\Items\IModItem.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\ModItem.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Recipe.cs" />
     <Compile Include="Classes, Structs, Enums\Structs\SColor.cs" />
     <Compile Include="Classes, Structs, Enums\Structs\SPoint.cs" />
     <Compile Include="Classes, Structs, Enums\Structs\SRectangle.cs" />
     <Compile Include="Interfaces\ContentLoading\ICoreTranslation.cs" />
     <Compile Include="Interfaces\ContentLoading\ICoreTranslationHelper.cs" />
-    <Compile Include="Interfaces\ContentPacks\IContentPackValue.cs" />
+    <Compile Include="Interfaces\ContentPacks\IContentPackValueProvider.cs" />
     <Compile Include="Interfaces\ContentPacks\IContext.cs" />
     <Compile Include="Interfaces\ContentPacks\IContextSpecific.cs" />
     <Compile Include="Interfaces\ContentPacks\Tokens\IToken.cs" />
@@ -81,17 +87,15 @@
     <Compile Include="Conflux\Matching\MatchAllOperator.cs" />
     <Compile Include="Conflux\Matching\MatchExtensions.cs" />
     <Compile Include="Conflux\Matching\MatchOperator.cs" />
-    <Compile Include="Classes, Structs, Enums\Drawing\CraftablesTextureInfo.cs" />
     <Compile Include="Interfaces\Drawing\IDrawingInfo.cs" />
     <Compile Include="Interfaces\Drawing\IReadonlyDrawingInfo.cs" />
     <Compile Include="Interfaces\Drawing\ITrackedTexture.cs" />
     <Compile Include="Interfaces\Drawing\IDrawingApi.cs" />
     <Compile Include="Interfaces\Drawing\ITextureSourceInfo.cs" />
-    <Compile Include="Classes, Structs, Enums\Drawing\SpringObjectsTextureInfo.cs" />
-    <Compile Include="Classes, Structs, Enums\Drawing\TextureInformation.cs" />
     <Compile Include="Interfaces\ICoreApiFactory.cs" />
     <Compile Include="Interfaces\ICoreApiInitializer.cs" />
     <Compile Include="Interfaces\Items\IItemDelegator.cs" />
+    <Compile Include="Interfaces\Items\IModWeapon.cs" />
     <Compile Include="Interfaces\Items\ItemProviders\IDefaultItemProviders.cs" />
     <Compile Include="Interfaces\Items\IItemApi.cs" />
     <Compile Include="Interfaces\Drawing\Sprites\ISpriteSheet.cs" />
@@ -100,7 +104,7 @@
     <Compile Include="Classes, Structs, Enums\ContentLoading\GameContentSource.cs" />
     <Compile Include="Classes, Structs, Enums\ContentLoading\ContentPackContentSource.cs" />
     <Compile Include="Interfaces\Items\ItemProviders\IItemProvider.cs" />
-    <Compile Include="Interfaces\Items\ItemProviders\IObjectProvider.cs" />
+    <Compile Include="Interfaces\Items\ItemProviders\IItemRegistry.cs" />
     <Compile Include="System\Runtime\CompilerServices\TupleElementNamesAttribute.cs" />
     <Compile Include="System\ValueTuple.cs">
       <DependentUpon>ValueTuple.tt</DependentUpon>
@@ -112,7 +116,6 @@
     <Compile Include="Classes, Structs, Enums\Items\BuffDescription.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Category.cs" />
     <Compile Include="Interfaces\Items\IModObject.cs" />
-    <Compile Include="Interfaces\Items\IObjectInformation.cs" />
     <Compile Include="Interfaces\Items\Machines\IMachine.cs" />
     <Compile Include="Interfaces\Items\Machines\IMachineInformation.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Machines\ObjectRequest.cs" />

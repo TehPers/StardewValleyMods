@@ -221,17 +221,5 @@ namespace TehPers.CoreMod.Api.Extensions {
             // Return to last state
             batch.Begin(SpriteSortMode.BackToFront, oldBlendState, SamplerState.PointClamp, oldStencilState, oldRasterizerState);
         }
-
-        /// <summary>Multiplies two colors together, returning the third resulting color.</summary>
-        /// <param name="first">The first color.</param>
-        /// <param name="second">The second color.</param>
-        /// <returns>A third color where each component is the product of the same component of the two colors being multiplied.</returns>
-        public static Color Multiply(this Color first, Color second) {
-            float r = (float) first.R * second.R / byte.MaxValue;
-            float g = (float) first.G * second.G / byte.MaxValue;
-            float b = (float) first.B * second.B / byte.MaxValue;
-            float a = (float) first.A * second.A / byte.MaxValue;
-            return new Color(r, g, b, a);
-        }
     }
 }

@@ -63,7 +63,7 @@ namespace TehPers.FestiveSlimes {
             };
 
             // Register the candy with the core API to add it as an object in the game
-            coreApi.Items.DefaultItemProviders.ObjectProvider.Register("candy", candy);
+            coreApi.Items.DefaultItemProviders.Objects.Register("candy", candy);
         }
 
         private void ReplaceSlimes() {

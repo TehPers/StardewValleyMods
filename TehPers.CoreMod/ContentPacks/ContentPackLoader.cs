@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley.Menus;
+using StardewValley.Tools;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Conflux.Collections;
 using TehPers.CoreMod.Api.ContentLoading;
@@ -15,6 +16,7 @@ using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Structs;
+using TehPers.CoreMod.ContentLoading;
 using TehPers.CoreMod.ContentPacks.Data;
 using TehPers.CoreMod.ContentPacks.Data.Converters;
 using TehPers.CoreMod.Items;
@@ -52,21 +54,25 @@ namespace TehPers.CoreMod.ContentPacks {
             // Create the content source for this pack
             ContentPackContentSource contentSource = new ContentPackContentSource(contentPack);
 
+            // Create the translation helper for this pack
+            ContentPackTranslationHelper translationHelper = new ContentPackTranslationHelper(this._api, contentSource);
+
             // Load all content files
-            ContentSource[] data = this.LoadData(contentSource).ToArray();
+            ContentPackDataInfo[] data = this.LoadData(contentSource).ToArray();
 
             // Load all the items from the content pack
-            this.LoadItems(contentPack, contentSource, data);
+            this.LoadObjects(contentPack, contentSource, translationHelper, data);
+            this.LoadWeapons(contentPack, contentSource, translationHelper, data);
         }
 
-        private IEnumerable<ContentSource> LoadData(IContentSource contentSource) => this.LoadData(contentSource, new HashSet<string>(), "", "content.json");
-        private IEnumerable<ContentSource> LoadData(IContentSource contentSource, ISet<string> loadedPaths, string configDir, string configName) {
+        private IEnumerable<ContentPackDataInfo> LoadData(IContentSource contentSource) => this.LoadData(contentSource, new HashSet<string>(), "", "content.json");
+        private IEnumerable<ContentPackDataInfo> LoadData(IContentSource contentSource, ISet<string> loadedPaths, string configDir, string configName) {
             // Combine the directory and file name
             string fullPath = Path.Combine(configDir, configName);
 
             // Check if this data has already been loaded
             if (!loadedPaths.Add(fullPath)) {
-                return Enumerable.Empty<ContentSource>();
+                return Enumerable.Empty<ContentPackDataInfo>();
             }
 
             // Set up all the custom converters
@@ -82,18 +88,18 @@ namespace TehPers.CoreMod.ContentPacks {
             }
 
             // Get all child include paths
-            IEnumerable<ContentSource> childIncludes = from relativeChildPath in curData.Include
-                                                       let fullChildPath = Path.Combine(configDir, relativeChildPath)
-                                                       let childDir = Path.GetDirectoryName(fullChildPath)
-                                                       let childName = Path.GetFileName(fullChildPath)
-                                                       from child in this.LoadData(contentSource, loadedPaths, childDir, childName)
-                                                       select child;
+            IEnumerable<ContentPackDataInfo> childIncludes = from relativeChildPath in curData.Include
+                                                             let fullChildPath = Path.Combine(configDir, relativeChildPath)
+                                                             let childDir = Path.GetDirectoryName(fullChildPath)
+                                                             let childName = Path.GetFileName(fullChildPath)
+                                                             from child in this.LoadData(contentSource, loadedPaths, childDir, childName)
+                                                             select child;
 
             // Return all the paths
-            return new ContentSource(fullPath, curData).Yield().Concat(childIncludes);
+            return new ContentPackDataInfo(configDir, configName, curData).Yield().Concat(childIncludes);
         }
 
-        private Dictionary<string, PossibleConfigValuesData> GetConfigStructure(IEnumerable<ContentSource> sources) {
+        private Dictionary<string, PossibleConfigValuesData> GetConfigStructure(IEnumerable<ContentPackDataInfo> sources) {
             var configPairs = (from source in sources
                                from kv in source.Content.Config
                                select new { Key = kv.Key, PossibleValues = kv.Value, Source = source }).ToArray();
@@ -114,14 +120,14 @@ namespace TehPers.CoreMod.ContentPacks {
             return configPairs.ToDictionary(pair => pair.Key, pair => pair.PossibleValues);
         }
 
-        private void LoadItems(IContentPack contentPack, IContentSource contentSource, IEnumerable<ContentSource> sources) {
-            var items = (from source in sources
-                         from entry in source.Content.Objects
-                         select new { Source = source, Name = entry.Key, Data = entry.Value }).ToArray();
+        private void LoadObjects(IContentPack contentPack, IContentSource contentSource, ICoreTranslationHelper translationHelper, IEnumerable<ContentPackDataInfo> sources) {
+            var objects = (from source in sources
+                           from entry in source.Content.Objects
+                           select new { Source = source, Name = entry.Key, Data = entry.Value }).ToArray();
 
             // Create exceptions for conflicting item names
-            Exception[] exceptions = (from itemGroup in this.GetDuplicateGroups(items, item => item.Name)
-                                      select new Exception($"Item '{itemGroup.Key}' is being registered by multiple content files: {string.Join(", ", itemGroup.Select(item => $"'{item.Source.Path}'"))}")).ToArray();
+            Exception[] exceptions = (from itemGroup in this.GetDuplicateGroups(objects, item => item.Name)
+                                      select new Exception($"Object '{itemGroup.Key}' is being registered by multiple content files: {string.Join(", ", itemGroup.Select(item => $"'{item.Source.FullPath}'"))}")).ToArray();
 
             // Throw the exceptions
             if (exceptions.Any()) {
@@ -133,35 +139,74 @@ namespace TehPers.CoreMod.ContentPacks {
             }
 
             // Create each object
-            foreach (var item in items) {
-                ItemKey key = new ItemKey(contentPack.Manifest, item.Name);
+            foreach (var obj in objects) {
+                ItemKey key = new ItemKey(contentPack.Manifest, obj.Name);
 
                 // Create the sprite for the object
-                // TODO: Create each possible sprite (in the case of tokens and conditional values)
-                ISprite sprite = this.CreateSprite(contentSource, item.Name, item.Data);
+                ISprite sprite = this.CreateSprite(contentSource, obj.Source, obj.Name, obj.Data);
 
                 // Create the object's manager
-                ModObject objectManager = new ModObject(this._api, sprite, key.LocalKey, item.Data.Cost, new Category(item.Data.CategoryNumber, item.Data.CategoryName), item.Data.Edibility) {
-                    Tint = item.Data.Tint
+                ModObject objectManager = new ModObject(translationHelper, sprite, key.LocalKey, obj.Data.Cost, new Category(obj.Data.CategoryNumber, obj.Data.CategoryName), obj.Data.Edibility) {
+                    Tint = obj.Data.Tint
                 };
 
                 // Register the object
-                this._api.Items.DefaultItemProviders.ObjectProvider.Register(key, objectManager);
+                this._api.Items.DefaultItemProviders.Objects.Register(key, objectManager);
+                this._api.Owner.Monitor.Log($" - {key} registered (object)", LogLevel.Trace);
             }
         }
 
-        private ISprite CreateSprite(IContentSource contentSource, string key, SObjectData objectData) {
+        private void LoadWeapons(IContentPack contentPack, IContentSource contentSource, ICoreTranslationHelper translationHelper, IEnumerable<ContentPackDataInfo> sources) {
+            var weapons = (from source in sources
+                           from entry in source.Content.Weapons
+                           select new { Source = source, Name = entry.Key, Data = entry.Value }).ToArray();
+
+            // Create exceptions for conflicting item names
+            Exception[] exceptions = (from itemGroup in this.GetDuplicateGroups(weapons, item => item.Name)
+                                      select new Exception($"Weapon '{itemGroup.Key}' is being registered by multiple content files: {string.Join(", ", itemGroup.Select(item => $"'{item.Source.FullPath}'"))}")).ToArray();
+
+            // Throw the exceptions
+            if (exceptions.Any()) {
+                if (exceptions.Length > 1) {
+                    throw new AggregateException(exceptions);
+                }
+
+                throw exceptions.First();
+            }
+
+            // Create each weapon
+            foreach (var weapon in weapons) {
+                ItemKey key = new ItemKey(contentPack.Manifest, weapon.Name);
+
+                // Create the sprite for the object
+                ISprite sprite = this.CreateSprite(contentSource, weapon.Source, weapon.Name, weapon.Data);
+
+                // Create the weapon's manager
+                ModWeapon manager = new ModWeapon(translationHelper, key.LocalKey, sprite, weapon.Data.Type, weapon.Data.MinDamage, weapon.Data.MaxDamage, weapon.Data.Knockback, weapon.Data.Speed, weapon.Data.Accuracy, weapon.Data.Defense, weapon.Data.AreaOfEffect, weapon.Data.CritChance, weapon.Data.CritMultiplier) {
+                    Tint = weapon.Data.Tint
+                };
+
+                // Register the object
+                this._api.Items.DefaultItemProviders.Weapons.Register(key, manager);
+                this._api.Owner.Monitor.Log($" - {key} registered (weapon)", LogLevel.Trace);
+            }
+        }
+
+        private ISprite CreateSprite(IContentSource contentSource, ContentPackDataInfo source, string key, ItemData objectData) {
+            // TODO: Create each possible sprite (in the case of tokens and conditional values)
+
             // Try to get the sprite location
-            if (!(objectData.Sprite is string spriteLocation)) {
+            if (!(objectData.Texture is string spriteLocation)) {
                 throw new Exception($"{key} must have a valid sprite location.");
             }
 
             // Try to load the sprite
+            spriteLocation = Path.Combine(source.Directory, spriteLocation);
             if (!(contentSource.Load<Texture2D>(spriteLocation) is Texture2D spriteTexture)) {
                 throw new Exception($"{key}'s sprite location is invalid: {spriteLocation}");
             }
 
-            return this._api.Items.CreateSprite(spriteTexture);
+            return this._api.Items.CreateSprite(spriteTexture, objectData.FromArea);
         }
 
         private IEnumerable<IGrouping<TKey, T>> GetDuplicateGroups<T, TKey>(IEnumerable<T> source, Func<T, TKey> keySelector) {
@@ -171,12 +216,16 @@ namespace TehPers.CoreMod.ContentPacks {
                    select g;
         }
 
-        private class ContentSource {
-            public string Path { get; }
+        private class ContentPackDataInfo {
+            public string FullPath { get; }
+            public string Directory { get; }
+            public string FileName { get; }
             public ContentPackData Content { get; }
 
-            public ContentSource(string path, ContentPackData content) {
-                this.Path = path;
+            public ContentPackDataInfo(string directory, string fileName, ContentPackData content) {
+                this.FullPath = Path.Combine(directory, fileName);
+                this.Directory = directory;
+                this.FileName = fileName;
                 this.Content = content;
             }
         }

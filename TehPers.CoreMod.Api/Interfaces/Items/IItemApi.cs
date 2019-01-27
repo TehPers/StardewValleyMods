@@ -6,21 +6,21 @@ using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Items.ItemProviders;
 
 namespace TehPers.CoreMod.Api.Items {
-    public interface IItemApi {
+    public interface IItemApi : IItemCreator, IItemComparer {
         /// <summary>Default item provders. You can register items here.</summary>
         IDefaultItemProviders DefaultItemProviders { get; }
-        
+
         /// <summary>Tries to create an instance of the specified item.</summary>
         /// <param name="localKey">The key for the item.</param>
         /// <param name="item">The created item, if successful, with a stack size of 1.</param>
         /// <returns>True if successful, false otherwise.</returns>
         bool TryCreate(string localKey, out Item item);
 
-        /// <summary>Tries to create an instance of the specified item.</summary>
-        /// <param name="key">The key for the item.</param>
-        /// <param name="item">The created item, if successful, with a stack size of 1.</param>
-        /// <returns>True if successful, false otherwise.</returns>
-        bool TryCreate(ItemKey key, out Item item);
+        /// <summary>Tries to create an <see cref="ItemKey"/> from a string.</summary>
+        /// <param name="source">The source string to parse.</param>
+        /// <param name="key">The item key, if successful.</param>
+        /// <returns>True if successfully parsed, false otherwise.</returns>
+        bool TryParseKey(string source, out ItemKey key);
 
         /// <summary>Adds a new item provider, which can be used to construct items from their keys. This is useful for custom content packs, for example.</summary>
         /// <param name="providerFactory">A method which creates a new item provider from the given item delegator.</param>

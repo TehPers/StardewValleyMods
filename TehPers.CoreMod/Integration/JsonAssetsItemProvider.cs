@@ -21,7 +21,7 @@ namespace TehPers.CoreMod.Integration {
             this._jsonAssetsApi = jsonAssetsApi;
         }
 
-        public bool TryCreateItem(ItemKey key, out Item item) {
+        public bool TryCreate(ItemKey key, out Item item) {
             if (this._coreApi.Owner.Helper.ModRegistry.Get(key.OwnerId) is IModInfo ownerInfo && ownerInfo.Manifest.ContentPackFor.UniqueID == "spacechase0.JsonAssets") {
                 // Try to get it as an object
                 int index = this._jsonAssetsApi.GetObjectId(key.LocalKey);

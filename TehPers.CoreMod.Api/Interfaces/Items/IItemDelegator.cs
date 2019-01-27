@@ -1,4 +1,11 @@
-﻿namespace TehPers.CoreMod.Api.Items {
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Drawing.Sprites;
+using TehPers.CoreMod.Api.Items.ItemProviders;
+
+namespace TehPers.CoreMod.Api.Items {
     public interface IItemDelegator {
         /// <summary>Tries to register a particular key. Once registered, an index will be assigned to the key whenever the item is available to be used.</summary>
         /// <param name="key">The key to register.</param>
@@ -10,5 +17,15 @@
         /// <param name="index">The index assigned to the given key, if one is assigned.</param>
         /// <returns>True if successful, false otherwise.</returns>
         bool TryGetIndex(ItemKey key, out int index);
+
+        /// <summary>Overrides when an item is drawn from a particular sprite sheet.</summary>
+        /// <param name="key">The key for the item to override.</param>
+        /// <param name="parentSheet">The sprite sheet the item would normally be drawn from by the game.</param>
+        /// <param name="override">The callback which overrides the drawing call. It accepts the drawing info, the source position offset percentage, and the source size percentage and may override the drawing behavior.</param>
+        void OverrideSprite(ItemKey key, ISpriteSheet parentSheet, Action<IDrawingInfo, Vector2, Vector2> @override);
+
+        /// <summary>Returns all the registered item providers.</summary>
+        /// <returns>An <see cref="IEnumerable{T}"/> containing all the registered item providers.</returns>
+        IEnumerable<IItemProvider> GetItemProviders();
     }
 }

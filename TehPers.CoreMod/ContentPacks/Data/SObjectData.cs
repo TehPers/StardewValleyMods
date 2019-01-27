@@ -1,18 +1,8 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.ContentPacks.Data {
     // TODO: Use IContentPackValue instead and support tokens that change values
-    internal class SObjectData {
-        /// <summary>The path to the sprite relative to the current content pack.</summary>
-        public string Sprite { get; set; } = null;
-
-        public SRectangle? FromArea { get; set; } = null;
-
-        /// <summary>The color to tint the sprite.</summary>
-        public SColor Tint { get; set; } = Color.White;
-
+    internal class SObjectData : ItemData {
         /// <summary>The cost of the item at normal quality.</summary>
         public int Cost { get; set; } = 0;
 

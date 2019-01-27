@@ -5,9 +5,9 @@ namespace TehPers.CoreMod.Api.ContentPacks.Tokens {
         /// <summary>Get the value of the token, optionally with an argument.</summary>
         /// <param name="helper">The token helper.</param>
         /// <param name="arguments">The arguments passed to the token.</param>
-        /// <returns>The value of the token.</returns>
+        /// <returns>The string value of the token.</returns>
         /// <exception cref="ArgumentException"><paramref name="arguments"/> is invalid.</exception>
-        TokenValue GetValue(ITokenHelper helper, string[] arguments);
+        string GetValue(ITokenHelper helper, string[] arguments);
 
         /// <summary>Invoked whenever the value is updated.</summary>
         event EventHandler Changed;

@@ -39,5 +39,15 @@ namespace TehPers.CoreMod.Api.Structs {
         public override string ToString() {
             return $"{{{{X:{this.X} Y:{this.Y}}}}}";
         }
+
+        public static bool operator ==(in SPoint first, in SPoint second) {
+            return first.Equals(second);
+        }
+
+        public static bool operator !=(in SPoint first, in SPoint second) {
+            return !first.Equals(second);
+        }
+
+        public static SPoint Zero => new SPoint(0, 0);
     }
 }

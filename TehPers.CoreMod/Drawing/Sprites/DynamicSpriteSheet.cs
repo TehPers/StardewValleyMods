@@ -13,6 +13,7 @@ using TehPers.CoreMod.Api.Conflux.Collections;
 using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.Drawing.Sprites {
     internal class DynamicSpriteSheet : SpriteSheetBase {
@@ -129,7 +130,7 @@ namespace TehPers.CoreMod.Drawing.Sprites {
 
         private class MoveableSprite : SpriteBase {
             private Rectangle _sourceRectangle;
-            public override Rectangle? SourceRectangle => this._sourceRectangle;
+            public override SRectangle? SourceRectangle => this._sourceRectangle;
             public Color[] Data { get; }
 
             public MoveableSprite(int index, ISpriteSheet parentSheet, Texture2D texture, Rectangle sourceRectangle) : base(index, parentSheet) {
@@ -156,14 +157,15 @@ namespace TehPers.CoreMod.Drawing.Sprites {
                         return data;
                     }
 
-                    // Create a sliceable array out of the data
-                    ArrayX<Color> sliceableData = ArrayX<Color>.FromLinked(data);
+                    // Copy the data to a new array
+                    Color[] spriteData = new Color[sourceRectangle.Width * sourceRectangle.Height];
+                    for (int x = 0; x < sourceRectangle.Width; x++) {
+                        for (int y = 0; y < sourceRectangle.Height; y++) {
+                            spriteData[y * sourceRectangle.Width + x] = data[(y + sourceRectangle.Y) * texture.Width + x + sourceRectangle.X];
+                        }
+                    }
 
-                    // For each row in the rectangle, return that slice from the source data
-                    return Enumerable.Range(sourceRectangle.Y, sourceRectangle.Height) // For each slice
-                        .Select(y => y * texture.Width + sourceRectangle.X) // Calculate the starting index for each slice
-                        .SelectMany(sliceOffset => sliceableData[(sliceOffset, sliceOffset + sourceRectangle.Width)]) // Grab the relevant data for each slice
-                        .ToArray(); // Convert into an array
+                    return spriteData;
                 } else {
                     throw new NotSupportedException($"Textures with the surface format {texture.Format} are not supported.");
                 }

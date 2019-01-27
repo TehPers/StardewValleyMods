@@ -25,6 +25,9 @@ namespace TehPers.CoreMod.Drawing {
         private readonly TextureTracker _textureTracker;
 
         public Texture2D WhitePixel => DrawingApi._whitePixel.Value;
+        public ISpriteSheet ObjectSpriteSheet { get; }
+        public ISpriteSheet WeaponSpriteSheet { get; }
+        public ISpriteSheet CraftableSpriteSheet { get; }
 
         public DrawingApi(IApiHelper coreApiHelper) {
             this._coreApiHelper = coreApiHelper;
@@ -32,6 +35,7 @@ namespace TehPers.CoreMod.Drawing {
             coreApiHelper.Owner.Helper.Content.AssetEditors.Add(this._textureTracker);
 
             this.ObjectSpriteSheet = new SpriteSheet(this.GetTrackedTexture(new AssetLocation("Maps/springobjects", ContentSource.GameContent)), 16, 16);
+            this.WeaponSpriteSheet= new SpriteSheet(this.GetTrackedTexture(new AssetLocation("TileSheets/weapons", ContentSource.GameContent)), 16, 16);
             this.CraftableSpriteSheet = new SpriteSheet(this.GetTrackedTexture(new AssetLocation("TileSheets/Craftables", ContentSource.GameContent)), 16, 32);
         }
 
@@ -72,11 +76,5 @@ namespace TehPers.CoreMod.Drawing {
 
             return new SpriteSheet(trackedTexture, spriteWidth, spriteHeight);
         }
-
-        /// <inheritdoc />
-        public ISpriteSheet ObjectSpriteSheet { get; }
-
-        /// <inheritdoc />
-        public ISpriteSheet CraftableSpriteSheet { get; }
     }
 }

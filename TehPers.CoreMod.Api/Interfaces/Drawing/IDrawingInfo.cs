@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.Api.Drawing {
     public interface IDrawingInfo : IReadonlyDrawingInfo {
@@ -14,7 +15,7 @@ namespace TehPers.CoreMod.Api.Drawing {
 
         /// <summary>Adds a tint by multiplying it with the current tint.</summary>
         /// <param name="tint">The tint to add.</param>
-        void AddTint(Color tint);
+        void AddTint(in SColor tint);
 
         /// <summary>Prevents this drawing information from being drawn.</summary>
         void Cancel();
@@ -33,11 +34,11 @@ namespace TehPers.CoreMod.Api.Drawing {
         /// <summary>Sets the source texture and rectangle.</summary>
         /// <param name="texture">The new source texture.</param>
         /// <param name="sourceRectangle">The new source rectangle.</param>
-        void SetSource(Texture2D texture, Rectangle? sourceRectangle);
+        void SetSource(Texture2D texture, in SRectangle? sourceRectangle);
 
         /// <summary>Sets the destination rectangle for the texture.</summary>
         /// <param name="destination">The new destination rectangle.</param>
-        void SetDestination(Rectangle destination);
+        void SetDestination(in SRectangle destination);
 
         /// <summary>Sets the rotational and scaling origin for the texture. Any scaling or rotating of the texture will be centered about the given vector.</summary>
         /// <param name="origin">The new rotational and scaling origin.</param>
@@ -49,7 +50,7 @@ namespace TehPers.CoreMod.Api.Drawing {
 
         /// <summary>Sets the tint color.</summary>
         /// <param name="tint">The new tint color.</param>
-        void SetTint(Color tint);
+        void SetTint(in SColor tint);
 
         /// <summary>Sets the sprite effects for the texture, which include flipping it horizontally and vertically when drawn.</summary>
         /// <param name="effects">The new effects to apply to the texture.</param>

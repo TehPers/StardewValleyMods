@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.Api.Drawing {
     public interface IReadonlyDrawingInfo {
@@ -7,13 +8,13 @@ namespace TehPers.CoreMod.Api.Drawing {
         Texture2D Texture { get; }
 
         /// <summary>The rectangle on the source texture representing the area to be drawn, or <c>null</c> if the whole source texture should be drawn.</summary>
-        Rectangle? SourceRectangle { get; }
+        SRectangle? SourceRectangle { get; }
 
         /// <summary>The rectangle the texture will be drawn to.</summary>
-        Rectangle Destination { get; }
+        SRectangle Destination { get; }
 
         /// <summary>The color being applied to the texture while drawing. The formula used depends on the state of the <see cref="SpriteBatch"/>, but usually this color is multiplied by the source to calculate the destination color.</summary>
-        Color Tint { get; }
+        SColor Tint { get; }
 
         /// <summary>The batch being used to draw the texture. Calls to this batch will not be intercepted by Teh's Core Mod during texture drawing events.</summary>
         SpriteBatch Batch { get; }

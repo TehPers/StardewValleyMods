@@ -9,7 +9,10 @@ namespace TehPers.CoreMod.ContentPacks.Data {
         /// <summary>Details about the config file. Format is { propertyName, possibleValues }.</summary>
         public Dictionary<string, PossibleConfigValuesData> Config { get; set; } = new Dictionary<string, PossibleConfigValuesData>();
 
-        /// <summary>Custom base objects added by the content pack, which override the texture Maps/springobjects.</summary>
+        /// <summary>Custom base objects, which override the texture "Maps/springobjects".</summary>
         public Dictionary<string, SObjectData> Objects { get; set; } = new Dictionary<string, SObjectData>();
+
+        /// <summary>Custom weapons, which override the texture "Maps/springobjects".</summary>
+        public Dictionary<string, WeaponData> Weapons { get; set; } = new Dictionary<string, WeaponData>();
     }
 }

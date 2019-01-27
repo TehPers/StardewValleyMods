@@ -5,8 +5,7 @@ using TehPers.CoreMod.Api.Environment;
 using TehPers.CoreMod.Api.Extensions;
 
 namespace TehPers.CoreMod.Api.Structs {
-    public readonly struct SDateTime : IComparable<SDateTime> {
-
+    public readonly struct SDateTime : IEquatable<SDateTime>, IComparable<SDateTime> {
         /// <summary>The total number of elapsed years.</summary>
         public float TotalYears => (float) this.TotalMinutes / (4f * 28f * 2400f);
 
@@ -56,7 +55,12 @@ namespace TehPers.CoreMod.Api.Structs {
 
         /// <inheritdoc />
         public override bool Equals(object obj) {
-            return obj is SDateTime other && this.CompareTo(other) == 0;
+            return obj is SDateTime other && this.Equals(other);
+        }
+
+        /// <inheritdoc />
+        public bool Equals(SDateTime other) {
+            return this.TotalMinutes == other.TotalMinutes;
         }
 
         /// <inheritdoc />
@@ -69,20 +73,21 @@ namespace TehPers.CoreMod.Api.Structs {
             return this.TotalMinutes.CompareTo(other.TotalMinutes);
         }
 
+        /// <inheritdoc />
         public override string ToString() {
             int timeOfDay = this.TimeOfDay;
             return $"{this.Season} {this.DayOfSeason}, {this.Year} {timeOfDay / 100}:{timeOfDay % 100}";
         }
 
-        public static SDateTime operator +(SDateTime first, STimeSpan second) => new SDateTime(0, 0, 0, first.TotalMinutes + second.TotalMinutes);
-        public static SDateTime operator -(SDateTime first, STimeSpan second) => new SDateTime(0, 0, 0, first.TotalMinutes - second.TotalMinutes);
-        public static STimeSpan operator -(SDateTime first, SDateTime second) => new STimeSpan(first.TotalMinutes - second.TotalMinutes);
-        public static bool operator >(SDateTime first, SDateTime second) => first.CompareTo(second) > 0;
-        public static bool operator >=(SDateTime first, SDateTime second) => first.CompareTo(second) >= 0;
-        public static bool operator <(SDateTime first, SDateTime second) => first.CompareTo(second) < 0;
-        public static bool operator <=(SDateTime first, SDateTime second) => first.CompareTo(second) <= 0;
-        public static bool operator ==(SDateTime first, SDateTime second) => first.Equals(second);
-        public static bool operator !=(SDateTime first, SDateTime second) => !first.Equals(second);
+        public static SDateTime operator +(in SDateTime first, in STimeSpan second) => new SDateTime(0, 0, 0, first.TotalMinutes + second.TotalMinutes);
+        public static SDateTime operator -(in SDateTime first, in STimeSpan second) => new SDateTime(0, 0, 0, first.TotalMinutes - second.TotalMinutes);
+        public static STimeSpan operator -(in SDateTime first, in SDateTime second) => new STimeSpan(first.TotalMinutes - second.TotalMinutes);
+        public static bool operator >(in SDateTime first, in SDateTime second) => first.CompareTo(second) > 0;
+        public static bool operator >=(in SDateTime first, in SDateTime second) => first.CompareTo(second) >= 0;
+        public static bool operator <(in SDateTime first, in SDateTime second) => first.CompareTo(second) < 0;
+        public static bool operator <=(in SDateTime first, in SDateTime second) => first.CompareTo(second) <= 0;
+        public static bool operator ==(in SDateTime first, in SDateTime second) => first.Equals(second);
+        public static bool operator !=(in SDateTime first, in SDateTime second) => !first.Equals(second);
 
         public static SDateTime FromDateAndTime(int year, Season season, int dayOfSeason, int timeOfDay) {
             return new SDateTime(year, season, dayOfSeason, 60 * (timeOfDay / 100) + timeOfDay % 100);
@@ -93,5 +98,7 @@ namespace TehPers.CoreMod.Api.Structs {
 
         /// <summary>The current date.</summary>
         public static SDateTime Today => new SDateTime(Game1.year, Game1.currentSeason?.GetSeason() ?? Season.Spring, Game1.dayOfMonth);
+
+
     }
 }

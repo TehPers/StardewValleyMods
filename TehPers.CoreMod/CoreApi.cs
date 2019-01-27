@@ -23,7 +23,7 @@ namespace TehPers.CoreMod {
         public IItemApi Items => this._items.Value;
         public IJsonApi Json => this._json.Value;
 
-        public CoreApi(IMod owner, ItemDelegator2 itemDelegator) {
+        public CoreApi(IMod owner, ItemDelegator itemDelegator) {
             this.Owner = owner;
             this._drawing = new Lazy<IDrawingApi>(() => new DrawingApi(new ApiHelper(this, "Drawing")));
             this._items = new Lazy<IItemApi>(() => new ItemApi(new ApiHelper(this, "Items"), itemDelegator));

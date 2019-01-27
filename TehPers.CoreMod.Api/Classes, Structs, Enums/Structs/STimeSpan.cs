@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace TehPers.CoreMod.Api.Structs {
-    public readonly struct STimeSpan : IComparable<STimeSpan> {
+    public readonly struct STimeSpan : IEquatable<STimeSpan>, IComparable<STimeSpan> {
         /// <summary>The total number of elapsed years.</summary>
         public float TotalYears => (float) this.TotalMinutes / (4f * 28f * 2400f);
 
@@ -29,7 +29,7 @@ namespace TehPers.CoreMod.Api.Structs {
         }
 
         public bool Equals(STimeSpan other) {
-            return this.CompareTo(other) == 0;
+            return this.TotalMinutes == other.TotalMinutes;
         }
 
         /// <inheritdoc />
@@ -37,14 +37,14 @@ namespace TehPers.CoreMod.Api.Structs {
             return this.TotalMinutes;
         }
 
-        public static STimeSpan operator +(STimeSpan first, STimeSpan second) => new STimeSpan(first.TotalMinutes + second.TotalMinutes);
-        public static STimeSpan operator -(STimeSpan first, STimeSpan second) => new STimeSpan(first.TotalMinutes + second.TotalMinutes);
-        public static bool operator >(STimeSpan first, STimeSpan second) => first.CompareTo(second) > 0;
-        public static bool operator >=(STimeSpan first, STimeSpan second) => first.CompareTo(second) >= 0;
-        public static bool operator <(STimeSpan first, STimeSpan second) => first.CompareTo(second) < 0;
-        public static bool operator <=(STimeSpan first, STimeSpan second) => first.CompareTo(second) <= 0;
-        public static bool operator ==(STimeSpan first, STimeSpan second) => first.Equals(second);
-        public static bool operator !=(STimeSpan first, STimeSpan second) => !first.Equals(second);
+        public static STimeSpan operator +(in STimeSpan first, in STimeSpan second) => new STimeSpan(first.TotalMinutes + second.TotalMinutes);
+        public static STimeSpan operator -(in STimeSpan first, in STimeSpan second) => new STimeSpan(first.TotalMinutes + second.TotalMinutes);
+        public static bool operator >(in STimeSpan first, in STimeSpan second) => first.CompareTo(second) > 0;
+        public static bool operator >=(in STimeSpan first, in STimeSpan second) => first.CompareTo(second) >= 0;
+        public static bool operator <(in STimeSpan first, in STimeSpan second) => first.CompareTo(second) < 0;
+        public static bool operator <=(in STimeSpan first, in STimeSpan second) => first.CompareTo(second) <= 0;
+        public static bool operator ==(in STimeSpan first, in STimeSpan second) => first.Equals(second);
+        public static bool operator !=(in STimeSpan first, in STimeSpan second) => !first.Equals(second);
 
         /// <summary>Creates a new <see cref="STimeSpan"/> from a specified number of minutes.</summary>
         /// <param name="minutes">The number of minutes that should be represented in the new instance.</param>

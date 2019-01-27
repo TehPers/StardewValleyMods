@@ -3,13 +3,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Extensions;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.Drawing {
     internal class DrawingInfo : IDrawingInfo, IDrawingInfoInternal {
         public Texture2D Texture { get; private set; }
-        public Rectangle? SourceRectangle { get; private set; }
-        public Rectangle Destination { get; private set; }
-        public Color Tint { get; private set; }
+        public SRectangle? SourceRectangle { get; private set; }
+        public SRectangle Destination { get; private set; }
+        public SColor Tint { get; private set; }
         public SpriteBatch Batch { get; }
         public Vector2 Origin { get; private set; }
         public float Rotation { get; private set; }
@@ -26,7 +27,7 @@ namespace TehPers.CoreMod.Drawing {
             this.Propagate = true;
         }
 
-        public DrawingInfo(SpriteBatch batch, Texture2D texture, Rectangle? sourceRectangle, Rectangle destination, Color tint, Vector2 origin, float rotation, SpriteEffects effects, float depth) : this() {
+        public DrawingInfo(SpriteBatch batch, Texture2D texture, SRectangle? sourceRectangle, SRectangle destination, SColor tint, Vector2 origin, float rotation, SpriteEffects effects, float depth) : this() {
             this.Texture = texture;
             this.SourceRectangle = sourceRectangle;
             this.Destination = destination;
@@ -38,7 +39,7 @@ namespace TehPers.CoreMod.Drawing {
             this.Depth = depth;
         }
 
-        public DrawingInfo(SpriteBatch batch, Texture2D texture, Rectangle? sourceRectangle, Vector2 destination, Color tint, Vector2 origin, float rotation, SpriteEffects effects, float depth) : this() {
+        public DrawingInfo(SpriteBatch batch, Texture2D texture, SRectangle? sourceRectangle, Vector2 destination, SColor tint, Vector2 origin, float rotation, SpriteEffects effects, float depth) : this() {
             this.Texture = texture;
             this.SourceRectangle = sourceRectangle;
             this.Tint = tint;
@@ -48,11 +49,11 @@ namespace TehPers.CoreMod.Drawing {
             this.Effects = effects;
             this.Depth = depth;
 
-            Rectangle sourceBounds = this.SourceRectangle ?? this.Texture.Bounds;
-            this.Destination = new Rectangle((int) destination.X, (int) destination.Y, sourceBounds.Width, sourceBounds.Height);
+            SRectangle sourceBounds = this.SourceRectangle ?? this.Texture.Bounds;
+            this.Destination = new SRectangle((int) destination.X, (int) destination.Y, sourceBounds.Width, sourceBounds.Height);
         }
 
-        public void SetTint(Color tint) {
+        public void SetTint(in SColor tint) {
             this.Tint = tint;
             this.Modified = true;
         }
@@ -65,8 +66,8 @@ namespace TehPers.CoreMod.Drawing {
             this.Depth = depth;
         }
 
-        public void AddTint(Color tint) {
-            this.SetTint(this.Tint.Multiply(tint));
+        public void AddTint(in SColor tint) {
+            this.SetTint(this.Tint * tint);
         }
 
         public void Cancel() {
@@ -81,7 +82,8 @@ namespace TehPers.CoreMod.Drawing {
 
         public void SetScale(float scale) => this.SetScale(new Vector2(scale, scale));
         public void SetScale(Vector2 scale) {
-            Rectangle source = this.SourceRectangle ?? this.Texture.Bounds;
+            SRectangle source = this.SourceRectangle ?? this.Texture.Bounds;
+            Vector2 prevScale = this.GetScale();
 
             // Calculate new size for the rectangle
             float newWidth = scale.X * source.Width;
@@ -96,25 +98,25 @@ namespace TehPers.CoreMod.Drawing {
             float newY = destOriginY - this.Destination.Height * yOffsetScale;
 
             // Set the destination rectangle
-            this.Destination = new Rectangle((int) newX, (int) newY, (int) newWidth, (int) newHeight);
+            this.Destination = new SRectangle((int) newX, (int) newY, (int) newWidth, (int) newHeight);
         }
 
         public Vector2 GetScale() {
-            Rectangle source = this.SourceRectangle ?? this.Texture.Bounds;
+            SRectangle source = this.SourceRectangle ?? this.Texture.Bounds;
             return new Vector2((float) this.Destination.Width / source.Width, (float) this.Destination.Height / source.Height);
         }
 
-        public void SetSource(Texture2D texture, Rectangle? sourceRectangle) {
-            Rectangle prevSource = this.SourceRectangle ?? this.Texture.Bounds;
-            Rectangle newSource = sourceRectangle ?? texture.Bounds;
+        public void SetSource(Texture2D texture, in SRectangle? sourceRectangle) {
+            SRectangle prevSource = this.SourceRectangle ?? this.Texture.Bounds;
+            SRectangle newSource = sourceRectangle ?? texture.Bounds;
 
             this.Texture = texture;
             this.SourceRectangle = sourceRectangle;
-            this.SetScale(this.GetScale() * new Vector2((float) newSource.Width / prevSource.Width, (float) newSource.Height / prevSource.Height));
+            this.Origin = new Vector2(this.Origin.X * newSource.Width / prevSource.Width, this.Origin.Y * newSource.Height / prevSource.Height);
             this.Modified = true;
         }
 
-        public void SetDestination(Rectangle destination) {
+        public void SetDestination(in SRectangle destination) {
             this.Destination = destination;
             this.Modified = true;
         }
