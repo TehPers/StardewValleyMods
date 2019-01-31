@@ -50,13 +50,20 @@
   <ItemGroup>
     <Compile Include="Classes, Structs, Enums\ContentPacks\Tokens\TokenValue.cs" />
     <Compile Include="Classes, Structs, Enums\Extensions\DeconstructorExtensions.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Inventory\BigCraftableItemResult.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Inventory\ModItemRequest.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Inventory\ModItemResult.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Inventory\SObjectIngredient.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Inventory\SObjectItemResult.cs" />
     <Compile Include="Classes, Structs, Enums\Items\ModWeapon.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Recipes\GameRecipe.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Recipes\ModRecipe.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Recipes\SimpleRecipe.cs" />
     <Compile Include="Classes, Structs, Enums\Items\WeaponType.cs" />
     <Compile Include="Interfaces\Items\IItemComparer.cs" />
     <Compile Include="Interfaces\Items\IItemCreator.cs" />
     <Compile Include="Interfaces\Items\IModItem.cs" />
     <Compile Include="Classes, Structs, Enums\Items\ModItem.cs" />
-    <Compile Include="Classes, Structs, Enums\Items\Recipe.cs" />
     <Compile Include="Classes, Structs, Enums\Structs\SColor.cs" />
     <Compile Include="Classes, Structs, Enums\Structs\SPoint.cs" />
     <Compile Include="Classes, Structs, Enums\Structs\SRectangle.cs" />
@@ -96,7 +103,13 @@
     <Compile Include="Interfaces\ICoreApiInitializer.cs" />
     <Compile Include="Interfaces\Items\IItemDelegator.cs" />
     <Compile Include="Interfaces\Items\IModWeapon.cs" />
-    <Compile Include="Interfaces\Items\ItemProviders\IDefaultItemProviders.cs" />
+    <Compile Include="Interfaces\Items\Inventory\IInventory.cs" />
+    <Compile Include="Interfaces\Items\Inventory\IItemRequest.cs" />
+    <Compile Include="Interfaces\Items\Inventory\IItemResult.cs" />
+    <Compile Include="Interfaces\Items\Inventory\ItemRequest.cs" />
+    <Compile Include="Interfaces\Items\Recipes\IIngredient.cs" />
+    <Compile Include="Interfaces\Items\Recipes\IRecipe.cs" />
+    <Compile Include="Interfaces\Items\ItemProviders\ICommonItemRegistry.cs" />
     <Compile Include="Interfaces\Items\IItemApi.cs" />
     <Compile Include="Interfaces\Drawing\Sprites\ISpriteSheet.cs" />
     <Compile Include="Interfaces\ContentLoading\IContentSource.cs" />

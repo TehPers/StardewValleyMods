@@ -13,7 +13,7 @@ namespace TehPers.CoreMod.Items.ItemProviders {
     internal class SObjectRegistry : ItemRegistry<IModObject>, IAssetEditor {
         public SObjectRegistry(IApiHelper apiHelper, IItemDelegator itemDelegator) : base(apiHelper, itemDelegator) { }
 
-        public override bool IsInstanceOf(ItemKey key, Item item) {
+        public override bool IsInstanceOf(in ItemKey key, Item item) {
             return item is SObject obj && !obj.bigCraftable.Value && this.ItemDelegator.TryGetIndex(key, out int index) && item.ParentSheetIndex == index;
         }
 

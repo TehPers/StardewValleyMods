@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 using StardewValley.Monsters;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Environment;
 using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Items.Inventory;
+using TehPers.CoreMod.Api.Items.Recipes;
 using TehPers.CoreMod.Api.Structs;
 using SObject = StardewValley.Object;
 
@@ -63,7 +67,15 @@ namespace TehPers.FestiveSlimes {
             };
 
             // Register the candy with the core API to add it as an object in the game
-            coreApi.Items.DefaultItemProviders.Objects.Register("candy", candy);
+            ItemKey candyKey = coreApi.Items.CommonRegistry.Objects.Register("candy", candy);
+
+            // TODO: DEBUG - Add a recipe for candy
+            ModRecipe candyRecipe = new ModRecipe(candySprite, new ModItemResult(coreApi.Items, candyKey), new SObjectIngredient(coreApi, Objects.Stone, 10));
+            string candyRecipeName = coreApi.Items.RegisterCraftingRecipe(candyRecipe);
+
+            this.Helper.Events.GameLoop.SaveLoaded += (sender, args) => {
+                Game1.player.craftingRecipes.Add(candyRecipeName, 0);
+            };
         }
 
         private void ReplaceSlimes() {

@@ -10,6 +10,6 @@
         /// <param name="key">The key for this item, unique within all items registered through Teh's Core Mod.</param>
         /// <param name="manager">The item's manager.</param>
         /// <returns>The key for the item once registered.</returns>
-        void Register(ItemKey key, T manager);
+        void Register(in ItemKey key, T manager);
     }
 }

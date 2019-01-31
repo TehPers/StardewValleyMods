@@ -14,6 +14,7 @@ namespace TehPers.CoreMod.Api.Structs {
         public int Bottom => this.Y + this.Height;
         public SPoint Location => new SPoint(this.X, this.Y);
         public SPoint Center => new SPoint(this.X + this.Width / 2, this.Y + this.Height / 2);
+        public SPoint MaxCorner => new SPoint(this.X + this.Width, this.Y + this.Height);
         public bool IsEmpty => this.Width == 0 && this.Height == 0 && this.X == 0 && this.Y == 0;
 
         public SRectangle(int x, int y, int width, int height) {
@@ -56,7 +57,15 @@ namespace TehPers.CoreMod.Api.Structs {
             return new Rectangle(source.X, source.Y, source.Width, source.Height);
         }
 
-        public static implicit operator SRectangle(in Rectangle source) {
+        public static implicit operator SRectangle(Rectangle source) {
+            return new SRectangle(source.X, source.Y, source.Width, source.Height);
+        }
+
+        public static implicit operator xTile.Dimensions.Rectangle(in SRectangle source) {
+            return new xTile.Dimensions.Rectangle(source.X, source.Y, source.Width, source.Height);
+        }
+
+        public static implicit operator SRectangle(xTile.Dimensions.Rectangle source) {
             return new SRectangle(source.X, source.Y, source.Width, source.Height);
         }
 

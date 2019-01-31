@@ -6,6 +6,6 @@ namespace TehPers.CoreMod.Api.Items {
         /// <param name="key">The key for the item.</param>
         /// <param name="item">The created item, if successful, with a stack size of 1.</param>
         /// <returns>True if successful, false otherwise.</returns>
-        bool TryCreate(ItemKey key, out Item item);
+        bool TryCreate(in ItemKey key, out Item item);
     }
 }

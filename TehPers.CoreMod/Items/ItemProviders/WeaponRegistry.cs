@@ -12,7 +12,7 @@ namespace TehPers.CoreMod.Items.ItemProviders {
     internal class WeaponRegistry : ItemRegistry<IModWeapon>, IAssetEditor {
         public WeaponRegistry(IApiHelper apiHelper, IItemDelegator itemDelegator) : base(apiHelper, itemDelegator) { }
 
-        public override bool IsInstanceOf(ItemKey key, Item item) {
+        public override bool IsInstanceOf(in ItemKey key, Item item) {
             return item is MeleeWeapon && this.ItemDelegator.TryGetIndex(key, out int index) && item.ParentSheetIndex == index;
         }
 

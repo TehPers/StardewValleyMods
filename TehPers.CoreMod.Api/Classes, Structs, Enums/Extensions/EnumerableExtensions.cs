@@ -144,5 +144,40 @@ namespace TehPers.CoreMod.Api.Extensions {
         public static IEnumerable<T> Append<T>(this IEnumerable<T> source, T item) {
             return source.Concat(item.Yield());
         }
+
+        /// <summary>Groups the elements of an <see cref="IEnumerable{T}"/> into multiple <see cref="IEnumerable{T}"/> instances, each with up to a certain number of elements.</summary>
+        /// <typeparam name="T">The type of elements in the source.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
+        /// <param name="countPerWindow">The number of items each window should have at most. The last window may contain fewer items in it.</param>
+        /// <returns>A new <seealso cref="IEnumerable{T}"/> with the groups.</returns>
+        public static IEnumerable<IEnumerable<T>> Window<T>(this IEnumerable<T> source, int countPerWindow) {
+            if (source == null) {
+                throw new ArgumentNullException(nameof(source));
+            }
+
+            if (countPerWindow <= 0) {
+                throw new ArgumentOutOfRangeException(nameof(countPerWindow), "Must be greater than zero");
+            }
+
+            // Return as many windows as possible
+            using (IEnumerator<T> enumerator = source.GetEnumerator()) {
+                // Loop until there are no more items left
+                while (enumerator.MoveNext()) {
+                    // Since the enumerator was moved, pass the current element into the window and yield that window
+                    yield return GetWindow(enumerator, enumerator.Current);
+                }
+            }
+
+            IEnumerable<T> GetWindow(IEnumerator<T> enumerator, T buffered) {
+                // Yield the buffered item
+                yield return buffered;
+
+                // Keep going
+                int remaining = countPerWindow - 1;
+                while (remaining-- > 0 && enumerator.MoveNext()) {
+                    yield return enumerator.Current;
+                }
+            }
+        }
     }
 }

@@ -3,8 +3,8 @@ using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Items.ItemProviders;
 
 namespace TehPers.CoreMod.Items.ItemProviders {
-    internal class DefaultItemProviders : IDefaultItemProviders {
-        public DefaultItemProviders(IApiHelper apiHelper, ItemDelegator itemDelegator) {
+    internal class CommonItemRegistry : ICommonItemRegistry {
+        public CommonItemRegistry(IApiHelper apiHelper, ItemDelegator itemDelegator) {
             // Object registry
             SObjectRegistry objectRegistry = new SObjectRegistry(apiHelper, itemDelegator);
             this.Objects = objectRegistry;

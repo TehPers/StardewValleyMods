@@ -151,7 +151,7 @@ namespace TehPers.CoreMod.ContentPacks {
                 };
 
                 // Register the object
-                this._api.Items.DefaultItemProviders.Objects.Register(key, objectManager);
+                this._api.Items.CommonRegistry.Objects.Register(key, objectManager);
                 this._api.Owner.Monitor.Log($" - {key} registered (object)", LogLevel.Trace);
             }
         }
@@ -187,7 +187,7 @@ namespace TehPers.CoreMod.ContentPacks {
                 };
 
                 // Register the object
-                this._api.Items.DefaultItemProviders.Weapons.Register(key, manager);
+                this._api.Items.CommonRegistry.Weapons.Register(key, manager);
                 this._api.Owner.Monitor.Log($" - {key} registered (weapon)", LogLevel.Trace);
             }
         }

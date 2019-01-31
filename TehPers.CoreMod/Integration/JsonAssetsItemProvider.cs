@@ -21,8 +21,8 @@ namespace TehPers.CoreMod.Integration {
             this._jsonAssetsApi = jsonAssetsApi;
         }
 
-        public bool TryCreate(ItemKey key, out Item item) {
-            if (this._coreApi.Owner.Helper.ModRegistry.Get(key.OwnerId) is IModInfo ownerInfo && ownerInfo.Manifest.ContentPackFor.UniqueID == "spacechase0.JsonAssets") {
+        public bool TryCreate(in ItemKey key, out Item item) {
+            if (this._coreApi.Owner.Helper.ModRegistry.Get(key.OwnerId) is IModInfo ownerInfo && ownerInfo.Manifest.ContentPackFor?.UniqueID == "spacechase0.JsonAssets") {
                 // Try to get it as an object
                 int index = this._jsonAssetsApi.GetObjectId(key.LocalKey);
                 if (index >= 0) {
@@ -42,7 +42,7 @@ namespace TehPers.CoreMod.Integration {
             return false;
         }
 
-        public bool IsInstanceOf(ItemKey key, Item item) {
+        public bool IsInstanceOf(in ItemKey key, Item item) {
             if (!(item is SObject obj && this._coreApi.Owner.Helper.ModRegistry.Get(key.OwnerId) is IModInfo ownerInfo && ownerInfo.Manifest.ContentPackFor.UniqueID == "spacechase0.JsonAssets")) {
                 return false;
             }

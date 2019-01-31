@@ -12,7 +12,9 @@ using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Api.Items.ItemProviders;
+using TehPers.CoreMod.Api.Items.Recipes;
 using TehPers.CoreMod.Drawing.Sprites;
+using TehPers.CoreMod.Items.Crafting;
 
 namespace TehPers.CoreMod.Items {
     internal class ItemDelegator : IItemDelegator {
@@ -25,11 +27,13 @@ namespace TehPers.CoreMod.Items {
         private readonly Dictionary<ItemKey, TrackedIndex> _trackedIndices = new Dictionary<ItemKey, TrackedIndex>();
         private IDictionary<ItemKey, int> _saveIndexes;
         private readonly HashSet<ItemKey> _registeredKeys = new HashSet<ItemKey>();
+        private readonly CraftingManager _craftingManager;
 
         public DynamicSpriteSheet CustomItemSpriteSheet { get; private set; }
 
         public ItemDelegator(IMod coreMod) {
             this._coreMod = coreMod;
+            this._craftingManager = CraftingManager.GetCraftingManager(coreMod, this);
         }
 
         public void AddProvider(Func<IItemDelegator, IItemProvider> providerFactory) {
@@ -42,7 +46,7 @@ namespace TehPers.CoreMod.Items {
             }
         }
 
-        public bool TryRegisterKey(ItemKey key) {
+        public bool TryRegisterKey(in ItemKey key) {
             if (!this._registeredKeys.Add(key)) {
                 return false;
             }
@@ -52,11 +56,11 @@ namespace TehPers.CoreMod.Items {
 
         }
 
-        public bool TryGetIndex(ItemKey key, out int index) {
+        public bool TryGetIndex(in ItemKey key, out int index) {
             return this._itemIndexes.TryGetValue(key, out index);
         }
 
-        public void OverrideSprite(ItemKey key, ISpriteSheet parentSheet, Action<IDrawingInfo, Vector2, Vector2> @override) {
+        public void OverrideSprite(in ItemKey key, ISpriteSheet parentSheet, Action<IDrawingInfo, Vector2, Vector2> @override) {
             if (!this._trackedIndices.TryGetValue(key, out TrackedIndex trackedIndex)) {
                 return;
             }
@@ -82,10 +86,16 @@ namespace TehPers.CoreMod.Items {
             return this._providers.AsEnumerable();
         }
 
+        public string RegisterCraftingRecipe(IRecipe recipe) {
+            return this._craftingManager.AddRecipe(recipe);
+        }
+
         public void Initialize() {
             this.RegisterMultiplayerEvents();
             this.RegisterSaveEvents();
             this.CustomItemSpriteSheet = new DynamicSpriteSheet(this._coreMod);
+
+            this._craftingManager.Initialize();
         }
 
         public bool TryParseKey(string source, out ItemKey itemKey) {

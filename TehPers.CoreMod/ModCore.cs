@@ -30,7 +30,7 @@ namespace TehPers.CoreMod {
             DrawingDelegator.PatchIfNeeded();
 
             // Also do other patches here because why not
-            MachineDelegator.PatchIfNeeded();
+            // TODO: MachineDelegator.PatchIfNeeded();
 
             // Create the item delegator
             this._itemDelegator = new ItemDelegator(this);
@@ -53,6 +53,7 @@ namespace TehPers.CoreMod {
             this.Helper.Events.GameLoop.GameLaunched += (sender, args) => this.Helper.Events.GameLoop.UpdateTicking += this.UpdateTicking_LoadContentPacks;
             this.Helper.Events.GameLoop.GameLaunched += (sender, args) => this.LoadIntegrations(coreApi);
 
+            // Add console commands
             this.RegisterConsoleCommands(coreApi);
 
             this.Monitor.Log("Core mod loaded!", LogLevel.Info);
@@ -60,7 +61,7 @@ namespace TehPers.CoreMod {
 
         private void LoadIntegrations(ICoreApi coreApi) {
             if (this.Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets") is IJsonAssetsApi jsonAssetsApi) {
-                coreApi.Items.AddProvider(_ => new JsonAssetsItemProvider(coreApi, jsonAssetsApi));
+                coreApi.Items.RegisterProvider(_ => new JsonAssetsItemProvider(coreApi, jsonAssetsApi));
             }
         }
 
@@ -84,7 +85,7 @@ namespace TehPers.CoreMod {
         private void RegisterConsoleCommands(ICoreApi coreApi) {
             // Toggle sprite sheet command
             bool spriteSheetVisible = false;
-            this.Helper.ConsoleCommands.Add("core_togglespritesheet", "Toggles drawing the custom item sprite sheet in the top left corner of the screen.", (s, strings) => {
+            this.Helper.ConsoleCommands.Add("tcm_togglespritesheet", "Toggles drawing the custom item sprite sheet in the top left corner of the screen.", (s, strings) => {
                 spriteSheetVisible = !spriteSheetVisible;
                 if (spriteSheetVisible) {
                     this.Helper.Events.Display.RenderingHud += this.OnRenderingHud_DisplaySpriteSheet;
@@ -94,7 +95,7 @@ namespace TehPers.CoreMod {
             });
 
             // Add item spawning command
-            this.Helper.ConsoleCommands.Add("core_additem", "Adds an item to the player's inventory.\nUsage: core_additem <mod_id>:<item_name> [quantity]\n- mod_id: The unique ID of the mod that created the item\n- item_name: The key the item was registered as for that mod.\n- quantity: The quantity of the item to add to your inventory. Only applicable to stackable objects.", (s, args) => {
+            this.Helper.ConsoleCommands.Add("tcm_additem", "Adds an item to the player's inventory.\nUsage: core_additem <mod_id>:<item_name> [quantity]\n- mod_id: The unique ID of the mod that created the item\n- item_name: The key the item was registered as for that mod.\n- quantity: The quantity of the item to add to your inventory. Only applicable to stackable objects.", (s, args) => {
                 // Check for arguments
                 if (!args.Any()) {
                     this.Monitor.Log("Invalid usage: missing item key.", LogLevel.Error);
@@ -124,7 +125,7 @@ namespace TehPers.CoreMod {
             });
 
             // Add item list command
-            this.Helper.ConsoleCommands.Add("core_listitems", "Lists all items registered through the item API.", (s, args) => {
+            this.Helper.ConsoleCommands.Add("tcm_listitems", "Lists all items registered through the item API.", (s, args) => {
                 // Sort the registered item keys
                 IOrderedEnumerable<ItemKey> registeredKeys = this._itemDelegator.GetRegisteredKeys().OrderBy(k => k.ToString(), StringComparer.OrdinalIgnoreCase);
 

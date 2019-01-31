@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using StardewModdingAPI;
 using StardewValley;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing.Sprites;
@@ -28,7 +27,7 @@ namespace TehPers.CoreMod.Items.ItemProviders {
             return key;
         }
 
-        public void Register(ItemKey key, TManager manager) {
+        public void Register(in ItemKey key, TManager manager) {
             // Try to register this key with the item delegator
             if (!this.ItemDelegator.TryRegisterKey(key)) {
                 throw new ArgumentException($"Key already registered: {key}", nameof(key));
@@ -41,7 +40,7 @@ namespace TehPers.CoreMod.Items.ItemProviders {
             this.Managers.Add(key, manager);
         }
 
-        public bool TryCreate(ItemKey key, out Item item) {
+        public bool TryCreate(in ItemKey key, out Item item) {
             // Try to get the index for the given key
             if (this.ItemDelegator.TryGetIndex(key, out int index)) {
                 item = this.CreateSingleItem(key, index);
@@ -53,7 +52,7 @@ namespace TehPers.CoreMod.Items.ItemProviders {
             return false;
         }
 
-        public abstract bool IsInstanceOf(ItemKey key, Item item);
+        public abstract bool IsInstanceOf(in ItemKey key, Item item);
         public abstract void InvalidateAssets();
         protected abstract ISpriteSheet GetSpriteSheet(ItemKey key, TManager manager);
         protected abstract Item CreateSingleItem(ItemKey key, int index);
