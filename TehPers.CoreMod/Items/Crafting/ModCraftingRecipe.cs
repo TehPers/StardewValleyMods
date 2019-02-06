@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using TehPers.CoreMod.Api.Items.Inventory;
 using TehPers.CoreMod.Api.Items.Recipes;
-using TehPers.CoreMod.Items.Inventory;
 
 namespace TehPers.CoreMod.Items.Crafting {
     internal class ModCraftingRecipe : CustomCraftingRecipe {
@@ -27,9 +22,7 @@ namespace TehPers.CoreMod.Items.Crafting {
             this.DisplayName = recipe.GetDisplayName();
             ModCraftingRecipe._descriptionField.SetValue(this, recipe.GetDescription());
             this.timesCrafted = Game1.player.craftingRecipes.ContainsKey(name) ? Game1.player.craftingRecipes[name] : 0;
-
-            // TODO: not sure what to do here, maybe this should just be 1 unless there's a single result?
-            this.numberProducedPerCraft = recipe.Results.Sum(result => result.Quantity);
+            this.numberProducedPerCraft = recipe.Results.Count() == 1 ? recipe.Results.First().Quantity : 1;
         }
     }
 }

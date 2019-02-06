@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Items.Recipes;
 
 namespace TehPers.CoreMod.ContentPacks.Data {
     internal class ContentPackData {
@@ -14,5 +16,8 @@ namespace TehPers.CoreMod.ContentPacks.Data {
 
         /// <summary>Custom weapons, which override the texture "Maps/springobjects".</summary>
         public Dictionary<string, WeaponData> Weapons { get; set; } = new Dictionary<string, WeaponData>();
+
+        /// <summary>Custom recipes.</summary>
+        public List<RecipeData> Recipes { get; set; } = new List<RecipeData>();
     }
 }

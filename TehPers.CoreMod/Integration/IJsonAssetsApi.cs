@@ -6,6 +6,8 @@ namespace TehPers.CoreMod.Integration {
         int GetCropId(string name);
         int GetFruitTreeId(string name);
         int GetBigCraftableId(string name);
+        int GetHatId(string name);
+        int GetWeaponId(string name);
 
         event EventHandler IdsAssigned;
         event EventHandler AddedItemsToShop;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using StardewModdingAPI;
 
 namespace TehPers.CoreMod.Api.ContentLoading {
-    // TODO: documentation
     public interface ICoreTranslation {
         /// <inheritdoc cref="Translation.Key"/>
         string Key { get; }

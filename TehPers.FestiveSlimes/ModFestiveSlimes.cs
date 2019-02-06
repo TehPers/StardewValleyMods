@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Menus;
 using StardewValley.Monsters;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Environment;
 using TehPers.CoreMod.Api.Items;
-using TehPers.CoreMod.Api.Items.Inventory;
 using TehPers.CoreMod.Api.Items.Recipes;
+using TehPers.CoreMod.Api.Items.Recipes.Parts;
 using TehPers.CoreMod.Api.Structs;
 using SObject = StardewValley.Object;
 
@@ -56,23 +54,21 @@ namespace TehPers.FestiveSlimes {
 
         private void AddItems(ICoreApi coreApi) {
             // Create a sprite for the candy which points to the main custom item sprite sheet
-            ISprite candySprite = coreApi.Items.CreateSprite(this.Helper.Content.Load<Texture2D>("assets/items/candy.png"));
+            ISprite candySprite = new TintedSprite(coreApi.Items.CreateSprite(this.Helper.Content.Load<Texture2D>("assets/items/candy.png")), Color.Red);
 
             // Set the buffs for the candy
             BuffDescription candyBuffs = new BuffDescription(TimeSpan.FromMinutes(2.5), speed: 1);
 
             // Create the candy object manager
-            ModFood candy = new ModFood(coreApi, candySprite, "candy", 20, 5, Category.Trash, false, candyBuffs) {
-                Tint = Color.Red
-            };
+            ModFood candy = new ModFood(coreApi, candySprite, "candy", 20, 5, Category.Trash, false, candyBuffs);
 
             // Register the candy with the core API to add it as an object in the game
             ItemKey candyKey = coreApi.Items.CommonRegistry.Objects.Register("candy", candy);
+            IModInfo jsonAssets = this.Helper.ModRegistry.Get("spacechase0.JsonAssets");
 
             // TODO: DEBUG - Add a recipe for candy
-            ModRecipe candyRecipe = new ModRecipe(candySprite, new ModItemResult(coreApi.Items, candyKey), new SObjectIngredient(coreApi, Objects.Stone, 10));
+            ModRecipe candyRecipe = new ModRecipe(coreApi, candySprite, new ModRecipePart(coreApi, candyKey), new SObjectRecipePart(coreApi, Objects.Stone, 10), new ModRecipePart(coreApi, candyKey, 5), new ModRecipePart(coreApi, new ItemKey(jsonAssets.Manifest, "Honey Cake")), new ModRecipePart(coreApi, new ItemKey(jsonAssets.Manifest, "Iron Spear")), new ModRecipePart(coreApi, new ItemKey(jsonAssets.Manifest, "Nonexistent item")));
             string candyRecipeName = coreApi.Items.RegisterCraftingRecipe(candyRecipe);
-
             this.Helper.Events.GameLoop.SaveLoaded += (sender, args) => {
                 Game1.player.craftingRecipes.Add(candyRecipeName, 0);
             };

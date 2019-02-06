@@ -7,14 +7,18 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using StardewModdingAPI;
+using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Tools;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Conflux.Collections;
+using TehPers.CoreMod.Api.Conflux.Matching;
 using TehPers.CoreMod.Api.ContentLoading;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Items.Recipes;
+using TehPers.CoreMod.Api.Items.Recipes.Parts;
 using TehPers.CoreMod.Api.Structs;
 using TehPers.CoreMod.ContentLoading;
 using TehPers.CoreMod.ContentPacks.Data;
@@ -63,6 +67,7 @@ namespace TehPers.CoreMod.ContentPacks {
             // Load all the items from the content pack
             this.LoadObjects(contentPack, contentSource, translationHelper, data);
             this.LoadWeapons(contentPack, contentSource, translationHelper, data);
+            this.LoadRecipes(contentPack, data);
         }
 
         private IEnumerable<ContentPackDataInfo> LoadData(IContentSource contentSource) => this.LoadData(contentSource, new HashSet<string>(), "", "content.json");
@@ -80,6 +85,7 @@ namespace TehPers.CoreMod.ContentPacks {
                 settings.Converters.Add(new PossibleConfigValuesDataJsonConverter());
                 // settings.Converters.Add(new ContentPackValueJsonConverter());
                 settings.Converters.Add(new SColorJsonConverter());
+                settings.Converters.Add(new RecipeData.PartJsonConverter());
             }
 
             // Check if this path points to proper content pack data
@@ -144,11 +150,12 @@ namespace TehPers.CoreMod.ContentPacks {
 
                 // Create the sprite for the object
                 ISprite sprite = this.CreateSprite(contentSource, obj.Source, obj.Name, obj.Data);
+                if (obj.Data.Tint != Color.White) {
+                    sprite = new TintedSprite(sprite, obj.Data.Tint);
+                }
 
                 // Create the object's manager
-                ModObject objectManager = new ModObject(translationHelper, sprite, key.LocalKey, obj.Data.Cost, new Category(obj.Data.CategoryNumber, obj.Data.CategoryName), obj.Data.Edibility) {
-                    Tint = obj.Data.Tint
-                };
+                ModObject objectManager = new ModObject(translationHelper, sprite, key.LocalKey, obj.Data.Cost, new Category(obj.Data.CategoryNumber, obj.Data.CategoryName), obj.Data.Edibility);
 
                 // Register the object
                 this._api.Items.CommonRegistry.Objects.Register(key, objectManager);
@@ -180,15 +187,56 @@ namespace TehPers.CoreMod.ContentPacks {
 
                 // Create the sprite for the object
                 ISprite sprite = this.CreateSprite(contentSource, weapon.Source, weapon.Name, weapon.Data);
+                if (weapon.Data.Tint != Color.White) {
+                    sprite = new TintedSprite(sprite, weapon.Data.Tint);
+                }
 
                 // Create the weapon's manager
-                ModWeapon manager = new ModWeapon(translationHelper, key.LocalKey, sprite, weapon.Data.Type, weapon.Data.MinDamage, weapon.Data.MaxDamage, weapon.Data.Knockback, weapon.Data.Speed, weapon.Data.Accuracy, weapon.Data.Defense, weapon.Data.AreaOfEffect, weapon.Data.CritChance, weapon.Data.CritMultiplier) {
-                    Tint = weapon.Data.Tint
-                };
+                ModWeapon manager = new ModWeapon(translationHelper, key.LocalKey, sprite, weapon.Data.Type, weapon.Data.MinDamage, weapon.Data.MaxDamage, weapon.Data.Knockback, weapon.Data.Speed, weapon.Data.Accuracy, weapon.Data.Defense, weapon.Data.AreaOfEffect, weapon.Data.CritChance, weapon.Data.CritMultiplier);
 
                 // Register the object
                 this._api.Items.CommonRegistry.Weapons.Register(key, manager);
                 this._api.Owner.Monitor.Log($" - {key} registered (weapon)", LogLevel.Trace);
+            }
+        }
+
+        private void LoadRecipes(IContentPack contentPack, IEnumerable<ContentPackDataInfo> sources) {
+            var recipes = (from source in sources
+                           from entry in source.Content.Recipes
+                           select new { Source = source, Data = entry }).ToArray();
+
+            // Create each recipe
+            foreach (var recipe in recipes) {
+                // Create each ingredient
+                IRecipePart[] ingredients = recipe.Data.Ingredients.Select(ConvertPart).ToArray();
+
+                // Create each result
+                IRecipePart[] results = recipe.Data.Results.Select(ConvertPart).ToArray();
+
+                // Create the recipe
+                ISprite sprite = results.FirstOrDefault()?.Sprite ?? ingredients.FirstOrDefault()?.Sprite ?? throw new InvalidOperationException("Unable to create a sprite for a recipe.");
+                string recipeName = this._api.Items.RegisterCraftingRecipe(new ModRecipe(this._api, sprite, results, ingredients, recipe.Data.Name));
+
+                // TODO: Add conditions when the recipe can be added
+                this._api.Owner.Helper.Events.GameLoop.SaveLoaded += (sender, args) => Game1.player.craftingRecipes.Add(recipeName, 0);
+
+                this._api.Owner.Monitor.Log($" - Added recipe: {recipeName}, Ingredients: {ingredients.Length}, Results: {results.Length}", LogLevel.Debug);
+            }
+
+            IRecipePart ConvertPart(RecipeData.Part part) {
+                return part.Match<RecipeData.Part, IRecipePart>()
+                    .When<RecipeData.ModPart>(modPart => {
+                        if (!this._api.Items.Delegator.TryParseKey(modPart.Id, out ItemKey key)) {
+                            key = new ItemKey(contentPack.Manifest, modPart.Id);
+                        }
+
+                        return new ModRecipePart(this._api, key, part.Quantity);
+                    })
+                    .When<RecipeData.GamePart>(gamePart => gamePart.Type == RecipeData.ItemType.OBJECT, gamePart => new SObjectRecipePart(this._api, gamePart.Id, gamePart.Quantity))
+                    .When<RecipeData.GamePart>(gamePart => gamePart.Type == RecipeData.ItemType.BIGCRAFTABLE, gamePart => new BigCraftableRecipePart(this._api, gamePart.Id, gamePart.Quantity))
+                    .When<RecipeData.GamePart>(gamePart => gamePart.Type == RecipeData.ItemType.WEAPON, gamePart => new WeaponRecipePart(this._api, gamePart.Id, gamePart.Quantity))
+                    .When<RecipeData.GamePart>(gamePart => gamePart.Type == RecipeData.ItemType.HAT, gamePart => new HatRecipePart(this._api, gamePart.Id, gamePart.Quantity))
+                    .ElseThrow(_ => new InvalidOperationException($"Unknown part type: {part.GetType().FullName}"));
             }
         }
 

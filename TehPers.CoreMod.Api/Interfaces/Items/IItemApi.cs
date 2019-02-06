@@ -8,7 +8,7 @@ using TehPers.CoreMod.Api.Items.ItemProviders;
 using TehPers.CoreMod.Api.Items.Recipes;
 
 namespace TehPers.CoreMod.Api.Items {
-    public interface IItemApi : IItemCreator, IItemComparer {
+    public interface IItemApi : IItemCreator, IItemComparer, IItemDrawingProvider {
         /// <summary>Default item provders. You can register items here.</summary>
         ICommonItemRegistry CommonRegistry { get; }
 

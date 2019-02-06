@@ -8,9 +8,6 @@ namespace TehPers.CoreMod.Api.Items {
         /// <summary>The sprite for this item.</summary>
         ISprite Sprite { get; }
 
-        /// <summary>The color to tint the item's sprite when drawn.</summary>
-        SColor Tint { get; set; }
-
         /// <summary>Overrides the drawing information to properly draw the object.</summary>
         /// <param name="info">The drawing information that should be updated.</param>
         /// <param name="sourcePositionOffsetPercentage">The percentage of the source rectangle's size the source rectangle's position is offset from the top-left of the texture.</param>

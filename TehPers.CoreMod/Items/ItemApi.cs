@@ -62,5 +62,16 @@ namespace TehPers.CoreMod.Items {
         public ISprite CreateSprite(Texture2D texture, Rectangle? sourceRectangle = null) {
             return this._itemDelegator.CustomItemSpriteSheet.Add(this._coreApiHelper, texture, sourceRectangle ?? texture.Bounds);
         }
+
+        public bool TryGetSprite(in ItemKey key, out ISprite sprite) {
+            foreach (IItemProvider provider in this._itemDelegator.GetItemProviders()) {
+                if (provider.TryGetSprite(key, out sprite)) {
+                    return true;
+                }
+            }
+
+            sprite = default;
+            return false;
+        }
     }
 }

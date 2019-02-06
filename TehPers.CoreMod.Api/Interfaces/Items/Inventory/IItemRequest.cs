@@ -2,7 +2,7 @@
 
 namespace TehPers.CoreMod.Api.Items.Inventory {
     public interface IItemRequest {
-        /// <summary>The amount of the request to remove</summary>
+        /// <summary>The quantity of this item request.</summary>
         int Quantity { get; }
 
         /// <summary>Whether an item matches this request.</summary>

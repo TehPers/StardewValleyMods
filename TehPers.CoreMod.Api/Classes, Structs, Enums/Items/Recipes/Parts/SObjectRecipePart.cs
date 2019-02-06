@@ -2,17 +2,16 @@
 using Microsoft.Xna.Framework;
 using StardewValley;
 using TehPers.CoreMod.Api.Drawing.Sprites;
-using TehPers.CoreMod.Api.Items.Recipes;
 using SObject = StardewValley.Object;
 
-namespace TehPers.CoreMod.Api.Items.Inventory {
-    public class SObjectIngredient : IIngredient {
+namespace TehPers.CoreMod.Api.Items.Recipes.Parts {
+    public class SObjectRecipePart : IRecipePart {
         private readonly int _index;
 
         public int Quantity { get; }
         public ISprite Sprite { get; }
 
-        public SObjectIngredient(ICoreApi coreApi, int index, int quantity = 1) {
+        public SObjectRecipePart(ICoreApi coreApi, int index, int quantity = 1) {
             this._index = index;
             this.Quantity = quantity;
             this.Sprite = coreApi.Drawing.ObjectSpriteSheet.TryGetSprite(index, out ISprite sprite) ? sprite : throw new ArgumentOutOfRangeException(nameof(index));
@@ -24,6 +23,11 @@ namespace TehPers.CoreMod.Api.Items.Inventory {
 
         public string GetDisplayName() {
             return new SObject(Vector2.Zero, this._index, 1).DisplayName;
+        }
+
+        public bool TryCreateOne(out Item result) {
+            result = new SObject(Vector2.Zero, this._index, this.Quantity);
+            return true;
         }
     }
 }

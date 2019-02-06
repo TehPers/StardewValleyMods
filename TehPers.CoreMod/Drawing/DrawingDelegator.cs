@@ -7,12 +7,14 @@ using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TehPers.CoreMod.Api.Drawing;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.CoreMod.Drawing {
     internal static class DrawingDelegator {
         private static bool _patched = false;
-        private static readonly ConditionalWeakTable<Texture2D, HashSet<ITrackedTextureInternal>> _trackedTextures = new ConditionalWeakTable<Texture2D, HashSet<ITrackedTextureInternal>>();
         private static bool _drawing = false;
+        private static readonly ConditionalWeakTable<Texture2D, TrackedTexture> _textureToTrackedTexture = new ConditionalWeakTable<Texture2D, TrackedTexture>();
+        private static readonly Dictionary<AssetLocation, TrackedTexture> _assetToTrackedTexture = new Dictionary<AssetLocation, TrackedTexture>();
 
         public static void PatchIfNeeded() {
             if (DrawingDelegator._patched) return;
@@ -57,16 +59,24 @@ namespace TehPers.CoreMod.Drawing {
             harmony.Patch(target, new HarmonyMethod(replacement));
         }
 
-        public static void AddTrackedTexture(Texture2D texture, ITrackedTextureInternal trackedTexture) {
-            // Try to get the set of helpers
-            if (!DrawingDelegator._trackedTextures.TryGetValue(texture, out HashSet<ITrackedTextureInternal> helpers)) {
-                // Create a new entry in the table if one doesn't exist
-                helpers = new HashSet<ITrackedTextureInternal>();
-                DrawingDelegator._trackedTextures.Add(texture, helpers);
+        public static TrackedTexture GetOrCreateTrackedTexture(AssetLocation location, Func<Texture2D> textureFactory) {
+            // If a tracked texture for this location already exists, just return that
+            if (DrawingDelegator._assetToTrackedTexture.TryGetValue(location, out TrackedTexture trackedTexture)) {
+                return trackedTexture;
             }
 
-            // Add the helper to the list
-            helpers.Add(trackedTexture);
+            // Create the tracked texture
+            trackedTexture = new TrackedTexture(textureFactory());
+            DrawingDelegator._assetToTrackedTexture.Add(location, trackedTexture);
+            DrawingDelegator._textureToTrackedTexture.Add(trackedTexture.CurrentTexture, trackedTexture);
+            return trackedTexture;
+        }
+
+        public static void UpdateTexture(AssetLocation location, Texture2D newTexture) {
+            if (DrawingDelegator._assetToTrackedTexture.TryGetValue(location, out TrackedTexture trackedTexture)) {
+                trackedTexture.CurrentTexture = newTexture;
+                DrawingDelegator._textureToTrackedTexture.Add(newTexture, trackedTexture);
+            }
         }
 
         #region Patches
@@ -108,15 +118,14 @@ namespace TehPers.CoreMod.Drawing {
             if (DrawingDelegator._drawing) return false;
 
             // Check if this texture is being tracked
-            if (!DrawingDelegator._trackedTextures.TryGetValue(info.Texture, out HashSet<ITrackedTextureInternal> trackedTextures)) return false;
+            if (!DrawingDelegator._textureToTrackedTexture.TryGetValue(info.Texture, out TrackedTexture trackedTexture)) return false;
 
             // Check if any overrides handle this drawing call
-            IEnumerable<EventHandler<IDrawingInfo>> overriders = trackedTextures.SelectMany(helper => helper.GetDrawingHandlers());
             bool modified = false;
-            foreach (EventHandler<IDrawingInfo> overrider in overriders) {
+            foreach (EventHandler<IDrawingInfo> drawingHandler in trackedTexture.GetDrawingHandlers()) {
                 // Set the drawing info's Modified property to false, then execute the overrider
                 info.Reset();
-                overrider(null, info);
+                drawingHandler(null, info);
 
                 // Check if modified
                 if (info.Modified) modified = true;
@@ -144,8 +153,8 @@ namespace TehPers.CoreMod.Drawing {
 
             void RaiseAfterDrawn() {
                 ReadonlyDrawingInfo finalInfo = new ReadonlyDrawingInfo(info);
-                foreach (EventHandler<IReadonlyDrawingInfo> handler in trackedTextures.SelectMany(helper => helper.GetDrawnHandlers())) {
-                    handler(null, finalInfo);
+                foreach (EventHandler<IReadonlyDrawingInfo> drawnHandler in trackedTexture.GetDrawnHandlers()) {
+                    drawnHandler(null, finalInfo);
                 }
             }
         }

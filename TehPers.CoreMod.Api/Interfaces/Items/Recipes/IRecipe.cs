@@ -6,10 +6,10 @@ using TehPers.CoreMod.Api.Items.Inventory;
 namespace TehPers.CoreMod.Api.Items.Recipes {
     public interface IRecipe {
         /// <summary>The ingredients required to create the result.</summary>
-        IEnumerable<IIngredient> Ingredients { get; }
+        IEnumerable<IRecipePart> Ingredients { get; }
 
         /// <summary>The result of crafting this recipe.</summary>
-        IEnumerable<IItemResult> Results { get; }
+        IEnumerable<IRecipePart> Results { get; }
 
         /// <summary>The sprite that will be displayed when this recipe is drawn in the crafting page.</summary>
         ISprite Sprite { get; }
@@ -27,5 +27,10 @@ namespace TehPers.CoreMod.Api.Items.Recipes {
         /// <param name="results">The results from crafting this recipe.</param>
         /// <returns>True if successful, false otherwise.</returns>
         bool TryCraft(IInventory inventory, out IEnumerable<Item> results);
+
+        /// <summary>Checks whether this recipe can be crafted.</summary>
+        /// <param name="inventory">The inventory to search ingredients from.</param>
+        /// <returns>True if this recipe can be crafted from the given inventory, false if otherwise.</returns>
+        bool CanCraft(IInventory inventory);
     }
 }

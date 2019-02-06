@@ -47,8 +47,20 @@ namespace TehPers.CoreMod.Items.ItemProviders {
                 return true;
             }
 
-            // Failed
+            // None exists
             item = default;
+            return false;
+        }
+
+        public bool TryGetSprite(in ItemKey key, out ISprite sprite) {
+            // Try to get the manager for the given key
+            if (this.Managers.TryGetValue(key, out TManager manager)) {
+                sprite = manager.Sprite;
+                return true;
+            }
+
+            // Not found
+            sprite = default;
             return false;
         }
 

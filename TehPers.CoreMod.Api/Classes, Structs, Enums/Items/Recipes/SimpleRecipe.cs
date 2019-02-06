@@ -6,22 +6,22 @@ using TehPers.CoreMod.Api.Items.Inventory;
 
 namespace TehPers.CoreMod.Api.Items.Recipes {
     public abstract class SimpleRecipe : IRecipe {
-        public abstract IEnumerable<IIngredient> Ingredients { get; }
-        public abstract IEnumerable<IItemResult> Results { get; }
+        public abstract IEnumerable<IRecipePart> Ingredients { get; }
+        public abstract IEnumerable<IRecipePart> Results { get; }
         public abstract ISprite Sprite { get; }
-        
-        public string GetDisplayName() {
-            return this.Results.FirstOrDefault() is IItemResult firstResult && firstResult.TryCreateOne(out Item item) ? item.DisplayName : "Invalid Recipe";
+
+        public virtual string GetDisplayName() {
+            return this.Results.FirstOrDefault() is IRecipePart firstResult && firstResult.TryCreateOne(out Item item) ? item.DisplayName : "Invalid Recipe";
         }
 
-        public string GetDescription() {
-            return this.Results.FirstOrDefault() is IItemResult firstResult && firstResult.TryCreateOne(out Item item) ? item.getDescription() : "Invalid recipe";
+        public virtual string GetDescription() {
+            return this.Results.FirstOrDefault() is IRecipePart firstResult && firstResult.TryCreateOne(out Item item) ? item.getDescription() : "Invalid recipe";
         }
 
         public bool TryCraft(IInventory inventory, out IEnumerable<Item> results) {
             // Create results to make sure it's possible
             List<Item> resultItems = new List<Item>();
-            foreach (IItemResult result in this.Results) {
+            foreach (IRecipePart result in this.Results) {
                 for (int n = 0; n < result.Quantity; n++) {
                     if (!result.TryCreateOne(out Item item)) {
                         results = default;
@@ -41,6 +41,10 @@ namespace TehPers.CoreMod.Api.Items.Recipes {
 
             results = default;
             return false;
+        }
+
+        public bool CanCraft(IInventory inventory) {
+            return inventory.Contains(this.Ingredients);
         }
     }
 }

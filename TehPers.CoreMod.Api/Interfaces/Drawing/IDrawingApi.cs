@@ -16,6 +16,9 @@ namespace TehPers.CoreMod.Api.Drawing {
         /// <summary>The sprite sheet containing all big craftables, linked to "TileSheets/Craftables".</summary>
         ISpriteSheet CraftableSpriteSheet { get; }
 
+        /// <summary>The sprite sheet containing all hats, linked to "Character/Farmer/hats".</summary>
+        IHatSpriteSheet HatSpriteSheet { get; }
+
         /// <summary>Gets a texture helper for a particular resource that can be used to modify how the texture is drawn.</summary>
         /// <param name="asset">The resource to get the texture helper for.</param>
         /// <returns>The texture helper for the particular resource.</returns>

@@ -22,6 +22,8 @@ namespace TehPers.CoreMod.Api.Extensions {
         }
 
         /// <summary>Deconstructor for <see cref="KeyValuePair{TKey,TValue}"/>.</summary>
+        /// <typeparam name="TKey">The type of key in the pair.</typeparam>
+        /// <typeparam name="TValue">The type of value in the pair.</typeparam>
         /// <param name="source">The source point.</param>
         /// <param name="key">The x-coordinate of the source point.</param>
         /// <param name="value">The y-coordinate of the source point.</param>

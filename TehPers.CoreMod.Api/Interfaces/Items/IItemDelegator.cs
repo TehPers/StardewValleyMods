@@ -27,5 +27,11 @@ namespace TehPers.CoreMod.Api.Items {
         /// <summary>Returns all the registered item providers.</summary>
         /// <returns>An <see cref="IEnumerable{T}"/> containing all the registered item providers.</returns>
         IEnumerable<IItemProvider> GetItemProviders();
+
+        /// <summary>Tries to convert a string into the item key represented by it.</summary>
+        /// <param name="source">The source string.</param>
+        /// <param name="itemKey">The resulting item key, if successful.</param>
+        /// <returns>True if successful, false otherwise.</returns>
+        bool TryParseKey(string source, out ItemKey itemKey);
     }
 }

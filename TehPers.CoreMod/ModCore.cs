@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.ContentPacks;
 using TehPers.CoreMod.Drawing;
-using TehPers.CoreMod.Drawing.Sprites;
 using TehPers.CoreMod.Integration;
 using TehPers.CoreMod.Items;
-using TehPers.CoreMod.Items.Machines;
 using SObject = StardewValley.Object;
 
 namespace TehPers.CoreMod {
@@ -38,7 +33,7 @@ namespace TehPers.CoreMod {
 
         public override void Entry(IModHelper helper) {
             // Create the custom item sprite sheet
-            this._coreApiFactory = new CoreApiFactory(this._itemDelegator);
+            this._coreApiFactory = new CoreApiFactory(this, this._itemDelegator);
 
             // Get this mod's core API
             ICoreApi coreApi = this._coreApiFactory.GetApi(this);

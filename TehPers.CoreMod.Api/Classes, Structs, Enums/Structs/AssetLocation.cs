@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using StardewModdingAPI;
 using StardewValley;
-using TehPers.CoreMod.Api.Conflux.Collections;
 using TehPers.CoreMod.Api.Conflux.Matching;
 
 namespace TehPers.CoreMod.Api.Structs {
@@ -38,6 +37,10 @@ namespace TehPers.CoreMod.Api.Structs {
 
         public override int GetHashCode() {
             return unchecked(((this.Path?.GetHashCode() ?? 0) * 397) ^ (int) this.Source);
+        }
+
+        public override string ToString() {
+            return $"{this.Path} from {this.Source}";
         }
 
         #region Static

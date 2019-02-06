@@ -53,6 +53,7 @@
     <Compile Include="ContentPacks\Data\Converters\SColorJsonConverter.cs" />
     <Compile Include="ContentPacks\ContentPackLoader.cs" />
     <Compile Include="ContentPacks\Data\ItemData.cs" />
+    <Compile Include="ContentPacks\Data\RecipeData.cs" />
     <Compile Include="ContentPacks\Data\SObjectData.cs" />
     <Compile Include="ContentPacks\Data\WeaponData.cs" />
     <Compile Include="ContentPacks\Values\ConditionalContentPackValueProvider.cs" />
@@ -68,10 +69,10 @@
     <Compile Include="CoreApiInitializer.cs" />
     <Compile Include="Drawing\DrawingInfo.cs" />
     <Compile Include="Drawing\IDrawingInfoInternal.cs" />
-    <Compile Include="Drawing\ITextureTrackerInternal.cs" />
     <Compile Include="Drawing\ITrackedTextureInternal.cs" />
     <Compile Include="Drawing\ReadonlyDrawingInfo.cs" />
     <Compile Include="Drawing\Sprites\DynamicSpriteSheet.cs" />
+    <Compile Include="Drawing\Sprites\HatSpriteSheet.cs" />
     <Compile Include="Drawing\Sprites\Sprite.cs" />
     <Compile Include="Drawing\Sprites\SpriteBase.cs" />
     <Compile Include="Drawing\Sprites\SpritePacker.cs" />
@@ -101,7 +102,6 @@
     <Compile Include="Items\Machines\LocationPosition.cs" />
     <Compile Include="Items\ItemProviders\SObjectRegistry.cs" />
     <Compile Include="Items\Inventory\FarmerInventory.cs" />
-    <Compile Include="Items\Recipes\ModIngredient.cs" />
     <Compile Include="Items\Machines\MachineDelegator.cs" />
     <Compile Include="Items\Machines\MachineInformation.cs" />
     <Compile Include="Json\JsonApi.cs" />
@@ -114,6 +114,9 @@
     <Compile Include="ContentLoading\CoreTranslation.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="i18n\default.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="manifest.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -129,7 +132,7 @@
       <Version>1.2.0.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.1</Version>
+      <Version>11.0.2</Version>
     </PackageReference>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig">
       <Version>2.2.0</Version>

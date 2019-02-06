@@ -86,7 +86,15 @@ namespace TehPers.CoreMod.Api.Structs {
             return first.Equals(second);
         }
 
+        public static bool operator ==(in SColor first, Color second) {
+            return first.Equals(second);
+        }
+
         public static bool operator !=(in SColor first, in SColor second) {
+            return !first.Equals(second);
+        }
+
+        public static bool operator !=(in SColor first, Color second) {
             return !first.Equals(second);
         }
     }
