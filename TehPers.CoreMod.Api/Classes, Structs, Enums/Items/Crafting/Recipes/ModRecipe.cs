@@ -3,8 +3,9 @@ using System.Linq;
 using TehPers.CoreMod.Api.ContentLoading;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
+using TehPers.CoreMod.Api.Items.Recipes;
 
-namespace TehPers.CoreMod.Api.Items.Recipes {
+namespace TehPers.CoreMod.Api.Items.Crafting.Recipes {
     public class ModRecipe : SimpleRecipe {
         private readonly ICoreTranslationHelper _translationHelper;
         private readonly string _name;
@@ -14,9 +15,9 @@ namespace TehPers.CoreMod.Api.Items.Recipes {
         public override ISprite Sprite { get; }
 
         public ModRecipe(ICoreTranslationHelper translationHelper, ISprite sprite, IRecipePart result, params IRecipePart[] ingredients) : this(translationHelper, sprite, result.Yield(), ingredients?.AsEnumerable()) { }
-        public ModRecipe(ICoreTranslationHelper translationHelper, ISprite sprite, IRecipePart result, IEnumerable<IRecipePart> ingredients, string name = null) : this(translationHelper, sprite, result.Yield(), ingredients?.AsEnumerable(), name) { }
+        public ModRecipe(ICoreTranslationHelper translationHelper, ISprite sprite, IRecipePart result, IEnumerable<IRecipePart> ingredients, string name = null, bool isCooking = false) : this(translationHelper, sprite, result.Yield(), ingredients?.AsEnumerable(), name, isCooking) { }
         public ModRecipe(ICoreTranslationHelper translationHelper, ISprite sprite, IEnumerable<IRecipePart> results, params IRecipePart[] ingredients) : this(translationHelper, sprite, results, ingredients?.AsEnumerable()) { }
-        public ModRecipe(ICoreTranslationHelper translationHelper, ISprite sprite, IEnumerable<IRecipePart> results, IEnumerable<IRecipePart> ingredients, string name = null) {
+        public ModRecipe(ICoreTranslationHelper translationHelper, ISprite sprite, IEnumerable<IRecipePart> results, IEnumerable<IRecipePart> ingredients, string name = null, bool isCooking = false) : base(isCooking) {
             this.Sprite = sprite;
             this.Results = results;
             this.Ingredients = ingredients;

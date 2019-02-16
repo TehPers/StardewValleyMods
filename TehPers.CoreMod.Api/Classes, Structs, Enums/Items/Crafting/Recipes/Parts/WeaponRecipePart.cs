@@ -2,8 +2,9 @@
 using StardewValley;
 using StardewValley.Tools;
 using TehPers.CoreMod.Api.Drawing.Sprites;
+using TehPers.CoreMod.Api.Items.Recipes;
 
-namespace TehPers.CoreMod.Api.Items.Recipes.Parts {
+namespace TehPers.CoreMod.Api.Items.Crafting.Recipes.Parts {
     public class WeaponRecipePart : IRecipePart {
         private readonly int _index;
 

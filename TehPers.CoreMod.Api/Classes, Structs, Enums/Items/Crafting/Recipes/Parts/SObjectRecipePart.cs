@@ -2,9 +2,10 @@
 using Microsoft.Xna.Framework;
 using StardewValley;
 using TehPers.CoreMod.Api.Drawing.Sprites;
+using TehPers.CoreMod.Api.Items.Recipes;
 using SObject = StardewValley.Object;
 
-namespace TehPers.CoreMod.Api.Items.Recipes.Parts {
+namespace TehPers.CoreMod.Api.Items.Crafting.Recipes.Parts {
     public class SObjectRecipePart : IRecipePart {
         private readonly int _index;
 

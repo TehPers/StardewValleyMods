@@ -3,12 +3,18 @@ using System.Linq;
 using StardewValley;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Items.Inventory;
+using TehPers.CoreMod.Api.Items.Recipes;
 
-namespace TehPers.CoreMod.Api.Items.Recipes {
+namespace TehPers.CoreMod.Api.Items.Crafting.Recipes {
     public abstract class SimpleRecipe : IRecipe {
         public abstract IEnumerable<IRecipePart> Ingredients { get; }
         public abstract IEnumerable<IRecipePart> Results { get; }
         public abstract ISprite Sprite { get; }
+        public bool IsCooking { get; }
+
+        protected SimpleRecipe(bool isCooking) {
+            this.IsCooking = isCooking;
+        }
 
         public virtual string GetDisplayName() {
             return this.Results.FirstOrDefault() is IRecipePart firstResult && firstResult.TryCreateOne(out Item item) ? item.DisplayName : "Invalid Recipe";

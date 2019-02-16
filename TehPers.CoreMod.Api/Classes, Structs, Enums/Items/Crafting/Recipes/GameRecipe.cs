@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using StardewValley;
 using TehPers.CoreMod.Api.Drawing.Sprites;
-using TehPers.CoreMod.Api.Items.Recipes.Parts;
+using TehPers.CoreMod.Api.Items.Crafting.Recipes.Parts;
+using TehPers.CoreMod.Api.Items.Recipes;
 
-namespace TehPers.CoreMod.Api.Items.Recipes {
+namespace TehPers.CoreMod.Api.Items.Crafting.Recipes {
     public class GameRecipe : SimpleRecipe {
         private readonly string _recipeName;
         private readonly bool _cooking;
@@ -14,7 +15,7 @@ namespace TehPers.CoreMod.Api.Items.Recipes {
         public override IEnumerable<IRecipePart> Results { get; }
         public override ISprite Sprite { get; }
 
-        public GameRecipe(ICoreApi coreApi, string recipeName, bool cooking) {
+        public GameRecipe(ICoreApi coreApi, string recipeName, bool cooking) : base(cooking) {
             this._recipeName = recipeName;
             this._cooking = cooking;
             if (!cooking || !CraftingRecipe.cookingRecipes.TryGetValue(recipeName, out string data)) {

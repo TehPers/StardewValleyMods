@@ -2,8 +2,9 @@
 using StardewValley;
 using StardewValley.Objects;
 using TehPers.CoreMod.Api.Drawing.Sprites;
+using TehPers.CoreMod.Api.Items.Recipes;
 
-namespace TehPers.CoreMod.Api.Items.Recipes.Parts {
+namespace TehPers.CoreMod.Api.Items.Crafting.Recipes.Parts {
     public class HatRecipePart : IRecipePart {
         private readonly int _index;
 

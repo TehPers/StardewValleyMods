@@ -14,6 +14,9 @@ namespace TehPers.CoreMod.Api.Items.Recipes {
         /// <summary>The sprite that will be displayed when this recipe is drawn in the crafting page.</summary>
         ISprite Sprite { get; }
 
+        /// <summary>Whether the recipe is a cooking recipe.</summary>
+        bool IsCooking { get; }
+
         /// <summary>Gets the name displayed by this recipe when it appears in the crafting page.</summary>
         /// <returns>The display name of this recipe.</returns>
         string GetDisplayName();
