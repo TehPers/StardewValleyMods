@@ -17,7 +17,6 @@ namespace TehPers.CoreMod {
         private readonly Lazy<IJsonApi> _json;
 
         public IMod Owner { get; }
-        public string Path => this.ContentSource.Path;
         public IContentSource ContentSource { get; }
         public ICoreTranslationHelper TranslationHelper { get; }
         public IDrawingApi Drawing => this._drawing.Value;

@@ -1,5 +1,5 @@
 ﻿using StardewValley;
-using TehPers.CoreMod.Api.Items.Recipes;
+using TehPers.CoreMod.Api.Items.Crafting.Recipes;
 
 namespace TehPers.CoreMod.Items.Crafting {
     internal abstract class CustomCraftingRecipe : CraftingRecipe {

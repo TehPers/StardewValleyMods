@@ -2,7 +2,7 @@
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Items.Inventory;
 
-namespace TehPers.CoreMod.Api.Items.Recipes {
+namespace TehPers.CoreMod.Api.Items.Crafting.Recipes {
     public interface IRecipePart : IItemRequest {
         /// <summary>This recipe part's sprite.</summary>
         ISprite Sprite { get; }

@@ -1,5 +1,5 @@
 ﻿using System;
-using TehPers.CoreMod.Api.Items.Recipes;
+using TehPers.CoreMod.Api.Items.Crafting.Recipes;
 
 namespace TehPers.CoreMod.Api.Items.Events {
     public class RecipeCraftedEventArgs : EventArgs {

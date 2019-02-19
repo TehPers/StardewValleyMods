@@ -91,7 +91,7 @@
     <Compile Include="Conflux\Collections\ArrayX.cs" />
     <Compile Include="Conflux\Collections\CollectionExtensions.cs" />
     <Compile Include="Conflux\Collections\IArrayLike.cs" />
-    <Compile Include="Interfaces\Items\Crafting\Recipes\RecipeCraftedEventArgs.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Crafting\Recipes\RecipeCraftedEventArgs.cs" />
     <Compile Include="System\Index.cs" />
     <Compile Include="Conflux\Collections\IReadonlyArrayLike.cs" />
     <Compile Include="Conflux\Collections\IReadonlySliceable.cs" />

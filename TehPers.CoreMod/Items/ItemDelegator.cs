@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Netcode;
 using StardewModdingAPI;
-using StardewValley;
 using TehPers.CoreMod.Api.Drawing;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Items.Crafting.Recipes;
 using TehPers.CoreMod.Api.Items.Events;
 using TehPers.CoreMod.Api.Items.ItemProviders;
-using TehPers.CoreMod.Api.Items.Recipes;
 using TehPers.CoreMod.Drawing.Sprites;
 using TehPers.CoreMod.Items.Crafting;
 

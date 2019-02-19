@@ -3,7 +3,6 @@ using System.Linq;
 using TehPers.CoreMod.Api.ContentLoading;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
-using TehPers.CoreMod.Api.Items.Recipes;
 
 namespace TehPers.CoreMod.Api.Items.Crafting.Recipes {
     public class ModRecipe : SimpleRecipe {

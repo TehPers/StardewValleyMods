@@ -7,9 +7,9 @@ using StardewValley;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Items.Crafting.Recipes;
 using TehPers.CoreMod.Api.Items.Events;
 using TehPers.CoreMod.Api.Items.ItemProviders;
-using TehPers.CoreMod.Api.Items.Recipes;
 using TehPers.CoreMod.Items.ItemProviders;
 
 namespace TehPers.CoreMod.Items {

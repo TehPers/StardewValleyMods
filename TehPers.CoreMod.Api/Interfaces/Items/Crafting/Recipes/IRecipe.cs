@@ -3,7 +3,7 @@ using StardewValley;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Items.Inventory;
 
-namespace TehPers.CoreMod.Api.Items.Recipes {
+namespace TehPers.CoreMod.Api.Items.Crafting.Recipes {
     public interface IRecipe {
         /// <summary>The ingredients required to create the result.</summary>
         IEnumerable<IRecipePart> Ingredients { get; }

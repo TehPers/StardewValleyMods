@@ -18,9 +18,9 @@ using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Items.Crafting.Recipes;
 using TehPers.CoreMod.Api.Items.Events;
 using TehPers.CoreMod.Api.Items.Inventory;
-using TehPers.CoreMod.Api.Items.Recipes;
 using TehPers.CoreMod.Items.Inventory;
 using SObject = StardewValley.Object;
 
@@ -133,7 +133,7 @@ namespace TehPers.CoreMod.Items.Crafting {
 
         private static CraftingPageData GetExtraData(CraftingPage page) {
             if (!CraftingManager._extraCraftingPageData.TryGetValue(page, out CraftingPageData extraData)) {
-                extraData = new CraftingPageData(page);
+                extraData = new CraftingPageData();
                 CraftingManager._extraCraftingPageData.Add(page, extraData);
             }
 
@@ -924,14 +924,14 @@ namespace TehPers.CoreMod.Items.Crafting {
         #endregion
 
         private class CraftingPageData {
-            private readonly CraftingPage _page;
             public List<Item> HeldItems { get; } = new List<Item>();
 
-            public CraftingPageData(CraftingPage page) {
-                this._page = page;
-            }
-
             public void AddHeldItem(Item addedItem) {
+                if (addedItem == null) {
+                    CraftingManager._instance._coreMod.Monitor.Log($"Tried to add a null held item to the cursor. Please upload your log to https://log.smapi.io/ and send the link to the mod author. Stack trace:\n{Environment.StackTrace}", LogLevel.Warn);
+                    return;
+                }
+
                 Stack<Item> modifiedItems = new Stack<Item>();
 
                 for (int i = 0; i < this.HeldItems.Count; i++) {

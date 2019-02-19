@@ -1,7 +1,6 @@
 ﻿using StardewModdingAPI;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Items.Crafting.Recipes;
-using TehPers.CoreMod.Api.Items.Recipes;
 
 namespace TehPers.CoreMod.Items.Crafting {
     internal class GameCraftingRecipe : CustomCraftingRecipe {

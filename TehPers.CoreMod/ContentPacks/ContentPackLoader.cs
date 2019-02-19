@@ -15,9 +15,9 @@ using TehPers.CoreMod.Api.ContentLoading;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Extensions;
 using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Items.Crafting;
 using TehPers.CoreMod.Api.Items.Crafting.Recipes;
 using TehPers.CoreMod.Api.Items.Crafting.Recipes.Parts;
-using TehPers.CoreMod.Api.Items.Recipes;
 using TehPers.CoreMod.ContentLoading;
 using TehPers.CoreMod.ContentPacks.Data;
 using TehPers.CoreMod.ContentPacks.Data.Converters;
@@ -153,10 +153,45 @@ namespace TehPers.CoreMod.ContentPacks {
 
                 // Create the object's manager
                 Category category = new Category(obj.Data.CategoryNumber, obj.Data.CategoryName);
-                IModObject manager = obj.Data.Buffs.HasValue.Match<bool, IModObject>()
-                    .When(true, () => new ModFood(translationHelper, sprite, key.LocalKey, obj.Data.Cost, obj.Data.Edibility, category, false, obj.Data.Buffs.Value))
-                    .When(false, () => new ModObject(translationHelper, sprite, key.LocalKey, obj.Data.Cost, category, obj.Data.Edibility))
-                    .ElseThrow();
+                IModObject manager = new ModObject(translationHelper, sprite, key.LocalKey, obj.Data.Cost, category, obj.Data.Edibility);
+
+                // Register the object
+                this._api.Items.CommonRegistry.Objects.Register(key, manager);
+                this._api.Owner.Monitor.Log($" - {key} registered (object)", LogLevel.Trace);
+            }
+        }
+
+        private void LoadFood(IContentPack contentPack, IContentSource contentSource, ICoreTranslationHelper translationHelper, IEnumerable<ContentPackDataInfo> sources) {
+            var objects = (from source in sources
+                           from entry in source.Content.Food
+                           select new { Source = source, Name = entry.Key, Data = entry.Value }).ToArray();
+
+            // Create exceptions for conflicting item names
+            Exception[] exceptions = (from itemGroup in this.GetDuplicateGroups(objects, item => item.Name)
+                                      select new Exception($"Object '{itemGroup.Key}' is being registered by multiple content files: {string.Join(", ", itemGroup.Select(item => $"'{item.Source.FullPath}'"))}")).ToArray();
+
+            // Throw the exceptions
+            if (exceptions.Any()) {
+                if (exceptions.Length > 1) {
+                    throw new AggregateException(exceptions);
+                }
+
+                throw exceptions.First();
+            }
+
+            // Create each object
+            foreach (var obj in objects) {
+                ItemKey key = new ItemKey(contentPack.Manifest, obj.Name);
+
+                // Create the sprite for the object
+                ISprite sprite = this.CreateSprite(contentSource, obj.Source, obj.Name, obj.Data);
+                if (obj.Data.Tint != Color.White) {
+                    sprite = new TintedSprite(sprite, obj.Data.Tint);
+                }
+
+                // Create the object's manager
+                Category category = new Category(obj.Data.CategoryNumber, obj.Data.CategoryName);
+                IModObject manager = new ModFood(translationHelper, sprite, key.LocalKey, obj.Data.Cost, obj.Data.Edibility, category, obj.Data.IsDrink, obj.Data.Buffs.Value);
 
                 // Register the object
                 this._api.Items.CommonRegistry.Objects.Register(key, manager);
@@ -204,7 +239,20 @@ namespace TehPers.CoreMod.ContentPacks {
         private void LoadRecipes(IContentPack contentPack, IEnumerable<ContentPackDataInfo> sources) {
             var recipes = (from source in sources
                            from entry in source.Content.Recipes
-                           select new { Source = source, Data = entry }).ToArray();
+                           select new { Source = source, Name = entry.Key, Data = entry.Value }).ToArray();
+
+            // Create exceptions for conflicting item names
+            Exception[] exceptions = (from recipeGroup in this.GetDuplicateGroups(recipes, recipe => recipe.Name)
+                                      select new Exception($"Recipe '{recipeGroup.Key}' is being registered by multiple content files: {string.Join(", ", recipeGroup.Select(item => $"'{item.Source.FullPath}'"))}")).ToArray();
+
+            // Throw the exceptions
+            if (exceptions.Any()) {
+                if (exceptions.Length > 1) {
+                    throw new AggregateException(exceptions);
+                }
+
+                throw exceptions.First();
+            }
 
             // Create each recipe
             foreach (var recipe in recipes) {
@@ -216,7 +264,14 @@ namespace TehPers.CoreMod.ContentPacks {
 
                 // Create the recipe
                 ISprite sprite = results.FirstOrDefault()?.Sprite ?? ingredients.FirstOrDefault()?.Sprite ?? throw new InvalidOperationException("Unable to create a sprite for a recipe.");
-                string recipeName = this._api.Items.RegisterCraftingRecipe(new ModRecipe(this._api.TranslationHelper, sprite, results, ingredients, recipe.Data.Name, recipe.Data.IsCooking));
+                CraftingKey recipeKey = this._api.Items.Crafting.RegisterRecipe(recipe.Name, new ModRecipe(this._api.TranslationHelper, sprite, results, ingredients, recipe.Data.Name, recipe.Data.IsCooking));
+
+                // Register the recipe
+                if (recipe.Data.IsCooking) {
+                    this._api.Items.Crafting.AddCookingRecipe(recipeKey);
+                } else {
+                    this._api.Items.Crafting.AddCraftingRecipe(recipeKey);
+                }
 
                 // TODO: Add conditions when the recipe can be added
                 this._api.Owner.Helper.Events.GameLoop.SaveLoaded += (sender, args) => {
@@ -224,12 +279,12 @@ namespace TehPers.CoreMod.ContentPacks {
                     NetStringDictionary<int, NetInt> targetDictionary = recipe.Data.IsCooking ? Game1.player.craftingRecipes : Game1.player.cookingRecipes;
 
                     // Add the recipe to the target
-                    if (!targetDictionary.ContainsKey(recipeName)) {
-                        targetDictionary.Add(recipeName, 0);
+                    if (!targetDictionary.ContainsKey(recipeKey)) {
+                        targetDictionary.Add(recipeKey, 0);
                     }
                 };
 
-                this._api.Owner.Monitor.Log($" - Added recipe: {recipeName}, Ingredients: {ingredients.Length}, Results: {results.Length}", LogLevel.Debug);
+                this._api.Owner.Monitor.Log($" - Added recipe: {recipeKey}, Ingredients: {ingredients.Length}, Results: {results.Length}", LogLevel.Debug);
             }
 
             IRecipePart ConvertPart(RecipeData.Part part) {

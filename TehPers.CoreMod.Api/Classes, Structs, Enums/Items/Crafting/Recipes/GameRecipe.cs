@@ -4,7 +4,6 @@ using System.Linq;
 using StardewValley;
 using TehPers.CoreMod.Api.Drawing.Sprites;
 using TehPers.CoreMod.Api.Items.Crafting.Recipes.Parts;
-using TehPers.CoreMod.Api.Items.Recipes;
 
 namespace TehPers.CoreMod.Api.Items.Crafting.Recipes {
     public class GameRecipe : SimpleRecipe {

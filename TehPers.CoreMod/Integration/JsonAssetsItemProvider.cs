@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
-using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Drawing.Sprites;
@@ -18,6 +18,8 @@ namespace TehPers.CoreMod.Integration {
 
         private readonly ICoreApi _coreApi;
         private readonly IJsonAssetsApi _jsonAssetsApi;
+
+        public IEnumerable<int> ReservedIndexes => Enumerable.Empty<int>(); // TODO
 
         public JsonAssetsItemProvider(ICoreApi coreApi, IJsonAssetsApi jsonAssetsApi) {
             this._coreApi = coreApi;

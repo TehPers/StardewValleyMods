@@ -1,4 +1,6 @@
-﻿using TehPers.CoreMod.Api.Items.Recipes;
+﻿using System;
+using TehPers.CoreMod.Api.Items.Crafting.Recipes;
+using TehPers.CoreMod.Api.Items.Events;
 
 namespace TehPers.CoreMod.Api.Items.Crafting {
     public interface ICraftingApi {
@@ -27,5 +29,8 @@ namespace TehPers.CoreMod.Api.Items.Crafting {
         /// <summary>Adds a recipe to the list of possible cooking recipes. The recipe can be given to the main player with <c>Game1.player.cookingRecipes.Add(<paramref name="key"/>, 0);</c>.</summary>
         /// <param name="key">The global key for the recipe which uniquely identifies it within the game.</param>
         void AddCookingRecipe(CraftingKey key);
+
+        /// <summary>Occurs after a recipe is crafted and the items are placed in the farmer's inventory.</summary>
+        event EventHandler<RecipeCraftedEventArgs> RecipeCrafted;
     }
 }

@@ -5,6 +5,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using System;
 using System.Linq;
+using StardewValley.TerrainFeatures;
 using TehPers.CoreMod.Api;
 using TehPers.CoreMod.Api.Items;
 using TehPers.CoreMod.Config;
@@ -56,8 +57,7 @@ namespace TehPers.CoreMod {
         private void LoadConfig(ICoreApi coreApi) {
             this.Monitor.Log("Loading config", LogLevel.Info);
 
-            //this.Config = coreApi.Json.ReadOrCreate<ModConfig>("config.json") ?? new ModConfig();
-            this.Config = this.Helper.Data.ReadJsonFile<ModConfig>("config.json") ?? new ModConfig();
+            this.Config = coreApi.Json.ReadOrCreate<ModConfig>("config.json");
         }
 
         private void LoadIntegrations(ICoreApi coreApi) {
