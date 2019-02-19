@@ -57,6 +57,7 @@
     <Compile Include="Classes, Structs, Enums\Items\Crafting\Recipes\Parts\HatRecipePart.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Crafting\Recipes\Parts\ModRecipePart.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Crafting\Recipes\Parts\SObjectRecipePart.cs" />
+    <Compile Include="Classes, Structs, Enums\Items\Crafting\Recipes\RecipeCraftedEventArgs.cs" />
     <Compile Include="Classes, Structs, Enums\Items\ModWeapon.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Crafting\Recipes\GameRecipe.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Crafting\Recipes\ModRecipe.cs" />
@@ -91,7 +92,6 @@
     <Compile Include="Conflux\Collections\ArrayX.cs" />
     <Compile Include="Conflux\Collections\CollectionExtensions.cs" />
     <Compile Include="Conflux\Collections\IArrayLike.cs" />
-    <Compile Include="Interfaces\Items\Crafting\Recipes\RecipeCraftedEventArgs.cs" />
     <Compile Include="System\Index.cs" />
     <Compile Include="Conflux\Collections\IReadonlyArrayLike.cs" />
     <Compile Include="Conflux\Collections\IReadonlySliceable.cs" />

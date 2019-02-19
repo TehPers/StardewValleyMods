@@ -76,12 +76,8 @@
       <Project>{63f341d5-2440-4d3f-a11d-0d60fc0d67bd}</Project>
       <Name>TehPers.Core.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TehPers.Core.Gui\TehPers.Core.Gui.csproj">
-      <Project>{70F21DE3-7C43-45F8-96C0-6398D9420CF6}</Project>
-      <Name>TehPers.Core.Gui</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TehPers.Core.Json\TehPers.Core.Json.csproj">
-      <Project>{D3F1F7BB-D094-4FD2-A417-2A824A20440A}</Project>
+      <Project>{d3f1f7bb-d094-4fd2-a417-2a824a20440a}</Project>
       <Name>TehPers.Core.Json</Name>
     </ProjectReference>
     <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">

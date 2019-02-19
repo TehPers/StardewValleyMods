@@ -4,17 +4,11 @@ using System.Text;
 using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.Tools;
 using TehPers.Core.Api.Weighted;
-using TehPers.Core.Gui;
-using TehPers.Core.Gui.Base.Units;
-using TehPers.Core.Gui.SDV.Components;
-using TehPers.Core.Gui.SDV.Units;
 using TehPers.Core.Helpers.Static;
 using TehPers.Core.Json;
 using TehPers.Core.Rewrite;
@@ -133,29 +127,6 @@ namespace TehPers.FishingOverhaul {
 
             // Load config values
             FishingRod.maxTackleUses = ModFishing.Instance.MainConfig.DifficultySettings.MaxTackleUses;
-        }
-
-        private void LoadGuis() {
-            IGuiApi guiApi = this.GetCoreApi().GetGuiApi();
-
-            this.Helper.Events.Input.ButtonReleased += (sender, pressed) => {
-                if (pressed.Button != SButton.Y) {
-                    return;
-                }
-
-                MenuComponent menu = new MenuComponent {
-                    Location = GuiVectors.Centered,
-                    Size = new ResponsiveVector2<GuiInfo>(new PercentParentUnit(0.75f), new PercentParentUnit(0.75f))
-                };
-
-                menu.AddChild(new LabelComponent(menu) {
-                    Location = new ResponsiveVector2<GuiInfo>(GuiVectors.Centered.X, GuiVectors.SameAsParent.Y),
-                    Scale = Vector2.One * 2f,
-                    Text = "Internet Exploder 11"
-                });
-
-                Game1.activeClickableMenu = guiApi.ConvertMenu(menu);
-            };
         }
 
         #region Events
