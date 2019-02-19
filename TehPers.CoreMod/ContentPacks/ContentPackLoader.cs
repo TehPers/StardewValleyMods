@@ -153,10 +153,45 @@ namespace TehPers.CoreMod.ContentPacks {
 
                 // Create the object's manager
                 Category category = new Category(obj.Data.CategoryNumber, obj.Data.CategoryName);
-                IModObject manager = obj.Data.Buffs.HasValue.Match<bool, IModObject>()
-                    .When(true, () => new ModFood(translationHelper, sprite, key.LocalKey, obj.Data.Cost, obj.Data.Edibility, category, false, obj.Data.Buffs.Value))
-                    .When(false, () => new ModObject(translationHelper, sprite, key.LocalKey, obj.Data.Cost, category, obj.Data.Edibility))
-                    .ElseThrow();
+                IModObject manager = new ModObject(translationHelper, sprite, key.LocalKey, obj.Data.Cost, category, obj.Data.Edibility);
+
+                // Register the object
+                this._api.Items.CommonRegistry.Objects.Register(key, manager);
+                this._api.Owner.Monitor.Log($" - {key} registered (object)", LogLevel.Trace);
+            }
+        }
+
+        private void LoadFood(IContentPack contentPack, IContentSource contentSource, ICoreTranslationHelper translationHelper, IEnumerable<ContentPackDataInfo> sources) {
+            var objects = (from source in sources
+                           from entry in source.Content.Food
+                           select new { Source = source, Name = entry.Key, Data = entry.Value }).ToArray();
+
+            // Create exceptions for conflicting item names
+            Exception[] exceptions = (from itemGroup in this.GetDuplicateGroups(objects, item => item.Name)
+                                      select new Exception($"Object '{itemGroup.Key}' is being registered by multiple content files: {string.Join(", ", itemGroup.Select(item => $"'{item.Source.FullPath}'"))}")).ToArray();
+
+            // Throw the exceptions
+            if (exceptions.Any()) {
+                if (exceptions.Length > 1) {
+                    throw new AggregateException(exceptions);
+                }
+
+                throw exceptions.First();
+            }
+
+            // Create each object
+            foreach (var obj in objects) {
+                ItemKey key = new ItemKey(contentPack.Manifest, obj.Name);
+
+                // Create the sprite for the object
+                ISprite sprite = this.CreateSprite(contentSource, obj.Source, obj.Name, obj.Data);
+                if (obj.Data.Tint != Color.White) {
+                    sprite = new TintedSprite(sprite, obj.Data.Tint);
+                }
+
+                // Create the object's manager
+                Category category = new Category(obj.Data.CategoryNumber, obj.Data.CategoryName);
+                IModObject manager = new ModFood(translationHelper, sprite, key.LocalKey, obj.Data.Cost, obj.Data.Edibility, category, obj.Data.IsDrink, obj.Data.Buffs.Value);
 
                 // Register the object
                 this._api.Items.CommonRegistry.Objects.Register(key, manager);

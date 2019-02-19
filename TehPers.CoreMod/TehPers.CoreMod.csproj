@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="ContentLoading\ContentPackTranslationHelper.cs" />
     <Compile Include="ContentPacks\Data\ContentPackData.cs" />
+    <Compile Include="ContentPacks\Data\FoodData.cs" />
     <Compile Include="ContentPacks\Data\PossibleConfigValuesData.cs" />
     <Compile Include="ContentPacks\Data\Converters\PossibleConfigValuesDataJsonConverter.cs" />
     <Compile Include="ContentPacks\Data\Converters\SColorJsonConverter.cs" />
