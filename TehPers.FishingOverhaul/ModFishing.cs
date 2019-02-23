@@ -154,8 +154,15 @@ namespace TehPers.FishingOverhaul {
             boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
             boxBottomLeft += new Vector2(0, lineHeight);
 
-            // Get info on all the possible fish
-            IWeightedElement<int?>[] possibleFish = this.Api.GetPossibleFish(Game1.player).Where(e => e.Value != null).ToArray();
+            // Get info on all the possible fish, grouping all duplicate entries into single entries
+            IWeightedElement<int>[] possibleFish = (from weightedFish in this.Api.GetPossibleFish(Game1.player)
+                                                    where weightedFish.Value != null
+                                                    group weightedFish.GetWeight() by weightedFish.Value.Value into g
+                                                    select new { Weight = g.Sum(), Fish = g.Key })
+                .ToWeighted(item => item.Weight, item => item.Fish)
+                .ToArray();
+
+            // Calculate the total chance of getting a fish
             double fishChance = possibleFish.SumWeights();
 
             // Limit the number of displayed fish
@@ -179,13 +186,9 @@ namespace TehPers.FishingOverhaul {
             if (possibleFish.Any()) {
                 // Draw info for each fish
                 const float iconScale = Game1.pixelZoom / 2f;
-                foreach (IWeightedElement<int?> fishData in possibleFish) {
-                    // Skip trash
-                    if (fishData.Value == null)
-                        continue;
-
+                foreach (IWeightedElement<int> fishData in possibleFish) {
                     // Get fish ID
-                    int fish = fishData.Value.Value;
+                    int fish = fishData.Value;
 
                     // Don't draw hidden fish
                     if (this.Api.IsHidden(fish))

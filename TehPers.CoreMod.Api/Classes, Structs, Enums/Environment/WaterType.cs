@@ -11,6 +11,6 @@ namespace TehPers.CoreMod.Api.Environment {
         River = 2,
 
         /** <summary>Game ID is -1</summary> **/
-        Both = WaterType.Lake | WaterType.River
+        Any = WaterType.Lake | WaterType.River
     }
 }
