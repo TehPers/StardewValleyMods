@@ -1,5 +1,5 @@
 ﻿using StardewValley;
-using TehPers.Core.Api.Weighted;
+using TehPers.CoreMod.Api.Weighted;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Configs {

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using StardewModdingAPI.Utilities;
 using StardewValley;
-using TehPers.Core.Api.Enums;
-using TehPers.Core.Helpers.Static;
-using TehPers.Core.Json.Serialization;
+using TehPers.CoreMod.Api.Environment;
+using TehPers.CoreMod.Api.Extensions;
+using TehPers.CoreMod.Api.Json;
+using TehPers.CoreMod.Api.Structs;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Configs {
@@ -19,7 +19,7 @@ namespace TehPers.FishingOverhaul.Configs {
         public List<TimeInterval> Times { get; set; } = new List<TimeInterval>();
 
         [Description("The types of water this fish can appear in. Lake = 1, river = 2. For both, add the numbers together.")]
-        public WaterType WaterType { get; set; } = WaterType.Both;
+        public WaterTypes WaterTypes { get; set; } = WaterTypes.Any;
 
         [Description("The seasons this fish can appear in. Spring = 1, summer = 2, fall = 4, winter = 8. For multiple seasons, add the numbers together.")]
         public Season Season { get; set; } = Season.Spring | Season.Summer | Season.Fall | Season.Winter;
@@ -35,12 +35,12 @@ namespace TehPers.FishingOverhaul.Configs {
 
         public FishData() { }
 
-        public FishData(double chance, int minTime, int maxTime, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int? mineLevel = null)
-            : this(chance, new[] { new TimeInterval(minTime, maxTime) }, waterType, season, minLevel, weather, mineLevel) { }
+        public FishData(double chance, int minTime, int maxTime, WaterTypes waterTypes, Season season, int minLevel = 0, Weather? weather = null, int? mineLevel = null)
+            : this(chance, new[] { new TimeInterval(minTime, maxTime) }, waterTypes, season, minLevel, weather, mineLevel) { }
 
-        public FishData(double chance, IEnumerable<TimeInterval> times, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int? mineLevel = null) {
+        public FishData(double chance, IEnumerable<TimeInterval> times, WaterTypes waterTypes, Season season, int minLevel = 0, Weather? weather = null, int? mineLevel = null) {
             this.Chance = chance;
-            this.WaterType = waterType;
+            this.WaterTypes = waterTypes;
             this.Season = season;
             this.MinLevel = minLevel;
             this.Weather = weather ?? Weather.Sunny | Weather.Rainy;
@@ -50,17 +50,17 @@ namespace TehPers.FishingOverhaul.Configs {
             }
         }
 
-        public bool MeetsCriteria(int fish, WaterType waterType, SDate date, Weather weather, int time, int level) {
+        public bool MeetsCriteria(int fish, WaterTypes waterTypes, SDateTime dateTime, Weather weather, int level) {
             // Note: HasFlag won't work because these are checking for an intersection, not for a single bit
-            return (this.WaterType & waterType) > 0
-                   && (this.Season & date.GetSeason()) > 0
-                   && (this.Weather & weather) > 0
+            return this.WaterTypes.HasAnyFlags(waterTypes)
+                   && this.Season.HasAnyFlags(dateTime.Season)
+                   && this.Weather.HasAnyFlags(weather)
                    && level >= this.MinLevel
-                   && this.Times.Any(t => time >= t.Start && time < t.Finish);
+                   && this.Times.Any(t => dateTime.TimeOfDay >= t.Start && dateTime.TimeOfDay < t.Finish);
         }
 
-        public bool MeetsCriteria(int fish, WaterType waterType, SDate date, Weather weather, int time, int level, int? mineLevel) {
-            return this.MeetsCriteria(fish, waterType, date, weather, time, level)
+        public bool MeetsCriteria(int fish, WaterTypes waterTypes, SDateTime dateTime, Weather weather, int level, int? mineLevel) {
+            return this.MeetsCriteria(fish, waterTypes, dateTime, weather, level)
                    && (this.MineLevel == null || mineLevel == this.MineLevel);
         }
 
@@ -70,7 +70,7 @@ namespace TehPers.FishingOverhaul.Configs {
 
         public override string ToString() => $"Chance: {this.Chance}, Weather: {this.Weather}, Season: {this.Season}";
 
-        public static IFishData Trash { get; } = new FishData(1, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
+        public static IFishData Trash { get; } = new FishData(1, 600, 2600, WaterTypes.Any, Season.Any);
 
         [JsonDescribe]
         public class TimeInterval {

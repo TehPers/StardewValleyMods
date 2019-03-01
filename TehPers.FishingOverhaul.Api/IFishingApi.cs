@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Tools;
-using TehPers.Core.Api.Enums;
-using TehPers.Core.Api.Weighted;
+using TehPers.CoreMod.Api.Environment;
+using TehPers.CoreMod.Api.Structs;
+using TehPers.CoreMod.Api.Weighted;
 
 namespace TehPers.FishingOverhaul.Api {
     public interface IFishingApi {
@@ -139,14 +140,13 @@ namespace TehPers.FishingOverhaul.Api {
         /// <summary>Gets all the obtainable trash data with the given criteria.</summary>
         /// <param name="who">The farmer.</param>
         /// <param name="locationName">The name of the current location being fished in.</param>
-        /// <param name="waterType">The type of water the <see cref="Farmer"/> is fishing in.</param>
-        /// <param name="date">The current date.</param>
+        /// <param name="waterTypes">The type of water the <see cref="Farmer"/> is fishing in.</param>
+        /// <param name="dateTime"></param>
         /// <param name="weather">The current weather.</param>
-        /// <param name="time">The current time.</param>
         /// <param name="fishingLevel">The current <see cref="Farmer"/>'s fishing level.</param>
         /// <param name="mineLevel">The current level in the mine, or null if not in the mine.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> containing all the available trash data that meets the given criteria.</returns>
-        IEnumerable<ITrashData> GetTrashData(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel);
+        IEnumerable<ITrashData> GetTrashData(Farmer who, string locationName, WaterTypes waterTypes, SDateTime dateTime, Weather weather, int fishingLevel, int? mineLevel);
 
         /// <summary>Gets all the fish a <see cref="Farmer"/> can catch.</summary>
         /// <param name="who">The farmer.</param>
@@ -159,11 +159,10 @@ namespace TehPers.FishingOverhaul.Api {
         /// <param name="water">The current water type.</param>
         /// <param name="date">The current date.</param>
         /// <param name="weather">The current weather.</param>
-        /// <param name="time">The current time. This should be between 0600 and 2600, where the first two digits represent the hour, and the second two digits represent the minute.</param>
         /// <param name="fishLevel">The allowed fishing level.</param>
         /// <param name="mineLevel">The current mine level, or null to ignore fish specific to certain levels in the mine.</param>
         /// <returns>All the fish that can be caught with their associated weights.</returns>
-        IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterType water, SDate date, Weather weather, int time, int fishLevel, int? mineLevel = null);
+        IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterTypes water, SDateTime date, Weather weather, int fishLevel, int? mineLevel = null);
 
         /// <summary>Gets the display name of a fish.</summary>
         /// <param name="fish">The ID of the fish to get the name of.</param>

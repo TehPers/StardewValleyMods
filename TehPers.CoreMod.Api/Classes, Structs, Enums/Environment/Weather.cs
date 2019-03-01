@@ -5,5 +5,10 @@ namespace TehPers.CoreMod.Api.Environment {
     public enum Weather {
         Sunny = 1,
         Rainy = 2,
+
+        Any = Weather.Sunny | Weather.Rainy,
+
+        [Obsolete("Use " + nameof(Weather.Any) + " instead")]
+        All = Weather.Any
     }
 }

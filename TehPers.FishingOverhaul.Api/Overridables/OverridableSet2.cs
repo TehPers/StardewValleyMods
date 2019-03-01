@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TehPers.FishingOverhaul.Api.Overridables {
     public class OverridableSet2<T> : Overridable2<ISet<T>>, ISet<T> {

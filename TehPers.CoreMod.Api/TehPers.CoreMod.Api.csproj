@@ -52,6 +52,7 @@
     <Compile Include="Classes, Structs, Enums\ContentPacks\Tokens\TokenValue.cs" />
     <Compile Include="Classes, Structs, Enums\Drawing\Sprites\TintedSprite.cs" />
     <Compile Include="Classes, Structs, Enums\Extensions\DeconstructorExtensions.cs" />
+    <Compile Include="Classes, Structs, Enums\Extensions\WeightedExtensions.cs" />
     <Compile Include="Classes, Structs, Enums\FacingDirection.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Crafting\Recipes\Parts\BigCraftableRecipePart.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Crafting\Recipes\Parts\HatRecipePart.cs" />
@@ -92,6 +93,9 @@
     <Compile Include="Conflux\Collections\ArrayX.cs" />
     <Compile Include="Conflux\Collections\CollectionExtensions.cs" />
     <Compile Include="Conflux\Collections\IArrayLike.cs" />
+    <Compile Include="Interfaces\Weighted\IWeighted.cs" />
+    <Compile Include="Interfaces\Weighted\IWeightedElement.cs" />
+    <Compile Include="Classes, Structs, Enums\Weighted\WeightedElement.cs" />
     <Compile Include="System\Index.cs" />
     <Compile Include="Conflux\Collections\IReadonlyArrayLike.cs" />
     <Compile Include="Conflux\Collections\IReadonlySliceable.cs" />
@@ -150,7 +154,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes, Structs, Enums\Items\Objects.cs" />
     <Compile Include="Classes, Structs, Enums\Environment\Season.cs" />
-    <Compile Include="Classes, Structs, Enums\Environment\WaterType.cs" />
+    <Compile Include="Classes, Structs, Enums\Environment\WaterTypes.cs" />
     <Compile Include="Classes, Structs, Enums\Environment\Weather.cs" />
     <Compile Include="Classes, Structs, Enums\Extensions\DrawingExtensions.cs" />
     <Compile Include="Classes, Structs, Enums\Extensions\EnumerableExtensions.cs" />

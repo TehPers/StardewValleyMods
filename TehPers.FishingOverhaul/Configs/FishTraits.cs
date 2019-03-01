@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using TehPers.Core.Json.Serialization;
+using TehPers.CoreMod.Api.Json;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Enums;
 

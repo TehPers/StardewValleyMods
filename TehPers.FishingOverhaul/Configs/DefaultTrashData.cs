@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using StardewModdingAPI.Utilities;
 using StardewValley;
-using TehPers.Core.Api.Enums;
+using TehPers.CoreMod.Api.Environment;
+using TehPers.CoreMod.Api.Structs;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Configs {
@@ -11,7 +11,7 @@ namespace TehPers.FishingOverhaul.Configs {
         private const int MAX_TRASH_ID = 173;
         public IEnumerable<int> PossibleIds { get; } = Enumerable.Range(DefaultTrashData.MIN_TRASH_ID, DefaultTrashData.MAX_TRASH_ID - DefaultTrashData.MIN_TRASH_ID);
 
-        public bool MeetsCriteria(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel) {
+        public bool MeetsCriteria(Farmer who, string locationName, WaterTypes waterTypes, SDateTime dateTime, Weather weather, int fishingLevel, int? mineLevel) {
             return locationName != "Submarine";
         }
 

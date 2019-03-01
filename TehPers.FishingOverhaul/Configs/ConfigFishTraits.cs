@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using StardewModdingAPI;
-using TehPers.Core.Json.Serialization;
+using TehPers.CoreMod.Api.Json;
 using TehPers.FishingOverhaul.Api.Enums;
 
 namespace TehPers.FishingOverhaul.Configs {

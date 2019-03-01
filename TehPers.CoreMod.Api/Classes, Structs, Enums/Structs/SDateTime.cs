@@ -32,7 +32,7 @@ namespace TehPers.CoreMod.Api.Structs {
         /// <summary>The number of elapsed days in the season.</summary>
         public int DayOfSeason => (int) this.TotalDays % 28;
 
-        /// <summary>The current time of day in SDV format (hhmm).</summary>
+        /// <summary>The current time of day in SDV format (HHmm).</summary>
         public int TimeOfDay => this.TotalMinutes + 40 * (this.TotalMinutes / 60);
 
         /// <summary>The number of elapsed minutes in the day. This is not in SDV time format, use <see cref="TimeOfDay"/> instead if that is needed.</summary>
@@ -98,7 +98,5 @@ namespace TehPers.CoreMod.Api.Structs {
 
         /// <summary>The current date.</summary>
         public static SDateTime Today => new SDateTime(Game1.year, Game1.currentSeason?.GetSeason() ?? Season.Spring, Game1.dayOfMonth);
-
-
     }
 }

@@ -8,7 +8,9 @@ namespace TehPers.CoreMod.Api.Extensions {
         /// <summary>Shuffles a list.</summary>
         /// <typeparam name="T">The type of the elements of <see cref="source"/></typeparam>
         /// <param name="source">An <see cref="IList{T}"/> to shuffle.</param>
-        public static void Shuffle<T>(this IList<T> source) => source.Shuffle(new Random());
+        public static void Shuffle<T>(this IList<T> source) {
+            source.Shuffle(new Random());
+        }
 
         /// <summary>Shuffles a list.</summary>
         /// <typeparam name="T">The type of the elements of <see cref="source"/></typeparam>
@@ -29,16 +31,39 @@ namespace TehPers.CoreMod.Api.Extensions {
         /// <typeparam name="TSource">The type of the elements of <see cref="source"/></typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> to create a <see cref="HashSet{T}"/> from.</param>
         /// <returns>A <see cref="HashSet{T}"/> that contains values of type <see cref="TSource"/> selected from the input sequence.</returns>
-        /// <remarks>In framework versions 4.7.2+, this method can be removed</remarks>
-        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source) => source.ToHashSet(EqualityComparer<TSource>.Default);
+        /// <remarks>In framework versions 4.7.2+, this method can be removed.</remarks>
+        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source) {
+            return source.ToHashSet(EqualityComparer<TSource>.Default);
+        }
 
         /// <summary>Creates a <see cref="HashSet{T}"/> from an <see cref="IEnumerable{T}"/>.</summary>
-        /// <typeparam name="TSource">The type of the elements of <see cref="source"/></typeparam>
+        /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> to create a <see cref="HashSet{T}"/> from.</param>
         /// <param name="comparer">The comparer for the hash set.</param>
         /// <returns>A <see cref="HashSet{T}"/> that contains values of type <see cref="TSource"/> selected from the input sequence.</returns>
-        /// <remarks>In framework versions 4.7.2+, this method can be removed</remarks>
-        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer) => new HashSet<TSource>(source.ToArray(), comparer);
+        /// <remarks>In framework versions 4.7.2+, this method can be removed.</remarks>
+        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer) {
+            return new HashSet<TSource>(source.ToArray(), comparer);
+        }
+
+        /// <summary>Converts an <see cref="IEnumerable{T}"/> of <see cref="KeyValuePair{TKey,TValue}"/> to a <see cref="Dictionary{TKey,TValue}"/>.</summary>
+        /// <typeparam name="TKey">The type of the keys in the <paramref name="source" />.</typeparam>
+        /// <typeparam name="TValue">The type of the values in the <paramref name="source"/>.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
+        /// <returns>A dictionary containing all the <see cref="KeyValuePair{TKey,TValue}"/> entries in the <paramref name="source"/>.</returns>
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source) {
+            return source.ToDictionary(kv => kv.Key, kv => kv.Value);
+        }
+
+        /// <summary>Converts an <see cref="IEnumerable{T}"/> of <see cref="KeyValuePair{TKey,TValue}"/> to a <see cref="Dictionary{TKey,TValue}"/> using a custom <see cref="IEqualityComparer{T}"/>.</summary>
+        /// <typeparam name="TKey">The type of the keys in the <paramref name="source" />.</typeparam>
+        /// <typeparam name="TValue">The type of the values in the <paramref name="source"/>.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
+        /// <param name="comparer">The comparer used to compare keys in the dictionary.</param>
+        /// <returns>A dictionary containing all the <see cref="KeyValuePair{TKey,TValue}"/> entries in the <paramref name="source"/>.</returns>
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source, IEqualityComparer<TKey> comparer) {
+            return source.ToDictionary(kv => kv.Key, kv => kv.Value, comparer);
+        }
 
         /// <summary>Swaps two elements in a list.</summary>
         /// <typeparam name="T">The type of element in the list.</typeparam>
@@ -58,27 +83,39 @@ namespace TehPers.CoreMod.Api.Extensions {
         /// <param name="key">The key of the value to retrieve</param>
         /// <param name="fallback">The fallback value if the key doesn't exist in the dictionary</param>
         /// <returns>If the key exists in <see cref="source"/>, the value associated with <see cref="key"/>, otherwise <see cref="fallback"/></returns>
-        public static TVal GetDefault<TKey, TVal>(this IDictionary<TKey, TVal> source, TKey key, TVal fallback = default(TVal)) => source.ContainsKey(key) ? source[key] : fallback;
+        public static TVal GetDefault<TKey, TVal>(this IDictionary<TKey, TVal> source, TKey key, TVal fallback = default) {
+            return source.TryGetValue(key, out TVal value) ? value : fallback;
+        }
 
         /// <summary>Splits an <see cref="IEnumerable{T}"/> into several smaller ones, each containing at most a certain number of elements.</summary>
         /// <typeparam name="T">The type of the elements of <see cref="source"/></typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> to split.</param>
         /// <param name="size">The number of elements each group should have. The last group may contain fewer elements.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> containing the elements from <see cref="source"/> split into groups of at most <see cref="source"/> elements.</returns>
-        public static IEnumerable<IEnumerable<T>> Split<T>(this IEnumerable<T> source, int size) {
-            bool grouping;
+        public static IEnumerable<IEnumerable<T>> Window<T>(this IEnumerable<T> source, int size) {
+            // Keep track of whether there are any items left
+            bool itemsLeft;
+
+            // Enumerate the source manually
             using (IEnumerator<T> enumerator = source.GetEnumerator()) {
-                grouping = enumerator.MoveNext();
-                while (grouping) {
+                // Move to the first item
+                itemsLeft = enumerator.MoveNext();
+
+                // Make groups until out if items
+                while (itemsLeft) {
                     yield return GetGroup(enumerator);
                 }
             }
 
+            // Creates a group of items from the given enumerator
             IEnumerable<T> GetGroup(IEnumerator<T> e) {
-                int n = size;
-                while (n-- > 0 && grouping) {
+                // Keep track of the current size of this group
+                int itemsRemaining = size;
+
+                // Yield items until either the group has reached the given size or there are no more items
+                while (itemsRemaining-- > 0 && itemsLeft) {
                     yield return e.Current;
-                    grouping = e.MoveNext();
+                    itemsLeft = e.MoveNext();
                 }
             }
         }
@@ -104,7 +141,7 @@ namespace TehPers.CoreMod.Api.Extensions {
         /// <param name="input">The string to repeat</param>
         /// <param name="count">How many times to repeat it</param>
         /// <returns><see cref="input"/> repeated <see cref="count"/> times</returns>
-        /// <remarks>Based on this SO answer: https://stackoverflow.com/a/3754626</remarks>
+        /// <remarks>Based on this SO answer: https://stackoverflow.com/a/3754626. </remarks>
         public static string Repeat(this string input, int count) {
             if (string.IsNullOrEmpty(input))
                 return string.Empty;
@@ -121,8 +158,8 @@ namespace TehPers.CoreMod.Api.Extensions {
         /// <summary>Wraps this object instance into an <see cref="IEnumerable{T}"/> consisting of a single item.</summary>
         /// <typeparam name="T">Type of the object.</typeparam>
         /// <param name="item">The instance that will be wrapped.</param>
-        /// <returns>An IEnumerable&lt;T&gt; consisting of a single item.</returns>
-        /// <remarks>Based on this SO question: https://stackoverflow.com/q/1577822</remarks>
+        /// <returns>An <see cref="IEnumerable{T}"/> consisting of a single item.</returns>
+        /// <remarks>Based on this SO question: https://stackoverflow.com/q/1577822. </remarks>
         public static IEnumerable<T> Yield<T>(this T item) {
             yield return item;
         }
@@ -143,41 +180,6 @@ namespace TehPers.CoreMod.Api.Extensions {
         /// <returns>A new <see cref="IEnumerable{T}"/> with the item at the end of it.</returns>
         public static IEnumerable<T> Append<T>(this IEnumerable<T> source, T item) {
             return source.Concat(item.Yield());
-        }
-
-        /// <summary>Groups the elements of an <see cref="IEnumerable{T}"/> into multiple <see cref="IEnumerable{T}"/> instances, each with up to a certain number of elements.</summary>
-        /// <typeparam name="T">The type of elements in the source.</typeparam>
-        /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
-        /// <param name="countPerWindow">The number of items each window should have at most. The last window may contain fewer items in it.</param>
-        /// <returns>A new <seealso cref="IEnumerable{T}"/> with the groups.</returns>
-        public static IEnumerable<IEnumerable<T>> Window<T>(this IEnumerable<T> source, int countPerWindow) {
-            if (source == null) {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            if (countPerWindow <= 0) {
-                throw new ArgumentOutOfRangeException(nameof(countPerWindow), "Must be greater than zero");
-            }
-
-            // Return as many windows as possible
-            using (IEnumerator<T> enumerator = source.GetEnumerator()) {
-                // Loop until there are no more items left
-                while (enumerator.MoveNext()) {
-                    // Since the enumerator was moved, pass the current element into the window and yield that window
-                    yield return GetWindow(enumerator, enumerator.Current);
-                }
-            }
-
-            IEnumerable<T> GetWindow(IEnumerator<T> enumerator, T buffered) {
-                // Yield the buffered item
-                yield return buffered;
-
-                // Keep going
-                int remaining = countPerWindow - 1;
-                while (remaining-- > 0 && enumerator.MoveNext()) {
-                    yield return enumerator.Current;
-                }
-            }
         }
     }
 }

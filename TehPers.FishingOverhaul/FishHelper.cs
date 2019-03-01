@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Tools;
-using TehPers.Core.Api.Enums;
-using TehPers.Core.Api.Weighted;
-using TehPers.Core.Helpers.Static;
+using TehPers.CoreMod.Api.Environment;
+using TehPers.CoreMod.Api.Extensions;
+using TehPers.CoreMod.Api.Structs;
+using TehPers.CoreMod.Api.Weighted;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Configs;
 using SFarmer = StardewValley.Farmer;
@@ -29,9 +29,13 @@ namespace TehPers.FishingOverhaul {
             return possibleFish.Choose(Game1.random);
         }
 
-        public static int? GetRandomTrash(Farmer who) => FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who));
+        public static int? GetRandomTrash(Farmer who) {
+            return FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who));
+        }
 
-        public static int? GetRandomTrash(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel) => FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who, locationName, waterType, date, weather, time, fishingLevel, mineLevel));
+        public static int? GetRandomTrash(Farmer who, string locationName, WaterTypes waterTypes, SDateTime dateTime, Weather weather, int fishingLevel, int? mineLevel) {
+            return FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who, locationName, waterTypes, dateTime, weather, fishingLevel, mineLevel));
+        }
 
         public static int? GetRandomTrash(IEnumerable<ITrashData> trashData) {
             trashData = trashData.ToArray();
@@ -48,7 +52,9 @@ namespace TehPers.FishingOverhaul {
             return !ids.Any() ? (int?) null : ids.ToWeighted(id => 1D).Choose(Game1.random);
         }
 
-        public static bool IsTrash(int id) => ModFishing.Instance.Api.GetTrashData().Any(t => t.PossibleIds.Contains(id));
+        public static bool IsTrash(int id) {
+            return ModFishing.Instance.Api.GetTrashData().Any(t => t.PossibleIds.Contains(id));
+        }
 
         public static float GetRawFishChance(SFarmer who) {
             ConfigMain.ConfigGlobalFish config = ModFishing.Instance.MainConfig.GlobalFishSettings;

@@ -6,20 +6,20 @@ using System.Reflection;
 using Microsoft.Xna.Framework;
 using Netcode;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.Tools;
-using TehPers.Core.Api.Enums;
-using TehPers.Core.Helpers.Static;
+using TehPers.CoreMod.Api.Extensions;
+using TehPers.CoreMod.Api.Items;
+using TehPers.CoreMod.Api.Weighted;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Configs;
 using SObject = StardewValley.Object;
 
 namespace TehPers.FishingOverhaul {
-    internal class FishingRodOverrider {
+    internal class FishingRodOverrider : IDisposable {
+        private readonly IMod _mod;
         private readonly FieldInfo _pullFishField = typeof(FishingRod).GetField("pullFishFromWaterEvent", BindingFlags.NonPublic | BindingFlags.Instance);
         private readonly FieldInfo _netEventOnEvent = typeof(AbstractNetEvent1<byte[]>).GetField("onEvent", BindingFlags.Instance | BindingFlags.NonPublic);
         private readonly MethodInfo _doPullFishFromWater = typeof(FishingRod).GetMethod("doPullFishFromWater", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -27,6 +27,7 @@ namespace TehPers.FishingOverhaul {
         public readonly HashSet<FishingRod> OverridingCatch = new HashSet<FishingRod>();
 
         public FishingRodOverrider(IMod mod) {
+            this._mod = mod;
             mod.Helper.Events.GameLoop.UpdateTicked += this.Update;
         }
 
@@ -231,7 +232,7 @@ namespace TehPers.FishingOverhaul {
             bool treasure = !Game1.isFestival();
             treasure &= user.fishCaught != null && user.fishCaught.Count > 1;
             treasure &= Game1.random.NextDouble() < ModFishing.Instance.Api.GetTreasureChance(user, rod);
-            Game1.activeClickableMenu = new CustomBobberBar(user, fish, fishSize, treasure, rod.attachments[1]?.ParentSheetIndex ?? -1);
+            Game1.activeClickableMenu = new CustomBobberBar(this._mod, user, fish, fishSize, treasure, rod.attachments[1]?.ParentSheetIndex ?? -1);
         }
 
         private void OpenTreasureEndFunction(FishingRod rod, Farmer user, int includeFish) {
@@ -253,23 +254,26 @@ namespace TehPers.FishingOverhaul {
             if (includeFish == 1)
                 rewards.Add(new SObject(whichFish, 1, false, -1, fishQuality));
 
-            List<ITreasureData> possibleLoot = new List<ITreasureData>(ModFishing.Instance.TreasureConfig.PossibleLoot)
-                .Where(treasure => treasure.IsValid(user)).ToList();
+            List<IWeightedElement<ITreasureData>> possibleLoot = ModFishing.Instance.TreasureConfig.PossibleLoot
+                .Cast<ITreasureData>()
+                .Where(treasure => treasure.IsValid(user))
+                .ToWeighted(treasure => treasure.GetWeight(), treasure => treasure)
+                .ToList();
 
             // Select rewards
             float chance = 1f;
             int streak = ModFishing.Instance.Api.GetStreak(user);
             while (possibleLoot.Count > 0 && rewards.Count < config.MaxTreasureQuantity && Game1.random.NextDouble() <= chance) {
-                ITreasureData treasure = possibleLoot.Choose(Game1.random);
+                IWeightedElement<ITreasureData> weightedTreasure = possibleLoot.Choose(Game1.random);
 
                 // Choose an ID for the treasure
-                IList<int> ids = treasure.PossibleIds();
+                IList<int> ids = weightedTreasure.Value.PossibleIds();
                 int id = ids[Game1.random.Next(ids.Count)];
 
                 // Lost books have custom handling
                 if (id == Objects.LostBook) {
                     if (user.archaeologyFound == null || !user.archaeologyFound.ContainsKey(102) || user.archaeologyFound[102][0] >= 21) {
-                        possibleLoot.Remove(treasure);
+                        possibleLoot.Remove(weightedTreasure);
                         continue;
                     }
                     Game1.showGlobalMessage("You found a lost book. The library has been expanded.");
@@ -277,7 +281,7 @@ namespace TehPers.FishingOverhaul {
 
                 // Create reward item
                 Item reward;
-                if (treasure.MeleeWeapon) {
+                if (weightedTreasure.Value.MeleeWeapon) {
                     reward = new MeleeWeapon(id);
                 } else if (id >= Ring.ringLowerIndexRange && id <= Ring.ringUpperIndexRange) {
                     reward = new Ring(id);
@@ -285,7 +289,7 @@ namespace TehPers.FishingOverhaul {
                     reward = new Boots(id);
                 } else {
                     // Random quantity
-                    int count = Game1.random.Next(treasure.MinAmount, treasure.MaxAmount);
+                    int count = Game1.random.Next(weightedTreasure.Value.MinAmount, weightedTreasure.Value.MaxAmount);
 
                     reward = new SObject(Vector2.Zero, id, count);
                 }
@@ -294,8 +298,8 @@ namespace TehPers.FishingOverhaul {
                 rewards.Add(reward);
 
                 // Check if this reward shouldn't be duplicated
-                if (!config.AllowDuplicateLoot || !treasure.AllowDuplicates)
-                    possibleLoot.Remove(treasure);
+                if (!config.AllowDuplicateLoot || !weightedTreasure.Value.AllowDuplicates)
+                    possibleLoot.Remove(weightedTreasure);
 
                 // Update chance
                 chance *= config.AdditionalLootChance + streak * config.StreakAdditionalLootChance;
@@ -312,6 +316,10 @@ namespace TehPers.FishingOverhaul {
             Game1.activeClickableMenu = new ItemGrabMenu(rewards);
             ((ItemGrabMenu) Game1.activeClickableMenu).source = 3;
             user.completelyStopAnimatingOrDoingAction();
+        }
+
+        public void Dispose() {
+            this._mod.Helper.Events.GameLoop.UpdateTicked -= this.Update;
         }
     }
 }

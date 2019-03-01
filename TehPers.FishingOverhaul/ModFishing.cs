@@ -5,13 +5,13 @@ using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.Tools;
-using TehPers.Core.Api.Weighted;
-using TehPers.Core.Helpers.Static;
-using TehPers.Core.Json;
-using TehPers.Core.Rewrite;
+using TehPers.CoreMod.Api;
+using TehPers.CoreMod.Api.Extensions;
+using TehPers.CoreMod.Api.Weighted;
 using TehPers.FishingOverhaul.Configs;
 using TehPers.FishingOverhaul.Patches;
 using SObject = StardewValley.Object;
@@ -32,16 +32,22 @@ namespace TehPers.FishingOverhaul {
 
         public override void Entry(IModHelper helper) {
             ModFishing.Instance = this;
+
+            this.Helper.Events.GameLoop.GameLaunched += (sender, args) => {
+                if (this.Helper.ModRegistry.GetApi<ICoreApiFactory>("TehPers.CoreMod") is ICoreApiFactory coreApiFactory) {
+                    this.Initialize(coreApiFactory.GetApi(this));
+                } else {
+                    this.Monitor.Log("Failed to get the core API. Make sure that all your mods are up to date. This mod will be disabled.", LogLevel.Error);
+                }
+            };
+        }
+
+        private void Initialize(ICoreApi coreApi) {
             this.Api = new FishingApi();
             //TehMultiplayerApi.GetApi(this).RegisterItem(Objects.Coal, new FishingRodManager());
 
-            // Make sure TehPers.Core isn't loaded as it's not needed anymore
-            if (helper.ModRegistry.IsLoaded("TehPers.Core")) {
-                this.Monitor.Log("Delete TehCore, it's not needed anymore. Your game will probably crash with it installed anyway.", LogLevel.Error);
-            }
-
             // Load the configs
-            this.LoadConfigs();
+            this.LoadConfigs(coreApi);
 
             // Make sure this mod is enabled
             if (!this.MainConfig.ModEnabled) {
@@ -50,21 +56,20 @@ namespace TehPers.FishingOverhaul {
 
             // Apply patches
             this.Harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
-            Type targetType = AssortedHelpers.GetSDVType(nameof(NetAudio));
-            this.Harmony.Patch(targetType.GetMethod(nameof(NetAudio.PlayLocal)), new HarmonyMethod(typeof(NetAudioPatches).GetMethod(nameof(NetAudioPatches.Prefix))), null);
+            this.Harmony.Patch(typeof(NetAudio).GetMethod(nameof(NetAudio.PlayLocal)), prefix: new HarmonyMethod(typeof(NetAudioPatches).GetMethod(nameof(NetAudioPatches.Prefix))));
 
             // Override fishing
             this.Overrider = new FishingRodOverrider(this);
 
             // Events
-            this.Helper.Events.Display.RenderedHud += this.PostRenderHud;
+            this.Helper.Events.Display.RenderedHud += (sender, e) => this.PostRenderHud(coreApi, e);
             this.Helper.Events.Input.ButtonPressed += (sender, e) => {
                 if (e.Button != SButton.F5)
                     return;
 
-                this.Monitor.Log("Reloading configs...", LogLevel.Info);
-                this.LoadConfigs();
-                this.Monitor.Log("Done", LogLevel.Info);
+                this.Monitor.Log("Reloading configs", LogLevel.Info);
+                this.LoadConfigs(coreApi);
+                this.Monitor.Log("Done", LogLevel.Trace);
             };
 
             // Trash data
@@ -77,48 +82,23 @@ namespace TehPers.FishingOverhaul {
             this.Api.AddTrashData(new SpecificTrashData(new[] { 157 }, 1, "UndergroundMines")); // White Algae
             this.Api.AddTrashData(new SpecificTrashData(new[] { 797 }, 0.01D, "Submarine")); // Pearl
             this.Api.AddTrashData(new SpecificTrashData(new[] { 152 }, 0.99D, "Submarine")); // Seaweed
-
-            // this.LoadGuis();
-
-            /*ControlEvents.KeyPressed += (sender, pressed) => {
-                if (pressed.KeyPressed == Keys.NumPad7) {
-                    Menu menu = new Menu(Game1.viewport.Width / 6, Game1.viewport.Height / 6, 2 * Game1.viewport.Width / 3, 2 * Game1.viewport.Height / 3);
-
-                    menu.MainElement.AddChild(new TextElement {
-                        Text = "Test Menu",
-                        Color = Color.Black,
-                        Size = new BoxVector(0, 50, 1F, 0F),
-                        Scale = new Vector2(3, 3),
-                        HorizontalAlignment = Alignment.MIDDLE,
-                        VerticalAlignment = Alignment.TOP
-                    });
-
-                    menu.MainElement.AddChild(new TextboxElement {
-                        Location = new BoxVector(0, 100, 0, 0)
-                    });
-
-                    Game1.activeClickableMenu = menu;
-                }
-            };*/
         }
 
         public override object GetApi() {
             return this.Api;
         }
 
-        private void LoadConfigs() {
-            IJsonApi jsonApi = this.GetCoreApi().GetJsonApi();
-
+        private void LoadConfigs(ICoreApi coreApi) {
             // Load configs
-            this.MainConfig = jsonApi.ReadOrCreate<ConfigMain>("config.json");
-            this.TreasureConfig = jsonApi.ReadOrCreate<ConfigTreasure>("treasure.json", this.MainConfig.MinifyConfigs);
-            this.FishConfig = jsonApi.ReadOrCreate("fish.json", () => {
+            this.MainConfig = coreApi.Json.ReadOrCreate<ConfigMain>("config.json");
+            this.TreasureConfig = coreApi.Json.ReadOrCreate<ConfigTreasure>("treasure.json", this.MainConfig.MinifyConfigs);
+            this.FishConfig = coreApi.Json.ReadOrCreate("fish.json", () => {
                 // Populate fish data
                 ConfigFish config = new ConfigFish();
                 config.PopulateData();
                 return config;
             }, this.MainConfig.MinifyConfigs);
-            this.FishTraitsConfig = jsonApi.ReadOrCreate("fishTraits.json", () => {
+            this.FishTraitsConfig = coreApi.Json.ReadOrCreate("fishTraits.json", () => {
                 // Populate fish traits data
                 ConfigFishTraits config = new ConfigFishTraits();
                 config.PopulateData();
@@ -129,8 +109,19 @@ namespace TehPers.FishingOverhaul {
             FishingRod.maxTackleUses = ModFishing.Instance.MainConfig.DifficultySettings.MaxTackleUses;
         }
 
+        protected override void Dispose(bool disposing) {
+            if (disposing) {
+                // TODO: Detatch all event handlers
+
+                this.Overrider.Dispose();
+                this.Harmony.UnpatchAll(this.Harmony.Id);
+            }
+
+            base.Dispose(disposing);
+        }
+
         #region Events
-        private void PostRenderHud(object sender, EventArgs eventArgs) {
+        private void PostRenderHud(ICoreApi coreApi, RenderedHudEventArgs args) {
             if (!this.MainConfig.ShowFishingData || Game1.eventUp || !(Game1.player.CurrentTool is FishingRod rod))
                 return;
 
@@ -144,13 +135,12 @@ namespace TehPers.FishingOverhaul {
             Vector2 boxBottomLeft = boxTopLeft;
 
             // Setup the sprite batch
-            SpriteBatch batch = Game1.spriteBatch;
-            batch.End();
-            batch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
+            args.SpriteBatch.End();
+            args.SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
 
             // Draw streak
             string streakText = ModFishing.Translate("text.streak", this.Api.GetStreak(Game1.player));
-            batch.DrawStringWithShadow(font, streakText, boxBottomLeft, textColor, 1f);
+            args.SpriteBatch.DrawStringWithShadow(font, streakText, boxBottomLeft, textColor, 1f);
             boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
             boxBottomLeft += new Vector2(0, lineHeight);
 
@@ -173,13 +163,13 @@ namespace TehPers.FishingOverhaul {
 
             // Draw treasure chance
             string treasureText = ModFishing.Translate("text.treasure", ModFishing.Translate("text.percent", this.Api.GetTreasureChance(Game1.player, rod)));
-            batch.DrawStringWithShadow(font, treasureText, boxBottomLeft, textColor, 1f);
+            args.SpriteBatch.DrawStringWithShadow(font, treasureText, boxBottomLeft, textColor, 1f);
             boxWidth = Math.Max(boxWidth, font.MeasureString(treasureText).X);
             boxBottomLeft += new Vector2(0, lineHeight);
 
             // Draw trash chance
             string trashText = ModFishing.Translate("text.trash", ModFishing.Translate("text.percent", 1f - fishChance));
-            batch.DrawStringWithShadow(font, trashText, boxBottomLeft, textColor, 1f);
+            args.SpriteBatch.DrawStringWithShadow(font, trashText, boxBottomLeft, textColor, 1f);
             boxWidth = Math.Max(boxWidth, font.MeasureString(trashText).X);
             boxBottomLeft += new Vector2(0, lineHeight);
 
@@ -196,13 +186,13 @@ namespace TehPers.FishingOverhaul {
 
                     // Draw fish icon
                     Rectangle source = GameLocation.getSourceRectForObject(fish);
-                    batch.Draw(Game1.objectSpriteSheet, boxBottomLeft, source, Color.White, 0.0f, Vector2.Zero, iconScale, SpriteEffects.None, 1F);
+                    args.SpriteBatch.Draw(Game1.objectSpriteSheet, boxBottomLeft, source, Color.White, 0.0f, Vector2.Zero, iconScale, SpriteEffects.None, 1F);
                     lineHeight = Math.Max(lineHeight, source.Height * iconScale);
 
                     // Draw fish information
                     string chanceText = ModFishing.Translate("text.percent", fishData.GetWeight());
                     string fishText = $"{this.Api.GetFishName(fish)} - {chanceText}";
-                    batch.DrawStringWithShadow(font, fishText, boxBottomLeft + new Vector2(source.Width * iconScale, 0), textColor, 1F);
+                    args.SpriteBatch.DrawStringWithShadow(font, fishText, boxBottomLeft + new Vector2(source.Width * iconScale, 0), textColor, 1F);
                     boxWidth = Math.Max(boxWidth, font.MeasureString(fishText).X + source.Width * iconScale);
 
                     // Update destY
@@ -211,21 +201,21 @@ namespace TehPers.FishingOverhaul {
             }
 
             if (trimmed > 0) {
-                batch.DrawStringWithShadow(font, $"+{trimmed}...", boxBottomLeft, textColor, 1f);
+                args.SpriteBatch.DrawStringWithShadow(font, $"+{trimmed}...", boxBottomLeft, textColor, 1f);
                 boxBottomLeft += new Vector2(0, lineHeight);
             }
 
             // Draw the background rectangle
-            batch.Draw(DrawHelpers.WhitePixel, new Rectangle((int) boxTopLeft.X, (int) boxTopLeft.Y, (int) boxWidth, (int) boxBottomLeft.Y), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.85F);
+            args.SpriteBatch.Draw(coreApi.Drawing.WhitePixel, new Rectangle((int) boxTopLeft.X, (int) boxTopLeft.Y, (int) boxWidth, (int) boxBottomLeft.Y), null, new Color(0, 0, 0, 0.25F), 0f, Vector2.Zero, SpriteEffects.None, 0.85F);
 
             // Debug info
             StringBuilder text = new StringBuilder();
             if (text.Length > 0) {
-                batch.DrawStringWithShadow(Game1.smallFont, text.ToString(), boxBottomLeft, Color.White, 0.8F);
+                args.SpriteBatch.DrawStringWithShadow(Game1.smallFont, text.ToString(), boxBottomLeft, Color.White, 0.8F);
             }
 
-            batch.End();
-            batch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
+            args.SpriteBatch.End();
+            args.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise);
         }
         #endregion
 

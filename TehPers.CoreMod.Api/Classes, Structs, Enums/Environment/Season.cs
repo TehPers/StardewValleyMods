@@ -9,6 +9,9 @@ namespace TehPers.CoreMod.Api.Environment {
         Winter = 8,
 
         None = 0,
-        All = Season.Spring | Season.Summer | Season.Fall | Season.Winter
+        Any = Season.Spring | Season.Summer | Season.Fall | Season.Winter,
+
+        [Obsolete("Use " + nameof(Weather.Any) + " instead")]
+        All = Season.Any
     }
 }

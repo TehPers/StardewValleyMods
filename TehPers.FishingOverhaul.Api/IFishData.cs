@@ -1,6 +1,7 @@
 ﻿using StardewModdingAPI.Utilities;
 using StardewValley;
-using TehPers.Core.Api.Enums;
+using TehPers.CoreMod.Api.Environment;
+using TehPers.CoreMod.Api.Structs;
 
 namespace TehPers.FishingOverhaul.Api {
     public interface IFishData {
@@ -11,13 +12,12 @@ namespace TehPers.FishingOverhaul.Api {
 
         /// <summary>Whether this fish meets the given criteria and can be caught.</summary>
         /// <param name="fish">The <see cref="Item.ParentSheetIndex"/> of the fish being caught.</param>
-        /// <param name="waterType">The type of water this fish is in.</param>
-        /// <param name="date">The current date.</param>
+        /// <param name="waterTypes">The type of water this fish is in.</param>
+        /// <param name="dateTime">The current date and time.</param>
         /// <param name="weather">The current weather.</param>
-        /// <param name="time">The current time.</param>
         /// <param name="level">The current farmer's fishing level.</param>
         /// <param name="mineLevel">The current level in the mine, or null if not in the mine.</param>
         /// <returns>True if this fish can be caught, false otherwise.</returns>
-        bool MeetsCriteria(int fish, WaterType waterType, SDate date, Weather weather, int time, int level, int? mineLevel);
+        bool MeetsCriteria(int fish, WaterTypes waterTypes, SDateTime dateTime, Weather weather, int level, int? mineLevel);
     }
 }

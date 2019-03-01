@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using StardewModdingAPI;
-using TehPers.Core.Api.Enums;
-using TehPers.Core.Helpers;
-using TehPers.Core.Helpers.Static;
-using TehPers.Core.Json.Serialization;
+using TehPers.CoreMod.Api.Environment;
+using TehPers.CoreMod.Api.Extensions;
+using TehPers.CoreMod.Api.Json;
 
 namespace TehPers.FishingOverhaul.Configs {
 
@@ -51,7 +50,7 @@ namespace TehPers.FishingOverhaul.Configs {
                             s = Season.Winter;
                             break;
                         default:
-                            s = Season.All;
+                            s = Season.Any;
                             break;
                     }
 
@@ -66,11 +65,15 @@ namespace TehPers.FishingOverhaul.Configs {
                         int id = Convert.ToInt32(seasonData[j]);
 
                         // From location data
-                        WaterType water = SDVHelpers.ToWaterType(Convert.ToInt32(seasonData[j + 1])) ?? WaterType.Both;
+                        if (!Convert.ToInt32(seasonData[j + 1]).TryGetWaterTypes(out WaterTypes water)) {
+                            water = WaterTypes.Any;
+                        }
 
                         // Make sure this is a fish that has data in fish.xnb
                         if (fish.ContainsKey(id)) {
                             string[] fishInfo = fish[id].Split('/');
+
+                            // TODO: Check if removing the next two lines fixes seaweed, algae, and void mayonnaise being uncatchable
                             if (fishInfo[1] == "5") // Junk item
                                 continue;
 
@@ -113,44 +116,44 @@ namespace TehPers.FishingOverhaul.Configs {
             // NOW THEN, for the special cases >_>
 
             // Glacierfish
-            this.PossibleFish["Forest"][775] = new FishData(.02, 600, 2000, WaterType.River, Season.Winter, 6);
+            this.PossibleFish["Forest"][775] = new FishData(.02, 600, 2000, WaterTypes.River, Season.Winter, 6);
 
             // Crimsonfish
-            this.PossibleFish["Beach"][159] = new FishData(.02, 600, 2000, WaterType.Both, Season.Summer, 5);
+            this.PossibleFish["Beach"][159] = new FishData(.02, 600, 2000, WaterTypes.Any, Season.Summer, 5);
 
             // Legend
-            this.PossibleFish["Mountain"][163] = new FishData(.02, 600, 2300, WaterType.Lake, Season.Spring, 10, Weather.Rainy);
+            this.PossibleFish["Mountain"][163] = new FishData(.02, 600, 2300, WaterTypes.Lake, Season.Spring, 10, Weather.Rainy);
 
             // Angler
-            this.PossibleFish["Town"][160] = new FishData(.02, 600, 2600, WaterType.Both, Season.Fall, 3);
+            this.PossibleFish["Town"][160] = new FishData(.02, 600, 2600, WaterTypes.Any, Season.Fall, 3);
 
             // Mutant Carp
-            this.PossibleFish["Sewer"][682] = new FishData(.02, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
+            this.PossibleFish["Sewer"][682] = new FishData(.02, 600, 2600, WaterTypes.Any, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
 
             // UndergroundMine
             double mineBaseChance = 0.3;
             if (this.PossibleFish["UndergroundMine"].TryGetValue(156, out FishData ghostFish))
                 mineBaseChance = ghostFish.Chance;
-            this.PossibleFish["UndergroundMine"][158] = new FishData(mineBaseChance / 3d, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 0);
-            this.PossibleFish["UndergroundMine"][158] = new FishData(mineBaseChance / 2d, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 20);
-            this.PossibleFish["UndergroundMine"][161] = new FishData(mineBaseChance / 3d, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 60);
-            this.PossibleFish["UndergroundMine"][162] = new FishData(mineBaseChance / 3d, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 100);
+            this.PossibleFish["UndergroundMine"][158] = new FishData(mineBaseChance / 3d, 600, 2600, WaterTypes.Any, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 0);
+            this.PossibleFish["UndergroundMine"][158] = new FishData(mineBaseChance / 2d, 600, 2600, WaterTypes.Any, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 20);
+            this.PossibleFish["UndergroundMine"][161] = new FishData(mineBaseChance / 3d, 600, 2600, WaterTypes.Any, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 60);
+            this.PossibleFish["UndergroundMine"][162] = new FishData(mineBaseChance / 3d, 600, 2600, WaterTypes.Any, Season.Spring | Season.Summer | Season.Fall | Season.Winter, mineLevel: 100);
 
             // Submarine
             if (!this.PossibleFish.ContainsKey("Submarine"))
                 this.PossibleFish.Add("Submarine", new Dictionary<int, FishData>());
             double curChance = 0.1D;
-            this.PossibleFish["Submarine"][800] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Blobfish
+            this.PossibleFish["Submarine"][800] = new FishData(curChance, 600, 2600, WaterTypes.Any, Season.Winter); // Blobfish
             curChance = (1 - curChance) * 0.18D;
-            this.PossibleFish["Submarine"][799] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Spook Fish
+            this.PossibleFish["Submarine"][799] = new FishData(curChance, 600, 2600, WaterTypes.Any, Season.Winter); // Spook Fish
             curChance = (1 - curChance) * 0.28D;
-            this.PossibleFish["Submarine"][798] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Midnight Squid
+            this.PossibleFish["Submarine"][798] = new FishData(curChance, 600, 2600, WaterTypes.Any, Season.Winter); // Midnight Squid
             curChance = (1 - curChance) * 0.1D;
-            this.PossibleFish["Submarine"][154] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Sea Cucumber
+            this.PossibleFish["Submarine"][154] = new FishData(curChance, 600, 2600, WaterTypes.Any, Season.Winter); // Sea Cucumber
             curChance = (1 - curChance) * 0.08D;
-            this.PossibleFish["Submarine"][155] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Super Cucumber
+            this.PossibleFish["Submarine"][155] = new FishData(curChance, 600, 2600, WaterTypes.Any, Season.Winter); // Super Cucumber
             curChance = (1 - curChance) * 0.05D;
-            this.PossibleFish["Submarine"][149] = new FishData(curChance, 600, 2600, WaterType.Both, Season.Winter); // Octupus
+            this.PossibleFish["Submarine"][149] = new FishData(curChance, 600, 2600, WaterTypes.Any, Season.Winter); // Octupus
         }
     }
 }

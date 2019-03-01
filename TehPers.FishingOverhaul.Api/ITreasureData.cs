@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using StardewValley;
-using TehPers.Core.Api.Weighted;
+using TehPers.CoreMod.Api.Weighted;
 
 namespace TehPers.FishingOverhaul.Api {
     public interface ITreasureData : IWeighted {

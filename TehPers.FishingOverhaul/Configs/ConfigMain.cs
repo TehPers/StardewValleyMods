@@ -1,6 +1,5 @@
-﻿using System;
-using System.ComponentModel;
-using TehPers.Core.Json.Serialization;
+﻿using System.ComponentModel;
+using TehPers.CoreMod.Api.Json;
 
 namespace TehPers.FishingOverhaul.Configs {
 
@@ -52,9 +51,6 @@ namespace TehPers.FishingOverhaul.Configs {
         public class ConfigStreak {
             [Description("Required streak for an increase in quality. For example, 3 means that every 3 consecutive perfect catches increases your catch quality by 1.")]
             public int StreakForIncreasedQuality { get; set; } = 5;
-
-            [Description("Effect that catching treasure during a perfect catch has on the rarity of your treasure. The treasure is still random though.")]
-            public float PerfectTreasureQualityMult { get; set; } = 5;
         }
 
         [JsonDescribe]
@@ -154,6 +150,9 @@ namespace TehPers.FishingOverhaul.Configs {
 
             [Description("Maximum amount of treasure you can find in a single chest while fishing.")]
             public int MaxTreasureQuantity { get; set; } = 3;
+
+            [Description("Effect that catching treasure during a perfect catch has on the rarity of your treasure. The treasure is still random though.")]
+            public float PerfectTreasureQualityMult { get; set; } = 5;
         }
 
         [JsonDescribe]

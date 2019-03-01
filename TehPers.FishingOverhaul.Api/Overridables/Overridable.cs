@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TehPers.FishingOverhaul.Api.Overridables {
     public class Overridable<T> {
