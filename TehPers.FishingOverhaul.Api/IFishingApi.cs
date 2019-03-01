@@ -175,6 +175,10 @@ namespace TehPers.FishingOverhaul.Api {
         /// <param name="name">The name of the fish.</param>
         void SetFishName(int fish, string name);
 
+        /// <summary>Resets the display name of a fish within this mod to the vanilla name.</summary>
+        /// <param name="fish">The ID of the fish.</param>
+        bool ResetFishName(int fish);
+
         /// <summary>Gets the current perfect streak of a <see cref="Farmer"/>.</summary>
         /// <param name="who">The farmer.</param>
         /// <returns>The current perfect fishing streak of the <see cref="Farmer"/>.</returns>
