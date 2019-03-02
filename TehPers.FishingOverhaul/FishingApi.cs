@@ -29,24 +29,15 @@ namespace TehPers.FishingOverhaul {
         private readonly HashSet<ITreasureData> _added = new HashSet<ITreasureData>();
         private readonly HashSet<TreasureData> _removed = new HashSet<TreasureData>();
         private readonly HashSet<ITrashData> _trash = new HashSet<ITrashData>();
-        private readonly Dictionary<int, string> _fishNames = new Dictionary<int, string>();
+        private readonly Dictionary<int, string> _fishNameOverrides = new Dictionary<int, string>();
         private readonly Dictionary<Farmer, int> _streaks = new Dictionary<Farmer, int>();
         private readonly HashSet<int> _hidden = new HashSet<int>();
         private readonly int[] _defaultLegendary = { 159, 160, 163, 682, 775 };
         private readonly Dictionary<int, bool> _legendaryOverrides = new Dictionary<int, bool>();
         private bool _obsoleteWarning;
 
-        internal FishingApi() {
-            // Get raw content data for fish
-            Dictionary<int, string> fishContent = ModFishing.Instance.Helper.Content.Load<Dictionary<int, string>>(@"Data\Fish.xnb", ContentSource.GameContent);
+        internal FishingApi() { }
 
-            // Store all the names
-            foreach (KeyValuePair<int, string> fishData in fishContent) {
-                string[] contentData = fishContent[fishData.Key].Split('/');
-                this._fishNames[fishData.Key] = contentData.Length > 13 ? contentData[13] : contentData[0];
-            }
-        }
-        
         /// <inheritdoc />
         public event EventHandler<FishingEventArgs> BeforeFishCatching;
 
@@ -256,36 +247,36 @@ namespace TehPers.FishingOverhaul {
             // Custom handling for farm maps
             switch (Game1.whichFarm) {
                 case 0: {
-                        // Standard: default farm fish
-                        break;
-                    }
+                    // Standard: default farm fish
+                    break;
+                }
                 case 1: {
-                        // Riverland: forest fish + town fish + default farm fish
-                        IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.3);
-                        IEnumerable<IWeightedElement<int?>> townFish = this.GetPossibleFish(who, "Town", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.7);
-                        IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
-                        return forestFish.Concat(townFish).Concat(farmFish);
-                    }
+                    // Riverland: forest fish + town fish + default farm fish
+                    IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.3);
+                    IEnumerable<IWeightedElement<int?>> townFish = this.GetPossibleFish(who, "Town", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.7);
+                    IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                    return forestFish.Concat(townFish).Concat(farmFish);
+                }
                 case 2: {
-                        // Forest: forest fish + woodskip + default farm fish
-                        float scale = 0.05F + (float) Game1.dailyLuck;
-                        IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(1 - scale);
-                        IWeightedElement<int?>[] woodSkip = { new WeightedElement<int?>(734, scale) };
-                        IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
-                        return forestFish.Concat(woodSkip).Concat(farmFish);
-                    }
+                    // Forest: forest fish + woodskip + default farm fish
+                    float scale = 0.05F + (float) Game1.dailyLuck;
+                    IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(1 - scale);
+                    IWeightedElement<int?>[] woodSkip = { new WeightedElement<int?>(734, scale) };
+                    IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                    return forestFish.Concat(woodSkip).Concat(farmFish);
+                }
                 case 3: {
-                        // Hills: forest fish + default farm fish
-                        IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel);
-                        IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel);
-                        return forestFish.Concat(farmFish);
-                    }
+                    // Hills: forest fish + default farm fish
+                    IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel);
+                    IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel);
+                    return forestFish.Concat(farmFish);
+                }
                 case 4: {
-                        // Wilderness: mountain fish + default farm fish
-                        IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Mountain", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.35);
-                        IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
-                        return forestFish.Concat(farmFish);
-                    }
+                    // Wilderness: mountain fish + default farm fish
+                    IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Mountain", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.35);
+                    IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                    return forestFish.Concat(farmFish);
+                }
                 default:
                     return this.GetPossibleFishInternal(who, locationName, this.GetFarmFishing(), water, date, weather, time, fishLevel, mineLevel);
             }
@@ -336,13 +327,14 @@ namespace TehPers.FishingOverhaul {
         /// <inheritdoc />
         public string GetFishName(int fish) {
             // Search registered fish names
-            if (this._fishNames.TryGetValue(fish, out string name)) {
+            if (this._fishNameOverrides.TryGetValue(fish, out string name)) {
                 return name;
             }
 
             // Fallback to Data/ObjectInformation
-            if (Game1.objectInformation.TryGetValue(fish, out string objectData))
-                return objectData.Split('/').FirstOrDefault() ?? string.Empty;
+            if (Game1.objectInformation.TryGetValue(fish, out string objectData)) {
+                return objectData.Split('/')[4];
+            }
 
             // Not found
             return string.Empty;
@@ -350,7 +342,12 @@ namespace TehPers.FishingOverhaul {
 
         /// <inheritdoc />
         public void SetFishName(int fish, string name) {
-            this._fishNames[fish] = name ?? string.Empty;
+            this._fishNameOverrides[fish] = name ?? string.Empty;
+        }
+
+        /// <inheritdoc />
+        public bool ResetFishName(int fish) {
+            return this._fishNameOverrides.Remove(fish);
         }
 
         /// <inheritdoc />
