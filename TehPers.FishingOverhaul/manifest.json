@@ -11,6 +11,10 @@
     {
       "UniqueID": "TehPers.CoreMod",
       "IsRequired": false
+    },
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": false
     }
   ]
 }
