@@ -1,11 +1,9 @@
 ﻿Imports StardewModdingAPI
-Imports StardewModdingAPI.Events
-Imports StardewModdingAPI.Utilities
 Imports StardewValley
-Imports StardewValley.Locations
-Imports TehPers.Core.Api.Enums
-Imports TehPers.Core.Api.Weighted
-Imports TehPers.Core.Helpers.Static
+Imports TehPers.CoreMod.Api.Environment
+Imports TehPers.CoreMod.Api.Extensions
+Imports TehPers.CoreMod.Api.Structs
+Imports TehPers.CoreMod.Api.Weighted
 Imports TehPers.FishingOverhaul.Api
 
 Public Class ModEntry
@@ -46,11 +44,11 @@ Public Class BombTrashData
 
     Public ReadOnly Property PossibleIds As IEnumerable(Of Integer) Implements ITrashData.PossibleIds
         Get
-            Return TehPers.FishingBomb.ModEntry.BOMB.Yield()
+            Return ModEntry.BOMB.Yield()
         End Get
     End Property
 
-    Public Function MeetsCriteria(who As Farmer, locationName As String, waterType As WaterType, [date] As SDate, weather As Weather, time As Integer, fishingLevel As Integer, mineLevel As Integer?) As Boolean Implements ITrashData.MeetsCriteria
+    Public Function MeetsCriteria(who As Farmer, locationName As String, waterTypes As WaterTypes, dateTime As SDateTime, weather As Weather, fishingLevel As Integer, mineLevel As Integer?) As Boolean Implements ITrashData.MeetsCriteria
         Return True
     End Function
 End Class

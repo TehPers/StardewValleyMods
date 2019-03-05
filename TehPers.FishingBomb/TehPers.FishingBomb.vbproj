@@ -112,13 +112,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj">
-      <Project>{63f341d5-2440-4d3f-a11d-0d60fc0d67bd}</Project>
-      <Name>TehPers.Core.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj">
-      <Project>{7b58714f-e332-4973-ab71-dc1dbe52de29}</Project>
-      <Name>TehPers.Core</Name>
+    <ProjectReference Include="..\TehPers.CoreMod.Api\TehPers.CoreMod.Api.csproj">
+      <Project>{debf868c-fb0b-4b20-ba7f-afacf17c85aa}</Project>
+      <Name>TehPers.CoreMod.Api</Name>
     </ProjectReference>
     <ProjectReference Include="..\TehPers.FishingOverhaul.Api\TehPers.FishingOverhaul.Api.csproj">
       <Project>{cb430e93-7b42-4fc8-b7b0-f0b13a3ab790}</Project>
