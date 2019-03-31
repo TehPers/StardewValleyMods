@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Api", "TehPers
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Json", "TehPers.Core.Json\TehPers.Core.Json.csproj", "{D3F1F7BB-D094-4FD2-A417-2A824A20440A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.ShroomSpotter", "TehPers.ShroomSpotter\TehPers.ShroomSpotter.csproj", "{DBA66532-B904-4E84-A15E-8CBEF62299C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{D3F1F7BB-D094-4FD2-A417-2A824A20440A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3F1F7BB-D094-4FD2-A417-2A824A20440A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3F1F7BB-D094-4FD2-A417-2A824A20440A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBA66532-B904-4E84-A15E-8CBEF62299C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBA66532-B904-4E84-A15E-8CBEF62299C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBA66532-B904-4E84-A15E-8CBEF62299C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBA66532-B904-4E84-A15E-8CBEF62299C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
