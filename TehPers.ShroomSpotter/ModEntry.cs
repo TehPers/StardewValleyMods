@@ -36,19 +36,22 @@ namespace TehPers.ShroomSpotter {
 
         #region Events
         private void ButtonPressed(object sender, ButtonPressedEventArgs e) {
-            if (e.Button == this.Config.GetShroomLevels) {
-                // Find all shroom levels
-                List<int> shroomLevels = new List<int>();
-                int daysTilShroom = -1;
-                while (shroomLevels.Count == 0 && ++daysTilShroom < 50) shroomLevels = this.GetShroomLayers(daysTilShroom);
-
-                if (shroomLevels.Count > 0) {
-                    if (daysTilShroom == 0)
-                        Game1.showGlobalMessage("Shroom layers will spawn on these mine levels: " + string.Join<int>(", ", shroomLevels));
-                    else
-                        Game1.showGlobalMessage("Shrooms will spawn in " + daysTilShroom + " day(s) on these mine levels: " + string.Join<int>(", ", shroomLevels));
-                } else Game1.showGlobalMessage("No shroom layers will spawn in the next 50 days!");
+            // Check the pressed button
+            if (e.Button != this.Config.GetShroomLevels) {
+                return;
             }
+
+            // Find all shroom levels
+            List<int> shroomLevels = new List<int>();
+            int daysTilShroom = -1;
+            while (shroomLevels.Count == 0 && ++daysTilShroom < 50) shroomLevels = this.GetShroomLayers(daysTilShroom);
+
+            if (shroomLevels.Count > 0) {
+                if (daysTilShroom == 0)
+                    Game1.showGlobalMessage("Shroom layers will spawn on these mine levels: " + string.Join<int>(", ", shroomLevels));
+                else
+                    Game1.showGlobalMessage("Shrooms will spawn in " + daysTilShroom + " day(s) on these mine levels: " + string.Join<int>(", ", shroomLevels));
+            } else Game1.showGlobalMessage("No shroom layers will spawn in the next 50 days!");
         }
 
         private void RenderingActiveMenu(object sender, RenderingActiveMenuEventArgs e) {
@@ -59,7 +62,6 @@ namespace TehPers.ShroomSpotter {
 
             // Try to get the calendar field
             if (!(this.Helper.Reflection.GetField<List<ClickableTextureComponent>>(menu, nameof(Billboard.calendarDays))?.GetValue() is List<ClickableTextureComponent> calendarDays)) {
-                this.Monitor.Log("Could not access the calendar in the billboard", LogLevel.Error);
                 return;
             }
 
@@ -105,7 +107,6 @@ namespace TehPers.ShroomSpotter {
 
             // Try to get the calendar field
             if (!(this.Helper.Reflection.GetField<List<ClickableTextureComponent>>(menu, nameof(Billboard.calendarDays))?.GetValue() is List<ClickableTextureComponent> calendarDays)) {
-                this.Monitor.Log("Could not access the calendar in the billboard", LogLevel.Error);
                 return;
             }
 
