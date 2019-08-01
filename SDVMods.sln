@@ -1,33 +1,53 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.421
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingOverhaul.Api", "TehPers.FishingOverhaul.Api\TehPers.FishingOverhaul.Api.csproj", "{CB430E93-7B42-4FC8-B7B0-F0B13A3AB790}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingOverhaul.Api", "Outdated\TehPers.FishingOverhaul.Api\TehPers.FishingOverhaul.Api.csproj", "{CB430E93-7B42-4FC8-B7B0-F0B13A3AB790}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingOverhaul", "TehPers.FishingOverhaul\TehPers.FishingOverhaul.csproj", "{B0BECB8F-DB4B-4A41-84C0-9DAFEDE2BD12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingOverhaul", "Outdated\TehPers.FishingOverhaul\TehPers.FishingOverhaul.csproj", "{B0BECB8F-DB4B-4A41-84C0-9DAFEDE2BD12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.LinkedSkills", "TehPers.LinkedSkills\TehPers.LinkedSkills.csproj", "{0CD4B245-D944-43C6-8F8C-6B5FDE975F49}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.LinkedSkills", "Outdated\TehPers.LinkedSkills\TehPers.LinkedSkills.csproj", "{0CD4B245-D944-43C6-8F8C-6B5FDE975F49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FestiveSlimes", "TehPers.FestiveSlimes\TehPers.FestiveSlimes.csproj", "{CF268C1B-7D2E-44E9-96C2-232F00754EB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FestiveSlimes", "Outdated\TehPers.FestiveSlimes\TehPers.FestiveSlimes.csproj", "{CF268C1B-7D2E-44E9-96C2-232F00754EB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.DependencyResolver", "TehPers.DependencyResolver\TehPers.DependencyResolver.csproj", "{DE1D8F58-F37E-4E4D-B28E-D595BFA13E38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.DependencyResolver", "Outdated\TehPers.DependencyResolver\TehPers.DependencyResolver.csproj", "{DE1D8F58-F37E-4E4D-B28E-D595BFA13E38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.CoreMod", "TehPers.CoreMod\TehPers.CoreMod.csproj", "{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.CoreMod", "Outdated\TehPers.CoreMod\TehPers.CoreMod.csproj", "{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Logistics", "TehPers.Logistics\TehPers.Logistics.csproj", "{2A35037B-B4D5-4645-AF10-AAF1E93139A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Logistics", "Outdated\TehPers.Logistics\TehPers.Logistics.csproj", "{2A35037B-B4D5-4645-AF10-AAF1E93139A5}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TehPers.FishingBomb", "TehPers.FishingBomb\TehPers.FishingBomb.vbproj", "{7FD1CC58-7D4F-4820-8CF9-59448B2C4945}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TehPers.FishingBomb", "Outdated\TehPers.FishingBomb\TehPers.FishingBomb.vbproj", "{7FD1CC58-7D4F-4820-8CF9-59448B2C4945}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.CoreMod.Api", "TehPers.CoreMod.Api\TehPers.CoreMod.Api.csproj", "{DEBF868C-FB0B-4B20-BA7F-AFACF17C85AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.CoreMod.Api", "Outdated\TehPers.CoreMod.Api\TehPers.CoreMod.Api.csproj", "{DEBF868C-FB0B-4B20-BA7F-AFACF17C85AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core", "TehPers.Core\TehPers.Core.csproj", "{7B58714F-E332-4973-AB71-DC1DBE52DE29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core", "Outdated\TehPers.Core\TehPers.Core.csproj", "{7B58714F-E332-4973-AB71-DC1DBE52DE29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Api", "TehPers.Core.Api\TehPers.Core.Api.csproj", "{63F341D5-2440-4D3F-A11D-0D60FC0D67BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Api", "Outdated\TehPers.Core.Api\TehPers.Core.Api.csproj", "{63F341D5-2440-4D3F-A11D-0D60FC0D67BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Json", "TehPers.Core.Json\TehPers.Core.Json.csproj", "{D3F1F7BB-D094-4FD2-A417-2A824A20440A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Json", "Outdated\TehPers.Core.Json\TehPers.Core.Json.csproj", "{D3F1F7BB-D094-4FD2-A417-2A824A20440A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.ShroomSpotter", "TehPers.ShroomSpotter\TehPers.ShroomSpotter.csproj", "{DBA66532-B904-4E84-A15E-8CBEF62299C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.ShroomSpotter", "Outdated\TehPers.ShroomSpotter\TehPers.ShroomSpotter.csproj", "{DBA66532-B904-4E84-A15E-8CBEF62299C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Old", "Old", "{E6153C22-7C8C-4799-82E3-FC8EC01A8495}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Outdated", "Outdated", "{45699518-E714-4E6A-9E86-1B9030C30966}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Updated", "Updated", "{39C94A65-EF24-4EE2-852C-B1EC4CD0655A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core", "Updated\TehPers.Core\TehPers.Core.csproj", "{D8DF4803-FA71-4405-AE42-DAD92792D996}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Api", "Updated\TehPers.Core.Api\TehPers.Core.Api.csproj", "{5FD8584C-6B7F-4670-AE52-F81BDD4B3863}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishEverywhere", "Updated\TehPers.FishEverywhere\TehPers.FishEverywhere.csproj", "{C592D177-F935-4F64-80D8-98E637D5E7C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.DependencyInjection", "Updated\TehPers.Core.DependencyInjection\TehPers.Core.DependencyInjection.csproj", "{B3C9E9D1-07B8-485A-8675-3479BD5639A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.DependencyInjection.Api", "Updated\TehPers.Core.DependencyInjection.Api\TehPers.Core.DependencyInjection.Api.csproj", "{308034A4-5B60-4645-A5AE-0956875F70CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingFramework", "Updated\TehPers.FishingFramework\TehPers.FishingFramework.csproj", "{1F9A0E7D-9B59-439D-8200-344D9D015DB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.FishingFramework.Api", "Updated\TehPers.FishingFramework.Api\TehPers.FishingFramework.Api.csproj", "{75F9B5FE-B290-4552-A7AE-A24164D1FFF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,9 +107,59 @@ Global
 		{DBA66532-B904-4E84-A15E-8CBEF62299C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBA66532-B904-4E84-A15E-8CBEF62299C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBA66532-B904-4E84-A15E-8CBEF62299C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8DF4803-FA71-4405-AE42-DAD92792D996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8DF4803-FA71-4405-AE42-DAD92792D996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8DF4803-FA71-4405-AE42-DAD92792D996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8DF4803-FA71-4405-AE42-DAD92792D996}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FD8584C-6B7F-4670-AE52-F81BDD4B3863}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FD8584C-6B7F-4670-AE52-F81BDD4B3863}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FD8584C-6B7F-4670-AE52-F81BDD4B3863}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FD8584C-6B7F-4670-AE52-F81BDD4B3863}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C592D177-F935-4F64-80D8-98E637D5E7C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C592D177-F935-4F64-80D8-98E637D5E7C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C592D177-F935-4F64-80D8-98E637D5E7C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C592D177-F935-4F64-80D8-98E637D5E7C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3C9E9D1-07B8-485A-8675-3479BD5639A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3C9E9D1-07B8-485A-8675-3479BD5639A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3C9E9D1-07B8-485A-8675-3479BD5639A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3C9E9D1-07B8-485A-8675-3479BD5639A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{308034A4-5B60-4645-A5AE-0956875F70CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{308034A4-5B60-4645-A5AE-0956875F70CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{308034A4-5B60-4645-A5AE-0956875F70CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{308034A4-5B60-4645-A5AE-0956875F70CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F9A0E7D-9B59-439D-8200-344D9D015DB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F9A0E7D-9B59-439D-8200-344D9D015DB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F9A0E7D-9B59-439D-8200-344D9D015DB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F9A0E7D-9B59-439D-8200-344D9D015DB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75F9B5FE-B290-4552-A7AE-A24164D1FFF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75F9B5FE-B290-4552-A7AE-A24164D1FFF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75F9B5FE-B290-4552-A7AE-A24164D1FFF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75F9B5FE-B290-4552-A7AE-A24164D1FFF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CB430E93-7B42-4FC8-B7B0-F0B13A3AB790} = {45699518-E714-4E6A-9E86-1B9030C30966}
+		{B0BECB8F-DB4B-4A41-84C0-9DAFEDE2BD12} = {45699518-E714-4E6A-9E86-1B9030C30966}
+		{0CD4B245-D944-43C6-8F8C-6B5FDE975F49} = {E6153C22-7C8C-4799-82E3-FC8EC01A8495}
+		{CF268C1B-7D2E-44E9-96C2-232F00754EB8} = {45699518-E714-4E6A-9E86-1B9030C30966}
+		{DE1D8F58-F37E-4E4D-B28E-D595BFA13E38} = {E6153C22-7C8C-4799-82E3-FC8EC01A8495}
+		{5DA9F3A3-CFFB-4960-B94C-F1DF74FD89A5} = {45699518-E714-4E6A-9E86-1B9030C30966}
+		{2A35037B-B4D5-4645-AF10-AAF1E93139A5} = {E6153C22-7C8C-4799-82E3-FC8EC01A8495}
+		{7FD1CC58-7D4F-4820-8CF9-59448B2C4945} = {E6153C22-7C8C-4799-82E3-FC8EC01A8495}
+		{DEBF868C-FB0B-4B20-BA7F-AFACF17C85AA} = {45699518-E714-4E6A-9E86-1B9030C30966}
+		{7B58714F-E332-4973-AB71-DC1DBE52DE29} = {E6153C22-7C8C-4799-82E3-FC8EC01A8495}
+		{63F341D5-2440-4D3F-A11D-0D60FC0D67BD} = {E6153C22-7C8C-4799-82E3-FC8EC01A8495}
+		{D3F1F7BB-D094-4FD2-A417-2A824A20440A} = {E6153C22-7C8C-4799-82E3-FC8EC01A8495}
+		{DBA66532-B904-4E84-A15E-8CBEF62299C7} = {45699518-E714-4E6A-9E86-1B9030C30966}
+		{D8DF4803-FA71-4405-AE42-DAD92792D996} = {39C94A65-EF24-4EE2-852C-B1EC4CD0655A}
+		{5FD8584C-6B7F-4670-AE52-F81BDD4B3863} = {39C94A65-EF24-4EE2-852C-B1EC4CD0655A}
+		{C592D177-F935-4F64-80D8-98E637D5E7C8} = {39C94A65-EF24-4EE2-852C-B1EC4CD0655A}
+		{B3C9E9D1-07B8-485A-8675-3479BD5639A4} = {39C94A65-EF24-4EE2-852C-B1EC4CD0655A}
+		{308034A4-5B60-4645-A5AE-0956875F70CC} = {39C94A65-EF24-4EE2-852C-B1EC4CD0655A}
+		{1F9A0E7D-9B59-439D-8200-344D9D015DB9} = {39C94A65-EF24-4EE2-852C-B1EC4CD0655A}
+		{75F9B5FE-B290-4552-A7AE-A24164D1FFF2} = {39C94A65-EF24-4EE2-852C-B1EC4CD0655A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {498524B7-5CD2-476E-8A77-7050E2551687}

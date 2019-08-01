@@ -1,0 +1,17 @@
+﻿{
+  "Name": "Teh's Fishing Framework",
+  "Author": "TehPers",
+  "Version": "0.0.1",
+  "Description": "Core mod for fishing",
+  "UniqueID": "TehPers.FishingFramework",
+  "EntryDll": "TehPers.FishingFramework.dll",
+  "MinimumApiVersion": "2.10.0",
+  "UpdateKeys": [],
+  "Dependencies": [
+    {
+      "UniqueID": "TehPers.Core.DependencyInjection",
+      "MinimumVersion": "0.0.1",
+      "IsRequired": true
+    }
+  ]
+}

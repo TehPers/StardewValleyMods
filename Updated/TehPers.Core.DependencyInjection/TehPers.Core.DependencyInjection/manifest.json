@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Teh's Core Mod - Dependency Injection Module",
+  "Author": "TehPers",
+  "Version": "0.0.1",
+  "Description": "Allows mods to inject dependencies and register lifecycle handlers",
+  "UniqueID": "TehPers.Core.DependencyInjection",
+  "EntryDll": "TehPers.Core.DependencyInjection.dll",
+  "MinimumApiVersion": "2.10.0",
+  "UpdateKeys": []
+}

@@ -1,0 +1,150 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+	const string NAMESPACE = "TehPers.Core.DependencyInjection.Lifecycle";
+	const string API_NAMESPACE = "TehPers.Core.DependencyInjection.Api.Lifecycle";
+
+	var events = new Dictionary<string, List<string>> {
+        ["GameLoop"] = new List<string> {
+            "DayEnding",
+			"OneSecondUpdateTicked",
+			"OneSecondUpdateTicking",
+			"ReturnedToTitle",
+			"DayStarted",
+            "SaveCreated",
+            "SaveCreating",
+            "SaveLoaded",
+            "Saved",
+            "Saving",
+            "TimeChanged",
+            "UpdateTicked",
+            "UpdateTicking"
+        }, 
+        ["Display"] = new List<string> {
+            "MenuChanged",
+            "Rendered",
+            "RenderedActiveMenu",
+            "RenderedHud",
+            "RenderedWorld",
+            "Rendering",
+            "RenderingActiveMenu",
+            "RenderingHud",
+            "RenderingWorld",
+            "WindowResized"
+        }, 
+        ["Input"] = new List<string> {
+            "ButtonPressed",
+            "ButtonReleased",
+            "CursorMoved",
+            "MouseWheelScrolled"
+        }, 
+        ["Multiplayer"] = new List<string> {
+            "ModMessageReceived",
+            "PeerContextReceived",
+            "PeerDisconnected"
+        }, 
+        ["Player"] = new List<string> {
+            "InventoryChanged",
+            "LevelChanged",
+            "Warped"
+        }, 
+        ["Specialised"] = new List<string> {
+            "LoadStageChanged",
+            "UnvalidatedUpdateTicked",
+            "UnvalidatedUpdateTicking"
+        }, 
+        ["World"] = new List<string> {
+            "BuildingListChanged",
+            "DebrisListChanged",
+            "LargeTerrainFeatureListChanged",
+            "LocationListChanged",
+            "NpcListChanged",
+            "ObjectListChanged",
+            "TerrainFeatureListChanged"
+        }
+    };
+#>
+using System;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
+<#
+	foreach (var namespaceKv in events) {
+#>
+using <#= API_NAMESPACE #>.<#= namespaceKv.Key #>;
+<#
+	}
+#>
+
+namespace <#= NAMESPACE #>
+{
+    internal sealed partial class LifecycleManager : IDisposable
+    {
+		public static Type[] LifecycleInterfaces = {
+<#
+	foreach (var namespaceKv in events) {
+		foreach (var eventName in namespaceKv.Value) {
+#>
+			typeof(I<#= eventName #>Handler),
+<#
+		}
+	}
+#>
+		};
+
+		private void RegisterEventsInternal() {
+<#
+			foreach (var namespaceKv in events) {
+#>
+
+			// <#= namespaceKv.Key #>
+<#
+				foreach (var eventName in namespaceKv.Value) {
+#>
+			this._monitor.Log($"Registering '{nameof(I<#= namespaceKv.Key #>Events.<#= eventName #>)}' handler", LogLevel.Trace);
+			this._helper.Events.<#= namespaceKv.Key #>.<#= eventName #> += this.On<#= eventName #>;
+<#
+				}
+			}
+#>
+		}
+
+		public void Dispose() {
+<#
+			foreach (var namespaceKv in events) {
+#>
+
+			// <#= namespaceKv.Key #>
+<#
+				foreach (var eventName in namespaceKv.Value) {
+#>
+			this._helper.Events.<#= namespaceKv.Key #>.<#= eventName #> -= this.On<#= eventName #>;
+<#
+				}
+			}
+#>
+		}
+<#
+		foreach (var namespaceKv in events) {
+#>
+
+		#region <#= namespaceKv.Key #> Event Handlers
+<#
+			foreach (var eventName in namespaceKv.Value) {
+#>
+
+		private void On<#= eventName #>(object sender, <#= eventName #>EventArgs args) {
+			this.HandleEvent<I<#= eventName #>Handler>(nameof(I<#= namespaceKv.Key #>Events.<#= eventName #>), handler => handler.On<#= eventName #>(sender, args));
+		}
+<#
+			}
+#>
+		#endregion
+<#
+		}
+#>
+	}
+}
