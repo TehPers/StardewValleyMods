@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using Ninject.Activation;
 using Ninject.Syntax;
 using TehPers.Core.DependencyInjection.Api;

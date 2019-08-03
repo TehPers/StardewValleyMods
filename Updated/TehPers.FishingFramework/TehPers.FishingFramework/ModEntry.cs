@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using TehPers.Core.DependencyInjection.Api;
 using TehPers.Core.DependencyInjection.Api.Extensions;
@@ -7,6 +9,7 @@ namespace TehPers.FishingFramework
 {
     public class ModEntry : Mod
     {
+
         public override void Entry(IModHelper helper)
         {
             this.Helper.Events.GameLoop.GameLaunched += (sender, args) =>
@@ -24,9 +27,8 @@ namespace TehPers.FishingFramework
         {
             kernel.BindModTypes();
             kernel.Bind<FishingOverrideService>().ToSelf().InSingletonScope();
+            kernel.BindCustomModApi<object>("Pathoschild.ContentPatcher").InSingletonScope();
             // kernel.Global.Bind<IFishingApi>().To<FishingApi>().InSingletonScope();
-
-            this.Helper.ReadConfig<>()
 
             kernel.RegisterEvents<FishingOverrideService>();
         }

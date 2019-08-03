@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using Ninject.Syntax;
+using StardewModdingAPI;
 
 namespace TehPers.Core.DependencyInjection.Api.Extensions
 {
@@ -35,6 +36,12 @@ namespace TehPers.Core.DependencyInjection.Api.Extensions
                 .BindMonitor()
                 .BindManifest()
                 .BindHelper();
+        }
+
+        public static IBindingWhenInNamedWithOrOnSyntax<T> BindCustomModApi<T>(this IModKernel modKernel, string modId)
+            where T : class
+        {
+            return modKernel.Bind<T>().ToMethod(_ => modKernel.ParentMod.Helper.ModRegistry.GetApi<T>(modId));
         }
     }
 }
