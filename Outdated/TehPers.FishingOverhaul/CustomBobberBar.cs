@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -96,14 +97,14 @@ namespace TehPers.FishingOverhaul {
             this._lastTreasureCatchLevel = this._treasureCatchLevel.GetValue();
 
             /* Actual code */
-            ConfigMain config = ModFishing.Instance.MainConfig;
-            IFishTraits traits = ModFishing.Instance.Api.GetFishTraits(whichFish);
+            var config = ModFishing.Instance.MainConfig;
+            var traits = ModFishing.Instance.Api.GetFishTraits(whichFish);
 
             // Check if fish is unaware
             this.Unaware = Game1.random.NextDouble() < ModFishing.Instance.Api.GetUnawareChance(user, whichFish);
 
             // Applies difficulty modifier, including if fish is unaware
-            float difficulty = traits?.Difficulty ?? this._difficulty.GetValue();
+            var difficulty = traits?.Difficulty ?? this._difficulty.GetValue();
             difficulty *= config.DifficultySettings.BaseDifficultyMult;
             difficulty *= 1F + this._origStreak * config.DifficultySettings.DifficultyStreakEffect;
             if (this.Unaware) {
@@ -119,9 +120,9 @@ namespace TehPers.FishingOverhaul {
             }
 
             // Adjusts quality to be increased by streak
-            int fishQuality = this._fishQuality.GetValue();
+            var fishQuality = this._fishQuality.GetValue();
             this._origQuality = fishQuality;
-            int qualityBonus = (int) Math.Floor((double) this._origStreak / config.StreakSettings.StreakForIncreasedQuality);
+            var qualityBonus = (int) Math.Floor((double) this._origStreak / config.StreakSettings.StreakForIncreasedQuality);
             fishQuality = Math.Min(fishQuality + qualityBonus, 3);
             if (fishQuality == 3) fishQuality++; // Iridium-quality fish. Only possible through your perfect streak
             this._fishQuality.SetValue(fishQuality);
@@ -133,24 +134,24 @@ namespace TehPers.FishingOverhaul {
 
         public override void update(GameTime time) {
             // Speed warp on catching fish
-            float distanceFromCatching = this._distanceFromCatching.GetValue();
-            float delta = distanceFromCatching - this._lastDistanceFromCatching;
-            float mult = delta > 0 ? ModFishing.Instance.MainConfig.DifficultySettings.CatchSpeed : ModFishing.Instance.MainConfig.DifficultySettings.DrainSpeed;
+            var distanceFromCatching = this._distanceFromCatching.GetValue();
+            var delta = distanceFromCatching - this._lastDistanceFromCatching;
+            var mult = delta > 0 ? ModFishing.Instance.MainConfig.DifficultySettings.CatchSpeed : ModFishing.Instance.MainConfig.DifficultySettings.DrainSpeed;
             distanceFromCatching = this._lastDistanceFromCatching + delta * mult;
             this._lastDistanceFromCatching = distanceFromCatching;
             this._distanceFromCatching.SetValue(distanceFromCatching);
 
             // Speed warp on catching treasure
-            float treasureCatchLevel = this._treasureCatchLevel.GetValue();
+            var treasureCatchLevel = this._treasureCatchLevel.GetValue();
             delta = treasureCatchLevel - this._lastTreasureCatchLevel;
             mult = delta > 0 ? ModFishing.Instance.MainConfig.DifficultySettings.TreasureCatchSpeed : ModFishing.Instance.MainConfig.DifficultySettings.TreasureDrainSpeed;
             treasureCatchLevel = this._lastTreasureCatchLevel + delta * mult;
             this._lastTreasureCatchLevel = treasureCatchLevel;
             this._treasureCatchLevel.SetValue(treasureCatchLevel);
 
-            bool perfect = this._perfect.GetValue();
-            bool treasure = this._treasure.GetValue();
-            bool treasureCaught = this._treasureCaught.GetValue();
+            var perfect = this._perfect.GetValue();
+            var treasure = this._treasure.GetValue();
+            var treasureCaught = this._treasureCaught.GetValue();
 
             // Check if still perfect, otherwise apply changes to loot
             if (!this._perfectChanged && !perfect) {
@@ -165,8 +166,8 @@ namespace TehPers.FishingOverhaul {
             // Check if lost perfect, but got treasure
             if (!this._treasureChanged && !perfect && treasure && treasureCaught) {
                 this._treasureChanged = true;
-                int qualityBonus = (int) Math.Floor((double) this._origStreak / ModFishing.Instance.MainConfig.StreakSettings.StreakForIncreasedQuality);
-                int quality = this._origQuality;
+                var qualityBonus = (int) Math.Floor((double) this._origStreak / ModFishing.Instance.MainConfig.StreakSettings.StreakForIncreasedQuality);
+                var quality = this._origQuality;
                 quality = Math.Min(quality + qualityBonus, 3);
                 if (quality == 3) quality++;
                 this._fishQuality.SetValue(quality);
@@ -203,8 +204,8 @@ namespace TehPers.FishingOverhaul {
                 }
 
                 // Invoke fish caught event
-                int curFish = this._whichFish.GetValue();
-                FishingEventArgs eventArgs = new FishingEventArgs(curFish, this.User, this.User.CurrentTool as FishingRod);
+                var curFish = this._whichFish.GetValue();
+                var eventArgs = new FishingEventArgs(curFish, this.User, this.User.CurrentTool as FishingRod);
                 ModFishing.Instance.Api.OnFishCaught(eventArgs);
                 if (eventArgs.ParentSheetIndex != curFish) {
                     this._whichFish.SetValue(eventArgs.ParentSheetIndex);
@@ -229,57 +230,57 @@ namespace TehPers.FishingOverhaul {
             b.Draw(Game1.mouseCursors, new Vector2(this.xPositionOnScreen - (this._flipBubble.GetValue() ? 44 : 20) + 104, this.yPositionOnScreen - 16 + 314) + this._everythingShake.GetValue(), new Rectangle(652, 1685, 52, 157), Color.White * 0.6f * this._scale.GetValue(), 0.0f, new Vector2(26f, 78.5f) * this._scale.GetValue(), 4f * this._scale.GetValue(), this._flipBubble.GetValue() ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 1f / 1000f);
             b.Draw(Game1.mouseCursors, new Vector2(this.xPositionOnScreen + 70, this.yPositionOnScreen + 296) + this._everythingShake.GetValue(), new Rectangle(644, 1999, 37, 150), Color.White * this._scale.GetValue(), 0.0f, new Vector2(18.5f, 74f) * this._scale.GetValue(), 4f * this._scale.GetValue(), SpriteEffects.None, 0.01f);
             if (this._scale.GetValue() >= 1.0) {
-                SpriteBatch spriteBatch1 = b;
-                Texture2D mouseCursors1 = Game1.mouseCursors;
-                Vector2 position1 = new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int) this._bobberBarPos.GetValue()) + this._barShake.GetValue() + this._everythingShake.GetValue();
+                var spriteBatch1 = b;
+                var mouseCursors1 = Game1.mouseCursors;
+                var position1 = new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int) this._bobberBarPos.GetValue()) + this._barShake.GetValue() + this._everythingShake.GetValue();
                 Rectangle? sourceRectangle1 = new Rectangle(682, 2078, 9, 2);
                 TimeSpan timeOfDay;
                 Color color1;
                 if (!this._bobberInBar.GetValue()) {
-                    Color color2 = Color.White * 0.25f;
+                    var color2 = Color.White * 0.25f;
                     timeOfDay = DateTime.Now.TimeOfDay;
-                    double num = Math.Round(Math.Sin(timeOfDay.TotalMilliseconds / 100.0), 2) + 2.0;
+                    var num = Math.Round(Math.Sin(timeOfDay.TotalMilliseconds / 100.0), 2) + 2.0;
                     color1 = color2 * (float) num;
                 } else
                     color1 = Color.White;
                 const double num1 = 0.0;
-                Vector2 zero1 = Vector2.Zero;
+                var zero1 = Vector2.Zero;
                 const double num2 = 4.0;
                 const int num3 = 0;
                 const double num4 = 0.889999985694885;
                 spriteBatch1.Draw(mouseCursors1, position1, sourceRectangle1, color1, (float) num1, zero1, (float) num2, num3, (float) num4);
-                SpriteBatch spriteBatch2 = b;
-                Texture2D mouseCursors2 = Game1.mouseCursors;
-                Vector2 position2 = new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int) this._bobberBarPos.GetValue() + 8) + this._barShake.GetValue() + this._everythingShake.GetValue();
+                var spriteBatch2 = b;
+                var mouseCursors2 = Game1.mouseCursors;
+                var position2 = new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int) this._bobberBarPos.GetValue() + 8) + this._barShake.GetValue() + this._everythingShake.GetValue();
                 Rectangle? sourceRectangle2 = new Rectangle(682, 2081, 9, 1);
                 Color color3;
                 if (!this._bobberInBar.GetValue()) {
-                    Color color2 = Color.White * 0.25f;
+                    var color2 = Color.White * 0.25f;
                     timeOfDay = DateTime.Now.TimeOfDay;
-                    double num5 = Math.Round(Math.Sin(timeOfDay.TotalMilliseconds / 100.0), 2) + 2.0;
+                    var num5 = Math.Round(Math.Sin(timeOfDay.TotalMilliseconds / 100.0), 2) + 2.0;
                     color3 = color2 * (float) num5;
                 } else
                     color3 = Color.White;
                 const double num6 = 0.0;
-                Vector2 zero2 = Vector2.Zero;
-                Vector2 scale = new Vector2(4f, this._bobberBarHeight.GetValue() - 16);
+                var zero2 = Vector2.Zero;
+                var scale = new Vector2(4f, this._bobberBarHeight.GetValue() - 16);
                 const int num7 = 0;
                 const double num8 = 0.889999985694885;
                 spriteBatch2.Draw(mouseCursors2, position2, sourceRectangle2, color3, (float) num6, zero2, scale, num7, (float) num8);
-                SpriteBatch spriteBatch3 = b;
-                Texture2D mouseCursors3 = Game1.mouseCursors;
-                Vector2 position3 = new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int) this._bobberBarPos.GetValue() + this._bobberBarHeight.GetValue() - 8) + this._barShake.GetValue() + this._everythingShake.GetValue();
+                var spriteBatch3 = b;
+                var mouseCursors3 = Game1.mouseCursors;
+                var position3 = new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int) this._bobberBarPos.GetValue() + this._bobberBarHeight.GetValue() - 8) + this._barShake.GetValue() + this._everythingShake.GetValue();
                 Rectangle? sourceRectangle3 = new Rectangle(682, 2085, 9, 2);
                 Color color4;
                 if (!this._bobberInBar.GetValue()) {
-                    Color color2 = Color.White * 0.25f;
+                    var color2 = Color.White * 0.25f;
                     timeOfDay = DateTime.Now.TimeOfDay;
-                    double num5 = Math.Round(Math.Sin(timeOfDay.TotalMilliseconds / 100.0), 2) + 2.0;
+                    var num5 = Math.Round(Math.Sin(timeOfDay.TotalMilliseconds / 100.0), 2) + 2.0;
                     color4 = color2 * (float) num5;
                 } else
                     color4 = Color.White;
                 const double num9 = 0.0;
-                Vector2 zero3 = Vector2.Zero;
+                var zero3 = Vector2.Zero;
                 const double num10 = 4.0;
                 const int num11 = 0;
                 const double num12 = 0.889999985694885;
@@ -293,21 +294,21 @@ namespace TehPers.FishingOverhaul {
                 }
 
                 // Draw the fish
-                Vector2 fishPos = new Vector2(this.xPositionOnScreen + 64 + 18, this.yPositionOnScreen + 12 + 24 + this._bobberPosition.GetValue()) + this._fishShake.GetValue() + this._everythingShake.GetValue();
+                var fishPos = new Vector2(this.xPositionOnScreen + 64 + 18, this.yPositionOnScreen + 12 + 24 + this._bobberPosition.GetValue()) + this._fishShake.GetValue() + this._everythingShake.GetValue();
                 if (ModFishing.Instance.MainConfig.ShowFish && !ModFishing.Instance.Api.IsHidden(this._origFish)) {
-                    Rectangle fishSrc = GameLocation.getSourceRectForObject(this._origFish);
+                    var fishSrc = GameLocation.getSourceRectForObject(this._origFish);
                     b.Draw(Game1.objectSpriteSheet, fishPos, fishSrc, Color.White, 0.0f, new Vector2(10f, 10f), 2.25f, SpriteEffects.None, 0.88f);
                 } else {
-                    Rectangle fishSrc = new Rectangle(614 + (this._bossFish.GetValue() ? 20 : 0), 1840, 20, 20);
+                    var fishSrc = new Rectangle(614 + (this._bossFish.GetValue() ? 20 : 0), 1840, 20, 20);
                     b.Draw(Game1.mouseCursors, fishPos, fishSrc, Color.White, 0.0f, new Vector2(10f, 10f), 2f, SpriteEffects.None, 0.88f);
                 }
 
                 // Draw the sparkle text
                 this._sparkleText.GetValue()?.draw(b, new Vector2(this.xPositionOnScreen - 16, this.yPositionOnScreen - 64));
             }
-            if (Game1.player.fishCaught == null || Game1.player.fishCaught.Count != 0)
+            if (Game1.player.fishCaught == null || Game1.player.fishCaught.Any())
                 return;
-            Vector2 position = new Vector2(this.xPositionOnScreen + (this._flipBubble.GetValue() ? this.width + 64 + 8 : -200), this.yPositionOnScreen + 192);
+            var position = new Vector2(this.xPositionOnScreen + (this._flipBubble.GetValue() ? this.width + 64 + 8 : -200), this.yPositionOnScreen + 192);
             if (!Game1.options.gamepadControls)
                 b.Draw(Game1.mouseCursors, position, new Rectangle(644, 1330, 48, 69), Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, 0.88f);
             else

@@ -1,0 +1,143 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+    const string ROOT_NAMESPACE = "TehPers.Core.DependencyInjection.Lifecycle";
+	const string API_NAMESPACE = "TehPers.Core.Api.DependencyInjection.Lifecycle";
+
+    var events = new Dictionary<string, List<string>> {
+        ["GameLoop"] = new List<string> {
+            "DayEnding",
+            "OneSecondUpdateTicked",
+            "OneSecondUpdateTicking",
+            "ReturnedToTitle",
+            "DayStarted",
+            "SaveCreated",
+            "SaveCreating",
+            "SaveLoaded",
+            "Saved",
+            "Saving",
+            "TimeChanged",
+            "UpdateTicked",
+            "UpdateTicking"
+        }, 
+        ["Display"] = new List<string> {
+            "MenuChanged",
+            "Rendered",
+            "RenderedActiveMenu",
+            "RenderedHud",
+            "RenderedWorld",
+            "Rendering",
+            "RenderingActiveMenu",
+            "RenderingHud",
+            "RenderingWorld",
+            "WindowResized"
+        }, 
+        ["Input"] = new List<string> {
+            "ButtonPressed",
+            "ButtonReleased",
+            "CursorMoved",
+            "MouseWheelScrolled"
+        }, 
+        ["Multiplayer"] = new List<string> {
+            "ModMessageReceived",
+            "PeerContextReceived",
+            "PeerDisconnected"
+        }, 
+        ["Player"] = new List<string> {
+            "InventoryChanged",
+            "LevelChanged",
+            "Warped"
+        }, 
+        ["Specialized"] = new List<string> {
+            "LoadStageChanged",
+            "UnvalidatedUpdateTicked",
+            "UnvalidatedUpdateTicking"
+        }, 
+        ["World"] = new List<string> {
+            "BuildingListChanged",
+            "DebrisListChanged",
+            "LargeTerrainFeatureListChanged",
+            "LocationListChanged",
+            "NpcListChanged",
+            "ObjectListChanged",
+            "TerrainFeatureListChanged"
+        }
+    };
+#>
+using System;
+using System.Collections.Generic;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
+using TehPers.Core.Api.DependencyInjection.Lifecycle;
+<#
+	foreach (var namespaceKv in events) {
+#>
+using <#= API_NAMESPACE #>.<#= namespaceKv.Key #>;
+<#
+	}
+#>
+
+#pragma warning disable SA1403 // Auto-generated file, it's more easy to maintain if kept in one file.
+#pragma warning disable SA1649 // Auto-generated file, it's more easy to maintain if kept in one file.
+#pragma warning disable SA1505 // Auto-generated file, it's more difficult to remove extra blank lines.
+namespace <#= ROOT_NAMESPACE #>
+{
+<#
+    foreach (var namespaceKv in events) {
+#>
+
+    namespace <#= namespaceKv.Key #>
+    {
+<#
+        foreach (var eventName in namespaceKv.Value) {
+#>
+
+        /// <summary>Handles events from <see cref="I<#= namespaceKv.Key #>Events.<#= eventName #>" />.</summary>
+        internal class <#= eventName #>EventManager : EventManager<I<#= eventName #>Handler, <#= eventName #>EventArgs>
+        {
+			private readonly IModHelper helper;
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="<#= eventName #>EventManager"/> class.
+			/// </summary>
+			/// <param name="helper"></param>
+			/// <param name="getHandlers"></param>
+			public <#= eventName #>EventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<I<#= eventName #>Handler>>> getHandlers)
+				: base(getHandlers)
+			{
+				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
+			}
+
+			/// <inheritdoc/>
+			public override void StartListening()
+			{
+                this.helper.Events.<#= namespaceKv.Key #>.<#= eventName #> += this.HandleEvent;
+			}
+
+			/// <inheritdoc/>
+			public override void StopListening()
+			{
+                this.helper.Events.<#= namespaceKv.Key #>.<#= eventName #> -= this.HandleEvent;
+			}
+
+			/// <inheritdoc/>
+			protected override void NotifyHandler(I<#= eventName #>Handler handler, object sender, <#= eventName #>EventArgs eventArgs)
+			{
+				handler.On<#= eventName #>(sender, eventArgs);
+			}
+        }
+<#
+        }
+#>
+    }
+<#
+    }
+#>
+}
+#pragma warning restore SA1505
+#pragma warning restore SA1649
+#pragma warning restore SA1403

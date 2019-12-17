@@ -1,36 +1,32 @@
-﻿using System;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Ninject;
 using StardewModdingAPI;
-using TehPers.Core.DependencyInjection.Api;
-using TehPers.Core.DependencyInjection.Api.Extensions;
+using TehPers.Core.Api;
+using TehPers.Core.Api.DependencyInjection;
+using TehPers.Core.Api.Extensions;
+using TehPers.FishingFramework.Api;
 
 namespace TehPers.FishingFramework
 {
-    public class ModEntry : Mod
+    public class ModEntry : Mod, IServiceDrivenMod
     {
-
         public override void Entry(IModHelper helper)
         {
-            this.Helper.Events.GameLoop.GameLaunched += (sender, args) =>
-            {
-                if (!(this.Helper.ModRegistry.GetApi<IDependencyInjectionApi>("TehPers.Core.DependencyInjection")?.GetModKernel(this) is IModKernel modKernel))
-                {
-                    throw new Exception("Dependency injection module is not installed");
-                }
-
-                this.RegisterServices(modKernel);
-            };
+            this.Register();
         }
 
-        private void RegisterServices(IModKernel kernel)
+        public void GameLoaded(IModKernel modKernel)
         {
-            kernel.BindModTypes();
-            kernel.Bind<FishingOverrideService>().ToSelf().InSingletonScope();
-            kernel.BindCustomModApi<object>("Pathoschild.ContentPatcher").InSingletonScope();
-            // kernel.Global.Bind<IFishingApi>().To<FishingApi>().InSingletonScope();
+            var modInit = modKernel.Get<ModInit>();
+            modInit.Init();
+        }
 
-            kernel.RegisterEvents<FishingOverrideService>();
+        public void RegisterServices(IModKernel modKernel)
+        {
+            modKernel.Bind<ModInit>().ToSelf().InSingletonScope();
+            modKernel.Bind<FishingOverrideService>().ToSelf().InSingletonScope();
+            modKernel.AddEventHandler<FishingOverrideService>();
+            modKernel.Bind<FishingApi>().ToSelf().InSingletonScope();
+            modKernel.ExposeService<IFishingApi, FishingApi>();
         }
     }
 }

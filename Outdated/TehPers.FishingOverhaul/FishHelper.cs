@@ -12,13 +12,17 @@ using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Configs;
 using SFarmer = StardewValley.Farmer;
 
-namespace TehPers.FishingOverhaul {
-    internal class FishHelper {
-        public static int? GetRandomFish(Farmer who) {
+namespace TehPers.FishingOverhaul
+{
+    internal class FishHelper
+    {
+        public static int? GetRandomFish(Farmer who)
+        {
             return FishHelper.GetRandomFish(ModFishing.Instance.Api.GetPossibleFish(who));
         }
 
-        public static int? GetRandomFish(IEnumerable<IWeightedElement<int?>> possibleFish) {
+        public static int? GetRandomFish(IEnumerable<IWeightedElement<int?>> possibleFish)
+        {
             possibleFish = possibleFish.ToArray();
 
             // No possible fish
@@ -29,15 +33,18 @@ namespace TehPers.FishingOverhaul {
             return possibleFish.Choose(Game1.random);
         }
 
-        public static int? GetRandomTrash(Farmer who) {
+        public static int? GetRandomTrash(Farmer who)
+        {
             return FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who));
         }
 
-        public static int? GetRandomTrash(Farmer who, string locationName, WaterTypes waterTypes, SDateTime dateTime, Weather weather, int fishingLevel, int? mineLevel) {
+        public static int? GetRandomTrash(Farmer who, string locationName, WaterTypes waterTypes, SDateTime dateTime, Weather weather, int fishingLevel, int? mineLevel)
+        {
             return FishHelper.GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who, locationName, waterTypes, dateTime, weather, fishingLevel, mineLevel));
         }
 
-        public static int? GetRandomTrash(IEnumerable<ITrashData> trashData) {
+        public static int? GetRandomTrash(IEnumerable<ITrashData> trashData)
+        {
             trashData = trashData.ToArray();
 
             // No possible trash
@@ -45,22 +52,24 @@ namespace TehPers.FishingOverhaul {
                 return null;
 
             // Select a trash data
-            ITrashData data = trashData.Choose(Game1.random);
-            int[] ids = data.PossibleIds.ToArray();
+            var data = trashData.Choose(Game1.random);
+            var ids = data.PossibleIds.ToArray();
 
             // Select a trash ID
-            return !ids.Any() ? (int?) null : ids.ToWeighted(id => 1D).Choose(Game1.random);
+            return !ids.Any() ? (int?)null : ids.ToWeighted(id => 1D).Choose(Game1.random);
         }
 
-        public static bool IsTrash(int id) {
+        public static bool IsTrash(int id)
+        {
             return ModFishing.Instance.Api.GetTrashData().Any(t => t.PossibleIds.Contains(id));
         }
 
-        public static float GetRawFishChance(SFarmer who) {
-            ConfigMain.ConfigGlobalFish config = ModFishing.Instance.MainConfig.GlobalFishSettings;
+        public static float GetRawFishChance(SFarmer who)
+        {
+            var config = ModFishing.Instance.MainConfig.GlobalFishSettings;
 
             // Calculate chance
-            float chance = config.FishBaseChance;
+            var chance = config.FishBaseChance;
             // float chance2 = chance + who.FishingLevel * config.FishLevelEffect;
             // float chance3 = chance2 + who.LuckLevel * config.FishLuckLevelEffect;
             // float chance4 = chance3 + (float) Game1.dailyLuck * config.FishDailyLuckEffect;
@@ -68,19 +77,20 @@ namespace TehPers.FishingOverhaul {
 
             chance += who.FishingLevel * config.FishLevelEffect;
             chance += who.LuckLevel * config.FishLuckLevelEffect;
-            chance += (float) Game1.dailyLuck * config.FishDailyLuckEffect;
+            chance += (float)Game1.player.DailyLuck * config.FishDailyLuckEffect;
             chance += ModFishing.Instance.Api.GetStreak(who) * config.FishStreakEffect;
 
             return chance;
         }
 
-        public static float GetRawTreasureChance(SFarmer who, FishingRod rod) {
-            ConfigMain.ConfigGlobalTreasure config = ModFishing.Instance.MainConfig.GlobalTreasureSettings;
+        public static float GetRawTreasureChance(SFarmer who, FishingRod rod)
+        {
+            var config = ModFishing.Instance.MainConfig.GlobalTreasureSettings;
 
             // Calculate chance
-            float chance = config.TreasureChance;
+            var chance = config.TreasureChance;
             chance += who.LuckLevel * config.TreasureLuckLevelEffect;
-            chance += (float) Game1.dailyLuck * config.TreasureDailyLuckEffect;
+            chance += (float)Game1.player.DailyLuck * config.TreasureDailyLuckEffect;
             chance += config.TreasureStreakEffect * ModFishing.Instance.Api.GetStreak(who);
             if (rod.getBaitAttachmentIndex() == 703)
                 chance += config.TreasureBaitEffect;
@@ -92,13 +102,14 @@ namespace TehPers.FishingOverhaul {
             return Math.Min(chance, config.MaxTreasureChance);
         }
 
-        public static float GetRawUnawareChance(SFarmer who) {
-            ConfigMain.ConfigUnaware config = ModFishing.Instance.MainConfig.UnawareSettings;
+        public static float GetRawUnawareChance(SFarmer who)
+        {
+            var config = ModFishing.Instance.MainConfig.UnawareSettings;
 
             // Calculate chance
-            float chance = config.UnawareChance;
+            var chance = config.UnawareChance;
             chance += who.LuckLevel * config.UnawareLuckLevelEffect;
-            chance += (float) Game1.player.dailyLuck * config.UnawareDailyLuckEffect;
+            chance += (float)Game1.player.DailyLuck * config.UnawareDailyLuckEffect;
 
             return chance;
         }

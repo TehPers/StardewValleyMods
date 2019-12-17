@@ -1,59 +1,54 @@
 ﻿using Ninject;
-using Ninject.Modules;
 using StardewModdingAPI;
-using TehPers.Core.DependencyInjection.Api;
+using TehPers.Core.Api;
+using TehPers.Core.Api.DependencyInjection;
+using TehPers.Core.Api.Extensions;
+using TehPers.Core.DependencyInjection.Lifecycle;
 
 namespace TehPers.Core
 {
-    public class ModEntry : Mod
+    public class ModEntry : Mod, IServiceDrivenMod
     {
+        private IModKernelFactory modKernelFactory;
+        private LifecycleService lifecycleService;
+
         public override void Entry(IModHelper helper)
         {
-            this.Monitor.Log("Hello, world!");
+            this.Monitor.Log("Creating core API factory", LogLevel.Info);
+            this.modKernelFactory = new ModKernelFactory();
 
-            this.Helper.Events.GameLoop.GameLaunched += (sender, args) =>
+            this.Register();
+        }
+
+        public void GameLoaded(IModKernel modKernel)
+        {
+            this.lifecycleService = modKernel.Get<LifecycleService>();
+            this.lifecycleService.StartAll();
+        }
+
+        public void RegisterServices(IModKernel modKernel)
+        {
+            this.Monitor.Log("Registering mod services", LogLevel.Info);
+            modKernel.Bind<LifecycleService>().ToSelf().InSingletonScope();
+
+            this.Monitor.Log("Registering event managers", LogLevel.Info);
+            modKernel.BindManagedSmapiEvents();
+        }
+
+        public override object GetApi()
+        {
+            return this.modKernelFactory;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                if (this.Helper.ModRegistry.GetApi<IDependencyInjectionApi>("TehPers.Core.DependencyInjection") is IDependencyInjectionApi diApi)
-                {
-                    this.LoadModBindings(diApi.GetModKernel(this));
-                }
-            };
-
-            this.Monitor.Log("Registering dependencies", LogLevel.Info);
-        }
-
-        private void LoadGlobalModules(IKernel globalKernel)
-        {
-
-        }
-
-        private void LoadModBindings(IKernel modKernels)
-        {
-            modKernels.Load(new INinjectModule[] {
-                new CoreModule(this),
-                new Modules.CoreModule(this),
-            });
-        }
-    }
-
-    internal class CoreModule : NinjectModule
-    {
-        private readonly IMod _mod;
-
-        public CoreModule(IMod mod)
-        {
-            this._mod = mod;
-        }
-
-        public override void Load()
-        {
-            foreach (IModInfo modInfo in this._mod.Helper.ModRegistry.GetAll())
-            {
-                this.Bind<IModInfo>().ToConstant(modInfo).InSingletonScope();
-                this.Bind<IManifest>().ToConstant(modInfo.Manifest).InSingletonScope();
+                this.modKernelFactory?.Dispose();
+                this.lifecycleService?.StopAll();
             }
 
-            this.Bind(typeof(IOptional<>)).To(typeof(Optional<>)).InTransientScope();
+            base.Dispose(disposing);
         }
     }
 }

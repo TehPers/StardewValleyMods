@@ -9,7 +9,7 @@
   "UpdateKeys": [],
   "Dependencies": [
     {
-      "UniqueID": "TehPers.Core.DependencyInjection",
+      "UniqueID": "TehPers.Core",
       "MinimumVersion": "0.0.1",
       "IsRequired": true
     }

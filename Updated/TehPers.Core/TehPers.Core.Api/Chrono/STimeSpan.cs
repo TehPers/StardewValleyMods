@@ -1,50 +1,49 @@
 ﻿using System;
 
-namespace TehPers.Core.Api.Chrono {
-    public readonly struct STimeSpan : IEquatable<STimeSpan>, IComparable<STimeSpan> {
-        /// <summary>The total number of elapsed years.</summary>
-        public float TotalYears => this.TotalMinutes / (4f * 28f * 2400f);
-
-        /// <summary>The total number of elapsed seasons.</summary>
-        public float TotalSeasons => this.TotalMinutes / (28f * 2400f);
-
-        /// <summary>The total number of elapsed days.</summary>
-        public float TotalDays => this.TotalMinutes / 2400f;
-
-        /// <summary>The total number of elapsed minutes.</summary>
-        public int TotalMinutes { get; }
-
-        public STimeSpan(int minutes = 0, int days = 0, int seasons = 0, int years = 0) {
-            this.TotalMinutes = minutes + days * 2400 + seasons * 28 * 2400 + years * 4 * 28 * 2400;
+namespace TehPers.Core.Api.Chrono
+{
+    /// <summary>An interval of time in Stardew Valley.</summary>
+    public readonly struct STimeSpan : IEquatable<STimeSpan>, IComparable<STimeSpan>
+    {
+        public static STimeSpan operator +(in STimeSpan first, in STimeSpan second)
+        {
+            return new STimeSpan(first.TotalMinutes + second.TotalMinutes);
         }
 
-        /// <inheritdoc />
-        public int CompareTo(STimeSpan other) {
-            return this.TotalMinutes.CompareTo(other.TotalMinutes);
+        public static STimeSpan operator -(in STimeSpan first, in STimeSpan second)
+        {
+            return new STimeSpan(first.TotalMinutes + second.TotalMinutes);
         }
 
-        /// <inheritdoc />
-        public override bool Equals(object obj) {
-            return obj is STimeSpan other && this.Equals(other);
+        public static bool operator >(in STimeSpan first, in STimeSpan second)
+        {
+            return first.CompareTo(second) > 0;
         }
 
-        public bool Equals(STimeSpan other) {
-            return this.TotalMinutes == other.TotalMinutes;
+        public static bool operator >=(in STimeSpan first, in STimeSpan second)
+        {
+            return first.CompareTo(second) >= 0;
         }
 
-        /// <inheritdoc />
-        public override int GetHashCode() {
-            return this.TotalMinutes;
+        public static bool operator <(in STimeSpan first, in STimeSpan second)
+        {
+            return first.CompareTo(second) < 0;
         }
 
-        public static STimeSpan operator +(in STimeSpan first, in STimeSpan second) => new STimeSpan(first.TotalMinutes + second.TotalMinutes);
-        public static STimeSpan operator -(in STimeSpan first, in STimeSpan second) => new STimeSpan(first.TotalMinutes + second.TotalMinutes);
-        public static bool operator >(in STimeSpan first, in STimeSpan second) => first.CompareTo(second) > 0;
-        public static bool operator >=(in STimeSpan first, in STimeSpan second) => first.CompareTo(second) >= 0;
-        public static bool operator <(in STimeSpan first, in STimeSpan second) => first.CompareTo(second) < 0;
-        public static bool operator <=(in STimeSpan first, in STimeSpan second) => first.CompareTo(second) <= 0;
-        public static bool operator ==(in STimeSpan first, in STimeSpan second) => first.Equals(second);
-        public static bool operator !=(in STimeSpan first, in STimeSpan second) => !first.Equals(second);
+        public static bool operator <=(in STimeSpan first, in STimeSpan second)
+        {
+            return first.CompareTo(second) <= 0;
+        }
+
+        public static bool operator ==(in STimeSpan first, in STimeSpan second)
+        {
+            return first.Equals(second);
+        }
+
+        public static bool operator !=(in STimeSpan first, in STimeSpan second)
+        {
+            return !first.Equals(second);
+        }
 
         /// <summary>Creates a new <see cref="STimeSpan"/> from a specified number of minutes.</summary>
         /// <param name="minutes">The number of minutes that should be represented in the new instance.</param>
@@ -65,5 +64,51 @@ namespace TehPers.Core.Api.Chrono {
         /// <param name="years">The number of years that should be represented in the new instance.</param>
         /// <returns>A new <see cref="STimeSpan"/> representing the specified number of years.</returns>
         public static STimeSpan FromYears(int years) => new STimeSpan(years: years);
+
+        /// <summary>Gets the total number of elapsed years.</summary>
+        public float TotalYears => this.TotalMinutes / (4f * 28f * 2400f);
+
+        /// <summary>Gets the total number of elapsed seasons.</summary>
+        public float TotalSeasons => this.TotalMinutes / (28f * 2400f);
+
+        /// <summary>Gets the total number of elapsed days.</summary>
+        public float TotalDays => this.TotalMinutes / 2400f;
+
+        /// <summary>Gets the total number of elapsed minutes.</summary>
+        public int TotalMinutes { get; }
+
+        /// <summary>Initializes a new instance of the <see cref="STimeSpan"/> struct.</summary>
+        /// <param name="minutes">The number of elapsed minutes.</param>
+        /// <param name="days">The number of elapsed days.</param>
+        /// <param name="seasons">The number of elapsed seasons.</param>
+        /// <param name="years">The number of elapsed years.</param>
+        public STimeSpan(int minutes = 0, int days = 0, int seasons = 0, int years = 0)
+        {
+            this.TotalMinutes = minutes + days * 2400 + seasons * 28 * 2400 + years * 4 * 28 * 2400;
+        }
+
+        /// <inheritdoc />
+        public int CompareTo(STimeSpan other)
+        {
+            return this.TotalMinutes.CompareTo(other.TotalMinutes);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            return obj is STimeSpan other && this.Equals(other);
+        }
+
+        /// <inheritdoc/>
+        public bool Equals(STimeSpan other)
+        {
+            return this.TotalMinutes == other.TotalMinutes;
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return this.TotalMinutes;
+        }
     }
 }

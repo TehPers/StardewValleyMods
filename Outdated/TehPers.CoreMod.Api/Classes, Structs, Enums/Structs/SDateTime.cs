@@ -33,7 +33,7 @@ namespace TehPers.CoreMod.Api.Structs {
         public int DayOfSeason => (int) this.TotalDays % 28;
 
         /// <summary>The current time of day in SDV format (HHmm).</summary>
-        public int TimeOfDay => this.TotalMinutes + 40 * (this.TotalMinutes / 60);
+        public int TimeOfDay => this.MinutesOfDay + 40 * (this.MinutesOfDay / 60);
 
         /// <summary>The number of elapsed minutes in the day. This is not in SDV time format, use <see cref="TimeOfDay"/> instead if that is needed.</summary>
         public int MinutesOfDay => this.TotalMinutes % 2400;

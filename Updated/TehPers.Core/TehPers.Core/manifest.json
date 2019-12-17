@@ -1,10 +1,10 @@
 ﻿{
-  "Name": "Teh's Core Mod",
   "Author": "TehPers",
-  "Version": "0.0.1",
   "Description": "Core mod for loading dependencies into other mods",
-  "UniqueID": "TehPers.Core",
   "EntryDll": "TehPers.Core.dll",
   "MinimumApiVersion": "2.10.0",
-  "UpdateKeys": []
+  "Name": "Teh's Core Mod",
+  "UniqueID": "TehPers.Core",
+  "UpdateKeys": [],
+  "Version": "0.5.0"
 }
