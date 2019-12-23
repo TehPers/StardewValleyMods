@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
-using StardewValley.Objects;
 using StardewValley.Tools;
+using TehPers.Core.Api;
+using TehPers.Core.Api.Collections;
 using TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
-using TehPers.Core.Api.Weighted;
-using TehPers.FishingFramework.Api;
+using TehPers.FishingFramework.Api.Events;
 using TehPers.FishingFramework.Api.Extensions;
 using SObject = StardewValley.Object;
 
@@ -24,26 +24,21 @@ namespace TehPers.FishingFramework
     {
         private readonly IMonitor monitor;
         private readonly IModHelper helper;
-        private readonly IFishingApi api;
-        private readonly FieldInfo pullFishField;
-        private readonly FieldInfo netEventOnEvent;
-        private readonly MethodInfo doPullFishFromWater;
-        private readonly HashSet<FishingRod> overridden;
+        private readonly FishingApi api;
+        private readonly IGlobalItemProvider globalItemProvider;
+        private readonly WeakSet<FishingRod> overriddenRods;
 
-        public HashSet<FishingRod> OverridingCatch { get; }
+        public WeakSet<FishingRod> OverridingCatch { get; }
 
-        public FishingOverrideService(IMonitor monitor, IModHelper helper, FishingApi api)
+        public FishingOverrideService(IMonitor monitor, IModHelper helper, FishingApi api, IGlobalItemProvider globalItemProvider)
         {
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.api = api ?? throw new ArgumentNullException(nameof(api));
+            this.globalItemProvider = globalItemProvider ?? throw new ArgumentNullException(nameof(globalItemProvider));
 
-            this.pullFishField = typeof(FishingRod).GetField("pullFishFromWaterEvent", BindingFlags.NonPublic | BindingFlags.Instance);
-            this.netEventOnEvent = typeof(AbstractNetEvent1<byte[]>).GetField("onEvent", BindingFlags.Instance | BindingFlags.NonPublic);
-            this.doPullFishFromWater = typeof(FishingRod).GetMethod("doPullFishFromWater", BindingFlags.NonPublic | BindingFlags.Instance);
-            this.overridden = new HashSet<FishingRod>();
-
-            this.OverridingCatch = new HashSet<FishingRod>();
+            this.overriddenRods = new WeakSet<FishingRod>();
+            this.OverridingCatch = new WeakSet<FishingRod>();
         }
 
         public void OnUpdateTicked(object sender, UpdateTickedEventArgs args)
@@ -58,7 +53,7 @@ namespace TehPers.FishingFramework
             }
 
             // Override the pullFishFromWater event (for trash)
-            if (this.overridden.Add(rod))
+            if (this.overriddenRods.Add(rod))
             {
                 this.OverridePullFishEvent(rod);
             }
@@ -80,22 +75,16 @@ namespace TehPers.FishingFramework
             {
                 if (anim.endFunction == rod.openTreasureMenuEndFunction)
                 {
-                    // anim.endFunction = extra => this.OpenTreasureEndFunction(rod, Game1.player, extra);
+                    anim.endFunction = extra => this.OpenTreasureEndFunction(rod, Game1.player, extra);
                 }
             }
         }
 
         private void OverridePullFishEvent(FishingRod rod)
         {
-            // Make sure the pullFishFromWaterEvent has a value (it should)
-            if (!(this.pullFishField?.GetValue(rod) is NetEventBinary pullFishEvent))
-                return;
-
-            // Try to get the event field
-            if (!(this.netEventOnEvent?.GetValue(pullFishEvent) is AbstractNetEvent1<byte[]>.Event eventField))
-                return;
-
-            // Remove all the handlers from the event
+            // Remove all the handlers from the pull fish event
+            var pullFishEvent = this.helper.Reflection.GetField<NetEventBinary>(rod, "pullFishFromWaterEvent").GetValue();
+            var eventField = this.helper.Reflection.GetField<AbstractNetEvent1<byte[]>.Event>(rod, "onEvent").GetValue();
             foreach (var method in eventField.GetInvocationList())
             {
                 if (method is AbstractNetEvent1<byte[]>.Event handler)
@@ -110,7 +99,7 @@ namespace TehPers.FishingFramework
 
             // Add a new event handler
             pullFishEvent.AddReaderHandler(reader => this.DoPullFishFromWater(rod, this.helper.Reflection.GetField<Farmer>(rod, "lastUser").GetValue(), reader));
-            this.monitor.Log("Events overridden for fishing rod", LogLevel.Trace);
+            this.monitor.Log("Events overridden for fishing rod");
         }
 
         private void DoPullFishFromWater(FishingRod rod, Farmer user, BinaryReader reader)
@@ -119,8 +108,8 @@ namespace TehPers.FishingFramework
             if (this.OverridingCatch.Remove(rod))
             {
                 // Call normal handler
-                this.monitor.Log("Calling vanilla fishing logic", LogLevel.Trace);
-                this.doPullFishFromWater.Invoke(rod, new object[] { reader });
+                this.monitor.Log("Calling vanilla fishing logic");
+                this.helper.Reflection.GetMethod(rod, "doPullFishFromWater").Invoke(reader);
             }
             else
             {
@@ -141,100 +130,126 @@ namespace TehPers.FishingFramework
             var clearWaterDistance = this.helper.Reflection.GetField<int>(rod, "clearWaterDistance").GetValue();
             var location = user.currentLocation;
             var bobberTile = new Vector2(rod.bobber.X / 64F, rod.bobber.Y / 64F);
-
-            int? fish = null;
-
-            // Check if legendary fish are being overridden as well
-            if (!this.api.GlobalConfig.ShouldOverrideVanillaLegendaries)
+            var bubblyZone = false;
+            if (location.fishSplashPoint is { Value: var fishSplashPoint } && fishSplashPoint != Point.Zero)
             {
-                // Check if a legendary would be caught
-                var baitValue = rod.attachments[0]?.Price / 10.0 ?? 0.0;
-                var bubblyZone = false;
-                if (!(location.fishSplashPoint is null) && location.fishSplashPoint.Value != Point.Zero)
-                    bubblyZone = new Rectangle(location.fishSplashPoint.X * 64, location.fishSplashPoint.Y * 64, 64, 64).Intersects(new Rectangle((int)rod.bobber.X - 80, (int)rod.bobber.Y - 80, 64, 64));
-                var normalFish = location.getFish(rod.fishingNibbleAccumulator, rod.attachments[0]?.ParentSheetIndex ?? -1, clearWaterDistance + (bubblyZone ? 1 : 0), user, baitValue + (bubblyZone ? 0.4 : 0.0), bobberTile, user.currentLocation.Name);
+                var splashBounds = new Rectangle(fishSplashPoint.X * 64, fishSplashPoint.Y * 64, 64, 64);
+                var bobberBounds = new Rectangle((int)rod.bobber.X - 80, (int)rod.bobber.Y - 80, 64, 64);
+                bubblyZone = splashBounds.Intersects(bobberBounds);
+            }
 
-                // If so, select that fish
-                if (this.api.IsLegendaryFish(normalFish.ParentSheetIndex))
+            if (!TryCatchFish() && !TryCatchSpecial() && !TryCatchTrash())
+            {
+                // No valid trash was found
+                this.monitor.LogWithLocation($"No possible trash found for {location.Name}, using stone instead. This is probably caused by another mod removing trash data.", LogLevel.Warn);
+                rod.pullFishFromWater(ObjectsReference.Stone, -1, 0, 0, false, false, false);
+            }
+
+            bool TryCatchFish()
+            {
+                // Check if legendary fish are being overridden as well
+                if (!this.api.GlobalConfig.ShouldOverrideVanillaLegendaries)
                 {
-                    fish = normalFish.ParentSheetIndex;
-                }
-            }
+                    // Check if a legendary would be caught
+                    var baitValue = rod.attachments[0]?.Price / 10.0 ?? 0.0;
+                    var normalFish = location.getFish(rod.fishingNibbleAccumulator, rod.attachments[0]?.ParentSheetIndex ?? -1, clearWaterDistance + (bubblyZone ? 1 : 0), user, baitValue + (bubblyZone ? 0.4 : 0.0), bobberTile, user.currentLocation.Name);
+                    var normalFishId = NamespacedId.FromItem(normalFish);
 
-            // Void mayonnaise
-            if (location.Name.Equals("WitchSwamp") && !Game1.MasterPlayer.mailReceived.Contains("henchmanGone") && Game1.random.NextDouble() < 0.25 && !Game1.player.hasItemInInventory(308, 1))
-            {
-                rod.pullFishFromWater(308, -1, 0, 0, false, false, false);
-                return;
-            }
-
-            // Choose a random fish if one hasn't been chosen yet
-            if (fish == null && Game1.random.NextDouble() < this.api.GetChance(this.api.FishChances, user, this.api.FishingStreak))
-            {
-                var fishKey = this.api.Fish.WhereAvailable(user).Choose(Game1.random).Value;
-                fish = default;
-            }
-
-            // Check if a fish was chosen
-            if (fish == null)
-            {
-                // Secret note
-                if (user.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08)
-                {
-                    var unseenSecretNote = location.tryToCreateUnseenSecretNote(user);
-                    if (unseenSecretNote != null)
+                    // If so, select that fish
+                    if (this.api.IsLegendaryFish(normalFishId))
                     {
-                        rod.pullFishFromWater(unseenSecretNote.ParentSheetIndex, -1, 0, 0, false, false, false);
-                        return;
+                        return DoCatch(normalFishId);
                     }
                 }
 
-                // Trash
-                int? trash = this.api.TrashByLocationName.GetRandomTrash(user);
-                if (trash.HasValue)
+                // Choose a random fish if one hasn't been chosen yet
+                if (!(Game1.random.NextDouble() < this.api.FishChances.GetChance(user, this.api.FishingStreak)))
                 {
-                    // Invoke event
-                    FishingEventArgs eventArgs = new FishingEventArgs(trash.Value, user, rod);
-                    this.api.OnTrashCaught(eventArgs);
-                    trash = eventArgs.ParentSheetIndex;
+                    return false;
+                }
 
-                    this.monitor.Log($"Catching trash: {trash}", LogLevel.Trace);
-                    rod.pullFishFromWater(trash.Value, -1, 0, 0, false, false, false);
-                }
-                else
-                {
-                    this.monitor.Log($"No possible trash found for {location.Name}, using stone instead. This is probably caused by another mod removing trash data.", LogLevel.Warn);
-                    rod.pullFishFromWater(ObjectsReference.Stone, -1, 0, 0, false, false, false);
-                }
+                return this.api.Fish.WhereAvailable(user).ChooseOrDefault(Game1.random) is { Value: { FishId: var fishId } } && DoCatch(fishId);
             }
-            else
+
+            bool DoCatch(NamespacedId fishId)
             {
                 // Invoke event
-                var eventArgs = new FishingEventArgs(fish.Value, user, rod);
-                this.api.OnFishCatching(eventArgs);
-                fish = eventArgs.ParentSheetIndex;
+                var catchingArgs = new FishCatchingEventArgs(user, rod, fishId);
+                this.api.OnFishCatching(catchingArgs);
 
                 // Check if favBait should be set to true (still not sure what this does...)
-                var fishObject = new SObject(fish.Value, 1);
-                if (Math.Abs(fishObject.Scale.X - 1.0) < 0.001)
+                if (!this.globalItemProvider.TryCreate(catchingArgs.FishId, out var fishItem))
+                {
+                    this.monitor.LogWithLocation($"Unable to create instance of {catchingArgs.FishId} while creating fish. Reverting to trash.", LogLevel.Warn);
+                    return false;
+                }
+
+                if (fishItem is SObject { Scale: { X: var xScale } } && Math.Abs(xScale - 1.0) < 0.001)
+                {
                     rod.favBait = true;
+                }
 
                 // Show hit animation
                 rod.hit = true;
-                this.monitor.Log($"Catching fish: {fish}", LogLevel.Trace);
+                this.monitor.LogWithLocation($"Catching fish: {fishId}");
                 Game1.screenOverlayTempSprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(612, 1913, 74, 30), 1500f, 1, 0, Game1.GlobalToLocal(Game1.viewport, rod.bobber.Value + new Vector2(-140f, -160f)), false, false, 1f, 0.005f, Color.White, 4f, 0.075f, 0.0f, 0.0f, true)
                 {
                     scaleChangeChange = -0.005f,
                     motion = new Vector2(0.0f, -0.1f),
-                    endFunction = extra => this.StartMinigameEndFunction(rod, user, extra),
-                    extraInfoForEndBehavior = fish.Value
+                    endFunction = _ => this.StartMinigameEndFunction(rod, user, fishId),
                 });
                 location.localSound("FishHit");
+
+                return true;
+            }
+
+            bool TryCatchSpecial()
+            {
+                // Void mayonnaise
+                if (location.Name.Equals("WitchSwamp") && !Game1.MasterPlayer.mailReceived.Contains("henchmanGone") && Game1.random.NextDouble() < 0.25 && !Game1.player.hasItemInInventory(308, 1))
+                {
+                    rod.pullFishFromWater(308, -1, 0, 0, false, false, false);
+                    return true;
+                }
+
+                // Secret note
+                if (user.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08 && location.tryToCreateUnseenSecretNote(user) is { } unseenSecretNote)
+                {
+                    rod.pullFishFromWater(unseenSecretNote.ParentSheetIndex, -1, 0, 0, false, false, false);
+                    return true;
+                }
+
+                return false;
+            }
+
+            bool TryCatchTrash()
+            {
+                // Trash
+                var trash = this.api.Trash.WhereAvailable(user).ChooseOrDefault(Game1.random);
+                if (!(trash is { Value: { ItemIndex: var trashId } }))
+                {
+                    return false;
+                }
+
+                // Notify listeners that trash is being caught
+                var catchingArgs = new TrashCatchingEventArgs(user, rod, trashId);
+                this.api.OnTrashCatching(catchingArgs);
+
+                // Catch the trash
+                rod.pullFishFromWater(catchingArgs.TrashIndex, -1, 0, 0, false, false, false);
+
+                // Notify listeners that trash was caught
+                var caughtArgs = new TrashCaughtEventArgs(user, rod, catchingArgs.TrashIndex);
+                this.api.OnTrashCaught(caughtArgs);
+
+                return true;
             }
         }
 
-        private void StartMinigameEndFunction(FishingRod rod, Farmer user, int fish)
+        private void StartMinigameEndFunction(FishingRod rod, Farmer user, NamespacedId fish)
         {
+            var beginReeling = this.helper.Reflection.GetField<NetEvent0>(rod, "beginReelingEvent").GetValue();
+            beginReeling.Fire();
             rod.isReeling = true;
             rod.hit = false;
 
@@ -247,39 +262,34 @@ namespace TehPers.FishingFramework
                 case 3:
                     user.FarmerSprite.setCurrentSingleFrame(48, 32000, false, true);
                     break;
-                default:
-                    break;
             }
+
             user.FarmerSprite.PauseForSingleAnimation = true;
 
-            // Distance from bobber to land
-            var clearWaterDistanceField = this.helper.Reflection.GetField<int>(rod, "clearWaterDistance");
-            clearWaterDistanceField.SetValue(FishingRod.distanceToLand((int)(rod.bobber.X / 64.0 - 1.0), (int)(rod.bobber.Y / 64.0 - 1.0), user.currentLocation));
-
-            // Calculate size of fish
-            var num = 1f * (clearWaterDistanceField.GetValue() / 5f) * (Game1.random.Next(1 + Math.Min(10, user.FishingLevel) / 2, 6) / 5f);
+            var clearWaterDistance = this.helper.Reflection.GetField<int>(rod, "clearWaterDistance").GetValue();
+            var clearWaterDistanceFactor = clearWaterDistance / 5f;
+            var fishingLevelFactor = 1 + user.FishingLevel / 2;
+            var sizeFactor = clearWaterDistanceFactor * (Game1.random.Next(fishingLevelFactor, Math.Max(6, fishingLevelFactor)) / 5f);
             if (rod.favBait)
-                num *= 1.2f;
-            var fishSize = Math.Max(0.0f, Math.Min(1f, num * (float)(1.0 + Game1.random.Next(-10, 10) / 100.0)));
+            {
+                sizeFactor *= 1.2f;
+            }
 
             // Check if there should be treasure
+            var fishSize = Math.Max(0.0f, Math.Min(1f, sizeFactor * (float)(1.0 + Game1.random.Next(-10, 11) / 100.0)));
             var treasure = !Game1.isFestival();
-            treasure &= user.fishCaught != null && user.fishCaught.Count > 1;
-            treasure &= Game1.random.NextDouble() < this.api.GetTreasureChance(user, rod);
-            Game1.activeClickableMenu = new CustomBobberBar(this._mod, user, fish, fishSize, treasure, rod.attachments[1]?.ParentSheetIndex ?? -1);
+            treasure &= user.fishCaught is { } caughtFish && caughtFish.Any();
+            treasure &= Game1.random.NextDouble() < this.api.TreasureChances.GetChance(user, this.api.FishingStreak);
+            // Game1.activeClickableMenu = new BobberBar(extra, fishSize, treasure, this.attachments[1] != null ? this.attachments[1].ParentSheetIndex : -1);
+            // TODO: Game1.activeClickableMenu = new CustomBobberBar(this._mod, user, caughtFish, fishSize, treasure, rod.attachments[1]?.ParentSheetIndex ?? -1);
         }
 
         private void OpenTreasureEndFunction(FishingRod rod, Farmer user, int includeFish)
         {
-            this.monitor.Log("Successfully replaced treasure", LogLevel.Trace);
-
-            ConfigMain.ConfigGlobalTreasure config = ModFishing.Instance.MainConfig.GlobalTreasureSettings;
-            var clearWaterDistance = this.helper.Reflection.GetField<int>(rod, "clearWaterDistance")?.GetValue() ?? 5;
-
-            var whichFish = this.helper.Reflection.GetField<int>(rod, "whichFish").GetValue();
-            var fishQuality = this.helper.Reflection.GetField<int>(rod, "fishQuality").GetValue();
+            this.monitor.LogWithLocation("Successfully replaced treasure");
 
             // Gain experience and call vanilla code for this
+            var clearWaterDistance = this.helper.Reflection.GetField<int>(rod, "clearWaterDistance")?.GetValue() ?? 5;
             user.gainExperience(5, 10 * (clearWaterDistance + 1));
             rod.doneFishing(user, true);
             user.completelyStopAnimatingOrDoingAction();
@@ -287,38 +297,52 @@ namespace TehPers.FishingFramework
             // REWARDS
             var rewards = new List<Item>();
             if (includeFish == 1)
+            {
+                // TODO: whichFish should support namespaced IDs
+                var whichFish = this.helper.Reflection.GetField<int>(rod, "whichFish").GetValue();
+                var fishQuality = this.helper.Reflection.GetField<int>(rod, "fishQuality").GetValue();
                 rewards.Add(new SObject(whichFish, 1, false, -1, fishQuality));
+            }
 
-            List<IWeightedValue<ITreasureAvailability>> possibleLoot = ModFishing.Instance.TreasureConfig.PossibleLoot
-                .Cast<ITreasureAvailability>()
-                .Where(treasure => treasure.IsValid(user))
-                .ToWeighted(treasure => treasure.GetWeight(), treasure => treasure)
-                .ToList();
+            var possibleLoot = this.api.Treasure.WhereAvailable(user).ToHashSet();
 
             // Select rewards
-            var chance = 1f;
-            int streak = this.api.GetStreak(user);
+            var config = this.api.GlobalConfig.Treasure;
+            var chance = 1d;
             while (possibleLoot.Count > 0 && rewards.Count < config.MaxTreasureQuantity && Game1.random.NextDouble() <= chance)
             {
                 var weightedTreasure = possibleLoot.Choose(Game1.random);
 
                 // Choose an ID for the treasure
-                IList<int> ids = weightedTreasure.Value.PossibleIds();
-                var id = ids[Game1.random.Next(ids.Count)];
+                var ids = weightedTreasure.Value.ItemIds.ToArray();
+                var id = ids[Game1.random.Next(ids.Length)];
+
+                var count = Game1.random.Next(weightedTreasure.Value.MinimumQuantity, weightedTreasure.Value.MaximumQuantity);
+                if (count <= 0)
+                {
+                    continue;
+                }
 
                 // Lost books have custom handling
-                if (id == ObjectsReference.LostBook)
+                if (id == NamespacedId.FromObjectIndex(ObjectsReference.LostBook))
                 {
-                    if (user.archaeologyFound == null || !user.archaeologyFound.ContainsKey(102) || user.archaeologyFound[102][0] >= 21)
+                    if (user.archaeologyFound == null || !user.archaeologyFound.TryGetValue(102, out var found) || found[0] >= 21)
                     {
                         possibleLoot.Remove(weightedTreasure);
                         continue;
                     }
+
                     Game1.showGlobalMessage("You found a lost book. The library has been expanded.");
                 }
 
                 // Create reward item
-                Item reward;
+                if (!this.globalItemProvider.TryCreate(id, out var reward))
+                {
+                    this.monitor.LogWithLocation($"Unable to create instance of {id} for treasure reward, reverting to stone.", LogLevel.Warn);
+                    reward = new SObject(ObjectsReference.Stone, 1);
+                }
+
+                /*
                 if (weightedTreasure.Value.MeleeWeapon)
                 {
                     reward = new MeleeWeapon(id);
@@ -335,30 +359,49 @@ namespace TehPers.FishingFramework
                 {
                     // Random quantity
                     var count = Game1.random.Next(weightedTreasure.Value.MinAmount, weightedTreasure.Value.MaxAmount);
-
                     reward = new SObject(Vector2.Zero, id, count);
                 }
+                */
 
                 // Add the reward
-                rewards.Add(reward);
+                switch (reward)
+                {
+                    case SObject sobj:
+                    {
+                        sobj.Stack = count;
+                        rewards.Add(reward);
+                        break;
+                    }
+                    default:
+                    {
+                        for (var i = 0; i < count; i++)
+                        {
+                            rewards.Add(reward);
+                        }
+
+                        break;
+                    }
+                }
+
 
                 // Check if this reward shouldn't be duplicated
                 if (!config.AllowDuplicateLoot || !weightedTreasure.Value.AllowDuplicates)
                     possibleLoot.Remove(weightedTreasure);
 
                 // Update chance
-                chance *= config.AdditionalLootChance + streak * config.StreakAdditionalLootChance;
+                chance *= config.AdditionalLootChances.GetChance(user, this.api.FishingStreak);
+                // chance *= config.AdditionalLootChance + streak * config.StreakAdditionalLootChance;
             }
 
             // Add bait if no rewards were selected. NOTE: This should never happen
             if (rewards.Count == 0)
             {
-                this.monitor.Log("Could not find any valid loot for the treasure chest. Check your treasure.json?", LogLevel.Warn);
+                this.monitor.Log("Could not find any valid loot for the treasure chest. Check your treasure settings?", LogLevel.Warn);
                 rewards.Add(new SObject(685, Game1.random.Next(2, 5) * 5));
             }
 
             // Show rewards GUI
-            this.monitor.Log($"Treasure rewards: {string.Join(", ", rewards)}", LogLevel.Trace);
+            this.monitor.Log($"Treasure rewards: {string.Join(", ", rewards)}");
             Game1.activeClickableMenu = new ItemGrabMenu(rewards);
             ((ItemGrabMenu)Game1.activeClickableMenu).source = 3;
             user.completelyStopAnimatingOrDoingAction();

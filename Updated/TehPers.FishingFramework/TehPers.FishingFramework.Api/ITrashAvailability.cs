@@ -1,4 +1,5 @@
-﻿using TehPers.Core.Api;
+﻿using StardewValley;
+using SObject = StardewValley.Object;
 
 namespace TehPers.FishingFramework.Api
 {
@@ -8,8 +9,8 @@ namespace TehPers.FishingFramework.Api
     public interface ITrashAvailability : IFishingAvailability
     {
         /// <summary>
-        /// The <see cref="NamespacedId"/> for this trash.
+        /// Gets the <see cref="Item.ParentSheetIndex"/> for this trash. All trash must be instances of <see cref="SObject"/>.
         /// </summary>
-        NamespacedId ItemId { get; }
+        int ItemIndex { get; }
     }
 }

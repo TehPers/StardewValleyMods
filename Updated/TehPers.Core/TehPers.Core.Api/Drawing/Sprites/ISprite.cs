@@ -3,25 +3,39 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TehPers.Core.Api.Drawing.Sprites {
     public interface ISprite : ITextureEvents {
-        /// <summary>This sprite's index in its parent sheet.</summary>
+        /// <summary>
+        /// This sprite's index in its parent sheet.
+        /// </summary>
         int Index { get; }
 
-        /// <summary>The sprite sheet this sprite comes from.</summary>
+        /// <summary>
+        /// The sprite sheet this sprite comes from.
+        /// </summary>
         ISpriteSheet ParentSheet { get; }
 
-        /// <summary>The source rectangle for this sprite from the parent sheet.</summary>
+        /// <summary>
+        /// The source rectangle for this sprite from the parent sheet.
+        /// </summary>
         SRectangle? SourceRectangle { get; }
 
-        /// <summary>The x-coordinate of the top-left corner of this sprite.</summary>
+        /// <summary>
+        /// The x-coordinate of the top-left corner of this sprite.
+        /// </summary>
         int U { get; }
 
-        /// <summary>The y-coordinate of the top-left corner of this sprite.</summary>
+        /// <summary>
+        /// The y-coordinate of the top-left corner of this sprite.
+        /// </summary>
         int V { get; }
 
-        /// <summary>The width of this sprite.</summary>
+        /// <summary>
+        /// The width of this sprite.
+        /// </summary>
         int Width { get; }
 
-        /// <summary>The height of this sprite.</summary>
+        /// <summary>
+        /// The height of this sprite.
+        /// </summary>
         int Height { get; }
 
         void Draw(SpriteBatch batch, Vector2 position, Color color);

@@ -1,0 +1,2044 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TehPers.Core.Api</name>
+    </assembly>
+    <members>
+        <member name="T:TehPers.Core.Api.Chrono.SDateTime">
+            <summary>Represents a date and time in Stardew Valley.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.op_Addition(TehPers.Core.Api.Chrono.SDateTime@,TehPers.Core.Api.Chrono.STimeSpan@)">
+            <summary>Adds a <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> to a <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>, producing a <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> representative of the result.</summary>
+            <param name="first">The source <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="second">The <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> indicating the interval between the source <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> and the result.</param>
+            <returns>A <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> which is the given interval away in a positive direction from the source <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.op_Subtraction(TehPers.Core.Api.Chrono.SDateTime@,TehPers.Core.Api.Chrono.STimeSpan@)">
+            <summary>Subtracts a <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> from a <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>, producing a <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> representative of the result.</summary>
+            <param name="first">The source <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="second">The <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> indicating the interval between the source <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> and the result.</param>
+            <returns>A <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> which is the given interval away in a negative direction from the source <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.op_Subtraction(TehPers.Core.Api.Chrono.SDateTime@,TehPers.Core.Api.Chrono.SDateTime@)">
+            <summary>Calculates the interval between two instances of <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</summary>
+            <param name="first">The lower <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> of the interval being calculated.</param>
+            <param name="second">The higher <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> of the interval being calculated.</param>
+            <returns>A <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> which indicates the interval between the given instances of <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.op_GreaterThan(TehPers.Core.Api.Chrono.SDateTime@,TehPers.Core.Api.Chrono.SDateTime@)">
+            <summary>Checks if the first argument comes after the second argument in chronological order.</summary>
+            <param name="first">The first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="second">The second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <returns><see langword="true"/> if the first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> is chronologally after the second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>, otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.op_GreaterThanOrEqual(TehPers.Core.Api.Chrono.SDateTime@,TehPers.Core.Api.Chrono.SDateTime@)">
+            <summary>Checks if the first argument comes after the second argument in chronological order, or if they are equal.</summary>
+            <param name="first">The first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="second">The second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <returns><see langword="true"/> if the first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> is chronologally equivalent or after the second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>, otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.op_LessThan(TehPers.Core.Api.Chrono.SDateTime@,TehPers.Core.Api.Chrono.SDateTime@)">
+            <summary>Checks if the first argument comes before the second argument in chronological order.</summary>
+            <param name="first">The first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="second">The second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <returns><see langword="true"/> if the first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> is chronologally before the second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>, otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.op_LessThanOrEqual(TehPers.Core.Api.Chrono.SDateTime@,TehPers.Core.Api.Chrono.SDateTime@)">
+            <summary>Checks if the first argument comes before the second argument in chronological order, or if they are equal.</summary>
+            <param name="first">The first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="second">The second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <returns><see langword="true"/> if the first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> is chronologally equivalent or before the second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>, otherwise <see langword="false"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.op_Equality(TehPers.Core.Api.Chrono.SDateTime@,TehPers.Core.Api.Chrono.SDateTime@)">
+            <summary>Checks if two <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> instances are equivalent.</summary>
+            <param name="first">The first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="second">The second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> instances are equivalent, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.op_Inequality(TehPers.Core.Api.Chrono.SDateTime@,TehPers.Core.Api.Chrono.SDateTime@)">
+            <summary>Checks if two <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> instances are not equivalent.</summary>
+            <param name="first">The first <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="second">The second <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> instances are not equivalent, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.FromDateAndTime(System.Int32,TehPers.Core.Api.Chrono.Seasons,System.Int32,System.Int32)">
+            <summary>Creates a <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> from a date and time of day.</summary>
+            <param name="years">The number of years to add to the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="season">The current season of the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="days">The number of days to add to the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="timeOfDay">The time of day, in the format 'hhmm'. For example, 11:20 would be <c>1120</c>.</param>
+            <returns>The <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</returns>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.Now">
+            <summary>Gets the current date and time.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.Today">
+            <summary>Gets the current date.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.TotalYears">
+            <summary>Gets the total number of elapsed years.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.TotalSeasons">
+            <summary>Gets the total number of elapsed seasons.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.TotalDays">
+            <summary>Gets the total number of elapsed days.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.TotalMinutes">
+            <summary>Gets the total number of elapsed minutes.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.Year">
+            <summary>Gets the number of elapsed years.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.Season">
+            <summary>Gets the number of elapsed seasons in the year.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.DayOfSeason">
+            <summary>Gets the number of elapsed days in the season.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.TimeOfDay">
+            <summary>Gets the current time of day in SDV format (HHmm).</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.SDateTime.MinutesOfDay">
+            <summary>Gets the number of elapsed minutes in the day. This is not in SDV time format, use <see cref="P:TehPers.Core.Api.Chrono.SDateTime.TimeOfDay"/> instead if that is needed.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.#ctor(System.Int32,TehPers.Core.Api.Chrono.Seasons,System.Int32,System.Int32)">
+            <summary>Initializes a new instance of the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> struct.</summary>
+            <param name="years">The number of years to add to the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="season">The current season of the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="days">The number of days to add to the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="minutes">The number of minutes to add to the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/> struct.
+            </summary>
+            <param name="years">The number of years to add to the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="seasons">The number of seasons to add to the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="days">The number of days to add to the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+            <param name="minutes">The number of minutes to add to the <see cref="T:TehPers.Core.Api.Chrono.SDateTime"/>.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.Equals(TehPers.Core.Api.Chrono.SDateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.CompareTo(TehPers.Core.Api.Chrono.SDateTime)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SDateTime.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:TehPers.Core.Api.Chrono.SeasonExtensions">
+            <summary>Extensions for <see cref="T:TehPers.Core.Api.Chrono.Seasons"/>.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SeasonExtensions.GetName(TehPers.Core.Api.Chrono.Seasons)">
+            <summary>Converts a <see cref="T:TehPers.Core.Api.Chrono.Seasons"/> to its lowercase string representation.</summary>
+            <param name="season">The season to get the name of.</param>
+            <returns>A lowercase string containing the season's name, or <c>null</c> if it does not represent exactly one season.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SeasonExtensions.GetSeason(System.String)">
+            <summary>Tries to convert a string into a <see cref="T:TehPers.Core.Api.Chrono.Seasons"/>.</summary>
+            <param name="name">The name of the season.</param>
+            <returns>The <see cref="T:TehPers.Core.Api.Chrono.Seasons"/> with the given name, or <c>null</c> if it didn't match.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.SeasonExtensions.TryGetSeason(System.String,TehPers.Core.Api.Chrono.Seasons@)">
+            <summary>Tries to convert a string into a <see cref="T:TehPers.Core.Api.Chrono.Seasons"/>.</summary>
+            <param name="name">The name of the season.</param>
+            <param name="season">The resulting <see cref="T:TehPers.Core.Api.Chrono.Seasons"/>.</param>
+            <returns>True if the name matched a season, false otherwise.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Chrono.Seasons">
+            <summary>A season in Stardew Valley.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.Chrono.Seasons.Spring">
+            <summary>The spring season.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.Chrono.Seasons.Summer">
+            <summary>The summer season.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.Chrono.Seasons.Fall">
+            <summary>The fall season.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.Chrono.Seasons.Winter">
+            <summary>The winter season.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.Chrono.Seasons.None">
+            <summary>No seasons.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.Chrono.Seasons.Any">
+            <summary>Any season.</summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Chrono.STimeSpan">
+            <summary>An interval of time in Stardew Valley.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.STimeSpan.FromMinutes(System.Int32)">
+            <summary>Creates a new <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> from a specified number of minutes.</summary>
+            <param name="minutes">The number of minutes that should be represented in the new instance.</param>
+            <returns>A new <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> representing the specified number of minutes.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.STimeSpan.FromDays(System.Int32)">
+            <summary>Creates a new <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> from a specified number of days.</summary>
+            <param name="days">The number of days that should be represented in the new instance.</param>
+            <returns>A new <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> representing the specified number of days.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.STimeSpan.FromSeasons(System.Int32)">
+            <summary>Creates a new <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> from a specified number of seasons.</summary>
+            <param name="seasons">The number of seasons that should be represented in the new instance.</param>
+            <returns>A new <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> representing the specified number of seasons.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.STimeSpan.FromYears(System.Int32)">
+            <summary>Creates a new <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> from a specified number of years.</summary>
+            <param name="years">The number of years that should be represented in the new instance.</param>
+            <returns>A new <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> representing the specified number of years.</returns>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.STimeSpan.TotalYears">
+            <summary>Gets the total number of elapsed years.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.STimeSpan.TotalSeasons">
+            <summary>Gets the total number of elapsed seasons.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.STimeSpan.TotalDays">
+            <summary>Gets the total number of elapsed days.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Chrono.STimeSpan.TotalMinutes">
+            <summary>Gets the total number of elapsed minutes.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.STimeSpan.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>Initializes a new instance of the <see cref="T:TehPers.Core.Api.Chrono.STimeSpan"/> struct.</summary>
+            <param name="minutes">The number of elapsed minutes.</param>
+            <param name="days">The number of elapsed days.</param>
+            <param name="seasons">The number of elapsed seasons.</param>
+            <param name="years">The number of elapsed years.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.STimeSpan.CompareTo(TehPers.Core.Api.Chrono.STimeSpan)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.STimeSpan.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.STimeSpan.Equals(TehPers.Core.Api.Chrono.STimeSpan)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Chrono.STimeSpan.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:TehPers.Core.Api.Chrono.Weathers">
+            <summary>A vanilla weather in Stardew Valley.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.Chrono.Weathers.Sunny">
+            <summary>Sunny (or snowy) weather.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.Chrono.Weathers.Rainy">
+            <summary>Rainy weather.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.Chrono.Weathers.Any">
+            <summary>Any weather.</summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Collections.IMultiDictionary`2">
+            <summary>Represents a generic collection of key/value pairs where each key represents many values.</summary>
+            <typeparam name="TKey">The type of keys in the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/>.</typeparam>
+            <typeparam name="TValue">The type of values in the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/>.</typeparam>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.IMultiDictionary`2.Add(`0,`1)">
+            <summary>Adds an element with the provided key and value to the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2" />.</summary>
+            <param name="key">The object to use as the key of the element to add.</param>
+            <param name="value">The object to use as the value of the element to add.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is <see langword="null" />.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2" /> is read-only.</exception>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.IMultiDictionary`2.Contains(`0,`1)">
+            <summary>Determines whether the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2" /> contains a specific key-value pair.</summary>
+            <param name="key">The key of the item to locate in the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2" />.</param>
+            <param name="value">The value of the item to locate in the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/>.</param>
+            <returns><see langword="true" /> if <paramref name="value"/> is found in the set of values for <paramref name="key" />; otherwise, <see langword="false" />.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.IMultiDictionary`2.AddAll(TehPers.Core.Api.Collections.IMultiDictionary{`0,`1})">
+            <summary>Adds all the key-value pairs from another <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/> into the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/>.</summary>
+            <param name="other">The other <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/>.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.Collections.MultiDictionary`2">
+            <inheritdoc cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2" />
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.MultiDictionary`2.#ctor">
+            <summary>Initializes a new instance of the <see cref="T:TehPers.Core.Api.Collections.MultiDictionary`2"/> class.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.MultiDictionary`2.#ctor(System.Collections.Generic.IEqualityComparer{`0},System.Collections.Generic.IEqualityComparer{`1})">
+            <summary>Initializes a new instance of the <see cref="T:TehPers.Core.Api.Collections.MultiDictionary`2"/> class.</summary>
+            <param name="keyComparer">The comparer to use for keys.</param>
+            <param name="valueComparer">The comparer to use for values.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.MultiDictionary`2.Add(`0,`1)">
+            <summary>Adds an element with the provided key and value to the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2" />.</summary>
+            <param name="key">The object to use as the key of the element to add.</param>
+            <param name="value">The object to use as the value of the element to add.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is <see langword="null" />.</exception>
+            <exception cref="T:System.NotSupportedException">The <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2" /> is read-only.</exception>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.MultiDictionary`2.Contains(`0,`1)">
+            <summary>Determines whether the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2" /> contains a specific key-value pair.</summary>
+            <param name="key">The key of the item to locate in the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2" />.</param>
+            <param name="value">The value of the item to locate in the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/>.</param>
+            <returns><see langword="true" /> if <paramref name="value"/> is found in the set of values for <paramref name="key" />; otherwise, <see langword="false" />.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.MultiDictionary`2.AddAll(TehPers.Core.Api.Collections.IMultiDictionary{`0,`1})">
+            <summary>Adds all the key-value pairs from another <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/> into the <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/>.</summary>
+            <param name="other">The other <see cref="T:TehPers.Core.Api.Collections.IMultiDictionary`2"/>.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.MultiDictionary`2.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Collections.MultiDictionary`2"/> class.
+            </summary>
+            <param name="info">A <see cref="T:System.Runtime.Serialization.SerializationInfo" /> object containing the information required to serialize the <see cref="T:System.Collections.Generic.Dictionary`2" />.</param>
+            <param name="context">A <see cref="T:System.Runtime.Serialization.StreamingContext" /> structure containing the source and destination of the serialized stream associated with the <see cref="T:System.Collections.Generic.Dictionary`2" />.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.Collections.WeakSet`1">
+            <summary>
+            A set where each object is stored as a weak reference. Retrieval from the set gives strong references to the objects.
+            </summary>
+            <typeparam name="T">The type of elements in the list.</typeparam>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.WeakSet`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Collections.WeakSet`1"/> class.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.WeakSet`1.GetEnumerator">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.WeakSet`1.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.WeakSet`1.System#Collections#Generic#ICollection{T}#Add(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.WeakSet`1.Add(`0)">
+            <summary>Adds an item to the <see cref="T:TehPers.Core.Api.Collections.WeakSet`1" />.</summary>
+            <param name="item">The object to add to the <see cref="T:TehPers.Core.Api.Collections.WeakSet`1" />.</param>
+            <returns><see langword="true"/> if the item was added, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.WeakSet`1.Clear">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.WeakSet`1.Contains(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.WeakSet`1.CopyTo(`0[],System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Collections.WeakSet`1.Remove(`0)">
+            <inheritdoc/>
+        </member>
+        <member name="P:TehPers.Core.Api.Collections.WeakSet`1.Count">
+            <inheritdoc/>
+        </member>
+        <member name="P:TehPers.Core.Api.Collections.WeakSet`1.IsReadOnly">
+            <inheritdoc/>
+        </member>
+        <member name="T:TehPers.Core.Api.Conflux.OperatorExtensions">
+            <summary>
+            Extensions which provide useful operations.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Conflux.OperatorExtensions.Forward``2(``0,System.Func{``0,``1})">
+            <summary>
+            Forwards a function call to prevent excessive nesting of parentheses.
+            </summary>
+            <param name="source">The source value.</param>
+            <param name="f">The function which transforms the source value.</param>
+            <typeparam name="TSource">The input type for the transformation function.</typeparam>
+            <typeparam name="TResult">The output type of the transformation function.</typeparam>
+            <returns>The transformed value.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Conflux.OperatorExtensions.Forward``1(``0,System.Action{``0})">
+            <summary>
+            Forwards a function call to prevent excessive nesting of parentheses.
+            </summary>
+            <param name="source">The source value.</param>
+            <param name="f">The function which consumes the source value.</param>
+            <typeparam name="TSource">The input type for the consuming function.</typeparam>
+        </member>
+        <member name="T:TehPers.Core.Api.Content.AssetLocation">
+            <summary>
+            A location for a resource.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Content.AssetLocation.#ctor(System.String,StardewModdingAPI.ContentSource)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Content.AssetLocation"/> struct.
+            </summary>
+            <param name="path">The relative path to the asset.</param>
+            <param name="source">The asset's source directory.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Content.AssetLocation.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Content.AssetLocation.Equals(TehPers.Core.Api.Content.AssetLocation)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Content.AssetLocation.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Content.AssetLocation.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:TehPers.Core.Api.Content.IContentSource">
+            <summary>A source for content files.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Content.IContentSource.Load``1(System.String)">
+            <summary>Loads an asset from this content source.</summary>
+            <typeparam name="T">The type of asset to load.</typeparam>
+            <param name="path">The path to the asset relative to this content source.</param>
+            <returns>The loaded asset.</returns>
+            <exception cref="T:Microsoft.Xna.Framework.Content.ContentLoadException">The asset failed to load.</exception>
+        </member>
+        <member name="M:TehPers.Core.Api.Content.IContentSource.Open(System.String,System.IO.FileMode)">
+            <summary>Opens a file in this content source.</summary>
+            <param name="path">The path to the file.</param>
+            <param name="mode">The mode to open the file in.</param>
+            <returns>The file's stream.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.IModKernel">
+            <summary><see cref="T:Ninject.IKernel"/> specific to an <see cref="T:StardewModdingAPI.IMod"/>.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.DependencyInjection.IModKernel.ParentMod">
+            <summary>Gets the mod which owns this <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/>.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.DependencyInjection.IModKernel.GlobalKernel">
+            <summary>Gets the global <see cref="T:Ninject.IKernel"/>, which is the parent of this <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/>. Dependencies registered in the global <see cref="T:Ninject.IKernel"/> are visible to all mods.</summary>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.IOptional`1">
+            <summary>An object with an optional value.</summary>
+            <typeparam name="T">The type of value.</typeparam>
+        </member>
+        <member name="P:TehPers.Core.Api.DependencyInjection.IOptional`1.Value">
+            <summary>Gets the value of this <see cref="T:TehPers.Core.Api.DependencyInjection.IOptional`1"/>.</summary>
+            <exception cref="T:System.InvalidOperationException">This <see cref="T:TehPers.Core.Api.DependencyInjection.IOptional`1"/> has no value.</exception>
+        </member>
+        <member name="P:TehPers.Core.Api.DependencyInjection.IOptional`1.HasValue">
+            <summary>Gets a value indicating whether this <see cref="T:TehPers.Core.Api.DependencyInjection.IOptional`1"/> has a value.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.IOptional`1.TryGetValue(`0@)">
+            <summary>Tries to get the value from this <see cref="T:TehPers.Core.Api.DependencyInjection.IOptional`1"/>.</summary>
+            <param name="value">The value if it exists.</param>
+            <returns><see langword="true"/> if the value exists, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2">
+            <summary>
+            Manages an event by calling registered handlers as needed.
+            </summary>
+            <typeparam name="THandler">The type of event handler being managed.</typeparam>
+            <typeparam name="TEventArgs">The type of event args used by the event.</typeparam>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2.#ctor(System.Func{System.Collections.Generic.IEnumerable{TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler{`0}}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2"/> class.
+            </summary>
+            <param name="getHandlers">Gets the handlers for this managed event.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2.StartListening">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2.StopListening">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2.NotifyHandler(`0,System.Object,`1)">
+            <summary>
+            Notifies a managed event handler that the event has occurred.
+            </summary>
+            <param name="handler">The managed event handler.</param>
+            <param name="sender">The sender of the event.</param>
+            <param name="eventArgs">The event's args.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2.HandleEvent(System.Object,`1)">
+            <summary>
+            Handles the managed event by notifying all subscribed event handlers.
+            </summary>
+            <param name="sender">The sender of the event.</param>
+            <param name="eventArgs">The event's args.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.IEventManager">
+            <summary>
+            Manages an event by calling registered handlers as needed.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.IEventManager.StartListening">
+            <summary>
+            Starts listening for events.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.IEventManager.StopListening">
+            <summary>
+            Stops listening for events.
+            </summary>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IDayEndingHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.DayEnding" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IDayEndingHandler.OnDayEnding(System.Object,StardewModdingAPI.Events.DayEndingEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.DayEnding" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IOneSecondUpdateTickedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.OneSecondUpdateTicked" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IOneSecondUpdateTickedHandler.OnOneSecondUpdateTicked(System.Object,StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.OneSecondUpdateTicked" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IOneSecondUpdateTickingHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.OneSecondUpdateTicking" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IOneSecondUpdateTickingHandler.OnOneSecondUpdateTicking(System.Object,StardewModdingAPI.Events.OneSecondUpdateTickingEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.OneSecondUpdateTicking" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IReturnedToTitleHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.ReturnedToTitle" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IReturnedToTitleHandler.OnReturnedToTitle(System.Object,StardewModdingAPI.Events.ReturnedToTitleEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.ReturnedToTitle" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IDayStartedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.DayStarted" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IDayStartedHandler.OnDayStarted(System.Object,StardewModdingAPI.Events.DayStartedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.DayStarted" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISaveCreatedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.SaveCreated" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISaveCreatedHandler.OnSaveCreated(System.Object,StardewModdingAPI.Events.SaveCreatedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.SaveCreated" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISaveCreatingHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.SaveCreating" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISaveCreatingHandler.OnSaveCreating(System.Object,StardewModdingAPI.Events.SaveCreatingEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.SaveCreating" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISaveLoadedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.SaveLoaded" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISaveLoadedHandler.OnSaveLoaded(System.Object,StardewModdingAPI.Events.SaveLoadedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.SaveLoaded" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISavedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.Saved" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISavedHandler.OnSaved(System.Object,StardewModdingAPI.Events.SavedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.Saved" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISavingHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.Saving" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ISavingHandler.OnSaving(System.Object,StardewModdingAPI.Events.SavingEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.Saving" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ITimeChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.TimeChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.ITimeChangedHandler.OnTimeChanged(System.Object,StardewModdingAPI.Events.TimeChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.TimeChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IUpdateTickedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.UpdateTicked" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IUpdateTickedHandler.OnUpdateTicked(System.Object,StardewModdingAPI.Events.UpdateTickedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.UpdateTicked" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IUpdateTickingHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.UpdateTicking" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop.IUpdateTickingHandler.OnUpdateTicking(System.Object,StardewModdingAPI.Events.UpdateTickingEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IGameLoopEvents.UpdateTicking" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IMenuChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.MenuChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IMenuChangedHandler.OnMenuChanged(System.Object,StardewModdingAPI.Events.MenuChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.MenuChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.Rendered" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderedHandler.OnRendered(System.Object,StardewModdingAPI.Events.RenderedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.Rendered" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderedActiveMenuHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderedActiveMenu" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderedActiveMenuHandler.OnRenderedActiveMenu(System.Object,StardewModdingAPI.Events.RenderedActiveMenuEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderedActiveMenu" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderedHudHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderedHud" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderedHudHandler.OnRenderedHud(System.Object,StardewModdingAPI.Events.RenderedHudEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderedHud" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderedWorldHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderedWorld" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderedWorldHandler.OnRenderedWorld(System.Object,StardewModdingAPI.Events.RenderedWorldEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderedWorld" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderingHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.Rendering" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderingHandler.OnRendering(System.Object,StardewModdingAPI.Events.RenderingEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.Rendering" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderingActiveMenuHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderingActiveMenu" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderingActiveMenuHandler.OnRenderingActiveMenu(System.Object,StardewModdingAPI.Events.RenderingActiveMenuEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderingActiveMenu" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderingHudHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderingHud" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderingHudHandler.OnRenderingHud(System.Object,StardewModdingAPI.Events.RenderingHudEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderingHud" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderingWorldHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderingWorld" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IRenderingWorldHandler.OnRenderingWorld(System.Object,StardewModdingAPI.Events.RenderingWorldEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.RenderingWorld" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IWindowResizedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IDisplayEvents.WindowResized" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Display.IWindowResizedHandler.OnWindowResized(System.Object,StardewModdingAPI.Events.WindowResizedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IDisplayEvents.WindowResized" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Input.IButtonPressedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IInputEvents.ButtonPressed" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Input.IButtonPressedHandler.OnButtonPressed(System.Object,StardewModdingAPI.Events.ButtonPressedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IInputEvents.ButtonPressed" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Input.IButtonReleasedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IInputEvents.ButtonReleased" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Input.IButtonReleasedHandler.OnButtonReleased(System.Object,StardewModdingAPI.Events.ButtonReleasedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IInputEvents.ButtonReleased" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Input.ICursorMovedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IInputEvents.CursorMoved" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Input.ICursorMovedHandler.OnCursorMoved(System.Object,StardewModdingAPI.Events.CursorMovedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IInputEvents.CursorMoved" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Input.IMouseWheelScrolledHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IInputEvents.MouseWheelScrolled" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Input.IMouseWheelScrolledHandler.OnMouseWheelScrolled(System.Object,StardewModdingAPI.Events.MouseWheelScrolledEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IInputEvents.MouseWheelScrolled" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Multiplayer.IModMessageReceivedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IMultiplayerEvents.ModMessageReceived" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Multiplayer.IModMessageReceivedHandler.OnModMessageReceived(System.Object,StardewModdingAPI.Events.ModMessageReceivedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IMultiplayerEvents.ModMessageReceived" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Multiplayer.IPeerContextReceivedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IMultiplayerEvents.PeerContextReceived" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Multiplayer.IPeerContextReceivedHandler.OnPeerContextReceived(System.Object,StardewModdingAPI.Events.PeerContextReceivedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IMultiplayerEvents.PeerContextReceived" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Multiplayer.IPeerDisconnectedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IMultiplayerEvents.PeerDisconnected" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Multiplayer.IPeerDisconnectedHandler.OnPeerDisconnected(System.Object,StardewModdingAPI.Events.PeerDisconnectedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IMultiplayerEvents.PeerDisconnected" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Player.IInventoryChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IPlayerEvents.InventoryChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Player.IInventoryChangedHandler.OnInventoryChanged(System.Object,StardewModdingAPI.Events.InventoryChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IPlayerEvents.InventoryChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Player.ILevelChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IPlayerEvents.LevelChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Player.ILevelChangedHandler.OnLevelChanged(System.Object,StardewModdingAPI.Events.LevelChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IPlayerEvents.LevelChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Player.IWarpedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IPlayerEvents.Warped" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Player.IWarpedHandler.OnWarped(System.Object,StardewModdingAPI.Events.WarpedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IPlayerEvents.Warped" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Specialized.ILoadStageChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.ISpecializedEvents.LoadStageChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Specialized.ILoadStageChangedHandler.OnLoadStageChanged(System.Object,StardewModdingAPI.Events.LoadStageChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.ISpecializedEvents.LoadStageChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Specialized.IUnvalidatedUpdateTickedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.ISpecializedEvents.UnvalidatedUpdateTicked" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Specialized.IUnvalidatedUpdateTickedHandler.OnUnvalidatedUpdateTicked(System.Object,StardewModdingAPI.Events.UnvalidatedUpdateTickedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.ISpecializedEvents.UnvalidatedUpdateTicked" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.Specialized.IUnvalidatedUpdateTickingHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.ISpecializedEvents.UnvalidatedUpdateTicking" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.Specialized.IUnvalidatedUpdateTickingHandler.OnUnvalidatedUpdateTicking(System.Object,StardewModdingAPI.Events.UnvalidatedUpdateTickingEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.ISpecializedEvents.UnvalidatedUpdateTicking" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.World.IBuildingListChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IWorldEvents.BuildingListChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.World.IBuildingListChangedHandler.OnBuildingListChanged(System.Object,StardewModdingAPI.Events.BuildingListChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IWorldEvents.BuildingListChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.World.IDebrisListChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IWorldEvents.DebrisListChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.World.IDebrisListChangedHandler.OnDebrisListChanged(System.Object,StardewModdingAPI.Events.DebrisListChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IWorldEvents.DebrisListChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.World.ILargeTerrainFeatureListChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IWorldEvents.LargeTerrainFeatureListChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.World.ILargeTerrainFeatureListChangedHandler.OnLargeTerrainFeatureListChanged(System.Object,StardewModdingAPI.Events.LargeTerrainFeatureListChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IWorldEvents.LargeTerrainFeatureListChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.World.ILocationListChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IWorldEvents.LocationListChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.World.ILocationListChangedHandler.OnLocationListChanged(System.Object,StardewModdingAPI.Events.LocationListChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IWorldEvents.LocationListChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.World.INpcListChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IWorldEvents.NpcListChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.World.INpcListChangedHandler.OnNpcListChanged(System.Object,StardewModdingAPI.Events.NpcListChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IWorldEvents.NpcListChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.World.IObjectListChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IWorldEvents.ObjectListChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.World.IObjectListChangedHandler.OnObjectListChanged(System.Object,StardewModdingAPI.Events.ObjectListChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IWorldEvents.ObjectListChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.World.ITerrainFeatureListChangedHandler">
+            <summary>Handles events from <see cref="E:StardewModdingAPI.Events.IWorldEvents.TerrainFeatureListChanged" />.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.World.ITerrainFeatureListChangedHandler.OnTerrainFeatureListChanged(System.Object,StardewModdingAPI.Events.TerrainFeatureListChangedEventArgs)">
+            <summary>Invoked whenever <see cref="E:StardewModdingAPI.Events.IWorldEvents.TerrainFeatureListChanged" /> is invoked.</summary>
+            <param name="sender">The object which invoked the event.</param>
+            <param name="args">The arguments the event were invoked with.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler`1">
+            <summary>
+            Wrapper for lifecycle event handlers.
+            </summary>
+            <typeparam name="THandler">The type of event handler being managed.</typeparam>
+        </member>
+        <member name="P:TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler`1.Handler">
+            <summary>
+            Gets the handler for the event.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler`1.#ctor(`0)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler`1"/> class.
+            </summary>
+            <param name="handler">The handler for the managed event.</param>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IDrawingApi.WhitePixel">
+            <summary>
+            Gets a texture containing a single white pixel.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IDrawingApi.ObjectSpriteSheet">
+            <summary>
+            Gets the sprite sheet containing all normal objects, linked to "Maps/springobjects".
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IDrawingApi.WeaponSpriteSheet">
+            <summary>
+            Gets the sprite sheet containing all weapons, linked to "TileSheets/weapons".
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IDrawingApi.CraftableSpriteSheet">
+            <summary>
+            Gets the sprite sheet containing all big craftables, linked to "TileSheets/Craftables".
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IDrawingApi.HatSpriteSheet">
+            <summary>
+            Gets the sprite sheet containing all hats, linked to "Character/Farmer/hats".
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingApi.GetTrackedTexture(TehPers.Core.Api.Content.AssetLocation)">
+            <summary>
+            Gets a texture helper for a particular resource that can be used to modify how the texture is drawn.
+            </summary>
+            <param name="asset">The resource to get the texture helper for.</param>
+            <returns>The texture helper for the particular resource.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingApi.CreateSimpleSpriteSheet(TehPers.Core.Api.Drawing.ITrackedTexture,System.Int32,System.Int32)">
+            <summary>
+            Creates a simple sprite sheet.
+            </summary>
+            <param name="trackedTexture">The texture to create the sprite sheet from.</param>
+            <param name="spriteWidth">The width of each sprite in the sprite sheet.</param>
+            <param name="spriteHeight">The height of each sprite in the sprite sheet.</param>
+            <returns>A new sprite sheet which can provide individual sprites in the texture.</returns>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IDrawingInfo.Cancelled">
+            <summary>True if the original drawing call has been cancelled.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IDrawingInfo.Modified">
+            <summary>True if this drawing call has been modified by the current overrider.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IDrawingInfo.Propagate">
+            <summary>True if the drawing information should be propagated to the next overrider afterwards.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.AddTint(TehPers.Core.Api.Drawing.SColor@)">
+            <summary>Adds a tint by multiplying it with the current tint.</summary>
+            <param name="tint">The tint to add.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.Cancel">
+            <summary>Prevents this drawing information from being drawn.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.DrawAndCancel">
+            <summary>Immediately draws the texture and prevents the texture from being automatically drawn after propagation. This also prevents the current draw call from propagating further.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.SetScale(System.Single)">
+            <summary>Sets the scaling of the source image.</summary>
+            <param name="scale">The amount to scale the source by when drawing.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.SetScale(Microsoft.Xna.Framework.Vector2)">
+            <summary>Sets the scaling of the source image.</summary>
+            <param name="scale">The amount to scale the source by when drawing.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.SetSource(Microsoft.Xna.Framework.Graphics.Texture2D,System.Nullable{TehPers.Core.Api.Drawing.SRectangle}@)">
+            <summary>Sets the source texture and rectangle.</summary>
+            <param name="texture">The new source texture.</param>
+            <param name="sourceRectangle">The new source rectangle.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.SetDestination(TehPers.Core.Api.Drawing.SRectangle@)">
+            <summary>Sets the destination rectangle for the texture.</summary>
+            <param name="destination">The new destination rectangle.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.SetOrigin(Microsoft.Xna.Framework.Vector2)">
+            <summary>Sets the rotational and scaling origin for the texture. Any scaling or rotating of the texture will be centered about the given vector.</summary>
+            <param name="origin">The new rotational and scaling origin.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.SetRotation(System.Single)">
+            <summary>Sets the rotation of the texture on the destination.</summary>
+            <param name="rotation">The new rotation.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.SetTint(TehPers.Core.Api.Drawing.SColor@)">
+            <summary>Sets the tint color.</summary>
+            <param name="tint">The new tint color.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.SetEffects(Microsoft.Xna.Framework.Graphics.SpriteEffects)">
+            <summary>Sets the sprite effects for the texture, which include flipping it horizontally and vertically when drawn.</summary>
+            <param name="effects">The new effects to apply to the texture.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.SetDepth(System.Single)">
+            <summary>Sets the depth the texture will be drawn at, which determines draw order in some draw batches.</summary>
+            <param name="depth">The new depth for the texture to be drawn at.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingInfo.StopPropagating">
+            <summary>Prevents any other drawing overriders from handling this draw call afterwards.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.Texture">
+            <summary>The source texture to draw from.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.SourceRectangle">
+            <summary>The rectangle on the source texture representing the area to be drawn, or <c>null</c> if the whole source texture should be drawn.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.Destination">
+            <summary>The rectangle the texture will be drawn to.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.Tint">
+            <summary>The color being applied to the texture while drawing. The formula used depends on the state of the <see cref="T:Microsoft.Xna.Framework.Graphics.SpriteBatch"/>, but usually this color is multiplied by the source to calculate the destination color.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.Batch">
+            <summary>The batch being used to draw the texture. Calls to this batch will not be intercepted by Teh's Core Mod during texture drawing events.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.Origin">
+            <summary>The rotational and scaling origin of the texture.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.Rotation">
+            <summary>The amount to rotate the texture by.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.Effects">
+            <summary>The effects applied to the texture when drawing, including flipping horizontally or flipping vertically.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.Depth">
+            <summary>The layer depth to draw the texture at. This can determine draw order when drawn as part of a batch.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.IReadonlyDrawingInfo.GetScale">
+            <summary>Gets the amount the source is being scaled before being drawn to the destination.</summary>
+            <returns>The scaling amount for each dimension of the source.</returns>
+        </member>
+        <member name="E:TehPers.Core.Api.Drawing.ITextureEvents.Drawing">
+            <summary>Raised when a texture is being drawn to the screen.</summary>
+        </member>
+        <member name="E:TehPers.Core.Api.Drawing.ITextureEvents.Drawn">
+            <summary>Raised after a texture is drawn to the screen.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.ITextureSourceInfo.GetIndexFromUV(System.Int32,System.Int32)">
+            <summary>Converts a set of source coordinates to the <see cref="P:StardewValley.Item.ParentSheetIndex"/> associated with them for this texture.</summary>
+            <param name="u">The x-coordinate in the source texture.</param>
+            <param name="v">The y-coordinate in the source texture.</param>
+            <returns>The <see cref="P:StardewValley.Item.ParentSheetIndex"/> associated with the given coordinates.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Drawing.ITrackedTexture">
+            <summary>A tracked texture, not bound to a specific reference to a <seealso cref="T:Microsoft.Xna.Framework.Graphics.Texture2D"/>.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.ITrackedTexture.CurrentTexture">
+            <summary>A reference to the current texture being tracked. This may change over time, so it is advised not to store this anywhere for long term.</summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Drawing.SColor">
+            <summary>
+            A 4-byte representation of a color.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Implicit(TehPers.Core.Api.Drawing.SColor@)~Microsoft.Xna.Framework.Color">
+            <summary>
+            Implicitly converts a <see cref="T:TehPers.Core.Api.Drawing.SColor"/> to a <see cref="T:Microsoft.Xna.Framework.Color"/>.
+            </summary>
+            <param name="source">The source <see cref="T:TehPers.Core.Api.Drawing.SColor"/>.</param>
+            <returns>The converted <see cref="T:Microsoft.Xna.Framework.Color"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Implicit(Microsoft.Xna.Framework.Color)~TehPers.Core.Api.Drawing.SColor">
+            <summary>
+            Implicitly converts a <see cref="T:Microsoft.Xna.Framework.Color"/> to a <see cref="T:TehPers.Core.Api.Drawing.SColor"/>.
+            </summary>
+            <param name="source">The source <see cref="T:Microsoft.Xna.Framework.Color"/>.</param>
+            <returns>The converted <see cref="T:TehPers.Core.Api.Drawing.SColor"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Addition(TehPers.Core.Api.Drawing.SColor@,TehPers.Core.Api.Drawing.SColor@)">
+            <summary>
+            Adds two <see cref="T:TehPers.Core.Api.Drawing.SColor"/>s by adding each individual component. If an operation would overflow, the result is <see cref="F:System.Byte.MaxValue"/>.
+            </summary>
+            <param name="first">The first <see cref="T:TehPers.Core.Api.Drawing.SColor"/> (LHS).</param>
+            <param name="second">The second <see cref="T:TehPers.Core.Api.Drawing.SColor"/> (RHS).</param>
+            <returns>The added colors.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Subtraction(TehPers.Core.Api.Drawing.SColor@,TehPers.Core.Api.Drawing.SColor@)">
+            <summary>
+            Subtracts two <see cref="T:TehPers.Core.Api.Drawing.SColor"/>s by subtracting each individual component. If an operation would underflow, the result is <see cref="F:System.Byte.MinValue"/>.
+            </summary>
+            <param name="first">The first <see cref="T:TehPers.Core.Api.Drawing.SColor"/> (LHS).</param>
+            <param name="second">The second <see cref="T:TehPers.Core.Api.Drawing.SColor"/> (RHS).</param>
+            <returns>The subtracted colors.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Multiply(TehPers.Core.Api.Drawing.SColor@,System.Single@)">
+            <summary>
+            Multiplies each individual component of a <see cref="T:TehPers.Core.Api.Drawing.SColor"/> by a scalar. The operation is clamped to [<see cref="F:System.Byte.MinValue"/>, <see cref="F:System.Byte.MaxValue"/>].
+            </summary>
+            <param name="first">The <see cref="T:TehPers.Core.Api.Drawing.SColor"/> to multiply.</param>
+            <param name="second">The scalar.</param>
+            <returns>The mulitplied color.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Multiply(System.Single@,TehPers.Core.Api.Drawing.SColor@)">
+            <summary>
+            Multiplies each individual component of a <see cref="T:TehPers.Core.Api.Drawing.SColor"/> by a scalar. The operation is clamped to [<see cref="F:System.Byte.MinValue"/>, <see cref="F:System.Byte.MaxValue"/>].
+            </summary>
+            <param name="first">The scalar.</param>
+            <param name="second">The <see cref="T:TehPers.Core.Api.Drawing.SColor"/> to multiply.</param>
+            <returns>The mulitplied color.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Multiply(TehPers.Core.Api.Drawing.SColor@,TehPers.Core.Api.Drawing.SColor@)">
+            <summary>
+            Multiplicatively blends two colors together by multiplying the float representations of their individual components with each other. For example, multiplying by white yields the same color (multiplicative identity) and multiplying by black yields black.
+            </summary>
+            <param name="first">The first color to blend.</param>
+            <param name="second">The second color to blend.</param>
+            <returns>The blended color.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Multiply(TehPers.Core.Api.Drawing.SColor@,Microsoft.Xna.Framework.Color@)">
+            <summary>
+            Multiplicatively blends two colors together by multiplying the float representations of their individual components with each other. For example, multiplying by white yields the same color (multiplicative identity) and multiplying by black yields black.
+            </summary>
+            <param name="first">The first color to blend.</param>
+            <param name="second">The second color to blend.</param>
+            <returns>The blended color.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Multiply(Microsoft.Xna.Framework.Color@,TehPers.Core.Api.Drawing.SColor@)">
+            <summary>
+            Multiplicatively blends two colors together by multiplying the float representations of their individual components with each other. For example, multiplying by white yields the same color (multiplicative identity) and multiplying by black yields black.
+            </summary>
+            <param name="first">The first color to blend.</param>
+            <param name="second">The second color to blend.</param>
+            <returns>The blended color.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Division(TehPers.Core.Api.Drawing.SColor@,System.Single@)">
+            <summary>
+            Divides each individual component of a <see cref="T:TehPers.Core.Api.Drawing.SColor"/> by a scalar. The operation is clamped to [<see cref="F:System.Byte.MinValue"/>, <see cref="F:System.Byte.MaxValue"/>].
+            </summary>
+            <param name="first">The <see cref="T:TehPers.Core.Api.Drawing.SColor"/> to divide.</param>
+            <param name="second">The scalar.</param>
+            <returns>The divided color.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Equality(TehPers.Core.Api.Drawing.SColor@,TehPers.Core.Api.Drawing.SColor@)">
+            <summary>
+            Compares two colors for equality.
+            </summary>
+            <param name="first">The first color.</param>
+            <param name="second">The second color.</param>
+            <returns>A value indicating whether the two colors were equal.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Equality(TehPers.Core.Api.Drawing.SColor@,Microsoft.Xna.Framework.Color)">
+            <summary>
+            Compares two colors for equality.
+            </summary>
+            <param name="first">The first color.</param>
+            <param name="second">The second color.</param>
+            <returns>A value indicating whether the two colors were equal.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Inequality(TehPers.Core.Api.Drawing.SColor@,TehPers.Core.Api.Drawing.SColor@)">
+            <summary>
+            Compares two colors for inequality.
+            </summary>
+            <param name="first">The first color.</param>
+            <param name="second">The second color.</param>
+            <returns>A value indicating whether the two colors were not equal.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.op_Inequality(TehPers.Core.Api.Drawing.SColor@,Microsoft.Xna.Framework.Color)">
+            <summary>
+            Compares two colors for inequality.
+            </summary>
+            <param name="first">The first color.</param>
+            <param name="second">The second color.</param>
+            <returns>A value indicating whether the two colors were not equal.</returns>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.SColor.PackedValue">
+            <summary>
+            Gets the 4-byte packed value of the color. Layout order (from high byte to low byte) is A, B, G, R.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.SColor.A">
+            <summary>
+            Gets the alpha component.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.SColor.R">
+            <summary>
+            Gets the red component.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.SColor.G">
+            <summary>
+            Gets the green component.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.SColor.B">
+            <summary>
+            Gets the blue component.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Drawing.SColor"/> struct.
+            </summary>
+            <param name="r">The red component.</param>
+            <param name="g">The green component.</param>
+            <param name="b">The blue component.</param>
+            <param name="a">The alpha component.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Drawing.SColor"/> struct.
+            </summary>
+            <param name="r">The red component.</param>
+            <param name="g">The green component.</param>
+            <param name="b">The blue component.</param>
+            <param name="a">The alpha component.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.#ctor(System.UInt32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Drawing.SColor"/> struct.
+            </summary>
+            <param name="packedValue">The 4-byte packed value of the color.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.Equals(TehPers.Core.Api.Drawing.SColor)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.Equals(Microsoft.Xna.Framework.Color)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.SColor.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:TehPers.Core.Api.Drawing.Sprites.IHatSpriteSheet">
+            <summary>
+            A sprite sheet for hats.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.Sprites.IHatSpriteSheet.TryGetSprite(System.Int32,TehPers.Core.Api.FacingDirection,TehPers.Core.Api.Drawing.Sprites.ISprite@)">
+            <summary>Tries to get a reference to a specific hat sprite on this sprite sheet, given the direction the wearer is facing.</summary>
+            <param name="hatId">The ID for the hat.</param>
+            <param name="direction">The direction the wearer is facing.</param>
+            <param name="sprite">The sprite for the hat.</param>
+            <returns>True if the hat was found, false otherwise.</returns>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ISprite.Index">
+            <summary>
+            This sprite's index in its parent sheet.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ISprite.ParentSheet">
+            <summary>
+            The sprite sheet this sprite comes from.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ISprite.SourceRectangle">
+            <summary>
+            The source rectangle for this sprite from the parent sheet.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ISprite.U">
+            <summary>
+            The x-coordinate of the top-left corner of this sprite.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ISprite.V">
+            <summary>
+            The y-coordinate of the top-left corner of this sprite.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ISprite.Width">
+            <summary>
+            The width of this sprite.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ISprite.Height">
+            <summary>
+            The height of this sprite.
+            </summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Drawing.Sprites.ISpriteSheet">
+            <summary>
+            A texture containing several sprites.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ISpriteSheet.TrackedTexture">
+            <summary>
+            Gets a reference to the tracked texture used by this sprite sheet. It is used to draw objects from the sprite sheet.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.Sprites.ISpriteSheet.TryGetSprite(System.Int32,TehPers.Core.Api.Drawing.Sprites.ISprite@)">
+            <summary>
+            Tries to get a reference to a specific sprite on this sprite sheet.
+            </summary>
+            <param name="index">The index of the sprite.</param>
+            <param name="sprite">The sprite, if a sprite with the given index exists.</param>
+            <returns>True if a sprite was found, false if the index isn't associated with any sprites on this sprite sheet.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.Sprites.ISpriteSheet.GetIndex(System.Int32,System.Int32)">
+            <summary>
+            Gets the index of the sprite containing a particular point on the sprite sheet. This index may be outside the range of the sprite sheet, so make sure to check that the index is valid.
+            </summary>
+            <param name="u">The x-coordinate of the point.</param>
+            <param name="v">The y-coordinate of the point.</param>
+            <returns>The sprite's index.</returns>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ITintedSprite.Sprite">
+            <summary>
+            Gets the sprite, which contains a reference to the texture it is contained in and the rectangle on that texture it is located in.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.ITintedSprite.Tint">
+            <summary>
+            Gets the color to tint the sprite when it's drawn.
+            </summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Drawing.Sprites.TintedSprite">
+            <summary>
+            A sprite that has been multiplicatively blended with a solid color.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Sprite">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Tint">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Index">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.TintedSprite.ParentSheet">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.TintedSprite.SourceRectangle">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.TintedSprite.U">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.TintedSprite.V">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Width">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Height">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.Sprites.TintedSprite.#ctor(TehPers.Core.Api.Drawing.Sprites.ISprite,TehPers.Core.Api.Drawing.SColor)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Drawing.Sprites.TintedSprite"/> class.
+            </summary>
+            <param name="sprite">The original sprite.</param>
+            <param name="tint">The tint being applied to the sprite.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Color)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Color,System.Single,Microsoft.Xna.Framework.Vector2,System.Single,Microsoft.Xna.Framework.Graphics.SpriteEffects,System.Single)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Color,System.Single,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Graphics.SpriteEffects,System.Single)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch,Microsoft.Xna.Framework.Rectangle,Microsoft.Xna.Framework.Color)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Draw(Microsoft.Xna.Framework.Graphics.SpriteBatch,Microsoft.Xna.Framework.Rectangle,Microsoft.Xna.Framework.Color,System.Single,Microsoft.Xna.Framework.Vector2,Microsoft.Xna.Framework.Graphics.SpriteEffects,System.Single)">
+            <inheritdoc />
+        </member>
+        <member name="E:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Drawing">
+            <inheritdoc />
+        </member>
+        <member name="E:TehPers.Core.Api.Drawing.Sprites.TintedSprite.Drawn">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindForeignModApi``1(TehPers.Core.Api.DependencyInjection.IModKernel,System.String)">
+            <summary>
+            Binds an API exposed by another mod to your mod's kernel.
+            </summary>
+            <typeparam name="T">The type the mod's API returns, or an interface which matches part of (or all of) its signature.</typeparam>
+            <param name="modKernel">The mod's kernel.</param>
+            <param name="modId">The foreign mod's API.</param>
+            <returns>The syntax that can be used to configure the binding.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindEventHandler``1(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>
+            Binds and registers a service as a handler for all the events it can handle.
+            </summary>
+            <typeparam name="TService">The type of service being registered and bound as an event handler.</typeparam>
+            <param name="kernel">The mod's kernel.</param>
+            <returns>The syntax that can be used to configure the event handler.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindEventHandler``2(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>
+            Binds and registers a service as a handler for all the events it can handle.
+            </summary>
+            <typeparam name="TService">The type of service being registered and bound as an event handler.</typeparam>
+            <typeparam name="TImplementation">The implementation of the service.</typeparam>
+            <param name="kernel">The mod's kernel.</param>
+            <returns>The syntax that can be used to configure the event handler.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``1(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>
+            Registers a service as a handler for all the events it can handle. This does not bind the service.
+            </summary>
+            <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
+            <param name="kernel">The mod's kernel.</param>
+            <returns>The mod kernel for chaining.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``2(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>
+            Binds a service as a handler for a particular type of event.
+            </summary>
+            <param name="kernel">The mod's kernel.</param>
+            <typeparam name="TService">The type of service being bound as an event handler. This service should be injectible by your mod's kernel.</typeparam>
+            <typeparam name="THandler">The type of event handler this service implements.</typeparam>
+            <returns>The mod kernel for chaining.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindEventManager``1(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>
+            Binds an event manager.
+            </summary>
+            <typeparam name="T">The type of the event manager.</typeparam>
+            <param name="kernel">The mod's kernel.</param>
+            <returns>The syntax that can be used to configure the event manager.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindEventManager``1(TehPers.Core.Api.DependencyInjection.IModKernel,System.Func{Ninject.Syntax.IBindingToSyntax{TehPers.Core.Api.DependencyInjection.Lifecycle.IEventManager},Ninject.Syntax.IBindingInSyntax{``0}})">
+            <summary>
+            Binds an event manager.
+            </summary>
+            <typeparam name="T">The type of the event manager.</typeparam>
+            <param name="kernel">The mod's kernel.</param>
+            <param name="bindTo">A callback which binds the event manager.</param>
+            <returns>The syntax that can be used to configure the event manager.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.ExposeService``1(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>
+            Exposes a service in a mod's kernel to the global kernel.
+            </summary>
+            <param name="kernel">The mod's kernel.</param>
+            <typeparam name="TService">The service being exposed globally.</typeparam>
+            <returns>The syntax that can be used to configure the service that was exposed.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.ExposeService``2(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>
+            Exposes a service in a mod's kernel to the global kernel.
+            </summary>
+            <param name="kernel">The mod's kernel.</param>
+            <typeparam name="TGlobalService">The type of service that is visible globally and will be injected by the global kernel. Generally, this would be your type's interface or base class.</typeparam>
+            <typeparam name="TModService">The type of service that is visible within your mod. This is generally the concrete type of your service, although it could be a base class or interface as well.</typeparam>
+            <returns>The syntax that can be used to configure the service that was exposed.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.ExposeService(TehPers.Core.Api.DependencyInjection.IModKernel,System.Type,System.Type)">
+            <summary>
+            Exposes a service in a mod's kernel to the global kernel.
+            </summary>
+            <param name="kernel">The mod's kernel.</param>
+            <param name="globalServiceType">The type of service that is visible globally and will be injected by the global kernel. Generally, this would be your type's interface or base class.</param>
+            <param name="modServiceType">The type of service that is visible within your mod. This is generally the concrete type of your service, although it could be a base class or interface as well.</param>
+            <returns>The syntax that can be used to configure the service that was exposed.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.DeconstructorExtensions">
+            <summary>Extension methods which add deconstructors to types.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.DeconstructorExtensions.Deconstruct``2(System.Collections.Generic.KeyValuePair{``0,``1},``0@,``1@)">
+            <summary>Deconstructor for <see cref="T:System.Collections.Generic.KeyValuePair`2"/>.</summary>
+            <typeparam name="TKey">The type of key in the pair.</typeparam>
+            <typeparam name="TValue">The type of value in the pair.</typeparam>
+            <param name="source">The source point.</param>
+            <param name="key">The x-coordinate of the source point.</param>
+            <param name="value">The y-coordinate of the source point.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.EnumerableExtensions">
+            <summary>
+            Extension methods for <see cref="T:System.Collections.Generic.IEnumerable`1"/> and some subtypes.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.Shuffle``1(System.Collections.Generic.IList{``0})">
+            <summary>Shuffles a list.</summary>
+            <typeparam name="T">The type of the elements of <paramref name="source"/>.</typeparam>
+            <param name="source">An <see cref="T:System.Collections.Generic.IList`1"/> to shuffle.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.Shuffle``1(System.Collections.Generic.IList{``0},System.Random)">
+            <summary>Shuffles a list.</summary>
+            <typeparam name="T">The type of the elements of <paramref name="source"/>.</typeparam>
+            <param name="source">An <see cref="T:System.Collections.Generic.IList`1"/> to shuffle.</param>
+            <param name="rand">The <see cref="T:System.Random"/> to use while shuffling.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.ToHashSet``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>Creates a <see cref="T:System.Collections.Generic.HashSet`1"/> from an <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</summary>
+            <typeparam name="TSource">The type of the elements of <paramref name="source"/></typeparam>
+            <param name="source">An <see cref="T:System.Collections.Generic.IEnumerable`1"/> to create a <see cref="T:System.Collections.Generic.HashSet`1"/> from.</param>
+            <returns>A <see cref="T:System.Collections.Generic.HashSet`1"/> that contains values of type <typeparamref name="TSource"/> selected from the input sequence.</returns>
+            <remarks>In framework versions 4.7.2+, this method can be removed.</remarks>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.ToHashSet``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>Creates a <see cref="T:System.Collections.Generic.HashSet`1"/> from an <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</summary>
+            <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
+            <param name="source">An <see cref="T:System.Collections.Generic.IEnumerable`1"/> to create a <see cref="T:System.Collections.Generic.HashSet`1"/> from.</param>
+            <param name="comparer">The comparer for the hash set.</param>
+            <returns>A <see cref="T:System.Collections.Generic.HashSet`1"/> that contains values of type <typeparamref name="TSource"/> selected from the input sequence.</returns>
+            <remarks>In framework versions 4.7.2+, this method can be removed.</remarks>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.ToDictionary``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}})">
+            <summary>Converts an <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:System.Collections.Generic.KeyValuePair`2"/> to a <see cref="T:System.Collections.Generic.Dictionary`2"/>.</summary>
+            <typeparam name="TKey">The type of the keys in the <paramref name="source" />.</typeparam>
+            <typeparam name="TValue">The type of the values in the <paramref name="source"/>.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <returns>A dictionary containing all the <see cref="T:System.Collections.Generic.KeyValuePair`2"/> entries in the <paramref name="source"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.ToDictionary``2(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{``0,``1}},System.Collections.Generic.IEqualityComparer{``0})">
+            <summary>Converts an <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:System.Collections.Generic.KeyValuePair`2"/> to a <see cref="T:System.Collections.Generic.Dictionary`2"/> using a custom <see cref="T:System.Collections.Generic.IEqualityComparer`1"/>.</summary>
+            <typeparam name="TKey">The type of the keys in the <paramref name="source" />.</typeparam>
+            <typeparam name="TValue">The type of the values in the <paramref name="source"/>.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <param name="comparer">The comparer used to compare keys in the dictionary.</param>
+            <returns>A dictionary containing all the <see cref="T:System.Collections.Generic.KeyValuePair`2"/> entries in the <paramref name="source"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.Swap``1(System.Collections.Generic.IList{``0},System.Int32,System.Int32)">
+            <summary>Swaps two elements in a list.</summary>
+            <typeparam name="T">The type of element in the list.</typeparam>
+            <param name="source">The list.</param>
+            <param name="first">The index of the first element.</param>
+            <param name="second">The index of the second element.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.GetDefault``2(System.Collections.Generic.IDictionary{``0,``1},``0,``1)">
+            <summary>Retrieves a value from a <see cref="T:System.Collections.Generic.IDictionary`2"/> with the given fallback value.</summary>
+            <typeparam name="TKey">The <see cref="T:System.Collections.Generic.IDictionary`2"/>'s key type.</typeparam>
+            <typeparam name="TVal">The <see cref="T:System.Collections.Generic.IDictionary`2"/>'s value type.</typeparam>
+            <param name="source">The dictionary to try to retrieve the value from.</param>
+            <param name="key">The key of the value to retrieve.</param>
+            <param name="fallback">The fallback value if the key doesn't exist in the dictionary.</param>
+            <returns>If the key exists in <paramref name="source"/>, the value associated with <paramref name="key"/>, otherwise <paramref name="fallback"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.Window``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>Splits an <see cref="T:System.Collections.Generic.IEnumerable`1"/> into several smaller ones, each containing at most a certain number of elements.</summary>
+            <typeparam name="T">The type of the elements of <paramref name="source"/></typeparam>
+            <param name="source">An <see cref="T:System.Collections.Generic.IEnumerable`1"/> to split.</param>
+            <param name="size">The number of elements each group should have. The last group may contain fewer elements.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> containing the elements from <paramref name="source"/> split into groups of at most <paramref name="source"/> elements.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.GetOrAdd``2(System.Collections.Generic.IDictionary{``0,``1},``0,System.Func{``1})">
+            <summary>Tries to get a value out of a dictionary. If it fails, uses a factory function to generate a new value, returning that instead and adding it to the dictionary.</summary>
+            <typeparam name="TKey">The type of key.</typeparam>
+            <typeparam name="TValue">The type of value.</typeparam>
+            <param name="source">The source dictionary.</param>
+            <param name="key">The key.</param>
+            <param name="factory">A function which returns a value to put in the dictionary if the key doesn't exist.</param>
+            <returns>The existing item with the given key in the source dictionary, or the factory-generated value if the key doesn't already exist.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.Repeat(System.String,System.Int32)">
+            <summary>Creates a new string containing one string repeated any number of times.</summary>
+            <param name="input">The string to repeat.</param>
+            <param name="count">How many times to repeat it.</param>
+            <returns><paramref name="input"/> repeated <paramref name="count"/> times.</returns>
+            <remarks>Based on this SO answer: https://stackoverflow.com/a/3754626. </remarks>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.Yield``1(``0)">
+            <summary>Wraps this object instance into an <see cref="T:System.Collections.Generic.IEnumerable`1"/> consisting of a single item.</summary>
+            <typeparam name="T">Type of the object.</typeparam>
+            <param name="item">The instance that will be wrapped.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> consisting of a single item.</returns>
+            <remarks>Based on this SO question: https://stackoverflow.com/q/1577822. </remarks>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.Prepend``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>Prepends an item to the beginning of an <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</summary>
+            <typeparam name="T">The type of elements in the source.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <param name="item">The item to prepend to the source.</param>
+            <returns>A new <see cref="T:System.Collections.Generic.IEnumerable`1"/> with the item at the start of it.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.Append``1(System.Collections.Generic.IEnumerable{``0},``0)">
+            <summary>Appends an item to the end of an <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</summary>
+            <typeparam name="T">The type of elements in the source.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <param name="item">The item to append to the source.</param>
+            <returns>A new <see cref="T:System.Collections.Generic.IEnumerable`1"/> with the item at the end of it.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.EnumExtensions">
+            <summary>Extensions for <see cref="T:System.Enum"/> types.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.EnumExtensions.HasFlags``1(``0,``0)">
+            <summary>Checks if some flags are present in an enum value.</summary>
+            <typeparam name="T">The type of <see cref="T:System.Enum"/>.</typeparam>
+            <param name="source">The source value.</param>
+            <param name="flags">The flags to check for.</param>
+            <returns><see langword="true"/> if the flags are present, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.LoggingExtensions">
+            <summary>
+            Extension methods for logging purposes.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.LoggingExtensions.LogWithLocation(StardewModdingAPI.IMonitor,System.String,StardewModdingAPI.LogLevel,System.String,System.String,System.Int64)">
+            <summary>
+            Logs a message with information about where the logging message was created. The caller information is automatically generated but may be overridden if desired.
+            </summary>
+            <param name="monitor">The monitor.</param>
+            <param name="message">The message to log.</param>
+            <param name="level">The message's severity.</param>
+            <param name="callerPath">The file path referenced in the logging message. This will be automatically generated but may be overridden.</param>
+            <param name="callerMember">The member referenced in the logging message. This will be automatically generated but may be overridden.</param>
+            <param name="callerLine">The line number referenced in the logging message. This will be automatically generated but may be overridden.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.ModExtensions">
+            <summary>Extensions for <see cref="T:StardewModdingAPI.IMod"/> and <see cref="T:TehPers.Core.Api.IServiceDrivenMod"/>.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.ModExtensions.Register(StardewModdingAPI.IMod,System.Action{TehPers.Core.Api.DependencyInjection.IModKernel},System.Action{TehPers.Core.Api.DependencyInjection.IModKernel})">
+            <summary>
+            Asynchronously register services and initializes the mod.
+            The services will be registered once all <see cref="M:StardewModdingAPI.Mod.Entry(StardewModdingAPI.IModHelper)"/> methods have been executed, and the mod will be initailized after all mods have registered their services.
+            </summary>
+            <param name="mod">The <see cref="T:StardewModdingAPI.IMod"/>.</param>
+            <param name="registerServices">The callback which registers services to the <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/> for this <see cref="T:StardewModdingAPI.IMod"/>.</param>
+            <param name="initialize">The callback which initializes the mod, after all services have been loaded.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.ModExtensions.Register(TehPers.Core.Api.IServiceDrivenMod)">
+            <summary>Asynchronously registers services for this <see cref="T:TehPers.Core.Api.IServiceDrivenMod"/> and initializes it.</summary>
+            <param name="mod">The <see cref="T:TehPers.Core.Api.IServiceDrivenMod"/>.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WeightedExtensions">
+            <summary>Extension methods for <see cref="T:System.Collections.Generic.IEnumerable`1"/> for weighted random item selection.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WeightedExtensions.ChooseOrDefault``1(System.Collections.Generic.IEnumerable{``0},System.Random)">
+            <summary>Chooses a random item using the items' weights, or a default value if there are no items.</summary>
+            <typeparam name="T">The type of item in the <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <param name="rand">The <see cref="T:System.Random"/> to use.</param>
+            <returns>The chosen item.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WeightedExtensions.Choose``1(System.Collections.Generic.IEnumerable{``0},System.Random)">
+            <summary>Chooses a random item using the items' weights.</summary>
+            <typeparam name="T">The type of item in the <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <param name="rand">The <see cref="T:System.Random"/> to use.</param>
+            <returns>The chosen item.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WeightedExtensions.ToWeighted``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Double})">
+            <summary>Converts the items in an <see cref="T:System.Collections.Generic.IEnumerable`1"/> to <see cref="T:TehPers.Core.Api.Weighted.IWeightedValue`1"/>.</summary>
+            <typeparam name="T">The type of item in the source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <param name="weightSelector">A callback which maps each item to its weight.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> with all the items converted to <see cref="T:TehPers.Core.Api.Weighted.IWeightedValue`1"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WeightedExtensions.ToWeighted``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Double},System.Func{``0,``1})">
+            <summary>Converts the items in an <see cref="T:System.Collections.Generic.IEnumerable`1"/> to <see cref="T:TehPers.Core.Api.Weighted.IWeightedValue`1"/>.</summary>
+            <typeparam name="TSource">The type of item in the source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</typeparam>
+            <typeparam name="TEntry">The type of values in the resulting <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <param name="weightSelector">A callback which maps each item to its weight.</param>
+            <param name="elementSelector">A callback which maps each item to its value.</param>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> with all the items converted to <see cref="T:TehPers.Core.Api.Weighted.IWeightedValue`1"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WeightedExtensions.Normalize``1(System.Collections.Generic.IEnumerable{``0},System.Double)">
+            <summary>Normalizes the weights of each item and returns a new <see cref="T:System.Collections.Generic.IEnumerable`1"/> with the normalized items.</summary>
+            <typeparam name="T">The type of item in the <see cref="T:System.Collections.Generic.IEnumerable`1"/>. It must implement <see cref="T:TehPers.Core.Api.Weighted.IWeighted"/>.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <param name="weight">The weight to normalize to.</param>
+            <returns>A new <see cref="T:System.Collections.Generic.IEnumerable`1"/> containing new, normalized items in the same order.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WeightedExtensions.Normalize``1(System.Collections.Generic.IEnumerable{TehPers.Core.Api.Weighted.IWeightedValue{``0}},System.Int32)">
+            <summary>Normalizes the weights of each <see cref="T:TehPers.Core.Api.Weighted.IWeightedValue`1"/> and returns a new <see cref="T:System.Collections.Generic.IEnumerable`1"/> with the normalized items.</summary>
+            <typeparam name="T">The type of value in the <see cref="T:TehPers.Core.Api.Weighted.IWeightedValue`1"/>.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <param name="weight">The weight to normalize to.</param>
+            <returns>A new <see cref="T:System.Collections.Generic.IEnumerable`1"/> containing new, normalized items in the same order.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WeightedExtensions.SumWeights``1(System.Collections.Generic.IEnumerable{``0})">
+            <summary>Sums all of the weights of the items in the <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</summary>
+            <typeparam name="T">The type of item in the <see cref="T:System.Collections.Generic.IEnumerable`1"/>. It must implement <see cref="T:TehPers.Core.Api.Weighted.IWeighted"/>.</typeparam>
+            <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
+            <returns>The sum of the weights.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.FacingDirection">
+            <summary>
+            A direction that a character can face.
+            </summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Harmony.IPatchingService">
+            <summary>
+            A service designed to manage one or more Harmony patches. Generally, imlementations of <see cref="T:TehPers.Core.Api.Harmony.IPatchingService"/> should be singleton services.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.IPatchingService.ApplyPatches">
+            <summary>
+            Applies the Harmony patches.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.IPatchingService.RemovePatches">
+            <summary>
+            Removes the Harmony patches applied by this <see cref="T:TehPers.Core.Api.Harmony.IPatchingService"/>.
+            </summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Harmony.PatchingService`1">
+            <summary>
+            Service which can apply and remove patches. It is recommended to mark classes that inherit <see cref="T:TehPers.Core.Api.Harmony.PatchingService`1"/> as <see langword="sealed"/> and register it as a singleton service.
+            </summary>
+            <typeparam name="TImplementation">The type that is inheriting <see cref="T:TehPers.Core.Api.Harmony.PatchingService`1"/>. This must be equal to the implementation type.</typeparam>
+        </member>
+        <member name="P:TehPers.Core.Api.Harmony.PatchingService`1.Instance">
+            <summary>
+            Gets the singleton instance of the service.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.PatchingService`1.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Harmony.PatchingService`1"/> class.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.PatchingService`1.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:TehPers.Core.Api.Harmony.PatchingService`1"/> class.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.PatchingService`1.ApplyPatches">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.PatchingService`1.RemovePatches">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.PatchingService`1.ApplyPatchesInternal">
+            <summary>
+            Called when patches should be applied.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.PatchingService`1.RemovePatchesInternal">
+            <summary>
+            Called when the patches applied by this class should be removed.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.PatchingService`1.GetMethod(System.Type,System.String,System.Reflection.BindingFlags)">
+            <summary>
+            Gets a <see cref="T:System.Reflection.MethodInfo"/> for a method from a <see cref="T:System.Type"/>.
+            </summary>
+            <param name="sourceType">The source <see cref="T:System.Type"/>.</param>
+            <param name="methodName">The name of the method to get the <see cref="T:System.Reflection.MethodInfo"/> of.</param>
+            <param name="bindingFlags">The <see cref="T:System.Reflection.BindingFlags"/> to use when searching for the method.</param>
+            <returns>The method's <see cref="T:System.Reflection.MethodInfo"/>.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.PatchingService`1.Dispose(System.Boolean)">
+            <summary>
+            Called when this <see cref="T:TehPers.Core.Api.Harmony.PatchingService`1"/> is being finalized or disposed of.
+            </summary>
+            <param name="disposing"><see langword="true"/> if managed resources should be freed.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Harmony.PatchingService`1.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TehPers.Core.Api.IModKernelFactory">
+            <summary>Factory for creating an <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/> for a <see cref="T:StardewModdingAPI.IMod"/>.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.IModKernelFactory.GlobalServices">
+             <summary>
+             Gets the global service container. Injected mod APIs can be found here.
+             </summary>
+             <example>
+             To retrieve a mod's injected API:
+             <code>
+             SomeModApi api = kernelFactory.GlobalKernel.Get&lt;SomeModApi&gt;();
+             </code>
+            
+             Other global services can be found here as well. For more advanced operations, consider making your mod service-driven by implementing <see cref="T:TehPers.Core.Api.IServiceDrivenMod"/> and calling <see cref="M:TehPers.Core.Api.Extensions.ModExtensions.Register(TehPers.Core.Api.IServiceDrivenMod)"/>.
+             </example>
+        </member>
+        <member name="M:TehPers.Core.Api.IModKernelFactory.GetKernel(StardewModdingAPI.IMod)">
+            <summary>Gets the <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/> for your <see cref="T:StardewModdingAPI.IMod"/>. This <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/> is specific to your <see cref="T:StardewModdingAPI.IMod"/> and can only see dependencies registered to it and the global <see cref="T:Ninject.IKernel"/>. Use <see cref="M:Ninject.ResolutionExtensions.Get``1(Ninject.Syntax.IResolutionRoot,Ninject.Parameters.IParameter[])"/> to get a service from the <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/>.</summary>
+            <param name="owner">The owner of the <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/>.</param>
+            <returns>The <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/> for your <see cref="T:StardewModdingAPI.IMod"/>.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.IServiceDrivenMod">
+            <summary>A mod which is driven by services and relies on dependency injection.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.IServiceDrivenMod.RegisterServices(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>Registers this <see cref="T:TehPers.Core.Api.IServiceDrivenMod"/>'s dependent services in the <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/>.</summary>
+            <param name="modKernel">The <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/> for this <see cref="T:StardewModdingAPI.IMod"/>.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.IServiceDrivenMod.GameLoaded(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>Initializes the mod after services have been registered.</summary>
+            <param name="modKernel">The <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/> for this <see cref="T:StardewModdingAPI.IMod"/>.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.Items.IGlobalItemProvider">
+            <summary>
+            Provides all items that can be provided. This type is merely for convenience. Item providers should be registered through your mod's <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/>.
+            </summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Items.IItemProvider">
+            <summary>
+            Provider for a set of items.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Items.IItemProvider.InvalidateAssets">
+            <summary>
+            Invalidates any assets used by the items registered by this provider.
+            This is called after each item is assigned an index, which occurs when a save is loaded or when connecting to a multiplayer game.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Items.IItemProvider.IsInstanceOf(TehPers.Core.Api.NamespacedId,StardewValley.Item)">
+            <summary>
+            Checks if an item is an instance of a particular key, but cannot guarantee that an item is not an instance of that key. To perform a more exhaustive check, use <see cref="T:TehPers.Core.Api.Items.IGlobalItemProvider"/> or enumerate each <see cref="T:TehPers.Core.Api.Items.IItemProvider"/> yourself.
+            </summary>
+            <param name="id">The key of the item.</param>
+            <param name="item">The item to compare against the key.</param>
+            <returns><see langword="true"/> if the item and key are associated, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Items.IItemProvider.TryCreate(TehPers.Core.Api.NamespacedId,StardewValley.Item@)">
+            <summary>
+            Tries to create an instance of the specified item.
+            </summary>
+            <param name="id">The key for the item.</param>
+            <param name="item">The created item, if successful, with a stack size of 1.</param>
+            <returns><see langword="true"/> if successful, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Items.IItemProvider.TryGetSprite(TehPers.Core.Api.NamespacedId,TehPers.Core.Api.Drawing.Sprites.ISprite@)">
+            <summary>
+            Tries to get the sprite for a particular item.
+            </summary>
+            <param name="id">The item's key.</param>
+            <param name="sprite">The sprite associated with the item.</param>
+            <returns><see langword="true"/> if the sprite was retrieved, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Items.ObjectsReference">
+            <summary><see cref="P:StardewValley.Item.ParentSheetIndex"/> values for commonly referenced objects.</summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Json.ICommentedJsonApi">
+            <summary>API for reading and writing commented JSON files.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.WriteJson``1(System.String,``0,System.Boolean)">
+            <summary>Writes a commented JSON file to a specified path.</summary>
+            <typeparam name="TModel">The type of object being written.</typeparam>
+            <param name="path">The path to the output file.</param>
+            <param name="model">The object being written.</param>
+            <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.WriteJson``1(System.String,``0,System.Action{Newtonsoft.Json.JsonSerializerSettings},System.Boolean)">
+            <summary>Writes a commented JSON file to a specified path.</summary>
+            <typeparam name="TModel">The type of object being written.</typeparam>
+            <param name="path">The path to the output file.</param>
+            <param name="model">The object being written.</param>
+            <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
+            <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.Serialize``1(``0,System.IO.Stream,System.Boolean)">
+            <summary>Serializes commented JSON to a <see cref="T:System.IO.Stream"/>.</summary>
+            <typeparam name="TModel">The type of object being written.</typeparam>
+            <param name="model">The object being written.</param>
+            <param name="outputStream">The <see cref="T:System.IO.Stream"/> to write to.</param>
+            <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.Serialize``1(``0,System.IO.Stream,System.Action{Newtonsoft.Json.JsonSerializerSettings},System.Boolean)">
+            <summary>Serializes commented JSON to a <see cref="T:System.IO.Stream"/>.</summary>
+            <typeparam name="TModel">The type of object being written.</typeparam>
+            <param name="model">The object being written.</param>
+            <param name="outputStream">The <see cref="T:System.IO.Stream"/> to write to.</param>
+            <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
+            <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.Deserialze``1(System.IO.Stream)">
+            <summary>Deserializes commented JSON from a <see cref="T:System.IO.Stream"/>.</summary>
+            <typeparam name="TModel">The type of object being read.</typeparam>
+            <param name="inputStream">The <see cref="T:System.IO.Stream"/> to read from.</param>
+            <returns>The deserialized model.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.Deserialze``1(System.IO.Stream,System.Action{Newtonsoft.Json.JsonSerializerSettings})">
+            <summary>Deserializes commented JSON from a <see cref="T:System.IO.Stream"/>.</summary>
+            <typeparam name="TModel">The type of object being read.</typeparam>
+            <param name="inputStream">The <see cref="T:System.IO.Stream"/> to read from.</param>
+            <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
+            <returns>The deserialized model.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadJson``1(System.String)">
+            <summary>Reads commented JSON from a file.</summary>
+            <typeparam name="TModel">The type of object being read.</typeparam>
+            <param name="path">The path to the file.</param>
+            <returns>The deserialized model.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadJson``1(System.String,TehPers.Core.Api.Content.IContentSource,System.Action{Newtonsoft.Json.JsonSerializerSettings})">
+            <summary>Reads commented JSON from a file.</summary>
+            <typeparam name="TModel">The type of object being read.</typeparam>
+            <param name="path">The path to the file.</param>
+            <param name="source">The <see cref="T:TehPers.Core.Api.Content.IContentSource"/> to read the file from.</param>
+            <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
+            <returns>The deserialized model.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadOrCreate``1(System.String,System.Boolean)">
+            <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
+            <typeparam name="TModel">The type of object being read.</typeparam>
+            <param name="path">The path to the file.</param>
+            <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
+            <returns>The deserialized model.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadOrCreate``1(System.String,TehPers.Core.Api.Content.IContentSource,System.Action{Newtonsoft.Json.JsonSerializerSettings},System.Boolean)">
+            <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
+            <typeparam name="TModel">The type of object being read.</typeparam>
+            <param name="path">The path to the file.</param>
+            <param name="source">The <see cref="T:TehPers.Core.Api.Content.IContentSource"/> to read the file from.</param>
+            <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
+            <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
+            <returns>The deserialized model.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadOrCreate``1(System.String,System.Func{``0},System.Boolean)">
+            <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
+            <typeparam name="TModel">The type of object being read.</typeparam>
+            <param name="path">The path to the file.</param>
+            <param name="modelFactory">Factory method which creates an instance of model.</param>
+            <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
+            <returns>The deserialized model.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadOrCreate``1(System.String,TehPers.Core.Api.Content.IContentSource,System.Action{Newtonsoft.Json.JsonSerializerSettings},System.Func{``0},System.Boolean)">
+            <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
+            <typeparam name="TModel">The type of object being read.</typeparam>
+            <param name="path">The path to the file.</param>
+            <param name="source">The <see cref="T:TehPers.Core.Api.Content.IContentSource"/> to read the file from.</param>
+            <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
+            <param name="modelFactory">Factory method which creates an instance of model.</param>
+            <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
+            <returns>The deserialized model.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Json.JsonDescribeAttribute">
+            <summary>Indicates that the properties of this type that are annotated with <see cref="T:System.ComponentModel.DescriptionAttribute"/> should be commented when serialized by an <see cref="T:TehPers.Core.Api.Json.ICommentedJsonApi"/>.</summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Multiplayer.ChannelMessageReceivedEventArgs`1">
+            <summary>
+            Arguments for the event raised whenever an <see cref="T:TehPers.Core.Api.Multiplayer.EventChannel`1"/> receives a message.
+            </summary>
+            <typeparam name="TMessage">The type of message that was received.</typeparam>
+        </member>
+        <member name="P:TehPers.Core.Api.Multiplayer.ChannelMessageReceivedEventArgs`1.Message">
+            <summary>
+            Gets the message that was received.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Multiplayer.ChannelMessageReceivedEventArgs`1.SenderMod">
+            <summary>
+            Gets the unique ID of the mod that sent the message.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Multiplayer.ChannelMessageReceivedEventArgs`1.SenderPlayer">
+            <summary>
+            Gets the unique ID of the player that sent the message.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Multiplayer.ChannelMessageReceivedEventArgs`1.#ctor(`0,System.String,System.Int64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Multiplayer.ChannelMessageReceivedEventArgs`1"/> class.
+            </summary>
+            <param name="message">The message that was received./</param>
+            <param name="senderMod">The unique ID of the mod that sent the message.</param>
+            <param name="senderPlayer">The unique ID of the player that sent the message.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.Multiplayer.EventChannel`1">
+            <summary>
+            An event channel that is synchronized over multiplayer.
+            </summary>
+            <typeparam name="TMessage">The type of message being sent over the channel.</typeparam>
+        </member>
+        <member name="P:TehPers.Core.Api.Multiplayer.EventChannel`1.Id">
+            <summary>
+            Gets the ID of the channel.
+            </summary>
+        </member>
+        <member name="E:TehPers.Core.Api.Multiplayer.EventChannel`1.MessageReceived">
+            <summary>
+            Raised whenever a message is received on this channel.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Multiplayer.EventChannel`1.#ctor(StardewModdingAPI.IManifest,StardewModdingAPI.IModHelper,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Multiplayer.EventChannel`1"/> class.
+            </summary>
+            <param name="coreManifest">The core mod's manifest.</param>
+            <param name="helper">The mod's helper.</param>
+            <param name="id">The ID of this event channel.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Multiplayer.EventChannel`1.Listen">
+            <summary>
+            Starts listening for multiplayer events.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Multiplayer.EventChannel`1.Send(`0,System.Int64[])">
+            <summary>
+            Sends a message over the channel.
+            </summary>
+            <param name="message">The message to send.</param>
+            <param name="playerIds">The players to send the message to, or <see langword="null"/> to send it to all players.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Multiplayer.EventChannel`1.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="T:TehPers.Core.Api.Multiplayer.EventChannelFactory">
+            <summary>
+            Factory for creating instances of <see cref="T:TehPers.Core.Api.Multiplayer.EventChannel`1"/>.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Multiplayer.EventChannelFactory.#ctor(StardewModdingAPI.IModHelper,StardewModdingAPI.IManifest)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Multiplayer.EventChannelFactory"/> class.
+            </summary>
+            <param name="coreHelper">The core mod's helper.</param>
+            <param name="coreManifest">The core mod's manifest.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Multiplayer.EventChannelFactory.CreateEventChannel``1(System.String)">
+            <summary>
+            Creates an instance of <see cref="T:TehPers.Core.Api.Multiplayer.EventChannel`1"/> with the given ID.
+            </summary>
+            <typeparam name="T">The type of message being sent over the channel.</typeparam>
+            <param name="id">The ID of the channel.</param>
+            <returns>A new <see cref="T:TehPers.Core.Api.Multiplayer.EventChannel`1"/> with the given ID.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.NamespacedId">
+            <summary>An identifier consisting of a namespace and another identifier.</summary>
+        </member>
+        <member name="F:TehPers.Core.Api.NamespacedId.VanillaObjectsNamespace">
+            <summary>
+            The namespace for vanilla <see cref="T:StardewValley.Object"/>s.
+            </summary>
+        </member>
+        <member name="F:TehPers.Core.Api.NamespacedId.VanillaSwordsNamespace">
+            <summary>
+            The namespace for vanilla <see cref="T:StardewValley.Tools.Sword"/>s.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.TryParse(System.String,TehPers.Core.Api.NamespacedId@)">
+            <summary>
+            Tries to parse a <see cref="T:System.String"/> as a <see cref="T:TehPers.Core.Api.NamespacedId"/>.
+            </summary>
+            <param name="value">The <see cref="T:System.String"/> to try to parse.</param>
+            <param name="namespacedId">The resulting <see cref="T:TehPers.Core.Api.NamespacedId"/> if parsing succeeds.</param>
+            <returns><see langword="true"/> if parsing succeeded, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.FromItem(StardewValley.Item)">
+            <summary>
+            Constructs a <see cref="T:TehPers.Core.Api.NamespacedId"/> from an existing item.
+            </summary>
+            <param name="item">The item to create the <see cref="T:TehPers.Core.Api.NamespacedId"/> for.</param>
+            <returns>A new <see cref="T:TehPers.Core.Api.NamespacedId"/> identifying the given item.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.FromObjectIndex(System.Int32)">
+            <summary>
+            Constructs a new <see cref="T:TehPers.Core.Api.NamespacedId"/> from a vanilla <see cref="T:StardewValley.Object"/>'s <see cref="P:StardewValley.Item.ParentSheetIndex"/>.
+            </summary>
+            <param name="parentSheetIndex">The <see cref="P:StardewValley.Item.ParentSheetIndex"/> of the item.</param>
+            <returns>A new <see cref="T:TehPers.Core.Api.NamespacedId"/> identifying that item.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.FromSwordIndex(System.Int32)">
+            <summary>
+            Constructs a new <see cref="T:TehPers.Core.Api.NamespacedId"/> from a vanilla <see cref="T:StardewValley.Tools.Sword"/>'s <see cref="P:StardewValley.Tool.InitialParentTileIndex"/>.
+            </summary>
+            <param name="initialParentTileIndex">The <see cref="P:StardewValley.Tool.InitialParentTileIndex"/> of the item.</param>
+            <returns>A new <see cref="T:TehPers.Core.Api.NamespacedId"/> identifying that item.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.op_Equality(TehPers.Core.Api.NamespacedId,TehPers.Core.Api.NamespacedId)">
+            <summary>
+            Checks for equality between two <see cref="T:TehPers.Core.Api.NamespacedId"/>s.
+            </summary>
+            <param name="left">The first ID.</param>
+            <param name="right">The second ID.</param>
+            <returns><see langword="true"/> if the two values are equal, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.op_Inequality(TehPers.Core.Api.NamespacedId,TehPers.Core.Api.NamespacedId)">
+            <summary>
+            Checks for inequality between two <see cref="T:TehPers.Core.Api.NamespacedId"/>s.
+            </summary>
+            <param name="left">The first ID.</param>
+            <param name="right">The second ID.</param>
+            <returns><see langword="false"/> if the two values are equal, <see langword="true"/> otherwise.</returns>
+        </member>
+        <member name="P:TehPers.Core.Api.NamespacedId.Namespace">
+            <summary>Gets the namespace for this <see cref="T:TehPers.Core.Api.NamespacedId"/>.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.NamespacedId.Key">
+            <summary>Gets the key for this <see cref="T:TehPers.Core.Api.NamespacedId"/>.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.#ctor(System.String,System.String)">
+            <summary>Initializes a new instance of the <see cref="T:TehPers.Core.Api.NamespacedId"/> struct.</summary>
+            <param name="namespace">The namespace for the <see cref="T:TehPers.Core.Api.NamespacedId"/>. This should usually be a mod's unique ID.</param>
+            <param name="key">The key for the <see cref="T:TehPers.Core.Api.NamespacedId"/>.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.ToString">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.Equals(TehPers.Core.Api.NamespacedId)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.NamespacedId.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:TehPers.Core.Api.Weighted.IWeighted">
+            <summary>Defines a weighted chance for an object, allowing easy weighted choosing of a random element from a list of the object.</summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Weighted.IWeighted.Weight">
+            <summary>Gets returns the positive weighted chance of this object being selected (in comparison to other objects).</summary>
+        </member>
+        <member name="T:TehPers.Core.Api.Weighted.IWeightedValue`1">
+            <summary>A wrapper for objects that assigns a weighted chance to them.</summary>
+            <typeparam name="T">The type of object being wrapped.</typeparam>
+        </member>
+        <member name="P:TehPers.Core.Api.Weighted.IWeightedValue`1.Value">
+            <summary>Gets the value wrapped by this element.</summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Weighted.WeightedValue`1.#ctor(`0,System.Double)">
+            <summary>Initializes a new instance of the <see cref="T:TehPers.Core.Api.Weighted.WeightedValue`1"/> class.</summary>
+            <param name="value">The value of this <see cref="T:TehPers.Core.Api.Weighted.WeightedValue`1"/>.</param>
+            <param name="weight">The weighted chance for this <see cref="T:TehPers.Core.Api.Weighted.WeightedValue`1"/>.</param>
+        </member>
+    </members>
+</doc>

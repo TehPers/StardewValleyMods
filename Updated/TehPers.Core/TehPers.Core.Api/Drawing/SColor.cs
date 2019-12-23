@@ -87,6 +87,43 @@ namespace TehPers.Core.Api.Drawing
         }
 
         /// <summary>
+        /// Multiplicatively blends two colors together by multiplying the float representations of their individual components with each other. For example, multiplying by white yields the same color (multiplicative identity) and multiplying by black yields black.
+        /// </summary>
+        /// <param name="first">The first color to blend.</param>
+        /// <param name="second">The second color to blend.</param>
+        /// <returns>The blended color.</returns>
+        public static SColor operator *(in SColor first, in SColor second)
+        {
+            var r = (first.R / (float)byte.MaxValue) * (second.R / (float)byte.MaxValue);
+            var g = (first.G / (float)byte.MaxValue) * (second.G / (float)byte.MaxValue);
+            var b = (first.B / (float)byte.MaxValue) * (second.B / (float)byte.MaxValue);
+            var a = (first.A / (float)byte.MaxValue) * (second.A / (float)byte.MaxValue);
+            return new SColor(r, g, b, a);
+        }
+
+        /// <summary>
+        /// Multiplicatively blends two colors together by multiplying the float representations of their individual components with each other. For example, multiplying by white yields the same color (multiplicative identity) and multiplying by black yields black.
+        /// </summary>
+        /// <param name="first">The first color to blend.</param>
+        /// <param name="second">The second color to blend.</param>
+        /// <returns>The blended color.</returns>
+        public static SColor operator *(in SColor first, in Color second)
+        {
+            return first * (SColor)second;
+        }
+
+        /// <summary>
+        /// Multiplicatively blends two colors together by multiplying the float representations of their individual components with each other. For example, multiplying by white yields the same color (multiplicative identity) and multiplying by black yields black.
+        /// </summary>
+        /// <param name="first">The first color to blend.</param>
+        /// <param name="second">The second color to blend.</param>
+        /// <returns>The blended color.</returns>
+        public static SColor operator *(in Color first, in SColor second)
+        {
+            return (SColor)first * second;
+        }
+
+        /// <summary>
         /// Divides each individual component of a <see cref="SColor"/> by a scalar. The operation is clamped to [<see cref="byte.MinValue"/>, <see cref="byte.MaxValue"/>].
         /// </summary>
         /// <param name="first">The <see cref="SColor"/> to divide.</param>

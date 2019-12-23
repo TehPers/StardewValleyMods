@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using StardewModdingAPI;
+using TehPers.Core.Api;
 using TehPers.FishingFramework.Api;
 using TehPers.FishingFramework.Api.Config;
 using TehPers.FishingFramework.Api.Events;
@@ -13,7 +14,7 @@ namespace TehPers.FishingFramework
         private readonly IGlobalConfiguration localGlobalConfig;
 
         public ISet<IFishAvailability> Fish { get; }
-        public IDictionary<int, IFishTraits> FishTraits { get; }
+        public IDictionary<NamespacedId, IFishTraits> FishTraits { get; }
         public ISet<ITrashAvailability> Trash { get; }
         public ISet<ITreasureAvailability> Treasure { get; }
         public IGlobalConfiguration GlobalConfig { get; }
@@ -36,7 +37,7 @@ namespace TehPers.FishingFramework
             this.localGlobalConfig = localGlobalConfig;
 
             this.Fish = new HashSet<IFishAvailability>();
-            this.FishTraits = new Dictionary<int, IFishTraits>();
+            this.FishTraits = new Dictionary<NamespacedId, IFishTraits>();
             this.Trash = new HashSet<ITrashAvailability>();
             this.Treasure = new HashSet<ITreasureAvailability>();
             this.GlobalConfig = localGlobalConfig;

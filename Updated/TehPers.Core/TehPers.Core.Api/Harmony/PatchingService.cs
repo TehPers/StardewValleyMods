@@ -3,15 +3,21 @@ using System.Reflection;
 
 namespace TehPers.Core.Api.Harmony
 {
-    /// <summary>Service which can apply and remove patches. It is recommended to mark classes that inherit <see cref="PatchingService{TImplementation}"/> as <see langword="sealed"/>.</summary>
+    /// <summary>
+    /// Service which can apply and remove patches. It is recommended to mark classes that inherit <see cref="PatchingService{TImplementation}"/> as <see langword="sealed"/> and register it as a singleton service.
+    /// </summary>
     /// <typeparam name="TImplementation">The type that is inheriting <see cref="PatchingService{TImplementation}"/>. This must be equal to the implementation type.</typeparam>
     public abstract class PatchingService<TImplementation> : IPatchingService
         where TImplementation : PatchingService<TImplementation>
     {
-        /// <summary>Gets the singleton instance of the service.</summary>
+        /// <summary>
+        /// Gets the singleton instance of the service.
+        /// </summary>
         protected static TImplementation Instance { get; private set; }
 
-        /// <summary>Initializes a new instance of the <see cref="PatchingService{TImplementation}"/> class.</summary>
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PatchingService{TImplementation}"/> class.
+        /// </summary>
         protected PatchingService()
         {
             if (typeof(TImplementation) != this.GetType())
@@ -20,7 +26,9 @@ namespace TehPers.Core.Api.Harmony
             }
         }
 
-        /// <summary>Finalizes an instance of the <see cref="PatchingService{TImplementation}"/> class.</summary>
+        /// <summary>
+        /// Finalizes an instance of the <see cref="PatchingService{TImplementation}"/> class.
+        /// </summary>
         ~PatchingService()
         {
             this.Dispose(false);
@@ -29,34 +37,40 @@ namespace TehPers.Core.Api.Harmony
         /// <inheritdoc/>
         public void ApplyPatches()
         {
-            if (Instance != null)
+            if (PatchingService<TImplementation>.Instance != null)
             {
                 throw new InvalidOperationException("Patches are already applied!");
             }
 
-            Instance = (TImplementation)this;
+            PatchingService<TImplementation>.Instance = (TImplementation)this;
             this.ApplyPatchesInternal();
         }
 
         /// <inheritdoc/>
         public void RemovePatches()
         {
-            if (Instance != this)
+            if (PatchingService<TImplementation>.Instance != this)
             {
                 return;
             }
 
             this.RemovePatchesInternal();
-            Instance = null;
+            PatchingService<TImplementation>.Instance = null;
         }
 
-        /// <summary>Called when patches should be applied.</summary>
+        /// <summary>
+        /// Called when patches should be applied.
+        /// </summary>
         protected abstract void ApplyPatchesInternal();
 
-        /// <summary>Called when the patches applied by this class should be removed.</summary>
+        /// <summary>
+        /// Called when the patches applied by this class should be removed.
+        /// </summary>
         protected abstract void RemovePatchesInternal();
 
-        /// <summary>Gets a <see cref="MethodInfo"/> for a method from a <see cref="Type"/>.</summary>
+        /// <summary>
+        /// Gets a <see cref="MethodInfo"/> for a method from a <see cref="Type"/>.
+        /// </summary>
         /// <param name="sourceType">The source <see cref="Type"/>.</param>
         /// <param name="methodName">The name of the method to get the <see cref="MethodInfo"/> of.</param>
         /// <param name="bindingFlags">The <see cref="BindingFlags"/> to use when searching for the method.</param>
@@ -68,11 +82,13 @@ namespace TehPers.Core.Api.Harmony
             return sourceType.GetMethod(methodName, bindingFlags) ?? throw new InvalidOperationException($"Could not get {nameof(MethodInfo)} for {sourceType.FullName}.{methodName}");
         }
 
-        /// <summary>Called when this <see cref="PatchingService{TImplementation}"/> is being finalized or disposed of.</summary>
+        /// <summary>
+        /// Called when this <see cref="PatchingService{TImplementation}"/> is being finalized or disposed of.
+        /// </summary>
         /// <param name="disposing"><see langword="true"/> if managed resources should be freed.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && Instance == this)
+            if (disposing && PatchingService<TImplementation>.Instance == this)
             {
                 this.RemovePatches();
             }

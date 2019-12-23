@@ -79,16 +79,14 @@ namespace TehPers.FishingFramework.Api.Extensions
         /// <summary>
         /// Gets the chance of a particular event for the given <see cref="Farmer"/>.
         /// </summary>
-        /// <param name="api">The fishing API.</param>
         /// <param name="chances">The chances of the event occurring.</param>
         /// <param name="who">The <see cref="Farmer"/>.</param>
         /// <param name="fishingStreak">The <see cref="Farmer"/>'s fishing streak.</param>
         /// <returns>The chance that the event occurs.</returns>
-        public static double GetChance(this IFishingApi api, IFishingChances chances, Farmer who, int fishingStreak)
+        public static double GetChance(this IFishingChances chances, Farmer who, int fishingStreak)
         {
             _ = who ?? throw new ArgumentNullException(nameof(who));
             _ = chances ?? throw new ArgumentNullException(nameof(chances));
-            _ = api ?? throw new ArgumentNullException(nameof(api));
 
             var locationFactor = chances.LocationFactors.TryGetValue(who.currentLocation, out var f) ? f : 1d;
             var normalChance = chances.BaseChance

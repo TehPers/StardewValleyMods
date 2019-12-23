@@ -1,15 +1,35 @@
 ﻿using System;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using StardewValley;
+using StardewValley.Objects;
+using StardewValley.Tools;
+using SObject = StardewValley.Object;
 
 namespace TehPers.Core.Api
 {
     /// <summary>An identifier consisting of a namespace and another identifier.</summary>
-    public readonly struct NamespacedId
+    public readonly struct NamespacedId : IEquatable<NamespacedId>
     {
+        private const string VanillaStub = "stardewvalley";
+
+        /// <summary>
+        /// The namespace for vanilla <see cref="SObject"/>s.
+        /// </summary>
+        public const string VanillaObjectsNamespace = NamespacedId.VanillaStub + "/objects";
+
+        /// <summary>
+        /// The namespace for vanilla <see cref="Sword"/>s.
+        /// </summary>
+        public const string VanillaSwordsNamespace = NamespacedId.VanillaStub + "/weapons";
+
         private static readonly Regex ParseRegex = new Regex(@"^\s*(?<namespace>[^:\s]+)\s*:\s*(?<key>[^:\s]+)\s*$");
         private static readonly Regex ValidPart = new Regex(@"^[^:\s]+$");
 
-        /// <summary>Tries to parse a <see cref="string"/> as a <see cref="NamespacedId"/>.</summary>
+        /// <summary>
+        /// Tries to parse a <see cref="string"/> as a <see cref="NamespacedId"/>.
+        /// </summary>
         /// <param name="value">The <see cref="string"/> to try to parse.</param>
         /// <param name="namespacedId">The resulting <see cref="NamespacedId"/> if parsing succeeds.</param>
         /// <returns><see langword="true"/> if parsing succeeded, <see langword="false"/> otherwise.</returns>
@@ -26,6 +46,63 @@ namespace TehPers.Core.Api
 
             namespacedId = new NamespacedId(match.Groups["namespace"].Value, match.Groups["key"].Value);
             return true;
+        }
+
+        /// <summary>
+        /// Constructs a <see cref="NamespacedId"/> from an existing item.
+        /// </summary>
+        /// <param name="item">The item to create the <see cref="NamespacedId"/> for.</param>
+        /// <returns>A new <see cref="NamespacedId"/> identifying the given item.</returns>
+        public static NamespacedId FromItem(Item item)
+        {
+            return item switch
+            {
+                Sword { InitialParentTileIndex: var index } => NamespacedId.FromSwordIndex(index),
+                SObject { ParentSheetIndex: var index } => NamespacedId.FromObjectIndex(index),
+                _ => throw new NotImplementedException("If this functionality is needed, create an item provider for the type you're interested in and handle the namespaced IDs from there."),
+            };
+        }
+
+        /// <summary>
+        /// Constructs a new <see cref="NamespacedId"/> from a vanilla <see cref="SObject"/>'s <see cref="Item.ParentSheetIndex"/>.
+        /// </summary>
+        /// <param name="parentSheetIndex">The <see cref="Item.ParentSheetIndex"/> of the item.</param>
+        /// <returns>A new <see cref="NamespacedId"/> identifying that item.</returns>
+        public static NamespacedId FromObjectIndex(int parentSheetIndex)
+        {
+            return new NamespacedId(NamespacedId.VanillaObjectsNamespace, parentSheetIndex.ToString("D", CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>
+        /// Constructs a new <see cref="NamespacedId"/> from a vanilla <see cref="Sword"/>'s <see cref="Tool.InitialParentTileIndex"/>.
+        /// </summary>
+        /// <param name="initialParentTileIndex">The <see cref="Tool.InitialParentTileIndex"/> of the item.</param>
+        /// <returns>A new <see cref="NamespacedId"/> identifying that item.</returns>
+        public static NamespacedId FromSwordIndex(int initialParentTileIndex)
+        {
+            return new NamespacedId(NamespacedId.VanillaSwordsNamespace, initialParentTileIndex.ToString("D", CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>
+        /// Checks for equality between two <see cref="NamespacedId"/>s.
+        /// </summary>
+        /// <param name="left">The first ID.</param>
+        /// <param name="right">The second ID.</param>
+        /// <returns><see langword="true"/> if the two values are equal, <see langword="false"/> otherwise.</returns>
+        public static bool operator ==(NamespacedId left, NamespacedId right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Checks for inequality between two <see cref="NamespacedId"/>s.
+        /// </summary>
+        /// <param name="left">The first ID.</param>
+        /// <param name="right">The second ID.</param>
+        /// <returns><see langword="false"/> if the two values are equal, <see langword="true"/> otherwise.</returns>
+        public static bool operator !=(NamespacedId left, NamespacedId right)
+        {
+            return !(left == right);
         }
 
         /// <summary>Gets the namespace for this <see cref="NamespacedId"/>.</summary>
@@ -57,6 +134,27 @@ namespace TehPers.Core.Api
         public override string ToString()
         {
             return $"{this.Namespace}:{this.Key}";
+        }
+
+        /// <inheritdoc />
+        public bool Equals(NamespacedId other)
+        {
+            return string.Equals(this.Namespace, other.Namespace, StringComparison.Ordinal) && string.Equals(this.Key, other.Key, StringComparison.Ordinal);
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            return obj is NamespacedId other && this.Equals(other);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((this.Namespace != null ? this.Namespace.GetHashCode() : 0) * 397) ^ (this.Key != null ? this.Key.GetHashCode() : 0);
+            }
         }
     }
 }

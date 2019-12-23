@@ -1,4 +1,5 @@
-﻿using TehPers.FishingFramework.Api.Minigame;
+﻿using TehPers.Core.Api;
+using TehPers.FishingFramework.Api.Minigame;
 
 namespace TehPers.FishingFramework.Api
 {
@@ -10,7 +11,7 @@ namespace TehPers.FishingFramework.Api
         /// <summary>
         /// Gets the item ID for this fish.
         /// </summary>
-        int ItemId { get; }
+        NamespacedId ItemId { get; }
 
         /// <summary>
         /// Gets a value indicating whether whether this fish is legendary.
@@ -35,6 +36,6 @@ namespace TehPers.FishingFramework.Api
         /// <summary>
         /// Gets this fish's motion controller.
         /// </summary>
-        ICatchableEntityController<BobberBarCatchableItem<int>> Controller { get; }
+        ICatchableEntityController<BobberBarCatchableItem<NamespacedId>> Controller { get; }
     }
 }

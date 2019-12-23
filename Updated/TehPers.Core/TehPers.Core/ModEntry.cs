@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using TehPers.Core.Api;
 using TehPers.Core.Api.DependencyInjection;
 using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Multiplayer;
 using TehPers.Core.DependencyInjection.Lifecycle;
 
 namespace TehPers.Core
@@ -33,6 +34,10 @@ namespace TehPers.Core
 
             this.Monitor.Log("Registering event managers", LogLevel.Info);
             modKernel.BindManagedSmapiEvents();
+
+            this.Monitor.Log("Registering global services", LogLevel.Info);
+            modKernel.Bind<EventChannelFactory>().ToSelf().InSingletonScope();
+            modKernel.ExposeService<EventChannelFactory>();
         }
 
         public override object GetApi()

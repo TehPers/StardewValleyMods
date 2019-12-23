@@ -12,7 +12,7 @@ namespace TehPers.FishingFramework.Api
         /// <summary>
         /// Gets the possible <see cref="NamespacedId"/>s for this treasure.
         /// </summary>
-        IEnumerable<NamespacedId> ItemKeys { get; }
+        IEnumerable<NamespacedId> ItemIds { get; }
 
         /// <summary>
         /// Gets the minimum quantity of this item that can be found.
@@ -23,5 +23,10 @@ namespace TehPers.FishingFramework.Api
         /// Gets the maximum quantity of this item that can be found.
         /// </summary>
         int MaximumQuantity { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether whether to allow this reward to appear multiple times in a treasure chest.
+        /// </summary>
+        bool AllowDuplicates { get; }
     }
 }

@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TehPers.Core.Api.Drawing.Sprites
 {
+    /// <summary>
+    /// A sprite that has been multiplicatively blended with a solid color.
+    /// </summary>
     public class TintedSprite : ITintedSprite
     {
         /// <inheritdoc />
@@ -33,6 +36,11 @@ namespace TehPers.Core.Api.Drawing.Sprites
         /// <inheritdoc />
         public int Height => this.Sprite.Height;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TintedSprite"/> class.
+        /// </summary>
+        /// <param name="sprite">The original sprite.</param>
+        /// <param name="tint">The tint being applied to the sprite.</param>
         public TintedSprite(ISprite sprite, SColor tint)
         {
             this.Sprite = sprite;
