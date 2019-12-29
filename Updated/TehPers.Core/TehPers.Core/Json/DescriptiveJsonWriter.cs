@@ -50,7 +50,9 @@ namespace TehPers.Core.Json
         public void Indent()
         {
             if (this.Minify)
+            {
                 return;
+            }
 
             this.writer.Write(this.Indentation.Repeat(this.indent));
         }
@@ -78,7 +80,9 @@ namespace TehPers.Core.Json
         public override void WriteComment(string text)
         {
             if (this.needsNewLine)
+            {
                 this.NextLine();
+            }
 
             this.writer.Write($"/*{text.Replace("*/", "* /")}*/");
         }
@@ -93,7 +97,9 @@ namespace TehPers.Core.Json
 
             // Go to the next line if needed
             if (this.needsNewLine)
+            {
                 this.NextLine();
+            }
 
             // Keep track of whether this will need a comma or not
             this.needsComma.Push(true);
@@ -118,7 +124,9 @@ namespace TehPers.Core.Json
 
             // Go to the next line if needed
             if (this.needsNewLine)
+            {
                 this.NextLine();
+            }
 
             // Keep track of whether this will need a comma or not
             this.needsComma.Push(true);
@@ -137,7 +145,9 @@ namespace TehPers.Core.Json
         {
             this.indent--;
             if (this.needsNewLine)
+            {
                 this.NextLine();
+            }
 
             this.writer.Write(']');
             this.needsComma.Pop();
@@ -149,7 +159,9 @@ namespace TehPers.Core.Json
         {
             this.indent--;
             if (this.needsNewLine)
+            {
                 this.NextLine();
+            }
 
             this.writer.Write('}');
             this.needsComma.Pop();
@@ -294,127 +306,6 @@ namespace TehPers.Core.Json
                 this.WriteValue(Convert.ToBase64String(value));
             }
         }
-
-        #region Nullables
-        public override void WriteValue(int? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(uint? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(long? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(ulong? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(float? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(double? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(bool? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(short? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(ushort? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(char? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(byte? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(sbyte? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(decimal? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(DateTime? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(DateTimeOffset? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(Guid? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-
-        public override void WriteValue(TimeSpan? value)
-        {
-            if (value.HasValue)
-                this.WriteValue(value.Value);
-            this.WriteNull();
-        }
-        #endregion
         #endregion
         #endregion
 
@@ -428,7 +319,9 @@ namespace TehPers.Core.Json
 
             // Go to the next line if needed
             if (this.needsNewLine)
+            {
                 this.NextLine();
+            }
 
             // If this is a property, write the comment and name
             this.BeginProperty();
@@ -444,7 +337,9 @@ namespace TehPers.Core.Json
         protected void BeginProperty()
         {
             if (this.propertyName == null)
+            {
                 return;
+            }
 
             // Write property comment
             if (this.propertyComment != null && !this.Minify)

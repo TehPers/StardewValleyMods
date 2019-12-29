@@ -4,16 +4,15 @@ using TehPers.Core.Api.Content;
 
 namespace TehPers.Core.Content
 {
-    public class ModContentSource : IContentSource
+    public class ModAssetProvider : IAssetProvider
     {
         private readonly IContentHelper contentHelper;
-        private readonly string path;
+        private readonly string modPath;
 
-        public ModContentSource(IMod mod) : this(mod.Helper) { }
-        public ModContentSource(IModHelper helper)
+        public ModAssetProvider(IModHelper helper)
         {
             this.contentHelper = helper.Content;
-            this.path = helper.DirectoryPath;
+            this.modPath = helper.DirectoryPath;
         }
 
         public T Load<T>(string path)
@@ -21,9 +20,9 @@ namespace TehPers.Core.Content
             return this.contentHelper.Load<T>(path);
         }
 
-        public Stream Open(string path, FileMode mode)
+        public Stream Read(string path, FileMode mode)
         {
-            return File.Open(Path.Combine(this.path, path), mode);
+            return File.Open(Path.Combine(this.modPath, path), mode);
         }
     }
 }

@@ -67,10 +67,10 @@ namespace TehPers.Core.Api.Json
         /// <summary>Reads commented JSON from a file.</summary>
         /// <typeparam name="TModel">The type of object being read.</typeparam>
         /// <param name="path">The path to the file.</param>
-        /// <param name="source">The <see cref="IContentSource"/> to read the file from.</param>
+        /// <param name="assetProvider">The <see cref="IAssetProvider"/> to read the file from.</param>
         /// <param name="settings">Callback for configuring the <see cref="JsonSerializerSettings"/>.</param>
         /// <returns>The deserialized model.</returns>
-        TModel ReadJson<TModel>(string path, IContentSource source, Action<JsonSerializerSettings> settings)
+        TModel ReadJson<TModel>(string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings)
             where TModel : class;
 
         /// <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
@@ -84,11 +84,11 @@ namespace TehPers.Core.Api.Json
         /// <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
         /// <typeparam name="TModel">The type of object being read.</typeparam>
         /// <param name="path">The path to the file.</param>
-        /// <param name="source">The <see cref="IContentSource"/> to read the file from.</param>
+        /// <param name="assetProvider">The <see cref="IAssetProvider"/> to read the file from.</param>
         /// <param name="settings">Callback for configuring the <see cref="JsonSerializerSettings"/>.</param>
         /// <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
         /// <returns>The deserialized model.</returns>
-        TModel ReadOrCreate<TModel>(string path, IContentSource source, Action<JsonSerializerSettings> settings, bool minify = false)
+        TModel ReadOrCreate<TModel>(string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, bool minify = false)
             where TModel : class, new();
 
         /// <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
@@ -103,12 +103,12 @@ namespace TehPers.Core.Api.Json
         /// <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
         /// <typeparam name="TModel">The type of object being read.</typeparam>
         /// <param name="path">The path to the file.</param>
-        /// <param name="source">The <see cref="IContentSource"/> to read the file from.</param>
+        /// <param name="assetProvider">The <see cref="IAssetProvider"/> to read the file from.</param>
         /// <param name="settings">Callback for configuring the <see cref="JsonSerializerSettings"/>.</param>
         /// <param name="modelFactory">Factory method which creates an instance of model.</param>
         /// <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
         /// <returns>The deserialized model.</returns>
-        TModel ReadOrCreate<TModel>(string path, IContentSource source, Action<JsonSerializerSettings> settings, Func<TModel> modelFactory, bool minify = false)
+        TModel ReadOrCreate<TModel>(string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, Func<TModel> modelFactory, bool minify = false)
             where TModel : class;
     }
 }

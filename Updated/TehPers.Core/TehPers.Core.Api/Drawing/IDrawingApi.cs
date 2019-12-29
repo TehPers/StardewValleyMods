@@ -36,7 +36,7 @@ namespace TehPers.Core.Api.Drawing
         /// </summary>
         /// <param name="asset">The resource to get the texture helper for.</param>
         /// <returns>The texture helper for the particular resource.</returns>
-        ITrackedTexture GetTrackedTexture(AssetLocation asset);
+        ITrackedTexture GetTrackedTexture(AssetPath asset);
 
         /// <summary>
         /// Creates a simple sprite sheet.

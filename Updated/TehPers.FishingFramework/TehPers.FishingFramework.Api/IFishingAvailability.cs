@@ -21,6 +21,6 @@ namespace TehPers.FishingFramework.Api
         /// <param name="dateTime">The current <see cref="SDateTime"/>.</param>
         /// <param name="mineLevel">The current mine level, or <see langword="null"/> if not in the mines.</param>
         /// <returns>The weighted chance that this item would be caught in the given circumstances.</returns>
-        double GetWeightedChance(Farmer who, GameLocation location, Weathers weather, WaterType water, SDateTime dateTime, int? mineLevel = null);
+        double GetWeightedChance(Farmer who, GameLocation location, Weathers weather, WaterTypes water, SDateTime dateTime, int? mineLevel = null);
     }
 }

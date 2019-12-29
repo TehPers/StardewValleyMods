@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Ninject;
+using Ninject.Extensions.ChildKernel;
+using Ninject.Syntax;
 using TehPers.Core.Api.DependencyInjection.Lifecycle;
 
 namespace TehPers.Core.DependencyInjection.Lifecycle
@@ -8,7 +11,7 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
     {
         private readonly IEventManager[] managedEvents;
 
-        public LifecycleService(IEnumerable<IEventManager> managedEvents)
+        public LifecycleService(IEnumerable<IEventManager> managedEvents, IResolutionRoot aaaa)
         {
             this.managedEvents = managedEvents.ToArray();
         }

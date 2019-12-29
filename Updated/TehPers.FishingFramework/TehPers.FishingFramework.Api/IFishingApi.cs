@@ -33,14 +33,9 @@ namespace TehPers.FishingFramework.Api
         ISet<ITreasureAvailability> Treasure { get; }
 
         /// <summary>
-        /// Gets the global configuration. In singleplayer, this is loaded from the player's config files. In multiplayer, this is loaded from the server host's config files.
+        /// Gets the fishing configuration. In singleplayer, this is loaded from the player's config files. In multiplayer, this is loaded from the server host's config files.
         /// </summary>
-        IGlobalConfiguration GlobalConfig { get; }
-
-        /// <summary>
-        /// Gets the personal configuration. This is always loaded from the player's config files.
-        /// </summary>
-        IPersonalConfiguration PersonalConfig { get; }
+        IFishingConfiguration FishingConfig { get; }
 
         /// <summary>
         /// Gets or sets the perfect fishing streak of the local <see cref="Farmer"/>.

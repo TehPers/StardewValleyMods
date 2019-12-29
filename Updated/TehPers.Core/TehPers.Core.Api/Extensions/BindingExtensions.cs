@@ -5,12 +5,14 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Ninject;
 using Ninject.Activation;
-using Ninject.Extensions.ContextPreservation;
 using Ninject.Parameters;
 using Ninject.Syntax;
+using StardewModdingAPI;
 using TehPers.Core.Api.Conflux;
+using TehPers.Core.Api.Content;
 using TehPers.Core.Api.DependencyInjection;
 using TehPers.Core.Api.DependencyInjection.Lifecycle;
+using TehPers.Core.Api.Json;
 
 namespace TehPers.Core.Api.Extensions
 {
@@ -187,12 +189,7 @@ namespace TehPers.Core.Api.Extensions
         {
             _ = kernel ?? throw new ArgumentNullException(nameof(kernel));
 
-            TService GetService(IContext context)
-            {
-                return kernel.Get<TService>(context.GetChildParameters());
-            }
-
-            kernel.GlobalKernel.Bind<ManagedEventHandler<THandler>>().ToMethod(context => new ManagedEventHandler<THandler>(GetService(context))).InTransientScope();
+            kernel.GlobalKernel.Bind<THandler>().ToMethod(context => kernel.Get<TService>(context.GetChildParameters())).InTransientScope();
             return kernel;
         }
 
@@ -205,7 +202,7 @@ namespace TehPers.Core.Api.Extensions
         public static IBindingNamedWithOrOnSyntax<T> BindEventManager<T>(this IModKernel kernel)
             where T : IEventManager
         {
-            return kernel.BindEventManager(syntax => syntax.To<T>());
+            return kernel.BindEventManager<T>(syntax => syntax.ToSelf());
         }
 
         /// <summary>
@@ -215,13 +212,15 @@ namespace TehPers.Core.Api.Extensions
         /// <param name="kernel">The mod's kernel.</param>
         /// <param name="bindTo">A callback which binds the event manager.</param>
         /// <returns>The syntax that can be used to configure the event manager.</returns>
-        public static IBindingNamedWithOrOnSyntax<T> BindEventManager<T>(this IModKernel kernel, Func<IBindingToSyntax<IEventManager>, IBindingInSyntax<T>> bindTo)
+        public static IBindingNamedWithOrOnSyntax<T> BindEventManager<T>(this IModKernel kernel, Func<IBindingToSyntax<T>, IBindingInSyntax<T>> bindTo)
             where T : IEventManager
         {
             _ = bindTo ?? throw new ArgumentNullException(nameof(bindTo));
             _ = kernel ?? throw new ArgumentNullException(nameof(kernel));
 
-            return kernel.GlobalKernel.Bind<IEventManager>().Forward(bindTo).InSingletonScope();
+            var binding = kernel.Bind<T>().Forward(bindTo).InSingletonScope();
+            kernel.ExposeService<IEventManager, T>();
+            return binding;
         }
 
         /// <summary>
@@ -251,48 +250,40 @@ namespace TehPers.Core.Api.Extensions
         }
 
         /// <summary>
-        /// Exposes a service in a mod's kernel to the global kernel.
+        /// Binds a configuration that is loaded from a file.
         /// </summary>
+        /// <typeparam name="T">The type of configuration to bind. The file's contents are deserialized into this type.</typeparam>
         /// <param name="kernel">The mod's kernel.</param>
-        /// <param name="globalServiceType">The type of service that is visible globally and will be injected by the global kernel. Generally, this would be your type's interface or base class.</param>
-        /// <param name="modServiceType">The type of service that is visible within your mod. This is generally the concrete type of your service, although it could be a base class or interface as well.</param>
-        /// <returns>The syntax that can be used to configure the service that was exposed.</returns>
-        public static IBindingOnSyntax<object> ExposeService(this IModKernel kernel, Type globalServiceType, Type modServiceType)
+        /// <param name="path">The path to the configuration file.</param>
+        /// <param name="source">The source folder for that configuration file.</param>
+        /// <returns>The syntax that can be used to configure the configuration.</returns>
+        public static IBindingWhenInNamedWithOrOnSyntax<T> BindConfiguration<T>(this IModKernel kernel, string path, ContentSource source = ContentSource.ModFolder)
+            where T : class, new()
+        {
+            return kernel.BindConfiguration<T, T>(path, source);
+        }
+
+        /// <summary>
+        /// Binds a configuration that is loaded from a file.
+        /// </summary>
+        /// <typeparam name="TService">The type that is visible to other services.</typeparam>
+        /// <typeparam name="TImplementation">The type that the contents of the file are deserialized into.</typeparam>
+        /// <param name="kernel">The mod's kernel.</param>
+        /// <param name="path">The path to the configuration file.</param>
+        /// <param name="source">The source folder for that configuration file.</param>
+        /// <returns>The syntax that can be used to configure the configuration.</returns>
+        public static IBindingWhenInNamedWithOrOnSyntax<TImplementation> BindConfiguration<TService, TImplementation>(this IModKernel kernel, string path, ContentSource source = ContentSource.ModFolder)
+            where TService : class
+            where TImplementation : class, TService, new()
         {
             _ = kernel ?? throw new ArgumentNullException(nameof(kernel));
-            _ = modServiceType ?? throw new ArgumentNullException(nameof(modServiceType));
-            _ = globalServiceType ?? throw new ArgumentNullException(nameof(globalServiceType));
 
-            return kernel.GlobalKernel
-                .Bind(globalServiceType)
-                .ToProvider(typeof(ExposedServiceProvider<>))
-                .InTransientScope()
-                .WithParameter(new ModKernelParameter(kernel));
-        }
-
-        private class ExposedServiceProvider<T> : Provider<T>
-        {
-            protected override T CreateInstance(IContext context)
+            return kernel.Bind<TService>().ToMethod(context =>
             {
-                var kernelParameter = context.Parameters.OfType<ModKernelParameter>().FirstOrDefault();
-                if (kernelParameter == null)
-                {
-                    return context.ContextPreservingGet<T>();
-                }
-
-                return kernelParameter.Kernel.Get<T>(context.GetChildParameters());
-            }
-        }
-
-        private class ModKernelParameter : Parameter
-        {
-            public IModKernel Kernel { get; }
-
-            public ModKernelParameter(IModKernel kernel)
-                : base("modKernel", kernel, false)
-            {
-                this.Kernel = kernel;
-            }
+                var assetProvider = context.Kernel.Get<IAssetProvider>(new ContentSourceAttribute(source).Matches);
+                var jsonApi = context.Kernel.Get<ICommentedJsonApi>();
+                return jsonApi.ReadOrCreate<TImplementation>(path, assetProvider, null);
+            });
         }
     }
 }

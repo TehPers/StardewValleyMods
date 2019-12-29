@@ -3,7 +3,7 @@
     /// <summary>
     /// The global fishing configuration.
     /// </summary>
-    public interface IGlobalConfiguration
+    public interface IFishingConfiguration
     {
         /// <summary>
         /// Gets configuration for treasures found while fishing.

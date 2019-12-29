@@ -84,7 +84,7 @@ namespace TehPers.FishingFramework
         {
             // Remove all the handlers from the pull fish event
             var pullFishEvent = this.helper.Reflection.GetField<NetEventBinary>(rod, "pullFishFromWaterEvent").GetValue();
-            var eventField = this.helper.Reflection.GetField<AbstractNetEvent1<byte[]>.Event>(rod, "onEvent").GetValue();
+            var eventField = this.helper.Reflection.GetField<AbstractNetEvent1<byte[]>.Event>(pullFishEvent, "onEvent").GetValue();
             foreach (var method in eventField.GetInvocationList())
             {
                 if (method is AbstractNetEvent1<byte[]>.Event handler)
@@ -148,7 +148,7 @@ namespace TehPers.FishingFramework
             bool TryCatchFish()
             {
                 // Check if legendary fish are being overridden as well
-                if (!this.api.GlobalConfig.ShouldOverrideVanillaLegendaries)
+                if (!this.api.FishingConfig.ShouldOverrideVanillaLegendaries)
                 {
                     // Check if a legendary would be caught
                     var baitValue = rod.attachments[0]?.Price / 10.0 ?? 0.0;
@@ -307,7 +307,7 @@ namespace TehPers.FishingFramework
             var possibleLoot = this.api.Treasure.WhereAvailable(user).ToHashSet();
 
             // Select rewards
-            var config = this.api.GlobalConfig.Treasure;
+            var config = this.api.FishingConfig.Treasure;
             var chance = 1d;
             while (possibleLoot.Count > 0 && rewards.Count < config.MaxTreasureQuantity && Game1.random.NextDouble() <= chance)
             {

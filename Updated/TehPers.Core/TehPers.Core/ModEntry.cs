@@ -1,13 +1,18 @@
-﻿using Ninject;
+﻿using System.Diagnostics.CodeAnalysis;
+using Ninject;
 using StardewModdingAPI;
 using TehPers.Core.Api;
 using TehPers.Core.Api.DependencyInjection;
 using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Multiplayer;
 using TehPers.Core.DependencyInjection.Lifecycle;
+using TehPers.Core.Items;
+using TehPers.Core.Modules;
 
 namespace TehPers.Core
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Type is instantiated by SMAPI")]
     public class ModEntry : Mod, IServiceDrivenMod
     {
         private IModKernelFactory modKernelFactory;
@@ -38,6 +43,7 @@ namespace TehPers.Core
             this.Monitor.Log("Registering global services", LogLevel.Info);
             modKernel.Bind<EventChannelFactory>().ToSelf().InSingletonScope();
             modKernel.ExposeService<EventChannelFactory>();
+            modKernel.GlobalKernel.Load(new GlobalServicesModule(modKernel));
         }
 
         public override object GetApi()

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace TehPers.Core.Api.DependencyInjection.Lifecycle
 {
@@ -11,15 +10,15 @@ namespace TehPers.Core.Api.DependencyInjection.Lifecycle
     public abstract class EventManager<THandler, TEventArgs> : IEventManager
         where THandler : class
     {
-        private readonly Func<IEnumerable<ManagedEventHandler<THandler>>> getHandlers;
+        private readonly ISimpleFactory<THandler> handlerFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventManager{THandler,TEventArgs}"/> class.
         /// </summary>
-        /// <param name="getHandlers">Gets the handlers for this managed event.</param>
-        protected EventManager(Func<IEnumerable<ManagedEventHandler<THandler>>> getHandlers)
+        /// <param name="handlerFactory">Gets the handlers for this managed event.</param>
+        protected EventManager(ISimpleFactory<THandler> handlerFactory)
         {
-            this.getHandlers = getHandlers ?? throw new ArgumentNullException(nameof(getHandlers));
+            this.handlerFactory = handlerFactory ?? throw new ArgumentNullException(nameof(handlerFactory));
         }
 
         /// <inheritdoc />
@@ -43,9 +42,9 @@ namespace TehPers.Core.Api.DependencyInjection.Lifecycle
         /// <param name="eventArgs">The event's args.</param>
         protected void HandleEvent(object sender, TEventArgs eventArgs)
         {
-            foreach (var handler in this.getHandlers())
+            foreach (var handler in this.handlerFactory.GetAll())
             {
-                this.NotifyHandler(handler.Handler, sender, eventArgs);
+                this.NotifyHandler(handler, sender, eventArgs);
             }
         }
     }

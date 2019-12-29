@@ -10,7 +10,8 @@ namespace TehPers.Core.Api.Content
     /// <summary>
     /// A location for a resource.
     /// </summary>
-    public readonly struct AssetLocation : IEquatable<AssetLocation>
+    [Obsolete]
+    public readonly struct AssetPath : IEquatable<AssetPath>
     {
         public static IEnumerable<string> GetParts(string path)
         {
@@ -37,69 +38,57 @@ namespace TehPers.Core.Api.Content
 
         public static string Normalize(string path)
         {
-            return string.Join("\\", AssetLocation.GetParts(path));
+            return string.Join("\\", AssetPath.GetParts(path));
         }
 
-        public static bool operator ==(AssetLocation left, AssetLocation right)
+        public static bool operator ==(AssetPath left, AssetPath right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(AssetLocation left, AssetLocation right)
+        public static bool operator !=(AssetPath left, AssetPath right)
         {
             return !(left == right);
         }
 
-        public string Path { get; }
-
-        public ContentSource Source { get; }
+        private readonly string path;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AssetLocation"/> struct.
+        /// Initializes a new instance of the <see cref="AssetPath"/> struct.
         /// </summary>
         /// <param name="path">The relative path to the asset.</param>
-        /// <param name="source">The asset's source directory.</param>
-        public AssetLocation(string path, ContentSource source)
+        public AssetPath(string path)
         {
-            this.Source = source;
-            this.Path = AssetLocation.Normalize(path);
-        }
-
-        public T Load<T>(IContentSource contentSource)
-        {
-            switch (this.Source)
+            if (string.IsNullOrWhiteSpace(path))
             {
-                case ContentSource.GameContent:
-                    return Game1.content.Load<T>(this.Path);
-                case ContentSource.ModFolder:
-                    return contentSource.Load<T>(this.Path);
-                default:
-                    throw new InvalidOperationException($"Could not load from content source: {this.Source}");
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(path));
             }
+
+            this.path = AssetPath.Normalize(path);
         }
 
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            return obj is AssetLocation other && this.Equals(other);
+            return obj is AssetPath other && this.Equals(other);
         }
 
         /// <inheritdoc />
-        public bool Equals(AssetLocation other)
+        public bool Equals(AssetPath other)
         {
-            return this.Source == other.Source && string.Equals(this.Path, other.Path, StringComparison.OrdinalIgnoreCase);
+            return string.Equals(this.path, other.path, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return unchecked(((this.Path?.GetHashCode() ?? 0) * 397) ^ (int)this.Source);
+            return this.path.GetHashCode();
         }
 
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{this.Path} from {this.Source}";
+            return this.path;
         }
     }
 }

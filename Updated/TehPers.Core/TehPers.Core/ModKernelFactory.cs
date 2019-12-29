@@ -10,9 +10,9 @@ using TehPers.Core.Modules;
 
 namespace TehPers.Core
 {
-    internal sealed class ModKernelFactory : IModKernelFactory
+    public sealed class ModKernelFactory : IModKernelFactory
     {
-        private readonly IKernel globalKernel;
+        private readonly KernelBase globalKernel;
         private readonly Dictionary<string, IModKernel> modKernels;
 
         public IResolutionRoot GlobalServices => this.globalKernel;
@@ -30,6 +30,9 @@ namespace TehPers.Core
             this.globalKernel.Bind(typeof(IOptional<>))
                 .To(typeof(InjectedOptional<>))
                 .InTransientScope();
+            this.globalKernel.Bind(typeof(ISimpleFactory<>))
+                .To(typeof(SimpleFactory<>))
+                .InSingletonScope();
         }
 
         public IModKernel GetKernel(IMod owner)

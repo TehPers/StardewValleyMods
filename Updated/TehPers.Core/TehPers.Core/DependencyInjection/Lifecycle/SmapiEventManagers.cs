@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using TehPers.Core.Api.DependencyInjection;
 using TehPers.Core.Api.DependencyInjection.Lifecycle;
 using TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop;
 using TehPers.Core.Api.DependencyInjection.Lifecycle.Display;
@@ -30,8 +31,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public DayEndingEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IDayEndingHandler>>> getHandlers)
-				: base(getHandlers)
+			public DayEndingEventManager(IModHelper helper, ISimpleFactory<IDayEndingHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -65,8 +66,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public OneSecondUpdateTickedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IOneSecondUpdateTickedHandler>>> getHandlers)
-				: base(getHandlers)
+			public OneSecondUpdateTickedEventManager(IModHelper helper, ISimpleFactory<IOneSecondUpdateTickedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -100,8 +101,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public OneSecondUpdateTickingEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IOneSecondUpdateTickingHandler>>> getHandlers)
-				: base(getHandlers)
+			public OneSecondUpdateTickingEventManager(IModHelper helper, ISimpleFactory<IOneSecondUpdateTickingHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -135,8 +136,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public ReturnedToTitleEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IReturnedToTitleHandler>>> getHandlers)
-				: base(getHandlers)
+			public ReturnedToTitleEventManager(IModHelper helper, ISimpleFactory<IReturnedToTitleHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -170,8 +171,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public DayStartedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IDayStartedHandler>>> getHandlers)
-				: base(getHandlers)
+			public DayStartedEventManager(IModHelper helper, ISimpleFactory<IDayStartedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -205,8 +206,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public SaveCreatedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ISaveCreatedHandler>>> getHandlers)
-				: base(getHandlers)
+			public SaveCreatedEventManager(IModHelper helper, ISimpleFactory<ISaveCreatedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -240,8 +241,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public SaveCreatingEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ISaveCreatingHandler>>> getHandlers)
-				: base(getHandlers)
+			public SaveCreatingEventManager(IModHelper helper, ISimpleFactory<ISaveCreatingHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -275,8 +276,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public SaveLoadedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ISaveLoadedHandler>>> getHandlers)
-				: base(getHandlers)
+			public SaveLoadedEventManager(IModHelper helper, ISimpleFactory<ISaveLoadedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -310,8 +311,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public SavedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ISavedHandler>>> getHandlers)
-				: base(getHandlers)
+			public SavedEventManager(IModHelper helper, ISimpleFactory<ISavedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -345,8 +346,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public SavingEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ISavingHandler>>> getHandlers)
-				: base(getHandlers)
+			public SavingEventManager(IModHelper helper, ISimpleFactory<ISavingHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -380,8 +381,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public TimeChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ITimeChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public TimeChangedEventManager(IModHelper helper, ISimpleFactory<ITimeChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -415,8 +416,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public UpdateTickedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IUpdateTickedHandler>>> getHandlers)
-				: base(getHandlers)
+			public UpdateTickedEventManager(IModHelper helper, ISimpleFactory<IUpdateTickedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -450,8 +451,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public UpdateTickingEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IUpdateTickingHandler>>> getHandlers)
-				: base(getHandlers)
+			public UpdateTickingEventManager(IModHelper helper, ISimpleFactory<IUpdateTickingHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -489,8 +490,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public MenuChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IMenuChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public MenuChangedEventManager(IModHelper helper, ISimpleFactory<IMenuChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -524,8 +525,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public RenderedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IRenderedHandler>>> getHandlers)
-				: base(getHandlers)
+			public RenderedEventManager(IModHelper helper, ISimpleFactory<IRenderedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -559,8 +560,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public RenderedActiveMenuEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IRenderedActiveMenuHandler>>> getHandlers)
-				: base(getHandlers)
+			public RenderedActiveMenuEventManager(IModHelper helper, ISimpleFactory<IRenderedActiveMenuHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -594,8 +595,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public RenderedHudEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IRenderedHudHandler>>> getHandlers)
-				: base(getHandlers)
+			public RenderedHudEventManager(IModHelper helper, ISimpleFactory<IRenderedHudHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -629,8 +630,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public RenderedWorldEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IRenderedWorldHandler>>> getHandlers)
-				: base(getHandlers)
+			public RenderedWorldEventManager(IModHelper helper, ISimpleFactory<IRenderedWorldHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -664,8 +665,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public RenderingEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IRenderingHandler>>> getHandlers)
-				: base(getHandlers)
+			public RenderingEventManager(IModHelper helper, ISimpleFactory<IRenderingHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -699,8 +700,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public RenderingActiveMenuEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IRenderingActiveMenuHandler>>> getHandlers)
-				: base(getHandlers)
+			public RenderingActiveMenuEventManager(IModHelper helper, ISimpleFactory<IRenderingActiveMenuHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -734,8 +735,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public RenderingHudEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IRenderingHudHandler>>> getHandlers)
-				: base(getHandlers)
+			public RenderingHudEventManager(IModHelper helper, ISimpleFactory<IRenderingHudHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -769,8 +770,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public RenderingWorldEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IRenderingWorldHandler>>> getHandlers)
-				: base(getHandlers)
+			public RenderingWorldEventManager(IModHelper helper, ISimpleFactory<IRenderingWorldHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -804,8 +805,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public WindowResizedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IWindowResizedHandler>>> getHandlers)
-				: base(getHandlers)
+			public WindowResizedEventManager(IModHelper helper, ISimpleFactory<IWindowResizedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -843,8 +844,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public ButtonPressedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IButtonPressedHandler>>> getHandlers)
-				: base(getHandlers)
+			public ButtonPressedEventManager(IModHelper helper, ISimpleFactory<IButtonPressedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -878,8 +879,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public ButtonReleasedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IButtonReleasedHandler>>> getHandlers)
-				: base(getHandlers)
+			public ButtonReleasedEventManager(IModHelper helper, ISimpleFactory<IButtonReleasedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -913,8 +914,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public CursorMovedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ICursorMovedHandler>>> getHandlers)
-				: base(getHandlers)
+			public CursorMovedEventManager(IModHelper helper, ISimpleFactory<ICursorMovedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -948,8 +949,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public MouseWheelScrolledEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IMouseWheelScrolledHandler>>> getHandlers)
-				: base(getHandlers)
+			public MouseWheelScrolledEventManager(IModHelper helper, ISimpleFactory<IMouseWheelScrolledHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -987,8 +988,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public ModMessageReceivedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IModMessageReceivedHandler>>> getHandlers)
-				: base(getHandlers)
+			public ModMessageReceivedEventManager(IModHelper helper, ISimpleFactory<IModMessageReceivedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1022,8 +1023,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public PeerContextReceivedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IPeerContextReceivedHandler>>> getHandlers)
-				: base(getHandlers)
+			public PeerContextReceivedEventManager(IModHelper helper, ISimpleFactory<IPeerContextReceivedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1057,8 +1058,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public PeerDisconnectedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IPeerDisconnectedHandler>>> getHandlers)
-				: base(getHandlers)
+			public PeerDisconnectedEventManager(IModHelper helper, ISimpleFactory<IPeerDisconnectedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1096,8 +1097,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public InventoryChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IInventoryChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public InventoryChangedEventManager(IModHelper helper, ISimpleFactory<IInventoryChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1131,8 +1132,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public LevelChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ILevelChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public LevelChangedEventManager(IModHelper helper, ISimpleFactory<ILevelChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1166,8 +1167,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public WarpedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IWarpedHandler>>> getHandlers)
-				: base(getHandlers)
+			public WarpedEventManager(IModHelper helper, ISimpleFactory<IWarpedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1205,8 +1206,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public LoadStageChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ILoadStageChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public LoadStageChangedEventManager(IModHelper helper, ISimpleFactory<ILoadStageChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1240,8 +1241,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public UnvalidatedUpdateTickedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IUnvalidatedUpdateTickedHandler>>> getHandlers)
-				: base(getHandlers)
+			public UnvalidatedUpdateTickedEventManager(IModHelper helper, ISimpleFactory<IUnvalidatedUpdateTickedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1275,8 +1276,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public UnvalidatedUpdateTickingEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IUnvalidatedUpdateTickingHandler>>> getHandlers)
-				: base(getHandlers)
+			public UnvalidatedUpdateTickingEventManager(IModHelper helper, ISimpleFactory<IUnvalidatedUpdateTickingHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1314,8 +1315,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public BuildingListChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IBuildingListChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public BuildingListChangedEventManager(IModHelper helper, ISimpleFactory<IBuildingListChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1349,8 +1350,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public DebrisListChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IDebrisListChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public DebrisListChangedEventManager(IModHelper helper, ISimpleFactory<IDebrisListChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1384,8 +1385,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public LargeTerrainFeatureListChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ILargeTerrainFeatureListChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public LargeTerrainFeatureListChangedEventManager(IModHelper helper, ISimpleFactory<ILargeTerrainFeatureListChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1419,8 +1420,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public LocationListChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ILocationListChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public LocationListChangedEventManager(IModHelper helper, ISimpleFactory<ILocationListChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1454,8 +1455,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public NpcListChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<INpcListChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public NpcListChangedEventManager(IModHelper helper, ISimpleFactory<INpcListChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1489,8 +1490,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public ObjectListChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<IObjectListChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public ObjectListChangedEventManager(IModHelper helper, ISimpleFactory<IObjectListChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
@@ -1524,8 +1525,8 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 			/// </summary>
 			/// <param name="helper"></param>
 			/// <param name="getHandlers"></param>
-			public TerrainFeatureListChangedEventManager(IModHelper helper, Func<IEnumerable<ManagedEventHandler<ITerrainFeatureListChangedHandler>>> getHandlers)
-				: base(getHandlers)
+			public TerrainFeatureListChangedEventManager(IModHelper helper, ISimpleFactory<ITerrainFeatureListChangedHandler> handlerFactory)
+				: base(handlerFactory)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}

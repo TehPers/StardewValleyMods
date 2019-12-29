@@ -21,11 +21,10 @@ namespace TehPers.Core.Api.Extensions
         public static void Register(this IMod mod, Action<IModKernel> registerServices, Action<IModKernel> initialize)
         {
             _ = mod ?? throw new ArgumentNullException(nameof(mod));
-            _ = registerServices ?? throw new ArgumentNullException(nameof(registerServices));
 
-            if (mod.ModManifest.UniqueID != CoreModId && !mod.ModManifest.Dependencies.Any(dependency => dependency.UniqueID == CoreModId && dependency.IsRequired))
+            if (mod.ModManifest.UniqueID != ModExtensions.CoreModId && !mod.ModManifest.Dependencies.Any(dependency => dependency.UniqueID == ModExtensions.CoreModId && dependency.IsRequired))
             {
-                throw new ArgumentException($"Mod must have '{CoreModId}' listed as a required dependency in order to register services.", nameof(mod));
+                throw new ArgumentException($"Mod must have '{ModExtensions.CoreModId}' listed as a required dependency in order to register services.", nameof(mod));
             }
 
             // Wait until next update tick
@@ -43,7 +42,7 @@ namespace TehPers.Core.Api.Extensions
 
                 // Register services
                 var modKernel = mod.Helper.ModRegistry.GetApi<IModKernelFactory>(ModExtensions.CoreModId).GetKernel(mod);
-                registerServices.Invoke(modKernel);
+                registerServices(modKernel);
             }
 
             void DoModInit(object sender, UpdateTickedEventArgs args)
@@ -57,11 +56,13 @@ namespace TehPers.Core.Api.Extensions
 
                 // Initialize mod
                 var modKernel = mod.Helper.ModRegistry.GetApi<IModKernelFactory>(ModExtensions.CoreModId).GetKernel(mod);
-                initialize.Invoke(modKernel);
+                initialize(modKernel);
             }
         }
 
-        /// <summary>Asynchronously registers services for this <see cref="IServiceDrivenMod"/> and initializes it.</summary>
+        /// <summary>
+        /// Asynchronously registers services for this <see cref="IServiceDrivenMod"/> and initializes it. Services will be registered early during game initialization, and the mod will be initialized after all mods have had a chance to register services.
+        /// </summary>
         /// <param name="mod">The <see cref="IServiceDrivenMod"/>.</param>
         public static void Register(this IServiceDrivenMod mod)
         {

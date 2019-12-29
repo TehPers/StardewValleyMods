@@ -4,17 +4,17 @@
         <name>TehPers.FishingFramework.Api</name>
     </assembly>
     <members>
-        <member name="T:TehPers.FishingFramework.Api.Config.IGlobalConfiguration">
+        <member name="T:TehPers.FishingFramework.Api.Config.IFishingConfiguration">
             <summary>
             The global fishing configuration.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.Config.IGlobalConfiguration.Treasure">
+        <member name="P:TehPers.FishingFramework.Api.Config.IFishingConfiguration.Treasure">
             <summary>
             Gets configuration for treasures found while fishing.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.Config.IGlobalConfiguration.ShouldOverrideVanillaLegendaries">
+        <member name="P:TehPers.FishingFramework.Api.Config.IFishingConfiguration.ShouldOverrideVanillaLegendaries">
             <summary>
             Gets a value indicating whether whether vanilla legendary fish should have overridden catching behavior.
             </summary>
@@ -145,7 +145,7 @@
             <param name="who">The <see cref="T:StardewValley.Farmer"/> that is fishing.</param>
             <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of all the items that are currently available to be caught by the <see cref="T:StardewValley.Farmer"/> and returns their weighted chances of being caught.</returns>
         </member>
-        <member name="M:TehPers.FishingFramework.Api.Extensions.FishingApiExtensions.WhereAvailable``1(System.Collections.Generic.IEnumerable{``0},StardewValley.Farmer,StardewValley.GameLocation,TehPers.Core.Api.Chrono.Weathers,TehPers.FishingFramework.Api.WaterType,TehPers.Core.Api.Chrono.SDateTime,System.Nullable{System.Int32})">
+        <member name="M:TehPers.FishingFramework.Api.Extensions.FishingApiExtensions.WhereAvailable``1(System.Collections.Generic.IEnumerable{``0},StardewValley.Farmer,StardewValley.GameLocation,TehPers.Core.Api.Chrono.Weathers,TehPers.FishingFramework.Api.WaterTypes,TehPers.Core.Api.Chrono.SDateTime,System.Nullable{System.Int32})">
             <summary>
             Filters the items by whether they are available under certain circumstances and returns their weighted chances of being caught.
             </summary>
@@ -154,7 +154,7 @@
             <param name="who">The <see cref="T:StardewValley.Farmer"/> that is fishing.</param>
             <param name="location">The <see cref="T:StardewValley.GameLocation"/> being fished in.</param>
             <param name="weather">The current weather.</param>
-            <param name="waterType">The type of water being fished in.</param>
+            <param name="waterTypes">The type of water being fished in.</param>
             <param name="dateTime">The game's current date and time.</param>
             <param name="mineLevel">The current mine level, or <see langword="null" /> if not in the mines.</param>
             <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of all of the items that are available to be caught in the given circumstances and returns their weighted chances of being caught.</returns>
@@ -212,14 +212,9 @@
             Gets all of the treasure that can be found while fishing.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.IFishingApi.GlobalConfig">
+        <member name="P:TehPers.FishingFramework.Api.IFishingApi.FishingConfig">
             <summary>
-            Gets the global configuration. In singleplayer, this is loaded from the player's config files. In multiplayer, this is loaded from the server host's config files.
-            </summary>
-        </member>
-        <member name="P:TehPers.FishingFramework.Api.IFishingApi.PersonalConfig">
-            <summary>
-            Gets the personal configuration. This is always loaded from the player's config files.
+            Gets the fishing configuration. In singleplayer, this is loaded from the player's config files. In multiplayer, this is loaded from the server host's config files.
             </summary>
         </member>
         <member name="P:TehPers.FishingFramework.Api.IFishingApi.FishingStreak">
@@ -277,7 +272,7 @@
             An entity that is available sometimes while fishing.
             </summary>
         </member>
-        <member name="M:TehPers.FishingFramework.Api.IFishingAvailability.GetWeightedChance(StardewValley.Farmer,StardewValley.GameLocation,TehPers.Core.Api.Chrono.Weathers,TehPers.FishingFramework.Api.WaterType,TehPers.Core.Api.Chrono.SDateTime,System.Nullable{System.Int32})">
+        <member name="M:TehPers.FishingFramework.Api.IFishingAvailability.GetWeightedChance(StardewValley.Farmer,StardewValley.GameLocation,TehPers.Core.Api.Chrono.Weathers,TehPers.FishingFramework.Api.WaterTypes,TehPers.Core.Api.Chrono.SDateTime,System.Nullable{System.Int32})">
             <summary>
             Gets the weighted chance that this item can be caught under certain circumstances. <br />
             <br />
@@ -497,6 +492,26 @@
         </member>
         <member name="P:TehPers.FishingFramework.Api.Providers.ITreasureProvider.Treasure">
             <summary>All of the custom treasure that can be found while fishing.</summary>
+        </member>
+        <member name="T:TehPers.FishingFramework.Api.WaterTypes">
+            <summary>
+            Enumeration of types of water that can be found in a map.
+            </summary>
+        </member>
+        <member name="F:TehPers.FishingFramework.Api.WaterTypes.Lake">
+            <summary>
+            Water that is part of a lake. For example, the lake in the forest map is classified as lake water.
+            </summary>
+        </member>
+        <member name="F:TehPers.FishingFramework.Api.WaterTypes.River">
+            <summary>
+            Water that is part of a river. For example, the river in the forest map is classified as river water.
+            </summary>
+        </member>
+        <member name="F:TehPers.FishingFramework.Api.WaterTypes.Any">
+            <summary>
+            Water of any type.
+            </summary>
         </member>
     </members>
 </doc>

@@ -11,14 +11,13 @@ namespace TehPers.FishingFramework
     public class FishingApi : IFishingApi
     {
         private readonly IMonitor monitor;
-        private readonly IGlobalConfiguration localGlobalConfig;
+        private readonly IFishingConfiguration localFishingConfig;
 
         public ISet<IFishAvailability> Fish { get; }
         public IDictionary<NamespacedId, IFishTraits> FishTraits { get; }
         public ISet<ITrashAvailability> Trash { get; }
         public ISet<ITreasureAvailability> Treasure { get; }
-        public IGlobalConfiguration GlobalConfig { get; }
-        public IPersonalConfiguration PersonalConfig { get; }
+        public IFishingConfiguration FishingConfig { get; }
         public int FishingStreak { get; set; }
         public IFishingChances FishChances { get; }
         public IFishingChances TreasureChances { get; }
@@ -31,17 +30,16 @@ namespace TehPers.FishingFramework
         public event EventHandler<TrashCatchingEventArgs> TrashCatching;
         public event EventHandler<TrashCaughtEventArgs> TrashCaught;
 
-        public FishingApi(IMonitor monitor, IGlobalConfiguration localGlobalConfig, IPersonalConfiguration personalConfig)
+        public FishingApi(IMonitor monitor, IFishingConfiguration localFishingConfig)
         {
             this.monitor = monitor;
-            this.localGlobalConfig = localGlobalConfig;
+            this.localFishingConfig = localFishingConfig;
 
             this.Fish = new HashSet<IFishAvailability>();
             this.FishTraits = new Dictionary<NamespacedId, IFishTraits>();
             this.Trash = new HashSet<ITrashAvailability>();
             this.Treasure = new HashSet<ITreasureAvailability>();
-            this.GlobalConfig = localGlobalConfig;
-            this.PersonalConfig = personalConfig;
+            this.FishingConfig = localFishingConfig;
         }
 
         public virtual void OnFishCatching(FishCatchingEventArgs e)

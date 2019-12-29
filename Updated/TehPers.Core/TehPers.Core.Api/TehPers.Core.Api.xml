@@ -362,45 +362,69 @@
             <param name="f">The function which consumes the source value.</param>
             <typeparam name="TSource">The input type for the consuming function.</typeparam>
         </member>
-        <member name="T:TehPers.Core.Api.Content.AssetLocation">
+        <member name="T:TehPers.Core.Api.Content.AssetPath">
             <summary>
             A location for a resource.
             </summary>
         </member>
-        <member name="M:TehPers.Core.Api.Content.AssetLocation.#ctor(System.String,StardewModdingAPI.ContentSource)">
+        <member name="M:TehPers.Core.Api.Content.AssetPath.#ctor(System.String)">
             <summary>
-            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Content.AssetLocation"/> struct.
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Content.AssetPath"/> struct.
             </summary>
             <param name="path">The relative path to the asset.</param>
-            <param name="source">The asset's source directory.</param>
         </member>
-        <member name="M:TehPers.Core.Api.Content.AssetLocation.Equals(System.Object)">
+        <member name="M:TehPers.Core.Api.Content.AssetPath.Equals(System.Object)">
             <inheritdoc/>
         </member>
-        <member name="M:TehPers.Core.Api.Content.AssetLocation.Equals(TehPers.Core.Api.Content.AssetLocation)">
+        <member name="M:TehPers.Core.Api.Content.AssetPath.Equals(TehPers.Core.Api.Content.AssetPath)">
             <inheritdoc />
         </member>
-        <member name="M:TehPers.Core.Api.Content.AssetLocation.GetHashCode">
+        <member name="M:TehPers.Core.Api.Content.AssetPath.GetHashCode">
             <inheritdoc />
         </member>
-        <member name="M:TehPers.Core.Api.Content.AssetLocation.ToString">
+        <member name="M:TehPers.Core.Api.Content.AssetPath.ToString">
             <inheritdoc />
         </member>
-        <member name="T:TehPers.Core.Api.Content.IContentSource">
-            <summary>A source for content files.</summary>
+        <member name="T:TehPers.Core.Api.Content.IAssetProvider">
+            <summary>
+            A provider for game assets.
+            </summary>
         </member>
-        <member name="M:TehPers.Core.Api.Content.IContentSource.Load``1(System.String)">
-            <summary>Loads an asset from this content source.</summary>
+        <member name="M:TehPers.Core.Api.Content.IAssetProvider.Load``1(System.String)">
+            <summary>
+            Loads an asset from this content source.
+            </summary>
             <typeparam name="T">The type of asset to load.</typeparam>
             <param name="path">The path to the asset relative to this content source.</param>
             <returns>The loaded asset.</returns>
             <exception cref="T:Microsoft.Xna.Framework.Content.ContentLoadException">The asset failed to load.</exception>
         </member>
-        <member name="M:TehPers.Core.Api.Content.IContentSource.Open(System.String,System.IO.FileMode)">
-            <summary>Opens a file in this content source.</summary>
+        <member name="M:TehPers.Core.Api.Content.IAssetProvider.Read(System.String,System.IO.FileMode)">
+            <summary>
+            Opens a file in this content source.
+            </summary>
             <param name="path">The path to the file.</param>
             <param name="mode">The mode to open the file in.</param>
             <returns>The file's stream.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.ContentSourceAttribute">
+            <summary>
+            Constrains a <see cref="T:TehPers.Core.Api.Content.IAssetProvider"/> so that a particular source is injected.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.DependencyInjection.ContentSourceAttribute.Source">
+            <summary>
+            Gets the requested content source.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.ContentSourceAttribute.#ctor(StardewModdingAPI.ContentSource)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.DependencyInjection.ContentSourceAttribute"/> class.
+            </summary>
+            <param name="source">The content source that should be used.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.ContentSourceAttribute.Matches(Ninject.Planning.Bindings.IBindingMetadata)">
+            <inheritdoc />
         </member>
         <member name="T:TehPers.Core.Api.DependencyInjection.IModKernel">
             <summary><see cref="T:Ninject.IKernel"/> specific to an <see cref="T:StardewModdingAPI.IMod"/>.</summary>
@@ -427,6 +451,24 @@
             <param name="value">The value if it exists.</param>
             <returns><see langword="true"/> if the value exists, <see langword="false"/> otherwise.</returns>
         </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.ISimpleFactory`1">
+            <summary>
+            Simple service factory for lazily retrieving/constructing instances of services.
+            </summary>
+            <typeparam name="TService">The type of service to retrieve.</typeparam>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.ISimpleFactory`1.GetSingle">
+            <summary>
+            Gets a single instance of the service. If more than one binding exists for the service, this throws an <see cref="T:Ninject.ActivationException"/> instead.
+            </summary>
+            <returns>A single instance of the service.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.ISimpleFactory`1.GetAll">
+            <summary>
+            Gets every instance of the service. Services are activated (if necessary) when the returned <see cref="T:System.Collections.Generic.IEnumerable`1"/> is enumerated.
+            </summary>
+            <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of every instance of the service.</returns>
+        </member>
         <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2">
             <summary>
             Manages an event by calling registered handlers as needed.
@@ -434,11 +476,11 @@
             <typeparam name="THandler">The type of event handler being managed.</typeparam>
             <typeparam name="TEventArgs">The type of event args used by the event.</typeparam>
         </member>
-        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2.#ctor(System.Func{System.Collections.Generic.IEnumerable{TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler{`0}}})">
+        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2.#ctor(TehPers.Core.Api.DependencyInjection.ISimpleFactory{`0})">
             <summary>
             Initializes a new instance of the <see cref="T:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2"/> class.
             </summary>
-            <param name="getHandlers">Gets the handlers for this managed event.</param>
+            <param name="handlerFactory">Gets the handlers for this managed event.</param>
         </member>
         <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.EventManager`2.StartListening">
             <inheritdoc />
@@ -820,23 +862,6 @@
             <param name="sender">The object which invoked the event.</param>
             <param name="args">The arguments the event were invoked with.</param>
         </member>
-        <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler`1">
-            <summary>
-            Wrapper for lifecycle event handlers.
-            </summary>
-            <typeparam name="THandler">The type of event handler being managed.</typeparam>
-        </member>
-        <member name="P:TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler`1.Handler">
-            <summary>
-            Gets the handler for the event.
-            </summary>
-        </member>
-        <member name="M:TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler`1.#ctor(`0)">
-            <summary>
-            Initializes a new instance of the <see cref="T:TehPers.Core.Api.DependencyInjection.Lifecycle.ManagedEventHandler`1"/> class.
-            </summary>
-            <param name="handler">The handler for the managed event.</param>
-        </member>
         <member name="P:TehPers.Core.Api.Drawing.IDrawingApi.WhitePixel">
             <summary>
             Gets a texture containing a single white pixel.
@@ -862,7 +887,7 @@
             Gets the sprite sheet containing all hats, linked to "Character/Farmer/hats".
             </summary>
         </member>
-        <member name="M:TehPers.Core.Api.Drawing.IDrawingApi.GetTrackedTexture(TehPers.Core.Api.Content.AssetLocation)">
+        <member name="M:TehPers.Core.Api.Drawing.IDrawingApi.GetTrackedTexture(TehPers.Core.Api.Content.AssetPath)">
             <summary>
             Gets a texture helper for a particular resource that can be used to modify how the texture is drawn.
             </summary>
@@ -1359,7 +1384,7 @@
             <param name="kernel">The mod's kernel.</param>
             <returns>The syntax that can be used to configure the event manager.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindEventManager``1(TehPers.Core.Api.DependencyInjection.IModKernel,System.Func{Ninject.Syntax.IBindingToSyntax{TehPers.Core.Api.DependencyInjection.Lifecycle.IEventManager},Ninject.Syntax.IBindingInSyntax{``0}})">
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindEventManager``1(TehPers.Core.Api.DependencyInjection.IModKernel,System.Func{Ninject.Syntax.IBindingToSyntax{``0},Ninject.Syntax.IBindingInSyntax{``0}})">
             <summary>
             Binds an event manager.
             </summary>
@@ -1385,14 +1410,26 @@
             <typeparam name="TModService">The type of service that is visible within your mod. This is generally the concrete type of your service, although it could be a base class or interface as well.</typeparam>
             <returns>The syntax that can be used to configure the service that was exposed.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.ExposeService(TehPers.Core.Api.DependencyInjection.IModKernel,System.Type,System.Type)">
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindConfiguration``1(TehPers.Core.Api.DependencyInjection.IModKernel,System.String,StardewModdingAPI.ContentSource)">
             <summary>
-            Exposes a service in a mod's kernel to the global kernel.
+            Binds a configuration that is loaded from a file.
             </summary>
+            <typeparam name="T">The type of configuration to bind. The file's contents are deserialized into this type.</typeparam>
             <param name="kernel">The mod's kernel.</param>
-            <param name="globalServiceType">The type of service that is visible globally and will be injected by the global kernel. Generally, this would be your type's interface or base class.</param>
-            <param name="modServiceType">The type of service that is visible within your mod. This is generally the concrete type of your service, although it could be a base class or interface as well.</param>
-            <returns>The syntax that can be used to configure the service that was exposed.</returns>
+            <param name="path">The path to the configuration file.</param>
+            <param name="source">The source folder for that configuration file.</param>
+            <returns>The syntax that can be used to configure the configuration.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindConfiguration``2(TehPers.Core.Api.DependencyInjection.IModKernel,System.String,StardewModdingAPI.ContentSource)">
+            <summary>
+            Binds a configuration that is loaded from a file.
+            </summary>
+            <typeparam name="TService">The type that is visible to other services.</typeparam>
+            <typeparam name="TImplementation">The type that the contents of the file are deserialized into.</typeparam>
+            <param name="kernel">The mod's kernel.</param>
+            <param name="path">The path to the configuration file.</param>
+            <param name="source">The source folder for that configuration file.</param>
+            <returns>The syntax that can be used to configure the configuration.</returns>
         </member>
         <member name="T:TehPers.Core.Api.Extensions.DeconstructorExtensions">
             <summary>Extension methods which add deconstructors to types.</summary>
@@ -1550,7 +1587,9 @@
             <param name="initialize">The callback which initializes the mod, after all services have been loaded.</param>
         </member>
         <member name="M:TehPers.Core.Api.Extensions.ModExtensions.Register(TehPers.Core.Api.IServiceDrivenMod)">
-            <summary>Asynchronously registers services for this <see cref="T:TehPers.Core.Api.IServiceDrivenMod"/> and initializes it.</summary>
+            <summary>
+            Asynchronously registers services for this <see cref="T:TehPers.Core.Api.IServiceDrivenMod"/> and initializes it. Services will be registered early during game initialization, and the mod will be initialized after all mods have had a chance to register services.
+            </summary>
             <param name="mod">The <see cref="T:TehPers.Core.Api.IServiceDrivenMod"/>.</param>
         </member>
         <member name="T:TehPers.Core.Api.Extensions.WeightedExtensions">
@@ -1808,11 +1847,11 @@
             <param name="path">The path to the file.</param>
             <returns>The deserialized model.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadJson``1(System.String,TehPers.Core.Api.Content.IContentSource,System.Action{Newtonsoft.Json.JsonSerializerSettings})">
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadJson``1(System.String,TehPers.Core.Api.Content.IAssetProvider,System.Action{Newtonsoft.Json.JsonSerializerSettings})">
             <summary>Reads commented JSON from a file.</summary>
             <typeparam name="TModel">The type of object being read.</typeparam>
             <param name="path">The path to the file.</param>
-            <param name="source">The <see cref="T:TehPers.Core.Api.Content.IContentSource"/> to read the file from.</param>
+            <param name="assetProvider">The <see cref="T:TehPers.Core.Api.Content.IAssetProvider"/> to read the file from.</param>
             <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
             <returns>The deserialized model.</returns>
         </member>
@@ -1823,11 +1862,11 @@
             <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
             <returns>The deserialized model.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadOrCreate``1(System.String,TehPers.Core.Api.Content.IContentSource,System.Action{Newtonsoft.Json.JsonSerializerSettings},System.Boolean)">
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadOrCreate``1(System.String,TehPers.Core.Api.Content.IAssetProvider,System.Action{Newtonsoft.Json.JsonSerializerSettings},System.Boolean)">
             <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
             <typeparam name="TModel">The type of object being read.</typeparam>
             <param name="path">The path to the file.</param>
-            <param name="source">The <see cref="T:TehPers.Core.Api.Content.IContentSource"/> to read the file from.</param>
+            <param name="assetProvider">The <see cref="T:TehPers.Core.Api.Content.IAssetProvider"/> to read the file from.</param>
             <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
             <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
             <returns>The deserialized model.</returns>
@@ -1840,11 +1879,11 @@
             <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
             <returns>The deserialized model.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadOrCreate``1(System.String,TehPers.Core.Api.Content.IContentSource,System.Action{Newtonsoft.Json.JsonSerializerSettings},System.Func{``0},System.Boolean)">
+        <member name="M:TehPers.Core.Api.Json.ICommentedJsonApi.ReadOrCreate``1(System.String,TehPers.Core.Api.Content.IAssetProvider,System.Action{Newtonsoft.Json.JsonSerializerSettings},System.Func{``0},System.Boolean)">
             <summary>Reads commented JSON from a file, creating the file if it doesn't exist.</summary>
             <typeparam name="TModel">The type of object being read.</typeparam>
             <param name="path">The path to the file.</param>
-            <param name="source">The <see cref="T:TehPers.Core.Api.Content.IContentSource"/> to read the file from.</param>
+            <param name="assetProvider">The <see cref="T:TehPers.Core.Api.Content.IAssetProvider"/> to read the file from.</param>
             <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
             <param name="modelFactory">Factory method which creates an instance of model.</param>
             <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
