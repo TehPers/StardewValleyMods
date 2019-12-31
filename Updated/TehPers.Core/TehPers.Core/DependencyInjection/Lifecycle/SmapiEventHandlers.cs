@@ -1,5 +1,4 @@
 ﻿using TehPers.Core.Api.DependencyInjection;
-using TehPers.Core.Api.Extensions;
 
 namespace TehPers.Core.DependencyInjection.Lifecycle
 {
@@ -9,61 +8,61 @@ namespace TehPers.Core.DependencyInjection.Lifecycle
 		{
 
 			// GameLoop
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.DayEndingEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.OneSecondUpdateTickedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.OneSecondUpdateTickingEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.ReturnedToTitleEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.DayStartedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.SaveCreatedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.SaveCreatingEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.SaveLoadedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.SavedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.SavingEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.TimeChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.UpdateTickedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.GameLoop.UpdateTickingEventManager>();
+			kernel.Bind<IEventManager>().To<GameLoop.DayEndingEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.OneSecondUpdateTickedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.OneSecondUpdateTickingEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.ReturnedToTitleEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.DayStartedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.SaveCreatedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.SaveCreatingEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.SaveLoadedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.SavedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.SavingEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.TimeChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.UpdateTickedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<GameLoop.UpdateTickingEventManager>().InSingletonScope();
 
 			// Display
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.MenuChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.RenderedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.RenderedActiveMenuEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.RenderedHudEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.RenderedWorldEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.RenderingEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.RenderingActiveMenuEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.RenderingHudEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.RenderingWorldEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Display.WindowResizedEventManager>();
+			kernel.Bind<IEventManager>().To<Display.MenuChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Display.RenderedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Display.RenderedActiveMenuEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Display.RenderedHudEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Display.RenderedWorldEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Display.RenderingEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Display.RenderingActiveMenuEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Display.RenderingHudEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Display.RenderingWorldEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Display.WindowResizedEventManager>().InSingletonScope();
 
 			// Input
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Input.ButtonPressedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Input.ButtonReleasedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Input.CursorMovedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Input.MouseWheelScrolledEventManager>();
+			kernel.Bind<IEventManager>().To<Input.ButtonPressedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Input.ButtonReleasedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Input.CursorMovedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Input.MouseWheelScrolledEventManager>().InSingletonScope();
 
 			// Multiplayer
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Multiplayer.ModMessageReceivedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Multiplayer.PeerContextReceivedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Multiplayer.PeerDisconnectedEventManager>();
+			kernel.Bind<IEventManager>().To<Multiplayer.ModMessageReceivedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Multiplayer.PeerContextReceivedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Multiplayer.PeerDisconnectedEventManager>().InSingletonScope();
 
 			// Player
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Player.InventoryChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Player.LevelChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Player.WarpedEventManager>();
+			kernel.Bind<IEventManager>().To<Player.InventoryChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Player.LevelChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Player.WarpedEventManager>().InSingletonScope();
 
 			// Specialized
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Specialized.LoadStageChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Specialized.UnvalidatedUpdateTickedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.Specialized.UnvalidatedUpdateTickingEventManager>();
+			kernel.Bind<IEventManager>().To<Specialized.LoadStageChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Specialized.UnvalidatedUpdateTickedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<Specialized.UnvalidatedUpdateTickingEventManager>().InSingletonScope();
 
 			// World
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.World.BuildingListChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.World.DebrisListChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.World.LargeTerrainFeatureListChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.World.LocationListChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.World.NpcListChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.World.ObjectListChangedEventManager>();
-			kernel.BindEventManager<TehPers.Core.DependencyInjection.Lifecycle.World.TerrainFeatureListChangedEventManager>();
+			kernel.Bind<IEventManager>().To<World.BuildingListChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<World.DebrisListChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<World.LargeTerrainFeatureListChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<World.LocationListChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<World.NpcListChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<World.ObjectListChangedEventManager>().InSingletonScope();
+			kernel.Bind<IEventManager>().To<World.TerrainFeatureListChangedEventManager>().InSingletonScope();
 		}
 	}
 }

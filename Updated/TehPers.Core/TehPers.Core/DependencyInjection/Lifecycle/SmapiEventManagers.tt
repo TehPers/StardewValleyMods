@@ -6,7 +6,6 @@
 <#@ output extension=".cs" #>
 <#
     const string ROOT_NAMESPACE = "TehPers.Core.DependencyInjection.Lifecycle";
-	const string API_NAMESPACE = "TehPers.Core.Api.DependencyInjection.Lifecycle";
 
     var events = new Dictionary<string, List<string>> {
         ["GameLoop"] = new List<string> {
@@ -69,18 +68,10 @@
     };
 #>
 using System;
-using System.Collections.Generic;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using TehPers.Core.Api.DependencyInjection;
 using TehPers.Core.Api.DependencyInjection.Lifecycle;
-<#
-	foreach (var namespaceKv in events) {
-#>
-using <#= API_NAMESPACE #>.<#= namespaceKv.Key #>;
-<#
-	}
-#>
 
 #pragma warning disable SA1403 // Auto-generated file, it's more easy to maintain if kept in one file.
 #pragma warning disable SA1649 // Auto-generated file, it's more easy to maintain if kept in one file.
@@ -97,38 +88,24 @@ namespace <#= ROOT_NAMESPACE #>
         foreach (var eventName in namespaceKv.Value) {
 #>
 
-        /// <summary>Handles events from <see cref="I<#= namespaceKv.Key #>Events.<#= eventName #>" />.</summary>
-        internal class <#= eventName #>EventManager : EventManager<I<#= eventName #>Handler, <#= eventName #>EventArgs>
+        internal class <#= eventName #>EventManager : EventManager<<#= eventName #>EventArgs>
         {
 			private readonly IModHelper helper;
 
-			/// <summary>
-			/// Initializes a new instance of the <see cref="<#= eventName #>EventManager"/> class.
-			/// </summary>
-			/// <param name="helper"></param>
-			/// <param name="getHandlers"></param>
-			public <#= eventName #>EventManager(IModHelper helper, ISimpleFactory<I<#= eventName #>Handler> handlerFactory)
-				: base(handlerFactory)
+			public <#= eventName #>EventManager(IModHelper helper, ISimpleFactory<IEventHandler<<#= eventName #>EventArgs>> handlers)
+				: base(handlers)
 			{
 				this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
 			}
 
-			/// <inheritdoc/>
 			public override void StartListening()
 			{
                 this.helper.Events.<#= namespaceKv.Key #>.<#= eventName #> += this.HandleEvent;
 			}
 
-			/// <inheritdoc/>
 			public override void StopListening()
 			{
                 this.helper.Events.<#= namespaceKv.Key #>.<#= eventName #> -= this.HandleEvent;
-			}
-
-			/// <inheritdoc/>
-			protected override void NotifyHandler(I<#= eventName #>Handler handler, object sender, <#= eventName #>EventArgs eventArgs)
-			{
-				handler.On<#= eventName #>(sender, eventArgs);
 			}
         }
 <#

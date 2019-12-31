@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using StardewValley;
 using TehPers.Core.Api;
 using TehPers.FishingFramework.Api.Config;
-using TehPers.FishingFramework.Api.Events;
 
 namespace TehPers.FishingFramework.Api
 {
@@ -33,11 +31,6 @@ namespace TehPers.FishingFramework.Api
         ISet<ITreasureAvailability> Treasure { get; }
 
         /// <summary>
-        /// Gets the fishing configuration. In singleplayer, this is loaded from the player's config files. In multiplayer, this is loaded from the server host's config files.
-        /// </summary>
-        IFishingConfiguration FishingConfig { get; }
-
-        /// <summary>
         /// Gets or sets the perfect fishing streak of the local <see cref="Farmer"/>.
         /// </summary>
         int FishingStreak { get; set; }
@@ -51,40 +44,5 @@ namespace TehPers.FishingFramework.Api
         /// Gets a mapping between <see cref="Farmer"/>s and their chances of finding treasure while fishing.
         /// </summary>
         IFishingChances TreasureChances { get; }
-
-        /// <summary>
-        /// Raised before a fish is caught, right before the minigame appears.
-        /// </summary>
-        event EventHandler<FishCatchingEventArgs> FishCatching;
-
-        /// <summary>
-        /// Raised after a fish is caught, once the minigame has completed.
-        /// </summary>
-        event EventHandler<FishCaughtEventArgs> FishCaught;
-
-        /// <summary>
-        /// Raised after a fish is lost, once the minigame has completed.
-        /// </summary>
-        event EventHandler<FishLostEventArgs> FishLost;
-
-        /// <summary>
-        /// Raised before a treasure chest is opened.
-        /// </summary>
-        event EventHandler<TreasureOpeningEventArgs> TreasureOpening;
-
-        /// <summary>
-        /// Raised after a treasure chest is opened.
-        /// </summary>
-        event EventHandler<TreasureOpenedEventArgs> TreasureOpened;
-
-        /// <summary>
-        /// Raised before trash is caught.
-        /// </summary>
-        event EventHandler<TrashCatchingEventArgs> TrashCatching;
-
-        /// <summary>
-        /// Raised after trash is caught.
-        /// </summary>
-        event EventHandler<TrashCaughtEventArgs> TrashCaught;
     }
 }

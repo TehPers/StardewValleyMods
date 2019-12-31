@@ -6,13 +6,13 @@
     public interface IFishingConfiguration
     {
         /// <summary>
-        /// Gets configuration for treasures found while fishing.
+        /// Gets the configuration for fish.
         /// </summary>
-        ITreasureConfiguration Treasure { get; }
+        IFishConfiguration Fish { get; }
 
         /// <summary>
-        /// Gets a value indicating whether whether vanilla legendary fish should have overridden catching behavior.
+        /// Gets the configuration for treasures found while fishing.
         /// </summary>
-        bool ShouldOverrideVanillaLegendaries { get; }
+        ITreasureConfiguration Treasure { get; }
     }
 }

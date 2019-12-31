@@ -20,9 +20,15 @@ namespace TehPers.Core.Content
             return this.contentHelper.Load<T>(path);
         }
 
-        public Stream Read(string path, FileMode mode)
+        public Stream Open(string path, FileMode mode)
         {
-            return File.Open(Path.Combine(this.modPath, path), mode);
+            var fullPath = Path.Combine(this.modPath, path);
+            if (Path.GetDirectoryName(fullPath) is { } dir)
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            return File.Open(fullPath, mode);
         }
     }
 }

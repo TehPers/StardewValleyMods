@@ -1,7 +1,7 @@
 ﻿namespace TehPers.FishingFramework.Api.Config
 {
     /// <summary>
-    /// Configuration for fishing treasure rewards.
+    /// The configuration for fishing treasure rewards.
     /// </summary>
     public interface ITreasureConfiguration
     {
@@ -16,8 +16,8 @@
         bool AllowDuplicateLoot { get; }
 
         /// <summary>
-        /// Gets the chances for additional loot to appear in a treasure chest. These chances are checked every time an additional item of loot is added to the chest.
+        /// Gets the chances for treasure to appear while fishing, and the chances for additional loot to appear in a treasure chest. These chances are checked every time an additional item of loot is added to the chest.
         /// </summary>
-        IFishingChances AdditionalLootChances { get; }
+        ITreasureChances TreasureChances { get; }
     }
 }

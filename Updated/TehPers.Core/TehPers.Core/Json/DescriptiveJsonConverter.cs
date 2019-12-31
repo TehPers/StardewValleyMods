@@ -67,7 +67,7 @@ namespace TehPers.Core.Json {
         private void GetMemberData<T>(T memberInfo, object value, IDictionary<string, object> values, IDictionary<string, string> descriptions) where T : MemberInfo {
             // Get member name
             var name = memberInfo.GetCustomAttribute<JsonPropertyAttribute>()?.PropertyName;
-            name = name ?? memberInfo.Name;
+            name ??= memberInfo.Name;
 
             // Keep track of object
             values[name] = value;

@@ -23,29 +23,40 @@ namespace TehPers.FishingFramework.Patches
             this.overrideService = overrideService ?? throw new ArgumentNullException(nameof(overrideService));
             this.harmony = harmony ?? throw new ArgumentNullException(nameof(harmony));
 
-            playLocalMethodInfo = GetMethod(typeof(NetAudio), nameof(NetAudio.PlayLocal));
-            playLocalPrefixMethodInfo = GetMethod(typeof(NetAudioPatchingService), nameof(NetAudioPatchingService.PlayLocalPrefix));
+            this.playLocalMethodInfo = this.GetMethod(typeof(NetAudio), nameof(NetAudio.PlayLocal));
+            this.playLocalPrefixMethodInfo = this.GetMethod(typeof(NetAudioPatchingService), nameof(NetAudioPatchingService.PlayLocalPrefix));
         }
 
         protected override void ApplyPatchesInternal()
         {
-            harmony.Patch(playLocalMethodInfo, prefix: new HarmonyMethod(playLocalPrefixMethodInfo));
+            this.harmony.Patch(this.playLocalMethodInfo, prefix: new HarmonyMethod(this.playLocalPrefixMethodInfo));
         }
 
         protected override void RemovePatchesInternal()
         {
-            harmony.Unpatch(playLocalMethodInfo, playLocalPrefixMethodInfo);
+            this.harmony.Unpatch(this.playLocalMethodInfo, this.playLocalPrefixMethodInfo);
         }
 
         public static bool PlayLocalPrefix(string audioName)
         {
-            if (audioName == "FishHit" && Game1.player.CurrentTool is FishingRod rod && !Instance.overrideService.OverridingCatch.Contains(rod))
+            if (audioName != "FishHit")
             {
-                Instance.monitor.Log($"Prevented {audioName} cue from playing.", LogLevel.Trace);
-                return false;
+                return true;
             }
 
-            return true;
+            if (!(Game1.player.CurrentTool is FishingRod rod))
+            {
+                return true;
+            }
+
+            if (PatchingService<NetAudioPatchingService>.Instance.overrideService.IsRodBeingProcessed(rod))
+            {
+                return true;
+            }
+
+            PatchingService<NetAudioPatchingService>.Instance.monitor.Log($"Prevented {audioName} cue from playing.");
+            return false;
+
         }
     }
 }

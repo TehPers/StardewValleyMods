@@ -1,5 +1,6 @@
 ﻿using System;
 using Ninject;
+using Ninject.Modules;
 using Ninject.Parameters;
 using Ninject.Syntax;
 using StardewModdingAPI;
@@ -23,6 +24,12 @@ namespace TehPers.Core.Api
         /// Other global services can be found here as well. For more advanced operations, consider making your mod service-driven by implementing <see cref="IServiceDrivenMod"/> and calling <see cref="ModExtensions.Register(TehPers.Core.Api.IServiceDrivenMod)"/>.
         /// </example>
         IResolutionRoot GlobalServices { get; }
+
+        /// <summary>
+        /// Loads modules into every <see cref="IModKernel"/>.
+        /// </summary>
+        /// <param name="moduleFactory">A factory callback for creating the modules that should be loaded into each <see cref="IModKernel"/>. This should never return the same instance more than once.</param>
+        void LoadIntoModKernels(Func<IManifest, INinjectModule> moduleFactory);
 
         /// <summary>Gets the <see cref="IModKernel"/> for your <see cref="IMod"/>. This <see cref="IModKernel"/> is specific to your <see cref="IMod"/> and can only see dependencies registered to it and the global <see cref="IKernel"/>. Use <see cref="ResolutionExtensions.Get{T}(IResolutionRoot, IParameter[])"/> to get a service from the <see cref="IModKernel"/>.</summary>
         /// <param name="owner">The owner of the <see cref="IModKernel"/>.</param>

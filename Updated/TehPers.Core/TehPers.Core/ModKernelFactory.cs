@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Ninject;
 using Ninject.Extensions.Factory;
+using Ninject.Modules;
 using Ninject.Syntax;
 using StardewModdingAPI;
 using TehPers.Core.Api;
 using TehPers.Core.Api.DependencyInjection;
+using TehPers.Core.Api.Extensions;
 using TehPers.Core.DependencyInjection;
 using TehPers.Core.Modules;
 
@@ -13,14 +16,16 @@ namespace TehPers.Core
     public sealed class ModKernelFactory : IModKernelFactory
     {
         private readonly KernelBase globalKernel;
-        private readonly Dictionary<string, IModKernel> modKernels;
+        private readonly Dictionary<IManifest, IModKernel> modKernels;
+        private readonly HashSet<Func<IManifest, INinjectModule>> modModuleFactories;
 
         public IResolutionRoot GlobalServices => this.globalKernel;
 
         public ModKernelFactory()
         {
             this.globalKernel = new StandardKernel();
-            this.modKernels = new Dictionary<string, IModKernel>();
+            this.modKernels = new Dictionary<IManifest, IModKernel>();
+            this.modModuleFactories = new HashSet<Func<IManifest, INinjectModule>>();
 
             this.RegisterGlobalServices();
         }
@@ -33,22 +38,42 @@ namespace TehPers.Core
             this.globalKernel.Bind(typeof(ISimpleFactory<>))
                 .To(typeof(SimpleFactory<>))
                 .InSingletonScope();
+            this.globalKernel.Bind<IModKernelFactory>()
+                .ToConstant(this)
+                .InSingletonScope();
+        }
+
+        public void LoadIntoModKernels(Func<IManifest, INinjectModule> moduleFactory)
+        {
+            _ = moduleFactory ?? throw new ArgumentNullException(nameof(moduleFactory));
+
+            this.modModuleFactories.Add(moduleFactory);
+            foreach (var (manifest, kernel) in this.modKernels)
+            {
+                kernel.Load(moduleFactory(manifest));
+            }
         }
 
         public IModKernel GetKernel(IMod owner)
         {
-            if (!this.modKernels.TryGetValue(owner.ModManifest.UniqueID, out var modKernel))
+            if (!this.modKernels.TryGetValue(owner.ModManifest, out var modKernel))
             {
-                modKernel = new ModKernel(owner, this.globalKernel, new NinjectSettings
+                modKernel = new ModKernel(owner, this.globalKernel, this, new NinjectSettings
                 {
-                    LoadExtensions = false
+                    LoadExtensions = false,
                 });
 
                 modKernel.Load(
                     new ModModule(owner, modKernel),
                     new FuncModule()
-                    );
-                this.modKernels.Add(owner.ModManifest.UniqueID, modKernel);
+                );
+
+                foreach (var factory in this.modModuleFactories)
+                {
+                    modKernel.Load(factory(owner.ModManifest));
+                }
+
+                this.modKernels.Add(owner.ModManifest, modKernel);
             }
 
             return modKernel;

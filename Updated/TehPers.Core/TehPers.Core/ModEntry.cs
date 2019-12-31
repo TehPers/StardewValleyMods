@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using Newtonsoft.Json;
 using Ninject;
 using StardewModdingAPI;
 using TehPers.Core.Api;
@@ -8,6 +11,7 @@ using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Multiplayer;
 using TehPers.Core.DependencyInjection.Lifecycle;
 using TehPers.Core.Items;
+using TehPers.Core.Json;
 using TehPers.Core.Modules;
 
 namespace TehPers.Core
@@ -41,9 +45,40 @@ namespace TehPers.Core
             modKernel.BindManagedSmapiEvents();
 
             this.Monitor.Log("Registering global services", LogLevel.Info);
+            modKernel.ParentFactory.LoadIntoModKernels<CoreApiModModule>();
             modKernel.Bind<EventChannelFactory>().ToSelf().InSingletonScope();
             modKernel.ExposeService<EventChannelFactory>();
-            modKernel.GlobalKernel.Load(new GlobalServicesModule(modKernel));
+            modKernel.GlobalKernel.Bind<IGlobalItemProvider>().To<GlobalItemProvider>().InSingletonScope();
+
+            // SMAPI's default converters
+            foreach (var converter in this.GetSmapiConverters())
+            {
+                modKernel.GlobalKernel.Bind<JsonConverter>().ToConstant(converter).InSingletonScope();
+            }
+
+            // Properly converts Net* objects
+            modKernel.GlobalKernel.Bind<JsonConverter>().ToConstant(new NetConverter()).InSingletonScope();
+
+            // Provides descriptions
+            modKernel.GlobalKernel.Bind<JsonConverter>().ToConstant(new DescriptiveJsonConverter()).InSingletonScope();
+        }
+
+        private IEnumerable<JsonConverter> GetSmapiConverters()
+        {
+            var smapiJsonHelper = this.Helper.Data.GetType().GetField("JsonHelper", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(this.Helper.Data);
+            var smapiJsonSettings = smapiJsonHelper?.GetType().GetProperty("JsonSettings", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(smapiJsonHelper);
+            if (smapiJsonSettings is JsonSerializerSettings { Converters: { } smapiConverters })
+            {
+                // Add all the converters SMAPI uses to this API's serializer settings
+                foreach (var converter in smapiConverters)
+                {
+                    yield return converter;
+                }
+            }
+            else
+            {
+                this.Monitor.Log("Unable to get SMAPI's JSON converters. Some config settings might be confusing!", LogLevel.Error);
+            }
         }
 
         public override object GetApi()

@@ -1,9 +1,9 @@
-﻿namespace TehPers.Core.Api.DependencyInjection.Lifecycle
+﻿namespace TehPers.Core.DependencyInjection.Lifecycle
 {
     /// <summary>
     /// Manages an event by calling registered handlers as needed.
     /// </summary>
-    public interface IEventManager
+    internal interface IEventManager
     {
         /// <summary>
         /// Starts listening for events.

@@ -23,6 +23,6 @@ namespace TehPers.Core.Api.Content
         /// <param name="path">The path to the file.</param>
         /// <param name="mode">The mode to open the file in.</param>
         /// <returns>The file's stream.</returns>
-        Stream Read(string path, FileMode mode);
+        Stream Open(string path, FileMode mode);
     }
 }

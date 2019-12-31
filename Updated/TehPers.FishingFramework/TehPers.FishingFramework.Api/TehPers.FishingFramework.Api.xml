@@ -4,24 +4,44 @@
         <name>TehPers.FishingFramework.Api</name>
     </assembly>
     <members>
+        <member name="T:TehPers.FishingFramework.Api.Config.IFishConfiguration">
+            <summary>
+            The configuration for fish. This configuration has no effect on fishing ponds.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.Config.IFishConfiguration.FishChances">
+            <summary>
+            Gets the chances of finding a fish when hitting something while fishing.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.Config.IFishConfiguration.ShouldOverrideVanillaLegendaries">
+            <summary>
+            Gets a value indicating whether whether vanilla legendary fish should have overridden catching behavior.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.Config.IFishConfiguration.AllowFishOnAllFarms">
+            <summary>
+            Gets a value indicating whether whether all farm types should have fish.
+            </summary>
+        </member>
         <member name="T:TehPers.FishingFramework.Api.Config.IFishingConfiguration">
             <summary>
             The global fishing configuration.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.Config.IFishingConfiguration.Treasure">
+        <member name="P:TehPers.FishingFramework.Api.Config.IFishingConfiguration.Fish">
             <summary>
-            Gets configuration for treasures found while fishing.
+            Gets the configuration for fish.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.Config.IFishingConfiguration.ShouldOverrideVanillaLegendaries">
+        <member name="P:TehPers.FishingFramework.Api.Config.IFishingConfiguration.Treasure">
             <summary>
-            Gets a value indicating whether whether vanilla legendary fish should have overridden catching behavior.
+            Gets the configuration for treasures found while fishing.
             </summary>
         </member>
         <member name="T:TehPers.FishingFramework.Api.Config.ITreasureConfiguration">
             <summary>
-            Configuration for fishing treasure rewards.
+            The configuration for fishing treasure rewards.
             </summary>
         </member>
         <member name="P:TehPers.FishingFramework.Api.Config.ITreasureConfiguration.MaxTreasureQuantity">
@@ -34,9 +54,9 @@
             Gets a value indicating whether whether to allow the same treasure reward to appear multiple times in a treasure chest.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.Config.ITreasureConfiguration.AdditionalLootChances">
+        <member name="P:TehPers.FishingFramework.Api.Config.ITreasureConfiguration.TreasureChances">
             <summary>
-            Gets the chances for additional loot to appear in a treasure chest. These chances are checked every time an additional item of loot is added to the chest.
+            Gets the chances for treasure to appear while fishing, and the chances for additional loot to appear in a treasure chest. These chances are checked every time an additional item of loot is added to the chest.
             </summary>
         </member>
         <member name="T:TehPers.FishingFramework.Api.Events.FishCatchingEventArgs">
@@ -177,6 +197,72 @@
             <param name="tileLocation">The tile the water is at.</param>
             <returns>The type of water at that tile.</returns>
         </member>
+        <member name="T:TehPers.FishingFramework.Api.FishAvailability">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.FishAvailability.FishId">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.FishAvailability.Chance">
+            <summary>
+            Gets the weighted chance of this fish appearing.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.FishAvailability.Times">
+            <summary>
+            Gets the times this fish can appear.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.FishAvailability.Location">
+            <summary>
+            Gets the name of the game location this fish can appear in.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.FishAvailability.WaterTypes">
+            <summary>
+            Gets the water types this fish can appear in.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.FishAvailability.Seasons">
+            <summary>
+            Gets the seasons this fish can appear in.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.FishAvailability.Weathers">
+            <summary>
+            Gets the weather this fish can appear in.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.FishAvailability.MinLevel">
+            <summary>
+            Gets the minimum fishing level required for this fish to appear.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.FishAvailability.MineLevel">
+            <summary>
+            Gets the mine level this fish can be found on in the mines or null if it can be found on any floor.
+            </summary>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.FishAvailability.#ctor(TehPers.Core.Api.NamespacedId,System.Double,TehPers.FishingFramework.Api.STimeInterval[],System.String,TehPers.Core.Api.Chrono.Seasons,TehPers.Core.Api.Chrono.Weathers,TehPers.FishingFramework.Api.WaterTypes,System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.FishingFramework.Api.FishAvailability"/> class.
+            </summary>
+            <param name="fishId">The <see cref="T:TehPers.Core.Api.NamespacedId"/> for the fish.</param>
+            <param name="chance">The weighted chance of this fish appearing.</param>
+            <param name="times">The times this fish can appear.</param>
+            <param name="location">The name of the game location this fish can appear in.</param>
+            <param name="seasons">The seasons this fish can appear in.</param>
+            <param name="weathers">The weathers this fish can appear in.</param>
+            <param name="waterTypes">The water types this fish can appear in.</param>
+            <param name="minLevel">The minimum fishing level required for this fish to appear.</param>
+            <param name="mineLevel">The mine level this fish can be found on in the mines.</param>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.FishAvailability.GetWeightedChance(StardewValley.Farmer,StardewValley.GameLocation,TehPers.Core.Api.Chrono.Weathers,TehPers.FishingFramework.Api.WaterTypes,TehPers.Core.Api.Chrono.SDateTime,System.Nullable{System.Int32})">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.FishAvailability.ToString">
+            <inheritdoc/>
+        </member>
         <member name="T:TehPers.FishingFramework.Api.IFishAvailability">
             <summary>
             A fish that is sometimes available while fishing.
@@ -212,11 +298,6 @@
             Gets all of the treasure that can be found while fishing.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.IFishingApi.FishingConfig">
-            <summary>
-            Gets the fishing configuration. In singleplayer, this is loaded from the player's config files. In multiplayer, this is loaded from the server host's config files.
-            </summary>
-        </member>
         <member name="P:TehPers.FishingFramework.Api.IFishingApi.FishingStreak">
             <summary>
             Gets or sets the perfect fishing streak of the local <see cref="T:StardewValley.Farmer"/>.
@@ -230,41 +311,6 @@
         <member name="P:TehPers.FishingFramework.Api.IFishingApi.TreasureChances">
             <summary>
             Gets a mapping between <see cref="T:StardewValley.Farmer"/>s and their chances of finding treasure while fishing.
-            </summary>
-        </member>
-        <member name="E:TehPers.FishingFramework.Api.IFishingApi.FishCatching">
-            <summary>
-            Raised before a fish is caught, right before the minigame appears.
-            </summary>
-        </member>
-        <member name="E:TehPers.FishingFramework.Api.IFishingApi.FishCaught">
-            <summary>
-            Raised after a fish is caught, once the minigame has completed.
-            </summary>
-        </member>
-        <member name="E:TehPers.FishingFramework.Api.IFishingApi.FishLost">
-            <summary>
-            Raised after a fish is lost, once the minigame has completed.
-            </summary>
-        </member>
-        <member name="E:TehPers.FishingFramework.Api.IFishingApi.TreasureOpening">
-            <summary>
-            Raised before a treasure chest is opened.
-            </summary>
-        </member>
-        <member name="E:TehPers.FishingFramework.Api.IFishingApi.TreasureOpened">
-            <summary>
-            Raised after a treasure chest is opened.
-            </summary>
-        </member>
-        <member name="E:TehPers.FishingFramework.Api.IFishingApi.TrashCatching">
-            <summary>
-            Raised before trash is caught.
-            </summary>
-        </member>
-        <member name="E:TehPers.FishingFramework.Api.IFishingApi.TrashCaught">
-            <summary>
-            Raised after trash is caught.
             </summary>
         </member>
         <member name="T:TehPers.FishingFramework.Api.IFishingAvailability">
@@ -291,32 +337,67 @@
             <summary>
             The chances of something occurring while fishing.<br />
             <br />
-            Final chances are calculated as <c>(baseChance + dailyLuck * dailyLuckFactor + luckLevel * luckLevelFactor + streak * streakFactor) * locationFactor</c>.
+            Final chances are calculated as <c>(baseChance + dailyLuck * dailyLuckFactor + luckLevel * luckLevelFactor + streak * streakFactor) * locationFactor</c> bounded in the range [minChance, maxChance], then bounded once again in the range [0, 1].
             </summary>
         </member>
         <member name="P:TehPers.FishingFramework.Api.IFishingChances.BaseChance">
             <summary>
-            Gets or sets the base chance.
+            Gets the base chance.
             </summary>
         </member>
         <member name="P:TehPers.FishingFramework.Api.IFishingChances.StreakFactor">
             <summary>
-            Gets or sets the effect the perfect fishing streak has.
+            Gets the effect the perfect fishing streak has.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.IFishingChances.FishingLevelFactor">
+            <summary>
+            Gets the effect that fishing level has on this chance.
             </summary>
         </member>
         <member name="P:TehPers.FishingFramework.Api.IFishingChances.DailyLuckFactor">
             <summary>
-            Gets or sets the effect that daily luck has.
+            Gets the effect that daily luck has.
             </summary>
         </member>
         <member name="P:TehPers.FishingFramework.Api.IFishingChances.LuckLevelFactor">
             <summary>
-            Gets or sets the effect that luck level has.
+            Gets the effect that luck level has.
             </summary>
         </member>
         <member name="P:TehPers.FishingFramework.Api.IFishingChances.LocationFactors">
             <summary>
-            Gets a mapping of locations to the effect those locations have on catching a fish. This is useful if you'd like to make it impossible to catch fish entirely in a location.
+            Gets a mapping of locations to the effect those locations have on this chance.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.IFishingChances.MinChance">
+            <summary>
+            Gets the minimum possible chance.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.IFishingChances.MaxChance">
+            <summary>
+            Gets the maximum possible chance.
+            </summary>
+        </member>
+        <member name="T:TehPers.FishingFramework.Api.ITreasureChances">
+            <summary>
+            The chances of finding treasure while fishing.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.ITreasureChances.MagnetFactor">
+            <summary>
+            Gets the effect that the magnet bait has.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.ITreasureChances.TreasureHunterFactor">
+            <summary>
+            Gets the effect that the treasure hunter tackle has.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.ITreasureChances.PirateFactor">
+            <summary>
+            Gets the effect that the pirate profession has.
             </summary>
         </member>
         <member name="T:TehPers.FishingFramework.Api.IFishTraits">
@@ -473,13 +554,22 @@
             </summary>
         </member>
         <member name="T:TehPers.FishingFramework.Api.Providers.IFishProvider">
-            <summary>Provides catchable fish.</summary>
-        </member>
-        <member name="P:TehPers.FishingFramework.Api.Providers.IFishProvider.FishTraits">
-            <summary>A mapping of fish keys to custom fish traits.</summary>
+            <summary>
+            Provides catchable fish.
+            </summary>
         </member>
         <member name="P:TehPers.FishingFramework.Api.Providers.IFishProvider.Fish">
-            <summary>All of the custom fish that can be caught while fishing.</summary>
+            <summary>
+            Gets all of the custom fish that can be caught while fishing.
+            </summary>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.Providers.IFishProvider.TryGetTraits(TehPers.Core.Api.NamespacedId,TehPers.FishingFramework.Api.IFishTraits@)">
+            <summary>
+            Tries to get the traits for a particular fish. This method must return valid fish traits for any fish listed in <see cref="P:TehPers.FishingFramework.Api.Providers.IFishProvider.Fish"/>.
+            </summary>
+            <param name="fishId">The fish's item ID.</param>
+            <param name="traits">The fish's traits.</param>
+            <returns>Whether fish traits were found.</returns>
         </member>
         <member name="T:TehPers.FishingFramework.Api.Providers.ITrashProvider">
             <summary>Provides catchable trash.</summary>
@@ -492,6 +582,67 @@
         </member>
         <member name="P:TehPers.FishingFramework.Api.Providers.ITreasureProvider.Treasure">
             <summary>All of the custom treasure that can be found while fishing.</summary>
+        </member>
+        <member name="T:TehPers.FishingFramework.Api.STimeInterval">
+            <summary>
+            An interval of time.
+            </summary>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.STimeInterval.op_Equality(TehPers.FishingFramework.Api.STimeInterval,TehPers.FishingFramework.Api.STimeInterval)">
+            <summary>
+            Checks if two instances of <see cref="T:TehPers.FishingFramework.Api.STimeInterval"/> are equal.
+            </summary>
+            <param name="left">The first interval.</param>
+            <param name="right">The second interval.</param>
+            <returns>Whether the two intervals are equal.</returns>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.STimeInterval.op_Inequality(TehPers.FishingFramework.Api.STimeInterval,TehPers.FishingFramework.Api.STimeInterval)">
+            <summary>
+            Checks if two instances of <see cref="T:TehPers.FishingFramework.Api.STimeInterval"/> are not equal.
+            </summary>
+            <param name="left">The first interval.</param>
+            <param name="right">The second interval.</param>
+            <returns>Whether the two intervals are inequal.</returns>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.STimeInterval.Start">
+            <summary>
+            Gets the (inclusive) earliest time in this interval.
+            </summary>
+        </member>
+        <member name="P:TehPers.FishingFramework.Api.STimeInterval.Finish">
+            <summary>
+            Gets the (exclusive) latest time in this interval.
+            </summary>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.STimeInterval.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.FishingFramework.Api.STimeInterval"/> struct.
+            </summary>
+            <param name="start">The (inclusive) earliest time in this interval.</param>
+            <param name="finish">The (exclusive) latest time in this interval.</param>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.STimeInterval.Contains(System.Int32)">
+            <summary>
+            Checks if a time is contained in this interval.
+            </summary>
+            <param name="timeOfDay">The time of day. For example, 6:00am = 600, noon = 1200, midnight = 2400, 2:00am = 2600, etc.</param>
+            <returns>Whether the time is contained in this interval.</returns>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.STimeInterval.Contains(TehPers.Core.Api.Chrono.SDateTime)">
+            <summary>
+            Checks if a time is contained in this interval.
+            </summary>
+            <param name="time">The time to check.</param>
+            <returns>Whether the time is contained in this interval.</returns>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.STimeInterval.Equals(TehPers.FishingFramework.Api.STimeInterval)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.STimeInterval.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.STimeInterval.GetHashCode">
+            <inheritdoc />
         </member>
         <member name="T:TehPers.FishingFramework.Api.WaterTypes">
             <summary>

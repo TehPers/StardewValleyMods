@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Locations;
@@ -94,7 +95,12 @@ namespace TehPers.FishingFramework.Api.Extensions
                    + who.LuckLevel * chances.LuckLevelFactor
                    + fishingStreak * chances.StreakFactor;
 
-            return normalChance * locationFactor;
+            return Clamp(Clamp(normalChance * locationFactor, chances.MinChance, chances.MaxChance), 0, 1);
+
+            static double Clamp(double value, double min, double max)
+            {
+                return Math.Max(min, Math.Min(max, value));
+            }
         }
 
         /// <summary>

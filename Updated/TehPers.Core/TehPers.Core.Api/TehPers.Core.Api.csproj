@@ -32,17 +32,6 @@
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="DependencyInjection\Lifecycle\LifecycleInterfaces.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>LifecycleInterfaces.cs</LastGenOutput>
-    </None>
-    <Compile Update="DependencyInjection\Lifecycle\LifecycleInterfaces.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>LifecycleInterfaces.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
   <Import Project="..\..\TehPers.Shared\TehPers.Shared.projitems" Label="Shared" />

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using StardewValley;
-using StardewValley.Objects;
 using StardewValley.Tools;
 using SObject = StardewValley.Object;
 

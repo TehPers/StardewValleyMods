@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Netcode;
 using StardewModdingAPI;
@@ -10,38 +11,60 @@ using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Tools;
 using TehPers.Core.Api;
-using TehPers.Core.Api.Collections;
-using TehPers.Core.Api.DependencyInjection.Lifecycle.GameLoop;
+using TehPers.Core.Api.Configuration;
+using TehPers.Core.Api.DependencyInjection;
+using TehPers.Core.Api.DependencyInjection.Lifecycle;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
 using TehPers.FishingFramework.Api.Events;
 using TehPers.FishingFramework.Api.Extensions;
+using TehPers.FishingFramework.Config;
 using SObject = StardewValley.Object;
 
 namespace TehPers.FishingFramework
 {
-    internal class FishingOverrideService : IUpdateTickedHandler
+    internal class FishingOverrideService : IEventHandler<UpdateTickedEventArgs>
     {
         private readonly IMonitor monitor;
         private readonly IModHelper helper;
         private readonly FishingApi api;
         private readonly IGlobalItemProvider globalItemProvider;
-        private readonly WeakSet<FishingRod> overriddenRods;
+        private readonly FishingEventService fishingEvents;
+        private readonly IConfiguration<FishConfiguration> fishConfig;
+        private readonly IConfiguration<TreasureConfiguration> treasureConfig;
+        private readonly IDataStore<ConditionalWeakTable<FishingRod, FishingRodData>> rodData;
 
-        public WeakSet<FishingRod> OverridingCatch { get; }
-
-        public FishingOverrideService(IMonitor monitor, IModHelper helper, FishingApi api, IGlobalItemProvider globalItemProvider)
+        public FishingOverrideService(
+            IMonitor monitor,
+            IModHelper helper,
+            FishingApi api,
+            IGlobalItemProvider globalItemProvider,
+            FishingEventService fishingEvents,
+            IConfiguration<FishConfiguration> fishConfig,
+            IConfiguration<TreasureConfiguration> treasureConfig,
+            IDataStore<ConditionalWeakTable<FishingRod, FishingRodData>> rodData)
         {
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.api = api ?? throw new ArgumentNullException(nameof(api));
             this.globalItemProvider = globalItemProvider ?? throw new ArgumentNullException(nameof(globalItemProvider));
-
-            this.overriddenRods = new WeakSet<FishingRod>();
-            this.OverridingCatch = new WeakSet<FishingRod>();
+            this.fishingEvents = fishingEvents ?? throw new ArgumentNullException(nameof(fishingEvents));
+            this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
+            this.treasureConfig = treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
+            this.rodData = rodData ?? throw new ArgumentNullException(nameof(rodData));
         }
 
-        public void OnUpdateTicked(object sender, UpdateTickedEventArgs args)
+        private T AccessRodData<T>(FishingRod rod, Func<FishingRodData, T> callback)
+        {
+            return this.rodData.Access(table => callback(table.GetValue(rod, _ => new FishingRodData())));
+        }
+
+        public bool IsRodBeingProcessed(FishingRod rod)
+        {
+            return this.AccessRodData(rod, data => data.IsProcessing);
+        }
+
+        void IEventHandler<UpdateTickedEventArgs>.HandleEvent(object sender, UpdateTickedEventArgs args)
         {
             // Get the client's farmer
             var currentFarmer = Game1.player;
@@ -53,14 +76,21 @@ namespace TehPers.FishingFramework
             }
 
             // Override the pullFishFromWater event (for trash)
-            if (this.overriddenRods.Add(rod))
+            var eventsOverridden = this.AccessRodData(rod, data =>
+            {
+                var prev = data.IsPullEventOverridden;
+                data.IsPullEventOverridden = true;
+                return prev;
+            });
+
+            if (!eventsOverridden)
             {
                 this.OverridePullFishEvent(rod);
             }
 
             if (!rod.isFishing)
             {
-                this.OverridingCatch.Remove(rod);
+                this.AccessRodData(rod, data => data.IsProcessing = false);
             }
 
             // Check if the rod hit a fish and replace the catch
@@ -105,7 +135,14 @@ namespace TehPers.FishingFramework
         private void DoPullFishFromWater(FishingRod rod, Farmer user, BinaryReader reader)
         {
             // Check if this should be overridden
-            if (this.OverridingCatch.Remove(rod))
+            var wasProcessing = this.AccessRodData(rod, data =>
+            {
+                var prev = data.IsProcessing;
+                data.IsProcessing = false;
+                return prev;
+            });
+
+            if (wasProcessing)
             {
                 // Call normal handler
                 this.monitor.Log("Calling vanilla fishing logic");
@@ -124,7 +161,7 @@ namespace TehPers.FishingFramework
             _ = rod ?? throw new ArgumentNullException(nameof(rod));
 
             // Make sure this rod doesn't get the pullFishFromWater event overridden when it shouldn't be
-            this.OverridingCatch.Add(rod);
+            this.AccessRodData(rod, data => data.IsProcessing = true);
 
             // Get some info about the rod
             var clearWaterDistance = this.helper.Reflection.GetField<int>(rod, "clearWaterDistance").GetValue();
@@ -134,7 +171,7 @@ namespace TehPers.FishingFramework
             if (location.fishSplashPoint is { Value: var fishSplashPoint } && fishSplashPoint != Point.Zero)
             {
                 var splashBounds = new Rectangle(fishSplashPoint.X * 64, fishSplashPoint.Y * 64, 64, 64);
-                var bobberBounds = new Rectangle((int)rod.bobber.X - 80, (int)rod.bobber.Y - 80, 64, 64);
+                var bobberBounds = new Rectangle((int) rod.bobber.X - 80, (int) rod.bobber.Y - 80, 64, 64);
                 bubblyZone = splashBounds.Intersects(bobberBounds);
             }
 
@@ -148,7 +185,7 @@ namespace TehPers.FishingFramework
             bool TryCatchFish()
             {
                 // Check if legendary fish are being overridden as well
-                if (!this.api.FishingConfig.ShouldOverrideVanillaLegendaries)
+                if (!this.fishConfig.Value.ShouldOverrideVanillaLegendaries)
                 {
                     // Check if a legendary would be caught
                     var baitValue = rod.attachments[0]?.Price / 10.0 ?? 0.0;
@@ -175,7 +212,7 @@ namespace TehPers.FishingFramework
             {
                 // Invoke event
                 var catchingArgs = new FishCatchingEventArgs(user, rod, fishId);
-                this.api.OnFishCatching(catchingArgs);
+                this.fishingEvents.OnFishCatching(this, catchingArgs);
 
                 // Check if favBait should be set to true (still not sure what this does...)
                 if (!this.globalItemProvider.TryCreate(catchingArgs.FishId, out var fishItem))
@@ -233,14 +270,14 @@ namespace TehPers.FishingFramework
 
                 // Notify listeners that trash is being caught
                 var catchingArgs = new TrashCatchingEventArgs(user, rod, trashId);
-                this.api.OnTrashCatching(catchingArgs);
+                this.fishingEvents.OnTrashCatching(this, catchingArgs);
 
                 // Catch the trash
                 rod.pullFishFromWater(catchingArgs.TrashIndex, -1, 0, 0, false, false, false);
 
                 // Notify listeners that trash was caught
                 var caughtArgs = new TrashCaughtEventArgs(user, rod, catchingArgs.TrashIndex);
-                this.api.OnTrashCaught(caughtArgs);
+                this.fishingEvents.OnTrashCaught(this, caughtArgs);
 
                 return true;
             }
@@ -276,7 +313,7 @@ namespace TehPers.FishingFramework
             }
 
             // Check if there should be treasure
-            var fishSize = Math.Max(0.0f, Math.Min(1f, sizeFactor * (float)(1.0 + Game1.random.Next(-10, 11) / 100.0)));
+            var fishSize = Math.Max(0.0f, Math.Min(1f, sizeFactor * (float) (1.0 + Game1.random.Next(-10, 11) / 100.0)));
             var treasure = !Game1.isFestival();
             treasure &= user.fishCaught is { } caughtFish && caughtFish.Any();
             treasure &= Game1.random.NextDouble() < this.api.TreasureChances.GetChance(user, this.api.FishingStreak);
@@ -307,7 +344,7 @@ namespace TehPers.FishingFramework
             var possibleLoot = this.api.Treasure.WhereAvailable(user).ToHashSet();
 
             // Select rewards
-            var config = this.api.FishingConfig.Treasure;
+            var config = this.treasureConfig.Value;
             var chance = 1d;
             while (possibleLoot.Count > 0 && rewards.Count < config.MaxTreasureQuantity && Game1.random.NextDouble() <= chance)
             {
@@ -389,7 +426,7 @@ namespace TehPers.FishingFramework
                     possibleLoot.Remove(weightedTreasure);
 
                 // Update chance
-                chance *= config.AdditionalLootChances.GetChance(user, this.api.FishingStreak);
+                chance *= config.TreasureChances.GetChance(user, this.api.FishingStreak);
                 // chance *= config.AdditionalLootChance + streak * config.StreakAdditionalLootChance;
             }
 
@@ -403,7 +440,7 @@ namespace TehPers.FishingFramework
             // Show rewards GUI
             this.monitor.Log($"Treasure rewards: {string.Join(", ", rewards)}");
             Game1.activeClickableMenu = new ItemGrabMenu(rewards);
-            ((ItemGrabMenu)Game1.activeClickableMenu).source = 3;
+            ((ItemGrabMenu) Game1.activeClickableMenu).source = 3;
             user.completelyStopAnimatingOrDoingAction();
         }
     }

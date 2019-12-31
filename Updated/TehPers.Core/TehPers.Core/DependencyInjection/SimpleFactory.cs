@@ -10,9 +10,9 @@ namespace TehPers.Core.DependencyInjection
     {
         private readonly IResolutionRoot serviceResolver;
 
-        public SimpleFactory(IResolutionRoot serviceResolver)
+        public SimpleFactory(IResolutionRoot resolutionRoot)
         {
-            this.serviceResolver = serviceResolver ?? throw new ArgumentNullException(nameof(serviceResolver));
+            this.serviceResolver = resolutionRoot ?? throw new ArgumentNullException(nameof(resolutionRoot));
         }
 
         public TService GetSingle()

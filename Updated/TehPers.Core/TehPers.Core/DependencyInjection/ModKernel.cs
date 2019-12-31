@@ -9,6 +9,7 @@ using Ninject.Modules;
 using Ninject.Planning;
 using Ninject.Planning.Bindings;
 using StardewModdingAPI;
+using TehPers.Core.Api;
 using TehPers.Core.Api.DependencyInjection;
 using Context = Ninject.Activation.Context;
 
@@ -20,11 +21,13 @@ namespace TehPers.Core.DependencyInjection
         
         public IMod ParentMod { get; }
         public IKernel GlobalKernel => this.globalKernel;
+        public IModKernelFactory ParentFactory { get; }
 
-        public ModKernel(IMod parentMod, KernelBase globalKernel, INinjectSettings settings, params INinjectModule[] modules)
+        public ModKernel(IMod parentMod, KernelBase globalKernel, IModKernelFactory parentFactory, INinjectSettings settings, params INinjectModule[] modules)
             : base(settings, modules)
         {
             this.ParentMod = parentMod;
+            this.ParentFactory = parentFactory;
             this.globalKernel = globalKernel;
         }
 

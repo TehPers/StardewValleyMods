@@ -1,87 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using StardewModdingAPI;
+﻿using System.Collections.Generic;
 using TehPers.Core.Api;
 using TehPers.FishingFramework.Api;
 using TehPers.FishingFramework.Api.Config;
-using TehPers.FishingFramework.Api.Events;
 
 namespace TehPers.FishingFramework
 {
     public class FishingApi : IFishingApi
     {
-        private readonly IMonitor monitor;
-        private readonly IFishingConfiguration localFishingConfig;
-
         public ISet<IFishAvailability> Fish { get; }
         public IDictionary<NamespacedId, IFishTraits> FishTraits { get; }
         public ISet<ITrashAvailability> Trash { get; }
         public ISet<ITreasureAvailability> Treasure { get; }
-        public IFishingConfiguration FishingConfig { get; }
         public int FishingStreak { get; set; }
         public IFishingChances FishChances { get; }
         public IFishingChances TreasureChances { get; }
 
-        public event EventHandler<FishCatchingEventArgs> FishCatching;
-        public event EventHandler<FishCaughtEventArgs> FishCaught;
-        public event EventHandler<FishLostEventArgs> FishLost;
-        public event EventHandler<TreasureOpeningEventArgs> TreasureOpening;
-        public event EventHandler<TreasureOpenedEventArgs> TreasureOpened;
-        public event EventHandler<TrashCatchingEventArgs> TrashCatching;
-        public event EventHandler<TrashCaughtEventArgs> TrashCaught;
-
-        public FishingApi(IMonitor monitor, IFishingConfiguration localFishingConfig)
+        public FishingApi()
         {
-            this.monitor = monitor;
-            this.localFishingConfig = localFishingConfig;
-
             this.Fish = new HashSet<IFishAvailability>();
             this.FishTraits = new Dictionary<NamespacedId, IFishTraits>();
             this.Trash = new HashSet<ITrashAvailability>();
             this.Treasure = new HashSet<ITreasureAvailability>();
-            this.FishingConfig = localFishingConfig;
-        }
-
-        public virtual void OnFishCatching(FishCatchingEventArgs e)
-        {
-            this.monitor.Log($"Invoking {nameof(FishingApi.FishCatching)}");
-            this.FishCatching?.Invoke(this, e);
-        }
-
-        public virtual void OnFishCaught(FishCaughtEventArgs e)
-        {
-            this.monitor.Log($"Invoking {nameof(FishingApi.FishCaught)}");
-            this.FishCaught?.Invoke(this, e);
-        }
-
-        protected virtual void OnFishLost(FishLostEventArgs e)
-        {
-            this.monitor.Log($"Invoking {nameof(FishingApi.FishLost)}");
-            this.FishLost?.Invoke(this, e);
-        }
-
-        public virtual void OnTreasureOpening(TreasureOpeningEventArgs e)
-        {
-            this.monitor.Log($"Invoking {nameof(FishingApi.TreasureOpening)}");
-            this.TreasureOpening?.Invoke(this, e);
-        }
-
-        public virtual void OnTreasureOpened(TreasureOpenedEventArgs e)
-        {
-            this.monitor.Log($"Invoking {nameof(FishingApi.TreasureOpened)}");
-            this.TreasureOpened?.Invoke(this, e);
-        }
-
-        public virtual void OnTrashCatching(TrashCatchingEventArgs e)
-        {
-            this.monitor.Log($"Invoking {nameof(FishingApi.TrashCatching)}");
-            this.TrashCatching?.Invoke(this, e);
-        }
-
-        public virtual void OnTrashCaught(TrashCaughtEventArgs e)
-        {
-            this.monitor.Log($"Invoking {nameof(FishingApi.TrashCaught)}");
-            this.TrashCaught?.Invoke(this, e);
         }
     }
 }

@@ -68,7 +68,6 @@
     };
 #>
 using TehPers.Core.Api.DependencyInjection;
-using TehPers.Core.Api.Extensions;
 
 namespace <#= NAMESPACE #>
 {
@@ -84,7 +83,7 @@ namespace <#= NAMESPACE #>
 <#
 				foreach (var eventName in namespaceKv.Value) {
 #>
-			kernel.BindEventManager<<#= NAMESPACE #>.<#= namespaceKv.Key #>.<#= eventName #>EventManager>();
+			kernel.Bind<IEventManager>().To<<#= NAMESPACE #>.<#= namespaceKv.Key #>.<#= eventName #>EventManager>().InSingletonScope();
 <#
 				}
 			}
