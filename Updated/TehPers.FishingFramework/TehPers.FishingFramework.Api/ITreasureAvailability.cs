@@ -7,7 +7,7 @@ namespace TehPers.FishingFramework.Api
     /// <summary>
     /// Treasure which is sometimes found while fishing.
     /// </summary>
-    public interface ITreasureAvailability : IFishingAvailability, IWeighted
+    public interface ITreasureAvailability : IFishingAvailability
     {
         /// <summary>
         /// Gets the possible <see cref="NamespacedId"/>s for this treasure.
@@ -17,12 +17,12 @@ namespace TehPers.FishingFramework.Api
         /// <summary>
         /// Gets the minimum quantity of this item that can be found.
         /// </summary>
-        int MinimumQuantity { get; }
+        int MinQuantity { get; }
 
         /// <summary>
         /// Gets the maximum quantity of this item that can be found.
         /// </summary>
-        int MaximumQuantity { get; }
+        int MaxQuantity { get; }
 
         /// <summary>
         /// Gets a value indicating whether whether to allow this reward to appear multiple times in a treasure chest.

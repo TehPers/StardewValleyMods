@@ -1,24 +1,16 @@
 ﻿using Ninject;
-using StardewModdingAPI;
 
 namespace TehPers.Core.Api.DependencyInjection
 {
-    /// <summary><see cref="IKernel"/> specific to an <see cref="IMod"/>.</summary>
-    public interface IModKernel : IKernel
+    /// <summary>
+    /// A factory capable of creating any type of object based on bindings.
+    /// It is a child of the global kernel, so any missing bindings will be resolved by the global kernel.
+    /// </summary>
+    public interface IModKernel : IKernel, IModBindingRoot
     {
         /// <summary>
-        /// Gets the mod which owns this <see cref="IModKernel"/>.
-        /// </summary>
-        IMod ParentMod { get; }
-
-        /// <summary>
-        /// Gets the global <see cref="IKernel"/>, which is the parent of this <see cref="IModKernel"/>. Dependencies registered in the global <see cref="IKernel"/> are visible to all mods.
+        /// Gets the global <see cref="IKernel"/>. Services without bindings in this <see cref="IModKernel"/> are resolved by the global kernel.
         /// </summary>
         IKernel GlobalKernel { get; }
-
-        /// <summary>
-        /// Gets the <see cref="IModKernelFactory"/> that created this <see cref="IModKernel"/>.
-        /// </summary>
-        IModKernelFactory ParentFactory { get; }
     }
 }

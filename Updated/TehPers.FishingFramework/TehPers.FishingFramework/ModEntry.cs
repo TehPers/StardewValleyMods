@@ -2,14 +2,11 @@
 using System.Runtime.CompilerServices;
 using Ninject;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley.Tools;
 using TehPers.Core.Api;
 using TehPers.Core.Api.DependencyInjection;
-using TehPers.Core.Api.DependencyInjection.Lifecycle;
 using TehPers.Core.Api.Extensions;
 using TehPers.FishingFramework.Api;
-using TehPers.FishingFramework.Api.Config;
 using TehPers.FishingFramework.Api.Providers;
 using TehPers.FishingFramework.Config;
 using TehPers.FishingFramework.Providers;
@@ -43,8 +40,14 @@ namespace TehPers.FishingFramework
                 .WhenInjectedInto<FishingOverrideService>()
                 .InSingletonScope();
             modKernel.AddEventHandler<FishingOverrideService>();
-            modKernel.Bind<IDefaultFishProvider, IDefaultTreasureProvider, IDefaultTrashProvider>()
-                .To<DefaultFishingProvider>()
+            modKernel.Bind<IDefaultFishProvider>()
+                .To<DefaultFishProvider>()
+                .InSingletonScope();
+            modKernel.Bind<IDefaultTreasureProvider>()
+                .To<DefaultTreasureProvider>()
+                .InSingletonScope();
+            modKernel.Bind<IDefaultTrashProvider>()
+                .To<DefaultTrashProvider>()
                 .InSingletonScope();
 
             // Exposed types

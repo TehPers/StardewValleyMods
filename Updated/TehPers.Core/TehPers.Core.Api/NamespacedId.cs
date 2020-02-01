@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using StardewValley;
+using StardewValley.Objects;
 using StardewValley.Tools;
 using SObject = StardewValley.Object;
 
@@ -21,6 +22,16 @@ namespace TehPers.Core.Api
         /// The namespace for vanilla <see cref="Sword"/>s.
         /// </summary>
         public const string VanillaSwordsNamespace = NamespacedId.VanillaStub + "/weapons";
+
+        /// <summary>
+        /// The namespace for vanilla <see cref="Boots"/>.
+        /// </summary>
+        public const string VanillaBootsNamespace = NamespacedId.VanillaStub + "/boots";
+
+        /// <summary>
+        /// The namespace for vanilla <see cref="Ring"/>s.
+        /// </summary>
+        public const string VanillaRingsNamespace = NamespacedId.VanillaStub + "/rings";
 
         private static readonly Regex ParseRegex = new Regex(@"^\s*(?<namespace>[^:\s]+)\s*:\s*(?<key>[^:\s]+)\s*$");
         private static readonly Regex ValidPart = new Regex(@"^[^:\s]+$");
@@ -57,7 +68,9 @@ namespace TehPers.Core.Api
             {
                 Sword { InitialParentTileIndex: var index } => NamespacedId.FromSwordIndex(index),
                 SObject { ParentSheetIndex: var index } => NamespacedId.FromObjectIndex(index),
-                _ => throw new NotImplementedException("If this functionality is needed, create an item provider for the type you're interested in and handle the namespaced IDs from there."),
+                Boots { indexInTileSheet: { Value: var index } } => NamespacedId.FromBootsIndex(index),
+                Ring { indexInTileSheet: { Value: var index } } => NamespacedId.FromRingIndex(index),
+                _ => throw new NotImplementedException("If this functionality is needed, create an item provider for the type you're interested in and create the namespaced IDs from there."),
             };
         }
 
@@ -79,6 +92,26 @@ namespace TehPers.Core.Api
         public static NamespacedId FromSwordIndex(int initialParentTileIndex)
         {
             return new NamespacedId(NamespacedId.VanillaSwordsNamespace, initialParentTileIndex.ToString("D", CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>
+        /// Constructs a new <see cref="NamespacedId"/> from a vanilla <see cref="Boots"/>' <see cref="Boots.indexInTileSheet"/>.
+        /// </summary>
+        /// <param name="indexInTileSheet">The <see cref="Boots.indexInTileSheet"/> of the item.</param>
+        /// <returns>A new <see cref="NamespacedId"/> identifying that item.</returns>
+        public static NamespacedId FromBootsIndex(int indexInTileSheet)
+        {
+            return new NamespacedId(NamespacedId.VanillaBootsNamespace, indexInTileSheet.ToString("D", CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>
+        /// Constructs a new <see cref="NamespacedId"/> from a vanilla <see cref="Ring"/>'s <see cref="Ring.indexInTileSheet"/>.
+        /// </summary>
+        /// <param name="indexInTileSheet">The <see cref="Ring.indexInTileSheet"/> of the item.</param>
+        /// <returns>A new <see cref="NamespacedId"/> identifying that item.</returns>
+        public static NamespacedId FromRingIndex(int indexInTileSheet)
+        {
+            return new NamespacedId(NamespacedId.VanillaRingsNamespace, indexInTileSheet.ToString("D", CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -149,10 +182,7 @@ namespace TehPers.Core.Api
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                return ((this.Namespace != null ? this.Namespace.GetHashCode() : 0) * 397) ^ (this.Key != null ? this.Key.GetHashCode() : 0);
-            }
+            return unchecked(((this.Namespace != null ? this.Namespace.GetHashCode() : 0) * 397) ^ (this.Key != null ? this.Key.GetHashCode() : 0));
         }
     }
 }

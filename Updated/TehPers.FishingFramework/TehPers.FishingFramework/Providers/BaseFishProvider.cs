@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TehPers.Core.Api;
 using TehPers.Core.Api.Configuration;
 using TehPers.FishingFramework.Api;
@@ -18,7 +16,7 @@ namespace TehPers.FishingFramework.Providers
 
         private IFishAvailability[] fish;
 
-        public IEnumerable<IFishAvailability> Fish { get; }
+        public IEnumerable<IFishAvailability> Fish => this.fish;
 
         public BaseFishProvider(IConfiguration<FishEntriesConfiguration> fishEntries, IConfiguration<FishTraitsConfiguration> fishTraits)
         {
@@ -41,9 +39,9 @@ namespace TehPers.FishingFramework.Providers
             this.UpdateFish(this.fishEntries.Value, this.fishTraits.Value);
         }
 
-        private void UpdateFish(FishEntriesConfiguration fishEntries, FishTraitsConfiguration fishTraits)
+        private void UpdateFish(FishEntriesConfiguration fishConfig, FishTraitsConfiguration traitsConfig)
         {
-            this.fish = fishEntries.PossibleFish.Cast<IFishAvailability>().ToArray();
+            this.fish = fishConfig.PossibleFish.Cast<IFishAvailability>().ToArray();
         }
 
         public bool TryGetTraits(NamespacedId fishId, out IFishTraits traits)

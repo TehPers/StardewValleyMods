@@ -15,7 +15,7 @@ namespace TehPers.Core
 {
     public sealed class ModKernelFactory : IModKernelFactory
     {
-        private readonly KernelBase globalKernel;
+        private readonly GlobalKernel globalKernel;
         private readonly Dictionary<IManifest, IModKernel> modKernels;
         private readonly HashSet<Func<IManifest, INinjectModule>> modModuleFactories;
 
@@ -23,7 +23,7 @@ namespace TehPers.Core
 
         public ModKernelFactory()
         {
-            this.globalKernel = new StandardKernel();
+            this.globalKernel = new GlobalKernel();
             this.modKernels = new Dictionary<IManifest, IModKernel>();
             this.modModuleFactories = new HashSet<Func<IManifest, INinjectModule>>();
 
@@ -64,7 +64,7 @@ namespace TehPers.Core
                 });
 
                 modKernel.Load(
-                    new ModModule(owner, modKernel),
+                    new CoreServicesModule(owner, modKernel),
                     new FuncModule()
                 );
 

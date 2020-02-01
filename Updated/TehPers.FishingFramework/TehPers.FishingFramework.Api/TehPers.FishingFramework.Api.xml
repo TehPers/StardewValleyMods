@@ -107,7 +107,7 @@
             Gets or sets the <see cref="P:StardewValley.Item.ParentSheetIndex"/> of the trash that is being caught. All trash must be instances of <see cref="T:StardewValley.Object"/>.
             </summary>
         </member>
-        <member name="M:TehPers.FishingFramework.Api.Events.TrashCatchingEventArgs.#ctor(StardewValley.Farmer,StardewValley.Tools.FishingRod,System.Int32)">
+        <member name="M:TehPers.FishingFramework.Api.Events.TrashCatchingEventArgs.#ctor(StardewValley.Farmer,StardewValley.Tools.FishingRod,TehPers.Core.Api.NamespacedId)">
             <summary>
             Initializes a new instance of the <see cref="T:TehPers.FishingFramework.Api.Events.TrashCatchingEventArgs"/> class.
             </summary>
@@ -130,18 +130,24 @@
             Gets the fishing rod used to catch the trash.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.Events.TrashCaughtEventArgs.TrashIndex">
+        <member name="P:TehPers.FishingFramework.Api.Events.TrashCaughtEventArgs.TrashId">
             <summary>
-            Gets the <see cref="P:StardewValley.Item.ParentSheetIndex"/> of the trash that was caught. All trash are instances of <see cref="T:StardewValley.Object"/>.
+            Gets the ID of the trash that was caught.
             </summary>
         </member>
-        <member name="M:TehPers.FishingFramework.Api.Events.TrashCaughtEventArgs.#ctor(StardewValley.Farmer,StardewValley.Tools.FishingRod,System.Int32)">
+        <member name="P:TehPers.FishingFramework.Api.Events.TrashCaughtEventArgs.TrashItem">
+            <summary>
+            Gets the trash item that was caught.
+            </summary>
+        </member>
+        <member name="M:TehPers.FishingFramework.Api.Events.TrashCaughtEventArgs.#ctor(StardewValley.Farmer,StardewValley.Tools.FishingRod,TehPers.Core.Api.NamespacedId,StardewValley.Item)">
             <summary>
             Initializes a new instance of the <see cref="T:TehPers.FishingFramework.Api.Events.TrashCaughtEventArgs"/> class.
             </summary>
             <param name="catcher">The farmer that caught the trash.</param>
             <param name="rod">The fishing rod used to catch the trash.</param>
-            <param name="trashIndex">The <see cref="P:StardewValley.Item.ParentSheetIndex"/> of the trash that was caught.</param>
+            <param name="trashId">The ID of the trash that was caught.</param>
+            <param name="trashItem">The item that was caught.</param>
         </member>
         <member name="T:TehPers.FishingFramework.Api.Extensions.FishingApiExtensions">
             <summary>
@@ -440,9 +446,9 @@
             Trash which is sometimes available while fishing.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.ITrashAvailability.ItemIndex">
+        <member name="P:TehPers.FishingFramework.Api.ITrashAvailability.ItemId">
             <summary>
-            Gets the <see cref="P:StardewValley.Item.ParentSheetIndex"/> for this trash. All trash must be instances of <see cref="T:StardewValley.Object"/>.
+            Gets the <see cref="T:TehPers.Core.Api.NamespacedId"/> for this trash.
             </summary>
         </member>
         <member name="T:TehPers.FishingFramework.Api.ITreasureAvailability">
@@ -455,12 +461,12 @@
             Gets the possible <see cref="T:TehPers.Core.Api.NamespacedId"/>s for this treasure.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.ITreasureAvailability.MinimumQuantity">
+        <member name="P:TehPers.FishingFramework.Api.ITreasureAvailability.MinQuantity">
             <summary>
             Gets the minimum quantity of this item that can be found.
             </summary>
         </member>
-        <member name="P:TehPers.FishingFramework.Api.ITreasureAvailability.MaximumQuantity">
+        <member name="P:TehPers.FishingFramework.Api.ITreasureAvailability.MaxQuantity">
             <summary>
             Gets the maximum quantity of this item that can be found.
             </summary>
@@ -551,6 +557,21 @@
         <member name="P:TehPers.FishingFramework.Api.Minigame.IFishingState.Treasure">
             <summary>
             Gets the set of catchable treasure.
+            </summary>
+        </member>
+        <member name="T:TehPers.FishingFramework.Api.Providers.IDefaultFishProvider">
+            <summary>
+            Provides default entries for fish.
+            </summary>
+        </member>
+        <member name="T:TehPers.FishingFramework.Api.Providers.IDefaultTrashProvider">
+            <summary>
+            Provides default entries for trash found while fishing.
+            </summary>
+        </member>
+        <member name="T:TehPers.FishingFramework.Api.Providers.IDefaultTreasureProvider">
+            <summary>
+            Provides default entries for treasure found while fishing.
             </summary>
         </member>
         <member name="T:TehPers.FishingFramework.Api.Providers.IFishProvider">

@@ -7,7 +7,7 @@ using TehPers.Core.Api.Content;
 namespace TehPers.Core.Api.DependencyInjection
 {
     /// <summary>
-    /// Constrains a <see cref="IAssetProvider"/> so that a particular source is injected.
+    /// Constrains the source for an injected <see cref="IAssetProvider"/>.
     /// </summary>
     public class ContentSourceAttribute : ConstraintAttribute
     {

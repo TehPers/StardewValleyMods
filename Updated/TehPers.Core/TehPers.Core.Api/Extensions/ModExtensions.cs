@@ -13,7 +13,8 @@ namespace TehPers.Core.Api.Extensions
 
         /// <summary>
         /// Asynchronously register services and initializes the mod.
-        /// The services will be registered once all <see cref="Mod.Entry"/> methods have been executed, and the mod will be initailized after all mods have registered their services.
+        /// The services will be registered once all <see cref="Mod.Entry"/> methods have been executed, and the mod will be initialized after all mods have registered their services.
+        /// This must be called in your mod's <see cref="IMod.Entry"/> method or it won't do anything.
         /// </summary>
         /// <param name="mod">The <see cref="IMod"/>.</param>
         /// <param name="registerServices">The callback which registers services to the <see cref="IModKernel"/> for this <see cref="IMod"/>.</param>
@@ -28,11 +29,11 @@ namespace TehPers.Core.Api.Extensions
             }
 
             // Wait until next update tick
-            mod.Helper.Events.GameLoop.UpdateTicked += DoRegisterServices;
+            mod.Helper.Events.GameLoop.GameLaunched += DoRegisterServices;
 
-            void DoRegisterServices(object sender, UpdateTickedEventArgs args)
+            void DoRegisterServices(object sender, GameLaunchedEventArgs gameLaunchedEventArgs)
             {
-                mod.Helper.Events.GameLoop.UpdateTicked -= DoRegisterServices;
+                mod.Helper.Events.GameLoop.GameLaunched -= DoRegisterServices;
                 mod.Helper.Events.GameLoop.UpdateTicked += DoModInit;
 
                 if (registerServices == null)
@@ -61,7 +62,9 @@ namespace TehPers.Core.Api.Extensions
         }
 
         /// <summary>
-        /// Asynchronously registers services for this <see cref="IServiceDrivenMod"/> and initializes it. Services will be registered early during game initialization, and the mod will be initialized after all mods have had a chance to register services.
+        /// Asynchronously registers services for this <see cref="IServiceDrivenMod"/> and initializes it.
+        /// Services will be registered early during game initialization, and the mod will be initialized after all mods have had a chance to register services.
+        /// This must be called in your mod's <see cref="IMod.Entry"/> method or it won't do anything.
         /// </summary>
         /// <param name="mod">The <see cref="IServiceDrivenMod"/>.</param>
         public static void Register(this IServiceDrivenMod mod)

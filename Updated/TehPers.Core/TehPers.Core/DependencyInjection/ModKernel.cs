@@ -1,72 +1,145 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using Castle.Core.Internal;
 using Ninject;
 using Ninject.Activation;
-using Ninject.Activation.Caching;
-using Ninject.Infrastructure;
+using Ninject.Infrastructure.Introspection;
 using Ninject.Modules;
-using Ninject.Planning;
 using Ninject.Planning.Bindings;
+using Ninject.Syntax;
 using StardewModdingAPI;
 using TehPers.Core.Api;
+using TehPers.Core.Api.Conflux;
 using TehPers.Core.Api.DependencyInjection;
-using Context = Ninject.Activation.Context;
+using TehPers.Core.Api.Extensions;
 
 namespace TehPers.Core.DependencyInjection
 {
-    internal class ModKernel : StandardKernel, IModKernel
+    internal class ModKernel : CoreKernel, IModKernel
     {
-        private readonly KernelBase globalKernel;
-        
+        private readonly CoreKernel parentKernel;
+
         public IMod ParentMod { get; }
-        public IKernel GlobalKernel => this.globalKernel;
+
+        public IBindingRoot GlobalRoot => this.parentKernel;
+
+        public IKernel GlobalKernel => this.parentKernel;
+
         public IModKernelFactory ParentFactory { get; }
 
-        public ModKernel(IMod parentMod, KernelBase globalKernel, IModKernelFactory parentFactory, INinjectSettings settings, params INinjectModule[] modules)
+        public ModKernel(IMod parentMod, CoreKernel parentKernel, IModKernelFactory parentFactory, INinjectSettings settings, params INinjectModule[] modules)
             : base(settings, modules)
         {
             this.ParentMod = parentMod;
             this.ParentFactory = parentFactory;
-            this.globalKernel = globalKernel;
+            this.parentKernel = parentKernel;
         }
 
-        public override IEnumerable<IBinding> GetBindings(Type service)
+        public override bool CanResolve(IRequest request)
         {
-            var bindings = base.GetBindings(service).ToArray();
-            if (bindings.Any())
+            if (request.Parameters.OfType<GlobalParameter>().Any())
             {
-                return bindings;
+                return this.parentKernel.CanResolve(request);
             }
 
-            var planner = this.globalKernel.Components.Get<IPlanner>();
-            var cache = this.globalKernel.Components.Get<ICache>();
-            var pipeline = this.globalKernel.Components.Get<IPipeline>();
-            return this.GlobalKernel.GetBindings(service)
-                .Where(binding => !binding.IsImplicit)
-                .Select(binding =>
+            return base.CanResolve(request);
+        }
+
+        public override bool CanResolve(IRequest request, bool ignoreImplicitBindings)
+        {
+            if (request.Parameters.OfType<GlobalParameter>().Any())
+            {
+                return this.parentKernel.CanResolve(request, ignoreImplicitBindings);
+            }
+
+            return base.CanResolve(request, ignoreImplicitBindings);
+        }
+
+        public override IEnumerable<object> Resolve(IRequest request)
+        {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+            if (ModKernel.ShouldInherit(request))
+            {
+                return this.parentKernel.Resolve(request);
+            }
+
+            return base.Resolve(request);
+        }
+
+        protected override IEnumerable<TService> Resolve<TService>(IRequest request, bool handleMissingBindings)
+        {
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
+            var modBindings = this.GetSatisfiedBindings(request).ToArray();
+            var bindingGroups = modBindings.Where(binding => !binding.Binding.IsImplicit).ToList().Yield()
+                .Append(this.parentKernel.GetSatisfiedBindings(request).ToList())
+                .Append(modBindings.Where(binding => binding.Binding.IsImplicit).ToList())
+                .ToList();
+
+            var resolvedServices = new List<TService>();
+            foreach (var satisfiedBindings in bindingGroups)
+            {
+                if (satisfiedBindings.Count == 0)
                 {
-                    var child = new Binding(binding.Service)
-                    {
-                        ScopeCallback = StandardScopeCallbacks.Transient,
-                    };
+                    continue;
+                }
 
-                    if (child.IsConditional)
-                    {
-                        child.Condition = binding.Condition;
-                    }
+                if (resolvedServices.Any() && satisfiedBindings.Any(binding => binding.Binding.IsImplicit))
+                {
+                    break;
+                }
 
-                    if (binding.ProviderCallback is { } providerCallback)
+                if (request.IsUnique)
+                {
+                    var firstTwo = satisfiedBindings.Take(2).ToList();
+                    if (firstTwo.Count > 1 && this.BindingPrecedenceComparer.Compare(firstTwo[0].Binding, firstTwo[1].Binding) == 0)
                     {
-                        child.ProviderCallback = context =>
+                        if (request.IsOptional && !request.ForceUnique)
                         {
-                            var request = new Request(context.Request.Service, context.Request.Constraint, context.Request.Parameters, context.Request.GetScope, context.Request.IsOptional, context.Request.IsUnique);
-                            return providerCallback(new Context(this.GlobalKernel, request, binding, cache, planner, pipeline));
-                        };
+                            return Enumerable.Empty<TService>();
+                        }
+
+                        var formattedBindings = satisfiedBindings
+                            .Select(binding => binding.Binding.Format(binding.Context))
+                            .ToArray();
+
+                        throw new ActivationException(ExceptionFormatter.CouldNotUniquelyResolveBinding(request, formattedBindings));
                     }
 
-                    return child;
-                });
+                    return firstTwo[0].Context.Resolve()
+                        .Forward(x => (TService)x)
+                        .Yield();
+                }
+
+                resolvedServices.AddRange(satisfiedBindings
+                    .Select(binding => binding.Context.Resolve())
+                    .Cast<TService>());
+            }
+
+            if (resolvedServices.Any())
+            {
+                return resolvedServices;
+            }
+
+            if (handleMissingBindings && this.HandleMissingBinding(request))
+            {
+                return this.Resolve<TService>(request, false);
+            }
+
+            if (request.IsOptional)
+            {
+                return Enumerable.Empty<TService>();
+            }
+
+            throw new ActivationException(ExceptionFormatter.CouldNotResolveBinding(request));
+        }
+
+        private static bool ShouldInherit(IRequest request)
+        {
+            return request.Parameters.OfType<GlobalParameter>().Any()
+                   || (request.Target?.Member.GetAttributes<GlobalAttribute>().Any() ?? false);
         }
     }
 }

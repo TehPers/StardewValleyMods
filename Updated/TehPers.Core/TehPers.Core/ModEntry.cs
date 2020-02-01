@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Newtonsoft.Json;
@@ -36,6 +37,17 @@ namespace TehPers.Core
             this.lifecycleService.StartAll();
         }
 
+        [Obsolete]
+        public class Blah
+        {
+            public static IMonitor Monitor;
+
+            public Blah()
+            {
+                Blah.Monitor.Log("a", LogLevel.Alert);
+            }
+        }
+
         public void RegisterServices(IModKernel modKernel)
         {
             this.Monitor.Log("Registering mod services", LogLevel.Info);
@@ -48,19 +60,23 @@ namespace TehPers.Core
             modKernel.ParentFactory.LoadIntoModKernels<CoreApiModModule>();
             modKernel.Bind<EventChannelFactory>().ToSelf().InSingletonScope();
             modKernel.ExposeService<EventChannelFactory>();
-            modKernel.GlobalKernel.Bind<IGlobalItemProvider>().To<GlobalItemProvider>().InSingletonScope();
+            modKernel.Load(new ItemProvidersModule());
+
+            Blah.Monitor = this.Monitor;
+            modKernel.Bind<Blah>().ToSelf().InSingletonScope();
+            modKernel.GlobalKernel.Bind<Blah>().ToSelf().InSingletonScope();
+            _ = modKernel.Get<Blah>(new GlobalParameter());
+            _ = modKernel.GlobalKernel.Get<Blah>();
 
             // SMAPI's default converters
             foreach (var converter in this.GetSmapiConverters())
             {
-                modKernel.GlobalKernel.Bind<JsonConverter>().ToConstant(converter).InSingletonScope();
+                modKernel.GlobalRoot.Bind<JsonConverter>().ToConstant(converter).InSingletonScope();
             }
 
-            // Properly converts Net* objects
-            modKernel.GlobalKernel.Bind<JsonConverter>().ToConstant(new NetConverter()).InSingletonScope();
-
-            // Provides descriptions
-            modKernel.GlobalKernel.Bind<JsonConverter>().ToConstant(new DescriptiveJsonConverter()).InSingletonScope();
+            modKernel.GlobalRoot.Bind<JsonConverter>().ToConstant(new NetConverter()).InSingletonScope();
+            modKernel.GlobalRoot.Bind<JsonConverter>().ToConstant(new DescriptiveJsonConverter()).InSingletonScope();
+            modKernel.GlobalRoot.Bind<JsonConverter>().ToConstant(new NamespacedIdJsonConverter()).InSingletonScope();
         }
 
         private IEnumerable<JsonConverter> GetSmapiConverters()

@@ -1,6 +1,7 @@
 ﻿using System;
 using StardewValley;
 using StardewValley.Tools;
+using TehPers.Core.Api;
 using SObject = StardewValley.Object;
 
 namespace TehPers.FishingFramework.Api.Events
@@ -21,21 +22,28 @@ namespace TehPers.FishingFramework.Api.Events
         public FishingRod Rod { get; }
 
         /// <summary>
-        /// Gets the <see cref="Item.ParentSheetIndex"/> of the trash that was caught. All trash are instances of <see cref="SObject"/>.
+        /// Gets the ID of the trash that was caught.
         /// </summary>
-        public int TrashIndex { get; }
+        public NamespacedId TrashId { get; }
+
+        /// <summary>
+        /// Gets the trash item that was caught.
+        /// </summary>
+        public Item TrashItem { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrashCaughtEventArgs"/> class.
         /// </summary>
         /// <param name="catcher">The farmer that caught the trash.</param>
         /// <param name="rod">The fishing rod used to catch the trash.</param>
-        /// <param name="trashIndex">The <see cref="Item.ParentSheetIndex"/> of the trash that was caught.</param>
-        public TrashCaughtEventArgs(Farmer catcher, FishingRod rod, int trashIndex)
+        /// <param name="trashId">The ID of the trash that was caught.</param>
+        /// <param name="trashItem">The item that was caught.</param>
+        public TrashCaughtEventArgs(Farmer catcher, FishingRod rod, NamespacedId trashId, Item trashItem)
         {
             this.Catcher = catcher;
             this.Rod = rod;
-            this.TrashIndex = trashIndex;
+            this.TrashId = trashId;
+            this.TrashItem = trashItem;
         }
     }
 }

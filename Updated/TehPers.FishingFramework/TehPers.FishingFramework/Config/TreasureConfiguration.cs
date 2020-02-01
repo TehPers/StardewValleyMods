@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using TehPers.Core.Api;
 using TehPers.Core.Api.Json;
 
 namespace TehPers.FishingFramework.Config

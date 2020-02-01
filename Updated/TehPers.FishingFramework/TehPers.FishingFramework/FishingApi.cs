@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using TehPers.Core.Api;
 using TehPers.FishingFramework.Api;
-using TehPers.FishingFramework.Api.Config;
 
 namespace TehPers.FishingFramework
 {

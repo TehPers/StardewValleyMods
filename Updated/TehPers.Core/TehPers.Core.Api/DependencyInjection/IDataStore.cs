@@ -13,6 +13,7 @@ namespace TehPers.Core.Api.DependencyInjection
         /// </summary>
         /// <param name="callback">Callback that processes or modifies the data in this store and returns some value from it.</param>
         /// <typeparam name="TReturn">The type of value to return.</typeparam>
+        /// <returns>The value returned from the callback.</returns>
         TReturn Access<TReturn>(Func<TData, TReturn> callback);
 
         /// <summary>

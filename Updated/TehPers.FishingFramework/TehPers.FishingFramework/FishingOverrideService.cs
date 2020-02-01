@@ -171,7 +171,7 @@ namespace TehPers.FishingFramework
             if (location.fishSplashPoint is { Value: var fishSplashPoint } && fishSplashPoint != Point.Zero)
             {
                 var splashBounds = new Rectangle(fishSplashPoint.X * 64, fishSplashPoint.Y * 64, 64, 64);
-                var bobberBounds = new Rectangle((int) rod.bobber.X - 80, (int) rod.bobber.Y - 80, 64, 64);
+                var bobberBounds = new Rectangle((int)rod.bobber.X - 80, (int)rod.bobber.Y - 80, 64, 64);
                 bubblyZone = splashBounds.Intersects(bobberBounds);
             }
 
@@ -245,14 +245,14 @@ namespace TehPers.FishingFramework
                 // Void mayonnaise
                 if (location.Name.Equals("WitchSwamp") && !Game1.MasterPlayer.mailReceived.Contains("henchmanGone") && Game1.random.NextDouble() < 0.25 && !Game1.player.hasItemInInventory(308, 1))
                 {
-                    rod.pullFishFromWater(308, -1, 0, 0, false, false, false);
+                    rod.pullFishFromWater(ObjectsReference.VoidMayonnaise, -1, 0, 0, false, false, false);
                     return true;
                 }
 
                 // Secret note
-                if (user.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08 && location.tryToCreateUnseenSecretNote(user) is { } unseenSecretNote)
+                if (user.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08 && location.tryToCreateUnseenSecretNote(user) is { ParentSheetIndex: var noteIndex })
                 {
-                    rod.pullFishFromWater(unseenSecretNote.ParentSheetIndex, -1, 0, 0, false, false, false);
+                    rod.pullFishFromWater(noteIndex, -1, 0, 0, false, false, false);
                     return true;
                 }
 
@@ -262,8 +262,8 @@ namespace TehPers.FishingFramework
             bool TryCatchTrash()
             {
                 // Trash
-                var trash = this.api.Trash.WhereAvailable(user).ChooseOrDefault(Game1.random);
-                if (!(trash is { Value: { ItemIndex: var trashId } }))
+                var selected = this.api.Trash.WhereAvailable(user).ChooseOrDefault(Game1.random);
+                if (!(selected is { Value: { ItemId: var trashId } }))
                 {
                     return false;
                 }
@@ -272,12 +272,20 @@ namespace TehPers.FishingFramework
                 var catchingArgs = new TrashCatchingEventArgs(user, rod, trashId);
                 this.fishingEvents.OnTrashCatching(this, catchingArgs);
 
+                if (!this.globalItemProvider.TryCreate(catchingArgs.TrashIndex, out var trash))
+                {
+                    this.monitor.LogWithLocation($"Failed to create an instance of '{trash}'. Trash will revert to a default value.");
+                    catchingArgs.TrashIndex = NamespacedId.FromObjectIndex(ObjectsReference.Trash);
+                    trash = new SObject(ObjectsReference.Trash, 1);
+                }
+
                 // Catch the trash
-                rod.pullFishFromWater(catchingArgs.TrashIndex, -1, 0, 0, false, false, false);
+                // TODO: fire dummy event, then override it with a custom event channel
+                // rod.pullFishFromWater(catchingArgs.TrashIndex, -1, 0, 0, false, false, false);
 
                 // Notify listeners that trash was caught
-                var caughtArgs = new TrashCaughtEventArgs(user, rod, catchingArgs.TrashIndex);
-                this.fishingEvents.OnTrashCaught(this, caughtArgs);
+                // var caughtArgs = new TrashCaughtEventArgs(user, rod, catchingArgs.TrashIndex);
+                // this.fishingEvents.OnTrashCaught(this, caughtArgs);
 
                 return true;
             }
@@ -313,7 +321,7 @@ namespace TehPers.FishingFramework
             }
 
             // Check if there should be treasure
-            var fishSize = Math.Max(0.0f, Math.Min(1f, sizeFactor * (float) (1.0 + Game1.random.Next(-10, 11) / 100.0)));
+            var fishSize = Math.Max(0.0f, Math.Min(1f, sizeFactor * (float)(1.0 + Game1.random.Next(-10, 11) / 100.0)));
             var treasure = !Game1.isFestival();
             treasure &= user.fishCaught is { } caughtFish && caughtFish.Any();
             treasure &= Game1.random.NextDouble() < this.api.TreasureChances.GetChance(user, this.api.FishingStreak);
@@ -354,7 +362,7 @@ namespace TehPers.FishingFramework
                 var ids = weightedTreasure.Value.ItemIds.ToArray();
                 var id = ids[Game1.random.Next(ids.Length)];
 
-                var count = Game1.random.Next(weightedTreasure.Value.MinimumQuantity, weightedTreasure.Value.MaximumQuantity);
+                var count = Game1.random.Next(weightedTreasure.Value.MinQuantity, weightedTreasure.Value.MaxQuantity);
                 if (count <= 0)
                 {
                     continue;
@@ -440,7 +448,7 @@ namespace TehPers.FishingFramework
             // Show rewards GUI
             this.monitor.Log($"Treasure rewards: {string.Join(", ", rewards)}");
             Game1.activeClickableMenu = new ItemGrabMenu(rewards);
-            ((ItemGrabMenu) Game1.activeClickableMenu).source = 3;
+            ((ItemGrabMenu)Game1.activeClickableMenu).source = 3;
             user.completelyStopAnimatingOrDoingAction();
         }
     }
