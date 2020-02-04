@@ -51,14 +51,12 @@ namespace TehPers.FishingFramework
                 .InSingletonScope();
 
             // Exposed types
-            modKernel.Bind<FishingApi>()
-                .ToSelf()
+            modKernel.GlobalProxyRoot.Bind<IFishingApi, FishingApi>()
+                .To<FishingApi>()
                 .InSingletonScope();
-            modKernel.ExposeService<IFishingApi, FishingApi>();
-            modKernel.Bind<BaseFishProvider>()
-                .ToSelf()
+            modKernel.GlobalProxyRoot.Bind<IFishProvider, BaseFishProvider>()
+                .To<BaseFishProvider>()
                 .InSingletonScope();
-            modKernel.ExposeService<IFishProvider, BaseFishProvider>();
 
             // Configs
             modKernel.BindConfiguration<FishConfiguration>("Configs/General/fish.json");

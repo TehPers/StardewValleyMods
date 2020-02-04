@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Ninject;
 using Ninject.Activation;
-using Ninject.Components;
 using Ninject.Infrastructure.Introspection;
 using Ninject.Modules;
 using Ninject.Planning.Bindings;

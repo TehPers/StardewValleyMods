@@ -4,12 +4,12 @@ using TehPers.Core.Api.DependencyInjection;
 
 namespace TehPers.Core.Modules
 {
-    internal class CoreServicesModule : NinjectModule
+    internal class ModServicesModule : NinjectModule
     {
         private readonly IMod mod;
         private readonly IModKernel modKernel;
 
-        public CoreServicesModule(IMod mod, IModKernel modKernel)
+        public ModServicesModule(IMod mod, IModKernel modKernel)
         {
             this.mod = mod;
             this.modKernel = modKernel;

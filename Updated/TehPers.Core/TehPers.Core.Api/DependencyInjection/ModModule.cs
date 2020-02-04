@@ -8,8 +8,8 @@ namespace TehPers.Core.Api.DependencyInjection
     /// <inheritdoc cref="IModModule"/>
     public abstract class ModModule : BaseModule, IModModule
     {
-        /// <inheritdoc/>
-        public IBindingRoot GlobalRoot => this.Kernel.GlobalRoot;
+        /// <inheritdoc />
+        public IBindingRoot GlobalProxyRoot => this.Kernel.GlobalProxyRoot;
 
         /// <inheritdoc/>
         public new IModKernel Kernel { get; private set; }

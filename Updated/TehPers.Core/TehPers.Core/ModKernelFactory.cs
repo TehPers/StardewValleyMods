@@ -64,7 +64,7 @@ namespace TehPers.Core
                 });
 
                 modKernel.Load(
-                    new CoreServicesModule(owner, modKernel),
+                    new ModServicesModule(owner, modKernel),
                     new FuncModule()
                 );
 

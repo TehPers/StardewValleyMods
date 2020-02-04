@@ -531,6 +531,32 @@
             </summary>
             <param name="callback">Callback that processes or modifies the data in this store, then returns a new value to store.</param>
         </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.IGlobalKernel">
+            <summary>
+            A factory capable of creating any type of object based on bindings.
+            It is the parent of every mod's kernel, however it doesn't automatically know about any bindings in them.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.IGlobalKernel.Proxy(Ninject.Planning.Bindings.IBinding,Ninject.IKernel)">
+            <summary>
+            Adds a proxied binding to the kernel. The binding will be resolved by making a request to the binding's original parent.
+            </summary>
+            <param name="binding">The binding to proxy.</param>
+            <param name="parent">The binding's parent kernel.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.IGlobalKernel.Unproxy(Ninject.Planning.Bindings.IBinding)">
+            <summary>
+            Removes a proxied binding from the kernel.
+            </summary>
+            <param name="binding">The binding to remove the proxy for.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.IGlobalKernel.Unproxy(System.Type,Ninject.IKernel)">
+            <summary>
+            Removes all proxied bindings for a particular service from the kernel.
+            </summary>
+            <param name="service">The type of service to remove proxies for.</param>
+            <param name="parent">The parent kernel for those proxies.</param>
+        </member>
         <member name="T:TehPers.Core.Api.DependencyInjection.IHaveModKernel">
             <summary>
             Indicates that an object has a reference to an <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/>.
@@ -551,11 +577,6 @@
             Gets the mod which owns this <see cref="T:TehPers.Core.Api.DependencyInjection.IModBindingRoot"/>.
             </summary>
         </member>
-        <member name="P:TehPers.Core.Api.DependencyInjection.IModBindingRoot.GlobalRoot">
-            <summary>
-            Gets the global <see cref="T:Ninject.Syntax.IBindingRoot"/>, which is the parent of this <see cref="T:TehPers.Core.Api.DependencyInjection.IModBindingRoot"/>. Dependencies registered in the global <see cref="T:Ninject.Syntax.IBindingRoot"/> are visible to all mods.
-            </summary>
-        </member>
         <member name="P:TehPers.Core.Api.DependencyInjection.IModBindingRoot.ParentFactory">
             <summary>
             Gets the <see cref="T:TehPers.Core.Api.IModKernelFactory"/> that created this <see cref="T:TehPers.Core.Api.DependencyInjection.IModBindingRoot"/>.
@@ -569,7 +590,7 @@
         </member>
         <member name="P:TehPers.Core.Api.DependencyInjection.IModKernel.GlobalKernel">
             <summary>
-            Gets the global <see cref="T:Ninject.IKernel"/>. Services without bindings in this <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/> are resolved by the global kernel.
+            Gets the global kernel. Services without bindings in this <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/> are resolved by the global kernel.
             </summary>
         </member>
         <member name="T:TehPers.Core.Api.DependencyInjection.IModModule">
@@ -592,6 +613,17 @@
             <summary>Tries to get the value from this <see cref="T:TehPers.Core.Api.DependencyInjection.IOptional`1"/>.</summary>
             <param name="value">The value if it exists.</param>
             <returns><see langword="true"/> if the value exists, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.IProxyBindable">
+            <summary>
+            Indicates that an object has a proxy root for exposing services.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.DependencyInjection.IProxyBindable.GlobalProxyRoot">
+            <summary>
+            Gets an <see cref="T:Ninject.Syntax.IBindingRoot"/> which automatically creates proxy bindings in the global kernel when bindings are created.
+            Dependencies registered in it are visible to all mods, however they are resolved by your <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/>.
+            </summary>
         </member>
         <member name="T:TehPers.Core.Api.DependencyInjection.ISimpleFactory`1">
             <summary>
@@ -646,8 +678,8 @@
         <member name="T:TehPers.Core.Api.DependencyInjection.ModModule">
             <inheritdoc cref="T:TehPers.Core.Api.DependencyInjection.IModModule"/>
         </member>
-        <member name="P:TehPers.Core.Api.DependencyInjection.ModModule.GlobalRoot">
-            <inheritdoc/>
+        <member name="P:TehPers.Core.Api.DependencyInjection.ModModule.GlobalProxyRoot">
+            <inheritdoc />
         </member>
         <member name="P:TehPers.Core.Api.DependencyInjection.ModModule.Kernel">
             <inheritdoc/>
@@ -1227,14 +1259,6 @@
             <param name="modId">The foreign mod's API.</param>
             <returns>The syntax that can be used to configure the binding.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindEventHandler``1(TehPers.Core.Api.DependencyInjection.IModBindingRoot)">
-            <summary>
-            Binds an event handler.
-            </summary>
-            <typeparam name="TEventArgs">The type of arguments for the event.</typeparam>
-            <param name="root">The mod's binding root.</param>
-            <returns>The syntax that can be used to configure the binding.</returns>
-        </member>
         <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindSimpleEventHandler``1(TehPers.Core.Api.DependencyInjection.IModBindingRoot,System.EventHandler{``0})">
             <summary>
             Binds a simple event handler. This is the easiest way to create an event handler, however they cannot have dependencies injected via DI.
@@ -1246,37 +1270,37 @@
         </member>
         <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``1(TehPers.Core.Api.DependencyInjection.IModBindingRoot)">
             <summary>
+            Registers a service as a handler for all the events that it can handle. This does not create a binding for the service.
+            </summary>
+            <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
+            <param name="module">The module.</param>
+            <returns>The module for chaining.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``1(TehPers.Core.Api.DependencyInjection.IModKernel)">
+            <summary>
             Registers a service as a handler for all the events it can handle. This does not bind the service.
             </summary>
             <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
-            <param name="root">The mod's binding root.</param>
+            <param name="kernel">The mod's kernel.</param>
             <returns>The mod kernel for chaining.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``2(TehPers.Core.Api.DependencyInjection.IModBindingRoot)">
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindProxy``2(Ninject.Syntax.IBindingRoot)">
+            <summary>
+            Binds a service as a proxy for another service, essentially giving it another name.
+            Whenever an instance of <typeparamref name="TProxy"/> is requested, an instance of <typeparamref name="TService"/> is provided instead.
+            </summary>
+            <param name="root">The binding root.</param>
+            <typeparam name="TProxy">The proxy service.</typeparam>
+            <typeparam name="TService">The provided service.</typeparam>
+            <returns>The syntax that can be used to configure the binding.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``2(TehPers.Core.Api.DependencyInjection.IProxyBindable)">
             <summary>
             Binds a service as a handler for a particular type of event.
             </summary>
             <param name="root">The mod's kernel.</param>
             <typeparam name="TService">The type of service being bound as an event handler. This service should be injectible by your mod's kernel.</typeparam>
             <typeparam name="TEventArgs">The type of arguments propagated by the event this service handles.</typeparam>
-            <returns>The mod kernel for chaining.</returns>
-        </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.ExposeService``1(TehPers.Core.Api.DependencyInjection.IModBindingRoot)">
-            <summary>
-            Exposes a service in a mod's kernel to the global kernel.
-            </summary>
-            <param name="kernel">The mod's kernel.</param>
-            <typeparam name="TService">The service being exposed globally.</typeparam>
-            <returns>The syntax that can be used to configure the service that was exposed.</returns>
-        </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.ExposeService``2(TehPers.Core.Api.DependencyInjection.IModBindingRoot)">
-            <summary>
-            Exposes a service in a mod's kernel to the global kernel.
-            </summary>
-            <param name="kernel">The mod's kernel.</param>
-            <typeparam name="TGlobalService">The type of service that is visible globally and will be injected by the global kernel. Generally, this would be your type's interface or base class.</typeparam>
-            <typeparam name="TModService">The type of service that is visible within your mod. This is generally the concrete type of your service, although it could be a base class or interface as well.</typeparam>
-            <returns>The syntax that can be used to configure the service that was exposed.</returns>
         </member>
         <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindConfiguration``1(TehPers.Core.Api.DependencyInjection.IModBindingRoot,System.String,StardewModdingAPI.ContentSource,System.Boolean)">
             <summary>
@@ -1426,22 +1450,6 @@
             <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
             <param name="item">The item to append to the source.</param>
             <returns>A new <see cref="T:System.Collections.Generic.IEnumerable`1"/> with the item at the end of it.</returns>
-        </member>
-        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.OrderBy``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,System.Int32})">
-            <summary>
-            Sorts the elements of a sequence in ascending order by using a specified comparer.
-            </summary>
-            <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
-            <param name="source">A sequence of values to order.</param>
-            <param name="comparer">A <see cref="T:System.Func`3" /> to compare keys.</param>
-            <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted according to a key.</returns>
-        </member>
-        <member name="M:TehPers.Core.Api.Extensions.EnumerableExtensions.OrderByDescending``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``0,System.Int32})">
-            <summary>Sorts the elements of a sequence in descending order by using a specified comparer.</summary>
-            <param name="source">A sequence of values to order.</param>
-            <param name="comparer">A <see cref="T:System.Func`3" /> to compare keys.</param>
-            <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
-            <returns>An <see cref="T:System.Linq.IOrderedEnumerable`1" /> whose elements are sorted in descending order according to a key.</returns>
         </member>
         <member name="T:TehPers.Core.Api.Extensions.EnumExtensions">
             <summary>Extensions for <see cref="T:System.Enum"/> types.</summary>

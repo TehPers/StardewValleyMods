@@ -249,56 +249,5 @@ namespace TehPers.Core.Api.Extensions
         {
             return source.Concat(item.Yield());
         }
-
-        /// <summary>
-        /// Sorts the elements of a sequence in ascending order by using a specified comparer.
-        /// </summary>
-        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
-        /// <param name="source">A sequence of values to order.</param>
-        /// <param name="comparer">A <see cref="Func{T1,T2,TResult}" /> to compare keys.</param>
-        /// <returns>An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted according to a key.</returns>
-        public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> source, Func<T, T, int> comparer)
-        {
-            _ = source ?? throw new ArgumentNullException(nameof(source));
-            return source.OrderBy(x => x, new LambdaComparer<T>(comparer));
-        }
-
-        /// <summary>Sorts the elements of a sequence in descending order by using a specified comparer.</summary>
-        /// <param name="source">A sequence of values to order.</param>
-        /// <param name="comparer">A <see cref="Func{T1,T2,TResult}" /> to compare keys.</param>
-        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
-        /// <returns>An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted in descending order according to a key.</returns>
-        public static IOrderedEnumerable<T> OrderByDescending<T>(this IEnumerable<T> source, Func<T, T, int> comparer)
-        {
-            _ = source ?? throw new ArgumentNullException(nameof(source));
-            return source.OrderByDescending(x => x, new LambdaComparer<T>(comparer));
-        }
-
-        public static IOrderedEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> source, Func<T, T, int> comparer)
-        {
-            _ = source ?? throw new ArgumentNullException(nameof(source));
-            return source.ThenBy(x => x, new LambdaComparer<T>(comparer));
-        }
-
-        public static IOrderedEnumerable<T> ThenByDescending<T>(this IOrderedEnumerable<T> source, Func<T, T, int> comparer)
-        {
-            _ = source ?? throw new ArgumentNullException(nameof(source));
-            return source.ThenByDescending(x => x, new LambdaComparer<T>(comparer));
-        }
-
-        private class LambdaComparer<T> : Comparer<T>
-        {
-            private readonly Func<T, T, int> comparer;
-
-            public LambdaComparer(Func<T, T, int> comparer)
-            {
-                this.comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
-            }
-
-            public override int Compare(T x, T y)
-            {
-                return this.comparer(x, y);
-            }
-        }
     }
 }

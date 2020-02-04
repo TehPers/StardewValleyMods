@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Castle.Core.Internal;
 using Ninject;
 using Ninject.Activation;
 using Ninject.Infrastructure.Introspection;
 using Ninject.Modules;
-using Ninject.Planning.Bindings;
 using Ninject.Syntax;
 using StardewModdingAPI;
 using TehPers.Core.Api;
@@ -19,29 +17,30 @@ namespace TehPers.Core.DependencyInjection
 {
     internal class ModKernel : CoreKernel, IModKernel
     {
-        private readonly CoreKernel parentKernel;
+        private readonly GlobalKernel globalKernel;
 
         public IMod ParentMod { get; }
 
-        public IBindingRoot GlobalRoot => this.parentKernel;
+        public IKernel GlobalKernel => this.globalKernel;
 
-        public IKernel GlobalKernel => this.parentKernel;
+        public IBindingRoot GlobalProxyRoot { get; }
 
         public IModKernelFactory ParentFactory { get; }
 
-        public ModKernel(IMod parentMod, CoreKernel parentKernel, IModKernelFactory parentFactory, INinjectSettings settings, params INinjectModule[] modules)
+        public ModKernel(IMod parentMod, GlobalKernel globalKernel, IModKernelFactory parentFactory, INinjectSettings settings, params INinjectModule[] modules)
             : base(settings, modules)
         {
             this.ParentMod = parentMod;
             this.ParentFactory = parentFactory;
-            this.parentKernel = parentKernel;
+            this.globalKernel = globalKernel;
+            this.GlobalProxyRoot = new ProxiedBindingRoot(globalKernel, this);
         }
 
         public override bool CanResolve(IRequest request)
         {
             if (request.Parameters.OfType<GlobalParameter>().Any())
             {
-                return this.parentKernel.CanResolve(request);
+                return this.globalKernel.CanResolve(request);
             }
 
             return base.CanResolve(request);
@@ -51,7 +50,7 @@ namespace TehPers.Core.DependencyInjection
         {
             if (request.Parameters.OfType<GlobalParameter>().Any())
             {
-                return this.parentKernel.CanResolve(request, ignoreImplicitBindings);
+                return this.globalKernel.CanResolve(request, ignoreImplicitBindings);
             }
 
             return base.CanResolve(request, ignoreImplicitBindings);
@@ -62,7 +61,7 @@ namespace TehPers.Core.DependencyInjection
             _ = request ?? throw new ArgumentNullException(nameof(request));
             if (ModKernel.ShouldInherit(request))
             {
-                return this.parentKernel.Resolve(request);
+                return this.globalKernel.Resolve(request);
             }
 
             return base.Resolve(request);
@@ -74,7 +73,7 @@ namespace TehPers.Core.DependencyInjection
 
             var modBindings = this.GetSatisfiedBindings(request).ToArray();
             var bindingGroups = modBindings.Where(binding => !binding.Binding.IsImplicit).ToList().Yield()
-                .Append(this.parentKernel.GetSatisfiedBindings(request).ToList())
+                .Append(this.globalKernel.GetSatisfiedBindings(request).ToList())
                 .Append(modBindings.Where(binding => binding.Binding.IsImplicit).ToList())
                 .ToList();
 
@@ -86,6 +85,7 @@ namespace TehPers.Core.DependencyInjection
                     continue;
                 }
 
+                // Implicit bindings should only be added if there are no other matching bindings
                 if (resolvedServices.Any() && satisfiedBindings.Any(binding => binding.Binding.IsImplicit))
                 {
                     break;

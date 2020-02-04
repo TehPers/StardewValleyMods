@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Newtonsoft.Json;
@@ -8,10 +7,8 @@ using StardewModdingAPI;
 using TehPers.Core.Api;
 using TehPers.Core.Api.DependencyInjection;
 using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Multiplayer;
 using TehPers.Core.DependencyInjection.Lifecycle;
-using TehPers.Core.Items;
 using TehPers.Core.Json;
 using TehPers.Core.Modules;
 
@@ -37,46 +34,27 @@ namespace TehPers.Core
             this.lifecycleService.StartAll();
         }
 
-        [Obsolete]
-        public class Blah
-        {
-            public static IMonitor Monitor;
-
-            public Blah()
-            {
-                Blah.Monitor.Log("a", LogLevel.Alert);
-            }
-        }
-
         public void RegisterServices(IModKernel modKernel)
         {
-            this.Monitor.Log("Registering mod services", LogLevel.Info);
-            modKernel.Bind<LifecycleService>().ToSelf().InSingletonScope();
+            this.Monitor.Log("Registering services", LogLevel.Info);
+            modKernel.ParentFactory.LoadIntoModKernels<CoreApiModModule>();
+            modKernel.Load(
+                new ItemProvidersModule(),
+                new CoreModModule()
+            );
 
             this.Monitor.Log("Registering event managers", LogLevel.Info);
             modKernel.BindManagedSmapiEvents();
 
-            this.Monitor.Log("Registering global services", LogLevel.Info);
-            modKernel.ParentFactory.LoadIntoModKernels<CoreApiModModule>();
-            modKernel.Bind<EventChannelFactory>().ToSelf().InSingletonScope();
-            modKernel.ExposeService<EventChannelFactory>();
-            modKernel.Load(new ItemProvidersModule());
-
-            Blah.Monitor = this.Monitor;
-            modKernel.Bind<Blah>().ToSelf().InSingletonScope();
-            modKernel.GlobalKernel.Bind<Blah>().ToSelf().InSingletonScope();
-            _ = modKernel.Get<Blah>(new GlobalParameter());
-            _ = modKernel.GlobalKernel.Get<Blah>();
-
             // SMAPI's default converters
             foreach (var converter in this.GetSmapiConverters())
             {
-                modKernel.GlobalRoot.Bind<JsonConverter>().ToConstant(converter).InSingletonScope();
+                modKernel.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(converter).InSingletonScope();
             }
 
-            modKernel.GlobalRoot.Bind<JsonConverter>().ToConstant(new NetConverter()).InSingletonScope();
-            modKernel.GlobalRoot.Bind<JsonConverter>().ToConstant(new DescriptiveJsonConverter()).InSingletonScope();
-            modKernel.GlobalRoot.Bind<JsonConverter>().ToConstant(new NamespacedIdJsonConverter()).InSingletonScope();
+            modKernel.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(new NetConverter()).InSingletonScope();
+            modKernel.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(new DescriptiveJsonConverter()).InSingletonScope();
+            modKernel.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(new NamespacedIdJsonConverter()).InSingletonScope();
         }
 
         private IEnumerable<JsonConverter> GetSmapiConverters()

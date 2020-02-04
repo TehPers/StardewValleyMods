@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Text;
 using Ninject;
 using Ninject.Activation;
-using Ninject.Activation.Caching;
 using Ninject.Extensions.ContextPreservation;
 using Ninject.Infrastructure;
 using Ninject.Modules;
 using Ninject.Parameters;
-using Ninject.Planning;
-using Ninject.Planning.Bindings;
 using Ninject.Syntax;
 using StardewModdingAPI;
 using TehPers.Core.Api.Configuration;
-using TehPers.Core.Api.Conflux;
 using TehPers.Core.Api.Content;
 using TehPers.Core.Api.DependencyInjection;
 using TehPers.Core.Api.DependencyInjection.Lifecycle;
@@ -28,6 +24,18 @@ namespace TehPers.Core.Api.Extensions
     /// </summary>
     public static class BindingExtensions
     {
+        private static readonly MethodInfo AddEventHandlerForRootMethod = typeof(BindingExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                                                                              .FirstOrDefault(method => method.Name == nameof(BindingExtensions.AddEventHandler)
+                                                                                                        && method.GetGenericArguments().Length == 2
+                                                                                                        && method.GetParameters()[0].ParameterType == typeof(IModModule))
+                                                                          ?? throw new InvalidOperationException($"The method {nameof(BindingExtensions.AddEventHandler)} could not be retrieved with reflection.");
+
+        private static readonly MethodInfo AddEventHandlerForKernelMethod = typeof(BindingExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                                                                                .FirstOrDefault(method => method.Name == nameof(BindingExtensions.AddEventHandler)
+                                                                                                          && method.GetGenericArguments().Length == 2
+                                                                                                          && method.GetParameters()[0].ParameterType == typeof(IModKernel))
+                                                                            ?? throw new InvalidOperationException($"The method {nameof(BindingExtensions.AddEventHandler)} could not be retrieved with reflection.");
+
         /// <summary>
         /// Gets the inherited parameters from a context.
         /// </summary>
@@ -54,7 +62,16 @@ namespace TehPers.Core.Api.Extensions
                     }
                 }
 
-                throw new ActivationException("None of the implementations could be activated");
+                var sb = new StringBuilder();
+                sb.AppendLine("None of the services could be activated. The following services were attempted:");
+                foreach (var type in implementationTypes)
+                {
+                    sb.Append(" - ");
+                    sb.AppendLine(type.FullName);
+                }
+
+                sb.AppendLine("Ensure that at least one of the requested services can be activated.");
+                throw new ActivationException(sb.ToString());
             });
         }
 
@@ -97,19 +114,6 @@ namespace TehPers.Core.Api.Extensions
         }
 
         /// <summary>
-        /// Binds an event handler.
-        /// </summary>
-        /// <typeparam name="TEventArgs">The type of arguments for the event.</typeparam>
-        /// <param name="root">The mod's binding root.</param>
-        /// <returns>The syntax that can be used to configure the binding.</returns>
-        public static IBindingToSyntax<IEventHandler<TEventArgs>> BindEventHandler<TEventArgs>(this IModBindingRoot root)
-            where TEventArgs : EventArgs
-        {
-            _ = root ?? throw new ArgumentNullException(nameof(root));
-            return root.GlobalRoot.Bind<IEventHandler<TEventArgs>>();
-        }
-
-        /// <summary>
         /// Binds a simple event handler. This is the easiest way to create an event handler, however they cannot have dependencies injected via DI.
         /// </summary>
         /// <param name="root">The mod's binding root.</param>
@@ -122,22 +126,57 @@ namespace TehPers.Core.Api.Extensions
             _ = handler ?? throw new ArgumentNullException(nameof(handler));
             _ = root ?? throw new ArgumentNullException(nameof(root));
 
-            return root.BindEventHandler<TEventArgs>()
+            return root.GlobalProxyRoot.Bind<IEventHandler<TEventArgs>>()
                 .ToConstant(new SimpleEventHandler<TEventArgs>(handler))
                 .InSingletonScope();
+        }
+
+        /// <summary>
+        /// Registers a service as a handler for all the events that it can handle. This does not create a binding for the service.
+        /// </summary>
+        /// <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
+        /// <param name="module">The module.</param>
+        /// <returns>The module for chaining.</returns>
+        public static IModBindingRoot AddEventHandler<TService>(this IModBindingRoot module)
+            where TService : class
+        {
+            _ = module ?? throw new ArgumentNullException(nameof(module));
+
+            return BindingExtensions.AddEventHandlerInternal<IModBindingRoot, TService>(module, BindingExtensions.AddEventHandlerForRootMethod);
         }
 
         /// <summary>
         /// Registers a service as a handler for all the events it can handle. This does not bind the service.
         /// </summary>
         /// <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
-        /// <param name="root">The mod's binding root.</param>
+        /// <param name="kernel">The mod's kernel.</param>
         /// <returns>The mod kernel for chaining.</returns>
-        public static IModBindingRoot AddEventHandler<TService>(this IModBindingRoot root)
+        public static IModKernel AddEventHandler<TService>(this IModKernel kernel)
             where TService : class
         {
-            _ = root ?? throw new ArgumentNullException(nameof(root));
+            _ = kernel ?? throw new ArgumentNullException(nameof(kernel));
 
+            return BindingExtensions.AddEventHandlerInternal<IModKernel, TService>(kernel, BindingExtensions.AddEventHandlerForKernelMethod);
+        }
+
+        private static T AddEventHandlerInternal<T, TService>(T root, MethodInfo addEventHandlerMethod)
+        {
+            var handlerTypes = BindingExtensions.GetHandlerTypes<TService>();
+            if (!handlerTypes.Any())
+            {
+                throw new ArgumentException($"Type does not implement {typeof(IEventHandler<>).FullName} so it cannot be bound as an event handler.");
+            }
+
+            foreach (var handlerType in handlerTypes)
+            {
+                addEventHandlerMethod.MakeGenericMethod(typeof(TService), handlerType.GenericTypeArguments[0]).Invoke(null, new object[] {root});
+            }
+
+            return root;
+        }
+
+        private static HashSet<Type> GetHandlerTypes<TService>()
+        {
             var handlerTypes = new HashSet<Type>();
             var queuedTypes = new Queue<Type>();
             queuedTypes.Enqueue(typeof(TService));
@@ -168,25 +207,24 @@ namespace TehPers.Core.Api.Extensions
                 }
             }
 
-            if (!handlerTypes.Any())
-            {
-                throw new ArgumentException($"Type does not implement {typeof(IEventHandler<>).FullName} so it cannot be bound as an event handler.");
-            }
+            return handlerTypes;
+        }
 
-            var bindHandler = typeof(BindingExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-                .FirstOrDefault(method => method.Name == nameof(BindingExtensions.AddEventHandler) && method.GetGenericArguments().Length == 2);
-
-            if (bindHandler == null)
-            {
-                throw new Exception("An error occurred while binding an event handler: the handler could not be retrieved with reflection.");
-            }
-
-            foreach (var handlerType in handlerTypes)
-            {
-                bindHandler.MakeGenericMethod(typeof(TService), handlerType.GenericTypeArguments[0]).Invoke(null, new object[] {root});
-            }
-
-            return root;
+        /// <summary>
+        /// Binds a service as a proxy for another service, essentially giving it another name.
+        /// Whenever an instance of <typeparamref name="TProxy"/> is requested, an instance of <typeparamref name="TService"/> is provided instead.
+        /// </summary>
+        /// <param name="root">The binding root.</param>
+        /// <typeparam name="TProxy">The proxy service.</typeparam>
+        /// <typeparam name="TService">The provided service.</typeparam>
+        /// <returns>The syntax that can be used to configure the binding.</returns>
+        public static IBindingNamedWithOrOnSyntax<TService> BindProxy<TProxy, TService>(this IBindingRoot root)
+            where TService : TProxy
+        {
+            _ = root ?? throw new ArgumentNullException(nameof(root));
+            return root.Bind<TProxy>()
+                .ToMethod(context => context.ContextPreservingGet<TService>())
+                .InTransientScope();
         }
 
         /// <summary>
@@ -195,46 +233,12 @@ namespace TehPers.Core.Api.Extensions
         /// <param name="root">The mod's kernel.</param>
         /// <typeparam name="TService">The type of service being bound as an event handler. This service should be injectible by your mod's kernel.</typeparam>
         /// <typeparam name="TEventArgs">The type of arguments propagated by the event this service handles.</typeparam>
-        /// <returns>The mod kernel for chaining.</returns>
-        public static IModBindingRoot AddEventHandler<TService, TEventArgs>(this IModBindingRoot root)
+        public static void AddEventHandler<TService, TEventArgs>(this IProxyBindable root)
             where TService : IEventHandler<TEventArgs>
             where TEventArgs : EventArgs
         {
             _ = root ?? throw new ArgumentNullException(nameof(root));
-
-            root.GlobalRoot.Bind<IEventHandler<TEventArgs>>()
-                .ToMethod(context => context.Kernel.Get<TService>(context.GetChildParameters()))
-                .InTransientScope();
-
-            return root;
-        }
-
-        /// <summary>
-        /// Exposes a service in a mod's kernel to the global kernel.
-        /// </summary>
-        /// <param name="kernel">The mod's kernel.</param>
-        /// <typeparam name="TService">The service being exposed globally.</typeparam>
-        /// <returns>The syntax that can be used to configure the service that was exposed.</returns>
-        public static IBindingOnSyntax<TService> ExposeService<TService>(this IModBindingRoot kernel)
-        {
-            return kernel.ExposeService<TService, TService>();
-        }
-
-        /// <summary>
-        /// Exposes a service in a mod's kernel to the global kernel.
-        /// </summary>
-        /// <param name="kernel">The mod's kernel.</param>
-        /// <typeparam name="TGlobalService">The type of service that is visible globally and will be injected by the global kernel. Generally, this would be your type's interface or base class.</typeparam>
-        /// <typeparam name="TModService">The type of service that is visible within your mod. This is generally the concrete type of your service, although it could be a base class or interface as well.</typeparam>
-        /// <returns>The syntax that can be used to configure the service that was exposed.</returns>
-        public static IBindingOnSyntax<TModService> ExposeService<TGlobalService, TModService>(this IModBindingRoot kernel)
-            where TModService : TGlobalService
-        {
-            _ = kernel ?? throw new ArgumentNullException(nameof(kernel));
-
-            return kernel.GlobalRoot.Bind<TGlobalService>()
-                .ToMethod(context => context.Kernel.Get<TModService>(context.Parameters.Append(new GlobalParameter()).ToArray()))
-                .InTransientScope();
+            root.GlobalProxyRoot.BindProxy<IEventHandler<TEventArgs>, TService>();
         }
 
         /// <summary>
