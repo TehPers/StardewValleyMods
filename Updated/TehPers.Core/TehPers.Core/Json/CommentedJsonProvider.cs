@@ -27,21 +27,21 @@ namespace TehPers.Core.Json
             };
         }
 
-        public void WriteJson<TModel>(TModel model, string path, IAssetProvider assetProvider, bool minify = false) where TModel : class => this.WriteJson(model, path, assetProvider, null, minify);
+        public void WriteJson<TModel>(TModel data, string path, IAssetProvider assetProvider, bool minify = false) where TModel : class => this.WriteJson(data, path, assetProvider, null, minify);
 
-        public void WriteJson<TModel>(TModel model, string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class
+        public void WriteJson<TModel>(TModel data, string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class
         {
             _ = assetProvider ?? throw new ArgumentNullException(nameof(assetProvider));
 
             // Write to stream directly
             using var stream = assetProvider.Open(path, FileMode.OpenOrCreate);
             using var writer = new StreamWriter(stream);
-            this.Serialize(model, writer, settings, minify);
+            this.Serialize(data, writer, settings, minify);
         }
 
-        public void Serialize<TModel>(TModel model, StreamWriter outputStream, bool minify = false) where TModel : class => this.Serialize(model, outputStream, null, minify);
+        public void Serialize<TModel>(TModel data, StreamWriter outputStream, bool minify = false) where TModel : class => this.Serialize(data, outputStream, null, minify);
 
-        public void Serialize<TModel>(TModel model, StreamWriter outputStream, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class
+        public void Serialize<TModel>(TModel data, StreamWriter outputStream, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class
         {
             // Write to stream directly using the custom JSON writer without closing the stream
             using var writer = new DescriptiveJsonWriter(outputStream)
@@ -54,13 +54,13 @@ namespace TehPers.Core.Json
             settings?.Invoke(clonedSettings);
 
             // Serialize
-            JsonSerializer.CreateDefault(clonedSettings).Serialize(writer, model);
+            JsonSerializer.CreateDefault(clonedSettings).Serialize(writer, data);
             writer.Flush();
         }
 
-        public TModel Deserialze<TModel>(StreamReader inputStream) where TModel : class => this.Deserialze<TModel>(inputStream, null);
+        public TModel Deserialize<TModel>(StreamReader inputStream) where TModel : class => this.Deserialize<TModel>(inputStream, null);
 
-        public TModel Deserialze<TModel>(StreamReader inputStream, Action<JsonSerializerSettings> settings) where TModel : class
+        public TModel Deserialize<TModel>(StreamReader inputStream, Action<JsonSerializerSettings> settings) where TModel : class
         {
             // Read from stream directly without closing the stream
             using var jsonReader = new JsonTextReader(inputStream);
@@ -85,7 +85,7 @@ namespace TehPers.Core.Json
             try
             {
                 using var stream = assetProvider.Open(path, FileMode.Open);
-                return this.Deserialze<TModel>(new StreamReader(stream), settings);
+                return this.Deserialize<TModel>(new StreamReader(stream), settings);
             }
             catch (FileNotFoundException)
             {
@@ -95,14 +95,14 @@ namespace TehPers.Core.Json
 
         public TModel ReadOrCreate<TModel>(string path, bool minify = false) where TModel : class, new() => this.ReadOrCreate(path, this.GetModContentSource(), null, () => new TModel(), minify);
         public TModel ReadOrCreate<TModel>(string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, bool minify = false) where TModel : class, new() => this.ReadOrCreate(path, assetProvider, settings, () => new TModel(), minify);
-        public TModel ReadOrCreate<TModel>(string path, Func<TModel> modelFactory, bool minify = false) where TModel : class => this.ReadOrCreate(path, this.GetModContentSource(), null, modelFactory, minify);
+        public TModel ReadOrCreate<TModel>(string path, Func<TModel> dataFactory, bool minify = false) where TModel : class => this.ReadOrCreate(path, this.GetModContentSource(), null, dataFactory, minify);
 
-        public TModel ReadOrCreate<TModel>(string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, Func<TModel> modelFactory, bool minify = false) where TModel : class
+        public TModel ReadOrCreate<TModel>(string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, Func<TModel> dataFactory, bool minify = false) where TModel : class
         {
             var model = this.ReadJson<TModel>(path, assetProvider, settings);
             if (model == null)
             {
-                model = modelFactory();
+                model = dataFactory();
                 this.WriteJson(model, path, assetProvider, settings, minify);
             }
 

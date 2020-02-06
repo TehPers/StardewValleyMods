@@ -382,6 +382,9 @@
         <member name="T:TehPers.Core.Api.Content.IAssetProvider">
             <summary>
             A provider for game assets.
+            You may use <see cref="T:TehPers.Core.Api.DependencyInjection.ContentSourceAttribute"/> to specify which content source you want to use.<br />
+            <br />
+            For custom content sources, it is recommended that you create a class that extends <see cref="T:Ninject.ConstraintAttribute"/> to identify which one you want to inject into your service.
             </summary>
         </member>
         <member name="M:TehPers.Core.Api.Content.IAssetProvider.Load``1(System.String)">
@@ -645,11 +648,11 @@
         </member>
         <member name="T:TehPers.Core.Api.DependencyInjection.Lifecycle.IEventHandler`1">
             <summary>
-            <p>A handler for lifecycle events (such as UpdateTicked or SaveLoaded), or for custom events created by other mods.</p>
+            A handler for lifecycle events (such as UpdateTicked or SaveLoaded), or for custom events created by other mods.<br />
             <br />
-            <p>You don't need to implement <see cref="T:TehPers.Core.Api.DependencyInjection.Lifecycle.IEventHandler`1"/> explicitly for it to handle events, but it is the recommended way of implementing it.
+            It is recommended that you implement this interface explicitly rather than implicitly.
             The event handler is most likely used by a separate service that doesn't care about your specific type, but instead only cares that it implements
-            <see cref="T:TehPers.Core.Api.DependencyInjection.Lifecycle.IEventHandler`1"/>. Because of that, it is unlikely you want the event handler to be visible as part of your type's public API.</p>
+            <see cref="T:TehPers.Core.Api.DependencyInjection.Lifecycle.IEventHandler`1"/>. Because of that, it is unlikely you want the event handler to be visible as part of your type's public API.
             </summary>
             <typeparam name="TEventArgs">The type of arguments the event propagates.</typeparam>
         </member>
@@ -1268,21 +1271,12 @@
             <typeparam name="TEventArgs">The type of arguments for the event.</typeparam>
             <returns>The syntax that can be used to configure the binding.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``1(TehPers.Core.Api.DependencyInjection.IModBindingRoot)">
-            <summary>
-            Registers a service as a handler for all the events that it can handle. This does not create a binding for the service.
-            </summary>
-            <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
-            <param name="module">The module.</param>
-            <returns>The module for chaining.</returns>
-        </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``1(TehPers.Core.Api.DependencyInjection.IModKernel)">
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``1(TehPers.Core.Api.DependencyInjection.IProxyBindable)">
             <summary>
             Registers a service as a handler for all the events it can handle. This does not bind the service.
             </summary>
             <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
-            <param name="kernel">The mod's kernel.</param>
-            <returns>The mod kernel for chaining.</returns>
+            <param name="root">The binding root.</param>
         </member>
         <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindProxy``2(Ninject.Syntax.IBindingRoot)">
             <summary>
@@ -1460,6 +1454,32 @@
             <param name="source">The source value.</param>
             <param name="flags">The flags to check for.</param>
             <returns><see langword="true"/> if the flags are present, <see langword="false"/> otherwise.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.JsonProviderExtensions">
+            <summary>
+            Extensions for <see cref="T:TehPers.Core.Api.Json.IJsonProvider"/>.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.JsonProviderExtensions.Serialize``1(TehPers.Core.Api.Json.IJsonProvider,``0,System.Action{Newtonsoft.Json.JsonSerializerSettings},System.Boolean)">
+            <summary>
+            Serializes data to JSON.
+            </summary>
+            <typeparam name="TModel">The type of object being written.</typeparam>
+            <param name="json">The JSON provider.</param>
+            <param name="data">The object being written.</param>
+            <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
+            <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
+            <returns>The serialized data.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.JsonProviderExtensions.Deserialize``1(TehPers.Core.Api.Json.IJsonProvider,System.String,System.Action{Newtonsoft.Json.JsonSerializerSettings})">
+            <summary>
+            Deserializes JSON text.
+            </summary>
+            <typeparam name="TModel">The type of object being read.</typeparam>
+            <param name="json">The JSON provider.</param>
+            <param name="text">The text to read from.</param>
+            <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
+            <returns>The deserialized model.</returns>
         </member>
         <member name="T:TehPers.Core.Api.Extensions.LoggingExtensions">
             <summary>
@@ -1669,6 +1689,44 @@
             Provides all items that can be provided. This type is merely for convenience. Item providers should be registered through your mod's <see cref="T:TehPers.Core.Api.DependencyInjection.IModKernel"/>.
             </summary>
         </member>
+        <member name="T:TehPers.Core.Api.Items.IIndexRegistry">
+            <summary>
+            A registry for reserving indexes for IDs.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Items.IIndexRegistry.Reserve(TehPers.Core.Api.NamespacedId)">
+            <summary>
+            Reserves a random index for the given ID.
+            </summary>
+            <param name="id">The ID to reserve an index for.</param>
+            <returns>The index reservation.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Items.IIndexRegistry.Reserve(TehPers.Core.Api.NamespacedId,System.Int32)">
+            <summary>
+            Reserves a specific index for the given ID.
+            </summary>
+            <param name="id">The ID to reserve an index for.</param>
+            <param name="index">The index to reserve.</param>
+            <returns>The index reservation.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Items.IIndexRegistry.GetAll">
+            <summary>
+            Gets all assigned indexes.
+            </summary>
+            <returns>A mapping of each reserved index.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Items.IIndexReservation">
+            <summary>
+            A reservation for an index.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Items.IIndexReservation.TryGetIndex(System.Int32@)">
+            <summary>
+            Tries to get the assigned index. If no index has been assigned yet (i.e. in the title screen), then this method returns <see langword="false"/>.
+            </summary>
+            <param name="index">The assigned item index.</param>
+            <returns><see langword="true"/> if an index has been assigned, or <see langword="false"/> otherwise.</returns>
+        </member>
         <member name="T:TehPers.Core.Api.Items.IItemProvider">
             <summary>
             Provider for a set of items.
@@ -1682,7 +1740,7 @@
         </member>
         <member name="M:TehPers.Core.Api.Items.IItemProvider.IsInstanceOf(TehPers.Core.Api.NamespacedId,StardewValley.Item)">
             <summary>
-            Checks if an item is an instance of a particular key, but cannot guarantee that an item is not an instance of that key. To perform a more exhaustive check, use <see cref="T:TehPers.Core.Api.Items.IGlobalItemProvider"/> or enumerate each <see cref="T:TehPers.Core.Api.Items.IItemProvider"/> yourself.
+            Checks if an item is an instance of a particular key, but cannot guarantee that an item is not an instance of that key. To perform a more exhaustive check, use <see cref="T:TehPers.Core.Api.Items.IGlobalItemProvider"/>.
             </summary>
             <param name="id">The key of the item.</param>
             <param name="item">The item to compare against the key.</param>
@@ -1717,7 +1775,7 @@
             Writes a JSON file to a specified path.
             </summary>
             <typeparam name="TModel">The type of object being written.</typeparam>
-            <param name="model">The object being written.</param>
+            <param name="data">The object being written.</param>
             <param name="path">The path to the output file.</param>
             <param name="assetProvider">The <see cref="T:TehPers.Core.Api.Content.IAssetProvider"/> to write the file to.</param>
             <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
@@ -1727,7 +1785,7 @@
             Writes a JSON file to a specified path.
             </summary>
             <typeparam name="TModel">The type of object being written.</typeparam>
-            <param name="model">The object being written.</param>
+            <param name="data">The object being written.</param>
             <param name="path">The path to the output file.</param>
             <param name="assetProvider">The <see cref="T:TehPers.Core.Api.Content.IAssetProvider"/> to write the file to.</param>
             <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
@@ -1738,7 +1796,7 @@
             Serializes JSON to a <see cref="T:System.IO.Stream"/>.
             </summary>
             <typeparam name="TModel">The type of object being written.</typeparam>
-            <param name="model">The object being written.</param>
+            <param name="data">The object being written.</param>
             <param name="outputStream">The <see cref="T:System.IO.StreamWriter"/> to write to.</param>
             <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
         </member>
@@ -1747,12 +1805,12 @@
             Serializes JSON to a <see cref="T:System.IO.Stream"/>.
             </summary>
             <typeparam name="TModel">The type of object being written.</typeparam>
-            <param name="model">The object being written.</param>
+            <param name="data">The object being written.</param>
             <param name="outputStream">The <see cref="T:System.IO.StreamWriter"/> to write to.</param>
             <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
             <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
         </member>
-        <member name="M:TehPers.Core.Api.Json.IJsonProvider.Deserialze``1(System.IO.StreamReader)">
+        <member name="M:TehPers.Core.Api.Json.IJsonProvider.Deserialize``1(System.IO.StreamReader)">
             <summary>
             Deserializes JSON from a <see cref="T:System.IO.Stream"/>.
             </summary>
@@ -1760,7 +1818,7 @@
             <param name="inputStream">The <see cref="T:System.IO.StreamReader"/> to read from.</param>
             <returns>The deserialized model.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Json.IJsonProvider.Deserialze``1(System.IO.StreamReader,System.Action{Newtonsoft.Json.JsonSerializerSettings})">
+        <member name="M:TehPers.Core.Api.Json.IJsonProvider.Deserialize``1(System.IO.StreamReader,System.Action{Newtonsoft.Json.JsonSerializerSettings})">
             <summary>
             Deserializes JSON from a <see cref="T:System.IO.Stream"/>.
             </summary>
@@ -1813,7 +1871,7 @@
             </summary>
             <typeparam name="TModel">The type of object being read.</typeparam>
             <param name="path">The path to the file.</param>
-            <param name="modelFactory">Factory method which creates an instance of model.</param>
+            <param name="dataFactory">Factory method which creates the data to write.</param>
             <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
             <returns>The deserialized model.</returns>
         </member>
@@ -1825,7 +1883,7 @@
             <param name="path">The path to the file.</param>
             <param name="assetProvider">The <see cref="T:TehPers.Core.Api.Content.IAssetProvider"/> to read the file from.</param>
             <param name="settings">Callback for configuring the <see cref="T:Newtonsoft.Json.JsonSerializerSettings"/>.</param>
-            <param name="modelFactory">Factory method which creates an instance of model.</param>
+            <param name="dataFactory">Factory method which creates the data to write.</param>
             <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
             <returns>The deserialized model.</returns>
         </member>
@@ -1921,7 +1979,7 @@
             <returns>A new <see cref="T:TehPers.Core.Api.Multiplayer.EventChannel`1"/> with the given ID.</returns>
         </member>
         <member name="T:TehPers.Core.Api.NamespacedId">
-            <summary>An identifier consisting of a namespace and another identifier.</summary>
+            <summary>An identifier consisting of a namespace and another identifier unique to that namespace.</summary>
         </member>
         <member name="F:TehPers.Core.Api.NamespacedId.VanillaObjectsNamespace">
             <summary>

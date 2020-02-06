@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using StardewModdingAPI;
-using StardewValley;
 using TehPers.Core.Api.Content;
 
 namespace TehPers.Core.Content

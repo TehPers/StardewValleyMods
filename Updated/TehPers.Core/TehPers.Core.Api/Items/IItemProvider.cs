@@ -1,4 +1,5 @@
-﻿using StardewValley;
+﻿using System;
+using StardewValley;
 using TehPers.Core.Api.Drawing.Sprites;
 
 namespace TehPers.Core.Api.Items
@@ -15,7 +16,7 @@ namespace TehPers.Core.Api.Items
         void InvalidateAssets();
 
         /// <summary>
-        /// Checks if an item is an instance of a particular key, but cannot guarantee that an item is not an instance of that key. To perform a more exhaustive check, use <see cref="IGlobalItemProvider"/> or enumerate each <see cref="IItemProvider"/> yourself.
+        /// Checks if an item is an instance of a particular key, but cannot guarantee that an item is not an instance of that key. To perform a more exhaustive check, use <see cref="IGlobalItemProvider"/>.
         /// </summary>
         /// <param name="id">The key of the item.</param>
         /// <param name="item">The item to compare against the key.</param>

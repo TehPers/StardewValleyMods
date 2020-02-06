@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TehPers.Core", "..\TehPers.
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TehPers.Shared", "..\TehPers.Shared\TehPers.Shared.shproj", "{D73ADCA5-94D8-40FB-BD3A-9C1D47FB18B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Sample", "..\TehPers.Core\TehPers.Core.Sample\TehPers.Core.Sample.csproj", "{F2384DAB-2F0F-4A69-8F91-F03359D24A54}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\TehPers.Shared\TehPers.Shared.projitems*{d73adca5-94d8-40fb-bd3a-9c1d47fb18b0}*SharedItemsImports = 13
@@ -51,6 +53,12 @@ Global
 		{D8DF4803-FA71-4405-AE42-DAD92792D996}.Release|Any CPU.ActiveCfg = Release|x86
 		{D8DF4803-FA71-4405-AE42-DAD92792D996}.Release|x86.ActiveCfg = Release|x86
 		{D8DF4803-FA71-4405-AE42-DAD92792D996}.Release|x86.Build.0 = Release|x86
+		{F2384DAB-2F0F-4A69-8F91-F03359D24A54}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{F2384DAB-2F0F-4A69-8F91-F03359D24A54}.Debug|x86.ActiveCfg = Debug|x86
+		{F2384DAB-2F0F-4A69-8F91-F03359D24A54}.Debug|x86.Build.0 = Debug|x86
+		{F2384DAB-2F0F-4A69-8F91-F03359D24A54}.Release|Any CPU.ActiveCfg = Release|x86
+		{F2384DAB-2F0F-4A69-8F91-F03359D24A54}.Release|x86.ActiveCfg = Release|x86
+		{F2384DAB-2F0F-4A69-8F91-F03359D24A54}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

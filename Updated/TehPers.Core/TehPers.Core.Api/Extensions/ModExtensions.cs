@@ -23,7 +23,7 @@ namespace TehPers.Core.Api.Extensions
         {
             _ = mod ?? throw new ArgumentNullException(nameof(mod));
 
-            if (mod.ModManifest.UniqueID != ModExtensions.CoreModId && !mod.ModManifest.Dependencies.Any(dependency => dependency.UniqueID == ModExtensions.CoreModId && dependency.IsRequired))
+            if (mod.ModManifest.UniqueID != ModExtensions.CoreModId && mod.ModManifest.Dependencies?.Any(dependency => dependency?.UniqueID == ModExtensions.CoreModId && dependency.IsRequired) != true)
             {
                 throw new ArgumentException($"Mod must have '{ModExtensions.CoreModId}' listed as a required dependency in order to register services.", nameof(mod));
             }

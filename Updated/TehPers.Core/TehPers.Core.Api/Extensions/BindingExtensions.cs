@@ -24,17 +24,9 @@ namespace TehPers.Core.Api.Extensions
     /// </summary>
     public static class BindingExtensions
     {
-        private static readonly MethodInfo AddEventHandlerForRootMethod = typeof(BindingExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-                                                                              .FirstOrDefault(method => method.Name == nameof(BindingExtensions.AddEventHandler)
-                                                                                                        && method.GetGenericArguments().Length == 2
-                                                                                                        && method.GetParameters()[0].ParameterType == typeof(IModModule))
+        private static readonly MethodInfo AddEventHandlerGenericMethod = typeof(BindingExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
+                                                                              .FirstOrDefault(method => method.Name == nameof(BindingExtensions.AddEventHandler) && method.GetGenericArguments().Length == 2)
                                                                           ?? throw new InvalidOperationException($"The method {nameof(BindingExtensions.AddEventHandler)} could not be retrieved with reflection.");
-
-        private static readonly MethodInfo AddEventHandlerForKernelMethod = typeof(BindingExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-                                                                                .FirstOrDefault(method => method.Name == nameof(BindingExtensions.AddEventHandler)
-                                                                                                          && method.GetGenericArguments().Length == 2
-                                                                                                          && method.GetParameters()[0].ParameterType == typeof(IModKernel))
-                                                                            ?? throw new InvalidOperationException($"The method {nameof(BindingExtensions.AddEventHandler)} could not be retrieved with reflection.");
 
         /// <summary>
         /// Gets the inherited parameters from a context.
@@ -132,35 +124,15 @@ namespace TehPers.Core.Api.Extensions
         }
 
         /// <summary>
-        /// Registers a service as a handler for all the events that it can handle. This does not create a binding for the service.
-        /// </summary>
-        /// <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
-        /// <param name="module">The module.</param>
-        /// <returns>The module for chaining.</returns>
-        public static IModBindingRoot AddEventHandler<TService>(this IModBindingRoot module)
-            where TService : class
-        {
-            _ = module ?? throw new ArgumentNullException(nameof(module));
-
-            return BindingExtensions.AddEventHandlerInternal<IModBindingRoot, TService>(module, BindingExtensions.AddEventHandlerForRootMethod);
-        }
-
-        /// <summary>
         /// Registers a service as a handler for all the events it can handle. This does not bind the service.
         /// </summary>
         /// <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
-        /// <param name="kernel">The mod's kernel.</param>
-        /// <returns>The mod kernel for chaining.</returns>
-        public static IModKernel AddEventHandler<TService>(this IModKernel kernel)
+        /// <param name="root">The binding root.</param>
+        public static void AddEventHandler<TService>(this IProxyBindable root)
             where TService : class
         {
-            _ = kernel ?? throw new ArgumentNullException(nameof(kernel));
+            _ = root ?? throw new ArgumentNullException(nameof(root));
 
-            return BindingExtensions.AddEventHandlerInternal<IModKernel, TService>(kernel, BindingExtensions.AddEventHandlerForKernelMethod);
-        }
-
-        private static T AddEventHandlerInternal<T, TService>(T root, MethodInfo addEventHandlerMethod)
-        {
             var handlerTypes = BindingExtensions.GetHandlerTypes<TService>();
             if (!handlerTypes.Any())
             {
@@ -169,10 +141,8 @@ namespace TehPers.Core.Api.Extensions
 
             foreach (var handlerType in handlerTypes)
             {
-                addEventHandlerMethod.MakeGenericMethod(typeof(TService), handlerType.GenericTypeArguments[0]).Invoke(null, new object[] {root});
+                BindingExtensions.AddEventHandlerGenericMethod.MakeGenericMethod(typeof(TService), handlerType.GenericTypeArguments[0]).Invoke(null, new object[] {root});
             }
-
-            return root;
         }
 
         private static HashSet<Type> GetHandlerTypes<TService>()

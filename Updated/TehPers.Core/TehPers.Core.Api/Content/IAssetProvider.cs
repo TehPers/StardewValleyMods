@@ -1,10 +1,15 @@
 ﻿using System.IO;
 using Microsoft.Xna.Framework.Content;
+using Ninject;
+using TehPers.Core.Api.DependencyInjection;
 
 namespace TehPers.Core.Api.Content
 {
     /// <summary>
     /// A provider for game assets.
+    /// You may use <see cref="ContentSourceAttribute"/> to specify which content source you want to use.<br />
+    /// <br />
+    /// For custom content sources, it is recommended that you create a class that extends <see cref="ConstraintAttribute"/> to identify which one you want to inject into your service.
     /// </summary>
     public interface IAssetProvider
     {

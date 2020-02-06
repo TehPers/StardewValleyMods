@@ -8,7 +8,7 @@ using SObject = StardewValley.Object;
 
 namespace TehPers.Core.Api
 {
-    /// <summary>An identifier consisting of a namespace and another identifier.</summary>
+    /// <summary>An identifier consisting of a namespace and another identifier unique to that namespace.</summary>
     public readonly struct NamespacedId : IEquatable<NamespacedId>
     {
         private const string VanillaStub = "stardewvalley";

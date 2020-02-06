@@ -9,9 +9,6 @@ namespace TehPers.Core.Modules
         {
             // Mod services
             this.Bind<LifecycleService>().ToSelf().InSingletonScope();
-
-            // Global services
-            // this.GlobalProxyRoot.Bind<EventChannelFactory>().ToSelf().InSingletonScope();
         }
     }
 }

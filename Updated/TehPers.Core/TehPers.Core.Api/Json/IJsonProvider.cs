@@ -14,44 +14,44 @@ namespace TehPers.Core.Api.Json
         /// Writes a JSON file to a specified path.
         /// </summary>
         /// <typeparam name="TModel">The type of object being written.</typeparam>
-        /// <param name="model">The object being written.</param>
+        /// <param name="data">The object being written.</param>
         /// <param name="path">The path to the output file.</param>
         /// <param name="assetProvider">The <see cref="IAssetProvider"/> to write the file to.</param>
         /// <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
-        void WriteJson<TModel>(TModel model, string path, IAssetProvider assetProvider, bool minify = false)
+        void WriteJson<TModel>(TModel data, string path, IAssetProvider assetProvider, bool minify = false)
             where TModel : class;
 
         /// <summary>
         /// Writes a JSON file to a specified path.
         /// </summary>
         /// <typeparam name="TModel">The type of object being written.</typeparam>
-        /// <param name="model">The object being written.</param>
+        /// <param name="data">The object being written.</param>
         /// <param name="path">The path to the output file.</param>
         /// <param name="assetProvider">The <see cref="IAssetProvider"/> to write the file to.</param>
         /// <param name="settings">Callback for configuring the <see cref="JsonSerializerSettings"/>.</param>
         /// <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
-        void WriteJson<TModel>(TModel model, string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, bool minify = false)
+        void WriteJson<TModel>(TModel data, string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, bool minify = false)
             where TModel : class;
 
         /// <summary>
         /// Serializes JSON to a <see cref="Stream"/>.
         /// </summary>
         /// <typeparam name="TModel">The type of object being written.</typeparam>
-        /// <param name="model">The object being written.</param>
+        /// <param name="data">The object being written.</param>
         /// <param name="outputStream">The <see cref="StreamWriter"/> to write to.</param>
         /// <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
-        void Serialize<TModel>(TModel model, StreamWriter outputStream, bool minify = false)
+        void Serialize<TModel>(TModel data, StreamWriter outputStream, bool minify = false)
             where TModel : class;
 
         /// <summary>
         /// Serializes JSON to a <see cref="Stream"/>.
         /// </summary>
         /// <typeparam name="TModel">The type of object being written.</typeparam>
-        /// <param name="model">The object being written.</param>
+        /// <param name="data">The object being written.</param>
         /// <param name="outputStream">The <see cref="StreamWriter"/> to write to.</param>
         /// <param name="settings">Callback for configuring the <see cref="JsonSerializerSettings"/>.</param>
         /// <param name="minify">Whether to minify the output. Minifying the output removes all comments and extra whitespace.</param>
-        void Serialize<TModel>(TModel model, StreamWriter outputStream, Action<JsonSerializerSettings> settings, bool minify = false)
+        void Serialize<TModel>(TModel data, StreamWriter outputStream, Action<JsonSerializerSettings> settings, bool minify = false)
             where TModel : class;
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace TehPers.Core.Api.Json
         /// <typeparam name="TModel">The type of object being read.</typeparam>
         /// <param name="inputStream">The <see cref="StreamReader"/> to read from.</param>
         /// <returns>The deserialized model.</returns>
-        TModel Deserialze<TModel>(StreamReader inputStream)
+        TModel Deserialize<TModel>(StreamReader inputStream)
             where TModel : class;
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace TehPers.Core.Api.Json
         /// <param name="inputStream">The <see cref="StreamReader"/> to read from.</param>
         /// <param name="settings">Callback for configuring the <see cref="JsonSerializerSettings"/>.</param>
         /// <returns>The deserialized model.</returns>
-        TModel Deserialze<TModel>(StreamReader inputStream, Action<JsonSerializerSettings> settings)
+        TModel Deserialize<TModel>(StreamReader inputStream, Action<JsonSerializerSettings> settings)
             where TModel : class;
 
         /// <summary>
@@ -120,10 +120,10 @@ namespace TehPers.Core.Api.Json
         /// </summary>
         /// <typeparam name="TModel">The type of object being read.</typeparam>
         /// <param name="path">The path to the file.</param>
-        /// <param name="modelFactory">Factory method which creates an instance of model.</param>
+        /// <param name="dataFactory">Factory method which creates the data to write.</param>
         /// <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
         /// <returns>The deserialized model.</returns>
-        TModel ReadOrCreate<TModel>(string path, Func<TModel> modelFactory, bool minify = false)
+        TModel ReadOrCreate<TModel>(string path, Func<TModel> dataFactory, bool minify = false)
             where TModel : class;
 
         /// <summary>
@@ -133,10 +133,10 @@ namespace TehPers.Core.Api.Json
         /// <param name="path">The path to the file.</param>
         /// <param name="assetProvider">The <see cref="IAssetProvider"/> to read the file from.</param>
         /// <param name="settings">Callback for configuring the <see cref="JsonSerializerSettings"/>.</param>
-        /// <param name="modelFactory">Factory method which creates an instance of model.</param>
+        /// <param name="dataFactory">Factory method which creates the data to write.</param>
         /// <param name="minify">Whether to minify the output if the file is created. Minifying the output removes all comments and extra whitespace.</param>
         /// <returns>The deserialized model.</returns>
-        TModel ReadOrCreate<TModel>(string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, Func<TModel> modelFactory, bool minify = false)
+        TModel ReadOrCreate<TModel>(string path, IAssetProvider assetProvider, Action<JsonSerializerSettings> settings, Func<TModel> dataFactory, bool minify = false)
             where TModel : class;
     }
 }
