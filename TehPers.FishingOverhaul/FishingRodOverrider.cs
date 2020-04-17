@@ -132,7 +132,7 @@ namespace TehPers.FishingOverhaul {
                     bubblyZone = new Rectangle(location.fishSplashPoint.X * 64, location.fishSplashPoint.Y * 64, 64, 64).Intersects(new Rectangle((int) rod.bobber.X - 80, (int) rod.bobber.Y - 80, 64, 64));
 
                 // NotNull
-                SObject normalFish = location.getFish(rod.fishingNibbleAccumulator, rod.attachments[0]?.ParentSheetIndex ?? -1, clearWaterDistance + (bubblyZone ? 1 : 0), user, baitValue + (bubblyZone ? 0.4 : 0.0));
+                SObject normalFish = location.getFish(rod.fishingNibbleAccumulator, rod.attachments[0]?.ParentSheetIndex ?? -1, clearWaterDistance + (bubblyZone ? 1 : 0), user, baitValue + (bubblyZone ? 0.4 : 0.0), rod.bobber);
 
                 // If so, select that fish
                 if (ModFishing.Instance.Api.IsLegendary(normalFish.ParentSheetIndex)) {
@@ -142,7 +142,7 @@ namespace TehPers.FishingOverhaul {
 
             // Void mayonnaise
             if (location.Name.Equals("WitchSwamp") && !Game1.MasterPlayer.mailReceived.Contains("henchmanGone") && Game1.random.NextDouble() < 0.25 && !Game1.player.hasItemInInventory(308, 1)) {
-                rod.pullFishFromWater(308, -1, 0, 0, false);
+                rod.pullFishFromWater(308, -1, 0, 0, false, false, false);
                 return;
             }
 
@@ -157,7 +157,7 @@ namespace TehPers.FishingOverhaul {
                 if (user.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08) {
                     SObject unseenSecretNote = location.tryToCreateUnseenSecretNote(user);
                     if (unseenSecretNote != null) {
-                        rod.pullFishFromWater(unseenSecretNote.ParentSheetIndex, -1, 0, 0, false);
+                        rod.pullFishFromWater(unseenSecretNote.ParentSheetIndex, -1, 0, 0, false, false, false);
                         return;
                     }
                 }
@@ -171,10 +171,10 @@ namespace TehPers.FishingOverhaul {
                     trash = eventArgs.ParentSheetIndex;
 
                     ModFishing.Instance.Monitor.Log($"Catching trash: {trash}", LogLevel.Trace);
-                    rod.pullFishFromWater(trash.Value, -1, 0, 0, false);
+                    rod.pullFishFromWater(trash.Value, -1, 0, 0, false, false, false);
                 } else {
                     ModFishing.Instance.Monitor.Log($"No possible trash found for {location.Name}, using stone instead. This is probably caused by another mod removing trash data.", LogLevel.Warn);
-                    rod.pullFishFromWater(Objects.Stone, -1, 0, 0, false);
+                    rod.pullFishFromWater(Objects.Stone, -1, 0, 0, false, false, false);
                 }
             } else {
                 // Invoke event
@@ -229,7 +229,7 @@ namespace TehPers.FishingOverhaul {
 
             // Check if there should be treasure
             bool treasure = !Game1.isFestival();
-            treasure &= user.fishCaught != null && user.fishCaught.Count > 1;
+            treasure &= user.fishCaught != null && user.fishCaught.FieldDict.Count > 1;
             treasure &= Game1.random.NextDouble() < ModFishing.Instance.Api.GetTreasureChance(user, rod);
             Game1.activeClickableMenu = new CustomBobberBar(user, fish, fishSize, treasure, rod.attachments[1]?.ParentSheetIndex ?? -1);
         }

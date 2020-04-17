@@ -62,7 +62,7 @@ namespace TehPers.FishingOverhaul {
 
             chance += who.FishingLevel * config.FishLevelEffect;
             chance += who.LuckLevel * config.FishLuckLevelEffect;
-            chance += (float) Game1.dailyLuck * config.FishDailyLuckEffect;
+            chance += (float) Game1.player.DailyLuck * config.FishDailyLuckEffect;
             chance += ModFishing.Instance.Api.GetStreak(who) * config.FishStreakEffect;
 
             return chance;
@@ -74,7 +74,7 @@ namespace TehPers.FishingOverhaul {
             // Calculate chance
             float chance = config.TreasureChance;
             chance += who.LuckLevel * config.TreasureLuckLevelEffect;
-            chance += (float) Game1.dailyLuck * config.TreasureDailyLuckEffect;
+            chance += (float) Game1.player.DailyLuck * config.TreasureDailyLuckEffect;
             chance += config.TreasureStreakEffect * ModFishing.Instance.Api.GetStreak(who);
             if (rod.getBaitAttachmentIndex() == 703)
                 chance += config.TreasureBaitEffect;
@@ -92,7 +92,7 @@ namespace TehPers.FishingOverhaul {
             // Calculate chance
             float chance = config.UnawareChance;
             chance += who.LuckLevel * config.UnawareLuckLevelEffect;
-            chance += (float) Game1.dailyLuck * config.UnawareDailyLuckEffect;
+            chance += (float) Game1.player.DailyLuck * config.UnawareDailyLuckEffect;
 
             return chance;
         }

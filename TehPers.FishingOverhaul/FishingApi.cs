@@ -259,7 +259,7 @@ namespace TehPers.FishingOverhaul {
                 }
                 case 2: {
                     // Forest: forest fish + woodskip + default farm fish
-                    float scale = 0.05F + (float) Game1.dailyLuck;
+                    float scale = 0.05F + (float) Game1.player.DailyLuck;
                     IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(1 - scale);
                     IWeightedElement<int?>[] woodSkip = { new WeightedElement<int?>(734, scale) };
                     IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);

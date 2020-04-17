@@ -305,7 +305,7 @@ namespace TehPers.FishingOverhaul {
                 // Draw the sparkle text
                 this._sparkleText.Value?.draw(b, new Vector2(this.xPositionOnScreen - 16, this.yPositionOnScreen - 64));
             }
-            if (Game1.player.fishCaught == null || Game1.player.fishCaught.Count != 0)
+            if (Game1.player.fishCaught == null || Game1.player.fishCaught.FieldDict.Count != 0)
                 return;
             Vector2 position = new Vector2(this.xPositionOnScreen + (this._flipBubble.Value ? this.width + 64 + 8 : -200), this.yPositionOnScreen + 192);
             if (!Game1.options.gamepadControls)
