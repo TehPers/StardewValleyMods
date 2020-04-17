@@ -117,6 +117,14 @@ namespace TehPers.FishingOverhaul {
                 throw new Exception("User is null, please report this");
             }
 
+            if (!rod.isFishing) {
+                // MBD: Not sure if its always been this way, but in SMAPI 3.1/SDV 1.4 the rod can still generate hits when treasure is being displayed.
+                //      Acting on such hits puts the mod into a catching loop that denies the user their treasure, perpetually displays the catch bar
+                //      until the user cancels (and loses their streak) and doesn't award the fish.  To prevent this, make sure the rod is actually
+                //      fishing before acting on a nibble.
+                return;
+            }
+
             // Get some info about the rod
             int clearWaterDistance = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "clearWaterDistance").GetValue();
             GameLocation location = user.currentLocation;
