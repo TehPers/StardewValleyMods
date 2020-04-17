@@ -277,6 +277,13 @@ namespace TehPers.FishingOverhaul {
                     IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
                     return forestFish.Concat(farmFish);
                 }
+                case 5: {
+                    // Four Corners: mountain fish + forest fish?
+                    IEnumerable<IWeightedElement<int?>> forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.3);
+                    IEnumerable<IWeightedElement<int?>> mountainFish = this.GetPossibleFish(who, "Mountain", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.7);
+                    IEnumerable<IWeightedElement<int?>> farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                    return forestFish.Concat(mountainFish).Concat(farmFish);
+                }
                 default:
                     return this.GetPossibleFishInternal(who, locationName, this.GetFarmFishing(), water, date, weather, time, fishLevel, mineLevel);
             }
