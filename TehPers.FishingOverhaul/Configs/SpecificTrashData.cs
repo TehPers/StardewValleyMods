@@ -31,12 +31,15 @@ namespace TehPers.FishingOverhaul.Configs {
         }
 
         public bool MeetsCriteria(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel) {
-            return (this.InvertLocations ^ (this.Location == null || locationName == this.Location))
+            return (this.InvertLocations ^ (
+                        this.Location == null ||
+                        locationName == this.Location ||
+                        (this.Location == "UndergroundMines" && mineLevel > 0 && (this.MineLevel == null || this.MineLevel == mineLevel)))
+                   )
                    && (this.WaterType & waterType) != 0
                    && (this.Season & date.GetSeason()) != 0
                    && (this.Weather & weather) != 0
-                   && this.FishingLevel <= fishingLevel
-                   && (this.MineLevel == null || this.MineLevel == mineLevel);
+                   && this.FishingLevel <= fishingLevel;
         }
 
         public double GetWeight() {
