@@ -241,6 +241,9 @@ namespace TehPers.FishingOverhaul {
 
         /// <inheritdoc />
         public IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who, string locationName, WaterType water, SDate date, Weather weather, int time, int fishLevel, int? mineLevel = null) {
+            if(string.Equals(locationName, "BeachNightMarket", StringComparison.OrdinalIgnoreCase)) {
+                locationName = "Beach";
+            }
             if (!string.Equals(locationName, "Farm", StringComparison.OrdinalIgnoreCase) || !this.GetFishableFarmFishing())
                 return this.GetPossibleFishInternal(who, locationName, this.GetFarmFishing(), water, date, weather, time, fishLevel, mineLevel);
 

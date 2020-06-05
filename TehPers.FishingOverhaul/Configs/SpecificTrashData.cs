@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StardewModdingAPI.Utilities;
 using StardewValley;
@@ -31,6 +32,9 @@ namespace TehPers.FishingOverhaul.Configs {
         }
 
         public bool MeetsCriteria(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel) {
+            if (string.Equals(locationName, "BeachNightMarket", StringComparison.OrdinalIgnoreCase)) {
+                locationName = "Beach";
+            }
             return (this.InvertLocations ^ (
                         this.Location == null ||
                         locationName == this.Location ||
