@@ -9,6 +9,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Buildings;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.Tools;
@@ -147,9 +148,12 @@ namespace TehPers.FishingOverhaul {
                     fish = normalFish.ParentSheetIndex;
                 }
             }
-
-            // Void mayonnaise
-            if (location.Name.Equals("WitchSwamp") && !Game1.MasterPlayer.mailReceived.Contains("henchmanGone") && Game1.random.NextDouble() < 0.25 && !Game1.player.hasItemInInventory(308, 1)) {
+            Vector2 rod_tile = new Vector2(rod.bobber.X / 64, rod.bobber.Y / 64);
+            if (location is BuildableGameLocation buildable_location && buildable_location.getBuildingAt(rod_tile) is FishPond active_pond) {
+                rod.pullFishFromWater(active_pond.fishType.Value, -1, 0, 0, false, false, false);
+                return;
+            } else if (location.Name.Equals("WitchSwamp") && !Game1.MasterPlayer.mailReceived.Contains("henchmanGone") && Game1.random.NextDouble() < 0.25 && !Game1.player.hasItemInInventory(308, 1)) {
+                // Void mayonnaise
                 rod.pullFishFromWater(308, -1, 0, 0, false, false, false);
                 return;
             }
