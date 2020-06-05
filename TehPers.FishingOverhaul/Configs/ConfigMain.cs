@@ -33,6 +33,9 @@ namespace TehPers.FishingOverhaul.Configs {
         [Description("The Y coordinate of the top left corner of the fishing HUD.")]
         public int HudTopLeftY { get; set; } = 0;
 
+        [Description("The Maximum Number of Fish Types to Show in the HUD.")]
+        public int HudMaxFishTypes { get; set; } = 5;
+
         [Description("Settings for streaks.")]
         public ConfigStreak StreakSettings { get; set; } = new ConfigStreak();
 

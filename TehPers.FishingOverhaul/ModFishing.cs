@@ -166,9 +166,12 @@ namespace TehPers.FishingOverhaul {
             double fishChance = possibleFish.SumWeights();
 
             // Limit the number of displayed fish
-            int trimmed = possibleFish.Length - 5;
-            if (trimmed > 1) {
-                possibleFish = possibleFish.Take(5).ToArray();
+            int trimmed = 0;
+            if (this.MainConfig.HudMaxFishTypes > 0) {
+                trimmed = possibleFish.Length - this.MainConfig.HudMaxFishTypes;
+                if (trimmed > 0) {
+                    possibleFish = possibleFish.Take(this.MainConfig.HudMaxFishTypes).ToArray();
+                }
             }
 
             // Draw treasure chance
