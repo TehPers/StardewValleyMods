@@ -36,6 +36,7 @@ namespace TehPers.FishingOverhaul.Configs {
                         locationName == this.Location ||
                         (this.Location == "UndergroundMines" && mineLevel > 0 && (this.MineLevel == null || this.MineLevel == mineLevel)))
                    )
+                   && !(this.InvertLocations && locationName == "Submarine") /* MBD: Crappy hack to stop catching green algae on the sub.  Better solution would be to replace invertLocations with a list of blocked locations */
                    && (this.WaterType & waterType) != 0
                    && (this.Season & date.GetSeason()) != 0
                    && (this.Weather & weather) != 0
