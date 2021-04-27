@@ -126,6 +126,21 @@ namespace TehPers.FishingOverhaul.Configs {
 
             // Mutant Carp
             this.PossibleFish["Sewer"][682] = new FishData(.02, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
+            
+            // Glacierfish Jr
+            this.PossibleFish["Forest"][902] = new FishData(.02, 600, 2000, WaterType.River, Season.Winter, 6);
+
+            // Legend II
+            this.PossibleFish["Mountain"][900] = new FishData(.02, 600, 2300, WaterType.Lake, Season.Spring, 10, Weather.Rainy);
+
+            // Ms Angler
+            this.PossibleFish["Town"][899] = new FishData(.02, 600, 2600, WaterType.Both, Season.Fall, 3);
+
+            // Radioactive Carp
+            this.PossibleFish["Sewer"][901] = new FishData(.02, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
+
+            // Son of Crimsonfish
+            this.PossibleFish["Beach"][898] = new FishData(.02, 600, 2000, WaterType.Both, Season.Summer, 5);
 
             // UndergroundMine
             double mineBaseChance = 0.3;
