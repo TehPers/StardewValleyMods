@@ -10,4 +10,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="manifest.json" />
+  </ItemGroup>
 </Project>

@@ -110,6 +110,7 @@ namespace TehPers.FishingOverhaul {
                 difficulty *= config.UnawareSettings.UnawareMult;
                 Game1.showGlobalMessage(ModFishing.Translate("text.unaware", ModFishing.Translate("text.percent", 1F - config.UnawareSettings.UnawareMult)));
             }
+
             this._difficulty.Value = difficulty;
 
             // Adjusts additional traits about the fish
@@ -127,8 +128,7 @@ namespace TehPers.FishingOverhaul {
             this._fishQuality.Value = fishQuality;
 
             // Increase the user's perfect streak (this will be dropped to 0 if they don't get a perfect catch)
-            if (this._origStreak >= config.StreakSettings.StreakForIncreasedQuality)
-                this._sparkleText.Value = new SparklingText(Game1.dialogueFont, ModFishing.Translate("text.streak", this._origStreak), Color.Yellow, Color.White);
+            if (this._origStreak >= config.StreakSettings.StreakForIncreasedQuality) this._sparkleText.Value = new SparklingText(Game1.dialogueFont, ModFishing.Translate("text.streak", this._origStreak), Color.Yellow, Color.White);
         }
 
         public override void update(GameTime time) {
@@ -177,8 +177,7 @@ namespace TehPers.FishingOverhaul {
 
             // Check if done fishing
             distanceFromCatching = this._distanceFromCatching.Value;
-            if (this._notifiedFailOrSucceed)
-                return;
+            if (this._notifiedFailOrSucceed) return;
 
             if (distanceFromCatching <= 0.0) {
                 // Failed to catch fish
@@ -190,15 +189,16 @@ namespace TehPers.FishingOverhaul {
                         Game1.showGlobalMessage(ModFishing.Translate("text.lostStreak", this._origStreak));
                     }
                 }
-            } else if (distanceFromCatching >= 1.0) {
+            }
+            else if (distanceFromCatching >= 1.0) {
                 // Succeeded in catching the fish
                 this._notifiedFailOrSucceed = true;
 
                 if (perfect) {
                     ModFishing.Instance.Api.SetStreak(this.User, this._origStreak + 1);
-                } else if (treasure && treasureCaught) {
-                    if (this._origStreak >= ModFishing.Instance.MainConfig.StreakSettings.StreakForIncreasedQuality)
-                        Game1.showGlobalMessage(ModFishing.Translate("text.keptStreak", this._origStreak));
+                }
+                else if (treasure && treasureCaught) {
+                    if (this._origStreak >= ModFishing.Instance.MainConfig.StreakSettings.StreakForIncreasedQuality) Game1.showGlobalMessage(ModFishing.Translate("text.keptStreak", this._origStreak));
                     ModFishing.Instance.Api.SetStreak(this.User, this._origStreak);
                 }
 
@@ -240,8 +240,10 @@ namespace TehPers.FishingOverhaul {
                     timeOfDay = DateTime.Now.TimeOfDay;
                     double num = Math.Round(Math.Sin(timeOfDay.TotalMilliseconds / 100.0), 2) + 2.0;
                     color1 = color2 * (float) num;
-                } else
+                }
+                else
                     color1 = Color.White;
+
                 const double num1 = 0.0;
                 Vector2 zero1 = Vector2.Zero;
                 const double num2 = 4.0;
@@ -258,8 +260,10 @@ namespace TehPers.FishingOverhaul {
                     timeOfDay = DateTime.Now.TimeOfDay;
                     double num5 = Math.Round(Math.Sin(timeOfDay.TotalMilliseconds / 100.0), 2) + 2.0;
                     color3 = color2 * (float) num5;
-                } else
+                }
+                else
                     color3 = Color.White;
+
                 const double num6 = 0.0;
                 Vector2 zero2 = Vector2.Zero;
                 Vector2 scale = new Vector2(4f, this._bobberBarHeight.Value - 16);
@@ -276,8 +280,10 @@ namespace TehPers.FishingOverhaul {
                     timeOfDay = DateTime.Now.TimeOfDay;
                     double num5 = Math.Round(Math.Sin(timeOfDay.TotalMilliseconds / 100.0), 2) + 2.0;
                     color4 = color2 * (float) num5;
-                } else
+                }
+                else
                     color4 = Color.White;
+
                 const double num9 = 0.0;
                 Vector2 zero3 = Vector2.Zero;
                 const double num10 = 4.0;
@@ -297,7 +303,8 @@ namespace TehPers.FishingOverhaul {
                 if (ModFishing.Instance.MainConfig.ShowFish && !ModFishing.Instance.Api.IsHidden(this._origFish)) {
                     Rectangle fishSrc = GameLocation.getSourceRectForObject(this._origFish);
                     b.Draw(Game1.objectSpriteSheet, fishPos, fishSrc, Color.White, 0.0f, new Vector2(10f, 10f), 2.25f, SpriteEffects.None, 0.88f);
-                } else {
+                }
+                else {
                     Rectangle fishSrc = new Rectangle(614 + (this._bossFish.Value ? 20 : 0), 1840, 20, 20);
                     b.Draw(Game1.mouseCursors, fishPos, fishSrc, Color.White, 0.0f, new Vector2(10f, 10f), 2f, SpriteEffects.None, 0.88f);
                 }
@@ -305,8 +312,8 @@ namespace TehPers.FishingOverhaul {
                 // Draw the sparkle text
                 this._sparkleText.Value?.draw(b, new Vector2(this.xPositionOnScreen - 16, this.yPositionOnScreen - 64));
             }
-            if (Game1.player.fishCaught == null || Game1.player.fishCaught.FieldDict.Count != 0)
-                return;
+
+            if (Game1.player.fishCaught == null || Game1.player.fishCaught.FieldDict.Count != 0) return;
             Vector2 position = new Vector2(this.xPositionOnScreen + (this._flipBubble.Value ? this.width + 64 + 8 : -200), this.yPositionOnScreen + 192);
             if (!Game1.options.gamepadControls)
                 b.Draw(Game1.mouseCursors, position, new Rectangle(644, 1330, 48, 69), Color.White, 0.0f, Vector2.Zero, 4f, SpriteEffects.None, 0.88f);

@@ -9,4 +9,8 @@
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="3.3.0" />
     <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="manifest.json" />
+  </ItemGroup>
 </Project>
