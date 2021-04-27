@@ -9,6 +9,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Buildings;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.Tools;
@@ -117,6 +118,14 @@ namespace TehPers.FishingOverhaul {
                 throw new Exception("User is null, please report this");
             }
 
+            if (!rod.isFishing) {
+                // MBD: Not sure if its always been this way, but in SMAPI 3.1/SDV 1.4 the rod can still generate hits when treasure is being displayed.
+                //      Acting on such hits puts the mod into a catching loop that denies the user their treasure, perpetually displays the catch bar
+                //      until the user cancels (and loses their streak) and doesn't award the fish.  To prevent this, make sure the rod is actually
+                //      fishing before acting on a nibble.
+                return;
+            }
+
             // Get some info about the rod
             int clearWaterDistance = ModFishing.Instance.Helper.Reflection.GetField<int>(rod, "clearWaterDistance").GetValue();
             GameLocation location = user.currentLocation;
@@ -132,17 +141,20 @@ namespace TehPers.FishingOverhaul {
                     bubblyZone = new Rectangle(location.fishSplashPoint.X * 64, location.fishSplashPoint.Y * 64, 64, 64).Intersects(new Rectangle((int) rod.bobber.X - 80, (int) rod.bobber.Y - 80, 64, 64));
 
                 // NotNull
-                SObject normalFish = location.getFish(rod.fishingNibbleAccumulator, rod.attachments[0]?.ParentSheetIndex ?? -1, clearWaterDistance + (bubblyZone ? 1 : 0), user, baitValue + (bubblyZone ? 0.4 : 0.0));
+                SObject normalFish = location.getFish(rod.fishingNibbleAccumulator, rod.attachments[0]?.ParentSheetIndex ?? -1, clearWaterDistance + (bubblyZone ? 1 : 0), user, baitValue + (bubblyZone ? 0.4 : 0.0), rod.bobber);
 
                 // If so, select that fish
                 if (ModFishing.Instance.Api.IsLegendary(normalFish.ParentSheetIndex)) {
                     fish = normalFish.ParentSheetIndex;
                 }
             }
-
-            // Void mayonnaise
-            if (location.Name.Equals("WitchSwamp") && !Game1.MasterPlayer.mailReceived.Contains("henchmanGone") && Game1.random.NextDouble() < 0.25 && !Game1.player.hasItemInInventory(308, 1)) {
-                rod.pullFishFromWater(308, -1, 0, 0, false);
+            Vector2 rod_tile = new Vector2(rod.bobber.X / 64, rod.bobber.Y / 64);
+            if (location is BuildableGameLocation buildable_location && buildable_location.getBuildingAt(rod_tile) is FishPond active_pond) {
+                rod.pullFishFromWater(active_pond.fishType.Value, -1, 0, 0, false, false, false);
+                return;
+            } else if (location.Name.Equals("WitchSwamp") && !Game1.MasterPlayer.mailReceived.Contains("henchmanGone") && Game1.random.NextDouble() < 0.25 && !Game1.player.hasItemInInventory(308, 1)) {
+                // Void mayonnaise
+                rod.pullFishFromWater(308, -1, 0, 0, false, false, false);
                 return;
             }
 
@@ -157,7 +169,7 @@ namespace TehPers.FishingOverhaul {
                 if (user.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08) {
                     SObject unseenSecretNote = location.tryToCreateUnseenSecretNote(user);
                     if (unseenSecretNote != null) {
-                        rod.pullFishFromWater(unseenSecretNote.ParentSheetIndex, -1, 0, 0, false);
+                        rod.pullFishFromWater(unseenSecretNote.ParentSheetIndex, -1, 0, 0, false, false, false);
                         return;
                     }
                 }
@@ -171,10 +183,10 @@ namespace TehPers.FishingOverhaul {
                     trash = eventArgs.ParentSheetIndex;
 
                     ModFishing.Instance.Monitor.Log($"Catching trash: {trash}", LogLevel.Trace);
-                    rod.pullFishFromWater(trash.Value, -1, 0, 0, false);
+                    rod.pullFishFromWater(trash.Value, -1, 0, 0, false, false, false);
                 } else {
                     ModFishing.Instance.Monitor.Log($"No possible trash found for {location.Name}, using stone instead. This is probably caused by another mod removing trash data.", LogLevel.Warn);
-                    rod.pullFishFromWater(Objects.Stone, -1, 0, 0, false);
+                    rod.pullFishFromWater(Objects.Stone, -1, 0, 0, false, false, false);
                 }
             } else {
                 // Invoke event
@@ -229,7 +241,7 @@ namespace TehPers.FishingOverhaul {
 
             // Check if there should be treasure
             bool treasure = !Game1.isFestival();
-            treasure &= user.fishCaught != null && user.fishCaught.Count > 1;
+            treasure &= user.fishCaught != null && user.fishCaught.FieldDict.Count > 1;
             treasure &= Game1.random.NextDouble() < ModFishing.Instance.Api.GetTreasureChance(user, rod);
             Game1.activeClickableMenu = new CustomBobberBar(user, fish, fishSize, treasure, rod.attachments[1]?.ParentSheetIndex ?? -1);
         }

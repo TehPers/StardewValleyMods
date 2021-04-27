@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StardewModdingAPI.Utilities;
 using StardewValley;
@@ -31,12 +32,19 @@ namespace TehPers.FishingOverhaul.Configs {
         }
 
         public bool MeetsCriteria(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel) {
-            return (this.InvertLocations ^ (this.Location == null || locationName == this.Location))
+            if (string.Equals(locationName, "BeachNightMarket", StringComparison.OrdinalIgnoreCase)) {
+                locationName = "Beach";
+            }
+            return (this.InvertLocations ^ (
+                        this.Location == null ||
+                        locationName == this.Location ||
+                        (this.Location == "UndergroundMines" && mineLevel > 0 && (this.MineLevel == null || this.MineLevel == mineLevel)))
+                   )
+                   && !(this.InvertLocations && locationName == "Submarine") /* MBD: Crappy hack to stop catching green algae on the sub.  Better solution would be to replace invertLocations with a list of blocked locations */
                    && (this.WaterType & waterType) != 0
                    && (this.Season & date.GetSeason()) != 0
                    && (this.Weather & weather) != 0
-                   && this.FishingLevel <= fishingLevel
-                   && (this.MineLevel == null || this.MineLevel == mineLevel);
+                   && this.FishingLevel <= fishingLevel;
         }
 
         public double GetWeight() {
