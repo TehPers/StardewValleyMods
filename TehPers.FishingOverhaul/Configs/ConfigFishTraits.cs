@@ -16,25 +16,25 @@ namespace TehPers.FishingOverhaul.Configs {
             ModFishing.Instance.Monitor.Log("Automatically populating fishTraits.json with data from Fish.xnb", LogLevel.Info);
             ModFishing.Instance.Monitor.Log("NOTE: If this file is modded, the config will reflect the changes!", LogLevel.Info);
 
-            Dictionary<int, string> fishDict = ModFishing.Instance.Helper.Content.Load<Dictionary<int, string>>(@"Data\Fish.xnb", ContentSource.GameContent);
-            this.FishTraits = this.FishTraits ?? new Dictionary<int, FishTraits>();
-            IEnumerable<int> possibleFish = (from locationKV in ModFishing.Instance.FishConfig.PossibleFish
+            var fishDict = ModFishing.Instance.Helper.Content.Load<Dictionary<int, string>>(@"Data\Fish.xnb", ContentSource.GameContent);
+            FishTraits ??= new Dictionary<int, FishTraits>();
+            var possibleFish = (from locationKV in ModFishing.Instance.FishConfig.PossibleFish
                                              from fishKV in locationKV.Value
                                              select fishKV.Key).Distinct();
 
             // Loop through each possible fish
-            foreach (int fish in possibleFish) {
+            foreach (var fish in possibleFish) {
                 try {
-                    if (!fishDict.TryGetValue(fish, out string rawData))
+                    if (!fishDict.TryGetValue(fish, out var rawData))
                         continue;
 
-                    string[] data = rawData.Split('/');
+                    var data = rawData.Split('/');
 
                     // Get difficulty
-                    int.TryParse(data[1], out int difficulty);
+                    int.TryParse(data[1], out var difficulty);
 
                     // Get motion type
-                    string motionTypeName = data[2].ToLower();
+                    var motionTypeName = data[2].ToLower();
                     FishMotionType motionType;
                     switch (motionTypeName) {
                         case "mixed":
@@ -58,11 +58,11 @@ namespace TehPers.FishingOverhaul.Configs {
                     }
 
                     // Get size
-                    int minSize = Convert.ToInt32(data[3]);
-                    int maxSize = Convert.ToInt32(data[4]);
+                    var minSize = Convert.ToInt32(data[3]);
+                    var maxSize = Convert.ToInt32(data[4]);
 
                     // Add trait
-                    this.FishTraits.Add(fish, new FishTraits {
+                    FishTraits.Add(fish, new FishTraits {
                         Difficulty = difficulty,
                         MinSize = minSize,
                         MaxSize = maxSize,

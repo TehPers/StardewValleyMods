@@ -9,13 +9,13 @@ namespace TehPers.FishingOverhaul.Configs {
         public Farmer Who { get; }
 
         public WeightedFishData(int fish, IFishData data, Farmer who) {
-            this.Fish = fish;
-            this.Data = data;
-            this.Who = who;
+            Fish = fish;
+            Data = data;
+            Who = who;
         }
 
         public double GetWeight() {
-            return this.Data.GetWeight(this.Who);
+            return Data.GetWeight(Who);
         }
 
     }

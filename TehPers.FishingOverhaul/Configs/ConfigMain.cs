@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using TehPers.Core.Json.Serialization;
 
 namespace TehPers.FishingOverhaul.Configs {
@@ -15,7 +14,7 @@ namespace TehPers.FishingOverhaul.Configs {
         [Description("Whether this mod affects legendary fish as well. If this is false, then you should never be able to catch legendary fish multiple times.")]
         public bool CustomLegendaries { get; set; } = true;
 
-        [Description("Whether you can catch legendary fish multiple times (including Legend). This setting only matters if " + nameof(ConfigMain.CustomLegendaries) + " is true. False for vanilla")]
+        [Description("Whether you can catch legendary fish multiple times (including Legend). This setting only matters if " + nameof(CustomLegendaries) + " is true. False for vanilla")]
         public bool RecatchableLegendaries { get; set; } = true;
 
         [Description("WIP, doesn't work yet - If legendary fish are recatchable, how many days you must wait before you can catch a particular legendary fish again. Set to 0 for no delay.")]

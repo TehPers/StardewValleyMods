@@ -39,36 +39,36 @@ namespace TehPers.FishingOverhaul.Configs {
             : this(chance, new[] { new TimeInterval(minTime, maxTime) }, waterType, season, minLevel, weather, mineLevel) { }
 
         public FishData(double chance, IEnumerable<TimeInterval> times, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int? mineLevel = null) {
-            this.Chance = chance;
-            this.WaterType = waterType;
-            this.Season = season;
-            this.MinLevel = minLevel;
-            this.Weather = weather ?? Weather.Sunny | Weather.Rainy;
-            this.MineLevel = mineLevel;
+            Chance = chance;
+            WaterType = waterType;
+            Season = season;
+            MinLevel = minLevel;
+            Weather = weather ?? Weather.Sunny | Weather.Rainy;
+            MineLevel = mineLevel;
             if (times != null) {
-                this.Times = new List<TimeInterval>(times);
+                Times = new List<TimeInterval>(times);
             }
         }
 
         public bool MeetsCriteria(int fish, WaterType waterType, SDate date, Weather weather, int time, int level) {
             // Note: HasFlag won't work because these are checking for an intersection, not for a single bit
-            return (this.WaterType & waterType) > 0
-                   && (this.Season & date.GetSeason()) > 0
-                   && (this.Weather & weather) > 0
-                   && level >= this.MinLevel
-                   && this.Times.Any(t => time >= t.Start && time < t.Finish);
+            return (WaterType & waterType) > 0
+                   && (Season & date.GetSeason()) > 0
+                   && (Weather & weather) > 0
+                   && level >= MinLevel
+                   && Times.Any(t => time >= t.Start && time < t.Finish);
         }
 
         public bool MeetsCriteria(int fish, WaterType waterType, SDate date, Weather weather, int time, int level, int? mineLevel) {
-            return this.MeetsCriteria(fish, waterType, date, weather, time, level)
-                   && (this.MineLevel == null || mineLevel == this.MineLevel);
+            return MeetsCriteria(fish, waterType, date, weather, time, level)
+                   && (MineLevel == null || mineLevel == MineLevel);
         }
 
         public virtual float GetWeight(Farmer who) {
-            return (float) this.Chance + who.FishingLevel / 50f;
+            return (float) Chance + who.FishingLevel / 50f;
         }
 
-        public override string ToString() => $"Chance: {this.Chance}, Weather: {this.Weather}, Season: {this.Season}";
+        public override string ToString() => $"Chance: {Chance}, Weather: {Weather}, Season: {Season}";
 
         public static IFishData Trash { get; } = new FishData(1, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
 
@@ -83,8 +83,8 @@ namespace TehPers.FishingOverhaul.Configs {
             public TimeInterval() { }
 
             public TimeInterval(int start, int finish) {
-                this.Start = start;
-                this.Finish = finish;
+                Start = start;
+                Finish = finish;
             }
         }
     }
