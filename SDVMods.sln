@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core", "TehPers.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Api", "TehPers.Core.Api\TehPers.Core.Api.csproj", "{63F341D5-2440-4D3F-A11D-0D60FC0D67BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Json", "TehPers.Core.Json\TehPers.Core.Json.csproj", "{D3F1F7BB-D094-4FD2-A417-2A824A20440A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{63F341D5-2440-4D3F-A11D-0D60FC0D67BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63F341D5-2440-4D3F-A11D-0D60FC0D67BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63F341D5-2440-4D3F-A11D-0D60FC0D67BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3F1F7BB-D094-4FD2-A417-2A824A20440A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3F1F7BB-D094-4FD2-A417-2A824A20440A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3F1F7BB-D094-4FD2-A417-2A824A20440A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3F1F7BB-D094-4FD2-A417-2A824A20440A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

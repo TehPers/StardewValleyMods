@@ -16,7 +16,7 @@ namespace TehPers.FishingOverhaul
     {
         public static int? GetRandomFish(SFarmer who)
         {
-            return GetRandomFish(ModFishing.Instance.Api.GetPossibleFish(who));
+            return FishHelper.GetRandomFish(ModEntry.Instance.Api.GetPossibleFish(who));
         }
 
         public static int? GetRandomFish(IEnumerable<IWeightedElement<int?>> possibleFish)
@@ -29,11 +29,11 @@ namespace TehPers.FishingOverhaul
             // Select a fish
         }
 
-        public static int? GetRandomTrash(SFarmer who) => GetRandomTrash(ModFishing.Instance.Api.GetTrashData(who));
+        public static int? GetRandomTrash(SFarmer who) => FishHelper.GetRandomTrash(ModEntry.Instance.Api.GetTrashData(who));
 
         public static int? GetRandomTrash(SFarmer who, string locationName, WaterType waterType, SDate date,
-            Weather weather, int time, int fishingLevel, int? mineLevel) => GetRandomTrash(
-            ModFishing.Instance.Api.GetTrashData(who, locationName, waterType, date, weather, time, fishingLevel,
+            Weather weather, int time, int fishingLevel, int? mineLevel) => FishHelper.GetRandomTrash(
+            ModEntry.Instance.Api.GetTrashData(who, locationName, waterType, date, weather, time, fishingLevel,
                 mineLevel));
 
         public static int? GetRandomTrash(IEnumerable<ITrashData> trashData)
@@ -53,36 +53,36 @@ namespace TehPers.FishingOverhaul
         }
 
         public static bool IsTrash(int id) =>
-            ModFishing.Instance.Api.GetTrashData().Any(t => t.PossibleIds.Contains(id));
+            ModEntry.Instance.Api.GetTrashData().Any(t => t.PossibleIds.Contains(id));
 
         public static float GetRawFishChance(SFarmer who)
         {
-            var config = ModFishing.Instance.MainConfig.GlobalFishSettings;
+            var config = ModEntry.Instance.MainConfig.GlobalFishSettings;
 
             // Calculate chance
             var chance = config.FishBaseChance;
             // float chance2 = chance + who.FishingLevel * config.FishLevelEffect;
             // float chance3 = chance2 + who.LuckLevel * config.FishLuckLevelEffect;
             // float chance4 = chance3 + (float) Game1.dailyLuck * config.FishDailyLuckEffect;
-            // float actualChance = chance4 + ModFishing.Instance.Api.GetStreak(who) * config.FishStreakEffect;
+            // float actualChance = chance4 + ModEntry.Instance.Api.GetStreak(who) * config.FishStreakEffect;
 
             chance += who.FishingLevel * config.FishLevelEffect;
             chance += who.LuckLevel * config.FishLuckLevelEffect;
             chance += (float) Game1.player.DailyLuck * config.FishDailyLuckEffect;
-            chance += ModFishing.Instance.Api.GetStreak(who) * config.FishStreakEffect;
+            chance += ModEntry.Instance.Api.GetStreak(who) * config.FishStreakEffect;
 
             return chance;
         }
 
         public static float GetRawTreasureChance(SFarmer who, FishingRod rod)
         {
-            var config = ModFishing.Instance.MainConfig.GlobalTreasureSettings;
+            var config = ModEntry.Instance.MainConfig.GlobalTreasureSettings;
 
             // Calculate chance
             var chance = config.TreasureChance;
             chance += who.LuckLevel * config.TreasureLuckLevelEffect;
             chance += (float) Game1.player.DailyLuck * config.TreasureDailyLuckEffect;
-            chance += config.TreasureStreakEffect * ModFishing.Instance.Api.GetStreak(who);
+            chance += config.TreasureStreakEffect * ModEntry.Instance.Api.GetStreak(who);
             if (rod.getBaitAttachmentIndex() == 703)
                 chance += config.TreasureBaitEffect;
             if (rod.getBobberAttachmentIndex() == 693)
@@ -95,7 +95,7 @@ namespace TehPers.FishingOverhaul
 
         public static float GetRawUnawareChance(SFarmer who)
         {
-            var config = ModFishing.Instance.MainConfig.UnawareSettings;
+            var config = ModEntry.Instance.MainConfig.UnawareSettings;
 
             // Calculate chance
             var chance = config.UnawareChance;

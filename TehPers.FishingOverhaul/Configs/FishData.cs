@@ -5,12 +5,10 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using TehPers.Core.Api.Enums;
 using TehPers.Core.Helpers.Static;
-using TehPers.Core.Json.Serialization;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Configs {
 
-    [JsonDescribe]
     public class FishData : IFishData {
         [Description("The weighted chance of this fish appearing")]
         public double Chance { get; set; } = 1D;
@@ -39,40 +37,39 @@ namespace TehPers.FishingOverhaul.Configs {
             : this(chance, new[] { new TimeInterval(minTime, maxTime) }, waterType, season, minLevel, weather, mineLevel) { }
 
         public FishData(double chance, IEnumerable<TimeInterval> times, WaterType waterType, Season season, int minLevel = 0, Weather? weather = null, int? mineLevel = null) {
-            Chance = chance;
-            WaterType = waterType;
-            Season = season;
-            MinLevel = minLevel;
-            Weather = weather ?? Weather.Sunny | Weather.Rainy;
-            MineLevel = mineLevel;
+            this.Chance = chance;
+            this.WaterType = waterType;
+            this.Season = season;
+            this.MinLevel = minLevel;
+            this.Weather = weather ?? Weather.Sunny | Weather.Rainy;
+            this.MineLevel = mineLevel;
             if (times != null) {
-                Times = new List<TimeInterval>(times);
+                this.Times = new List<TimeInterval>(times);
             }
         }
 
         public bool MeetsCriteria(int fish, WaterType waterType, SDate date, Weather weather, int time, int level) {
             // Note: HasFlag won't work because these are checking for an intersection, not for a single bit
-            return (WaterType & waterType) > 0
-                   && (Season & date.GetSeason()) > 0
-                   && (Weather & weather) > 0
-                   && level >= MinLevel
-                   && Times.Any(t => time >= t.Start && time < t.Finish);
+            return (this.WaterType & waterType) > 0
+                   && (this.Season & date.GetSeason()) > 0
+                   && (this.Weather & weather) > 0
+                   && level >= this.MinLevel
+                   && this.Times.Any(t => time >= t.Start && time < t.Finish);
         }
 
         public bool MeetsCriteria(int fish, WaterType waterType, SDate date, Weather weather, int time, int level, int? mineLevel) {
-            return MeetsCriteria(fish, waterType, date, weather, time, level)
-                   && (MineLevel == null || mineLevel == MineLevel);
+            return this.MeetsCriteria(fish, waterType, date, weather, time, level)
+                   && (this.MineLevel == null || mineLevel == this.MineLevel);
         }
 
         public virtual float GetWeight(Farmer who) {
-            return (float) Chance + who.FishingLevel / 50f;
+            return (float) this.Chance + who.FishingLevel / 50f;
         }
 
-        public override string ToString() => $"Chance: {Chance}, Weather: {Weather}, Season: {Season}";
+        public override string ToString() => $"Chance: {this.Chance}, Weather: {this.Weather}, Season: {this.Season}";
 
         public static IFishData Trash { get; } = new FishData(1, 600, 2600, WaterType.Both, Season.Spring | Season.Summer | Season.Fall | Season.Winter);
 
-        [JsonDescribe]
         public class TimeInterval {
             [Description("The earliest time in this interval")]
             public int Start { get; set; }
@@ -83,8 +80,8 @@ namespace TehPers.FishingOverhaul.Configs {
             public TimeInterval() { }
 
             public TimeInterval(int start, int finish) {
-                Start = start;
-                Finish = finish;
+                this.Start = start;
+                this.Finish = finish;
             }
         }
     }

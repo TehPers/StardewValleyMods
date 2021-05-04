@@ -46,57 +46,57 @@ namespace TehPers.FishingOverhaul {
 
         /// <inheritdoc />
         public void SetFishChance(float? chance) {
-            _fishChance = chance;
+            this._fishChance = chance;
         }
 
         /// <inheritdoc />
         public float GetFishChance(Farmer who) {
-            return (_fishChance ?? FishHelper.GetRawFishChance(who))
-                .Clamp(ModFishing.Instance.MainConfig.GlobalFishSettings.MinFishChance, ModFishing.Instance.MainConfig.GlobalFishSettings.MaxFishChance)
+            return (this._fishChance ?? FishHelper.GetRawFishChance(who))
+                .Clamp(ModEntry.Instance.MainConfig.GlobalFishSettings.MinFishChance, ModEntry.Instance.MainConfig.GlobalFishSettings.MaxFishChance)
                 .Clamp(0F, 1F); // Prevent invalid chances
         }
 
         /// <inheritdoc />
         public void SetTreasureChance(float? chance) {
-            _treasureChance = chance;
+            this._treasureChance = chance;
         }
 
         /// <inheritdoc />
         public float GetTreasureChance(Farmer who, FishingRod rod) {
-            return _treasureChance ?? FishHelper.GetRawTreasureChance(who, rod);
+            return this._treasureChance ?? FishHelper.GetRawTreasureChance(who, rod);
         }
 
         /// <inheritdoc />
         public void SetUnawareChance(float? chance) {
-            _unawareChance = chance;
+            this._unawareChance = chance;
         }
 
         /// <inheritdoc />
         public float GetUnawareChance(Farmer who, int fish) {
-            if (IsLegendary(fish))
+            if (this.IsLegendary(fish))
                 return 0F;
 
-            return _unawareChance ?? FishHelper.GetRawUnawareChance(who);
+            return this._unawareChance ?? FishHelper.GetRawUnawareChance(who);
         }
 
         /// <inheritdoc />
         public void SetFarmFishing(bool? allowFish) {
-            _farmFishing = allowFish;
+            this._farmFishing = allowFish;
         }
 
         /// <inheritdoc />
         public bool GetFarmFishing() {
-            return _farmFishing ?? ModFishing.Instance.MainConfig.GlobalFishSettings.AllowFishOnAllFarms;
+            return this._farmFishing ?? ModEntry.Instance.MainConfig.GlobalFishSettings.AllowFishOnAllFarms;
         }
 
         /// <inheritdoc />
         public void SetFishableFarmFishing(bool? allowFish) {
-            _fishableFarmFishing = allowFish;
+            this._fishableFarmFishing = allowFish;
         }
 
         /// <inheritdoc />
         public bool GetFishableFarmFishing() {
-            return _fishableFarmFishing ?? true;
+            return this._fishableFarmFishing ?? true;
         }
 
         /// <inheritdoc />
@@ -104,7 +104,7 @@ namespace TehPers.FishingOverhaul {
             var result = new Dictionary<int, IFishData>();
 
             // Get mod location data
-            if (ModFishing.Instance.FishConfig.PossibleFish.TryGetValue(location, out var modLocData)) {
+            if (ModEntry.Instance.FishConfig.PossibleFish.TryGetValue(location, out var modLocData)) {
                 foreach (var modData in modLocData) {
                     // Mod data
                     result[modData.Key] = modData.Value;
@@ -112,7 +112,7 @@ namespace TehPers.FishingOverhaul {
             }
 
             // Get overridden location data
-            if (!_fishDataOverrides.TryGetValue(location, out var overrideLocData)) return result.ToDictionary();
+            if (!this._fishDataOverrides.TryGetValue(location, out var overrideLocData)) return result.ToDictionary();
             foreach (var overrideData in overrideLocData) {
                 if (overrideData.Value == null) {
                     // Removed data
@@ -130,11 +130,11 @@ namespace TehPers.FishingOverhaul {
         /// <inheritdoc />
         public IFishData GetFishData(string location, int fish) {
             // Overriden fish data
-            if (_fishDataOverrides.TryGetValue(location, out var overrideLocData) && overrideLocData.TryGetValue(fish, out var overrideData))
+            if (this._fishDataOverrides.TryGetValue(location, out var overrideLocData) && overrideLocData.TryGetValue(fish, out var overrideData))
                 return overrideData;
 
             // Mod fish data
-            if (ModFishing.Instance.FishConfig.PossibleFish.TryGetValue(location, out var modLocData) && modLocData.TryGetValue(fish, out var modData))
+            if (ModEntry.Instance.FishConfig.PossibleFish.TryGetValue(location, out var modLocData) && modLocData.TryGetValue(fish, out var modData))
                 return modData;
 
             // None found
@@ -144,9 +144,9 @@ namespace TehPers.FishingOverhaul {
         /// <inheritdoc />
         public void SetFishData(string location, int fish, IFishData data) {
             // Get location data dictionary
-            if (!_fishDataOverrides.TryGetValue(location, out var overrideLocData)) {
+            if (!this._fishDataOverrides.TryGetValue(location, out var overrideLocData)) {
                 overrideLocData = new Dictionary<int, IFishData>();
-                _fishDataOverrides.Add(location, overrideLocData);
+                this._fishDataOverrides.Add(location, overrideLocData);
             }
 
             // Set the fish data for that location
@@ -155,85 +155,85 @@ namespace TehPers.FishingOverhaul {
 
         /// <inheritdoc />
         public void ResetFishData() {
-            _fishDataOverrides.Clear();
+            this._fishDataOverrides.Clear();
         }
 
         /// <inheritdoc />
         public bool ResetFishData(string location) {
-            return _fishDataOverrides.Remove(location);
+            return this._fishDataOverrides.Remove(location);
         }
 
         /// <inheritdoc />
         public bool ResetFishData(string location, int fish) {
-            return _fishDataOverrides.TryGetValue(location, out var overrideLocData) && overrideLocData.Remove(fish);
+            return this._fishDataOverrides.TryGetValue(location, out var overrideLocData) && overrideLocData.Remove(fish);
         }
 
         /// <inheritdoc />
         public void SetFishTraits(int fish, IFishTraits traits) {
             if (traits == null) {
-                _fishTraitsOverrides.Remove(fish);
+                this._fishTraitsOverrides.Remove(fish);
             } else {
-                _fishTraitsOverrides[fish] = traits;
+                this._fishTraitsOverrides[fish] = traits;
             }
         }
 
         /// <inheritdoc />
         public IFishTraits GetFishTraits(int fish) {
-            return _fishTraitsOverrides.TryGetValue(fish, out var traits) ? traits : null;
+            return this._fishTraitsOverrides.TryGetValue(fish, out var traits) ? traits : null;
         }
 
         /// <inheritdoc />
         public bool AddTreasureData(ITreasureData data) {
-            return _added.Add(data);
+            return this._added.Add(data);
         }
 
         /// <inheritdoc />
         public bool RemoveTreasureData(ITreasureData data)
         {
             if (data is TreasureData td) {
-                return _removed.Add(td);
+                return this._removed.Add(td);
             }
 
-            return _added.Remove(data);
+            return this._added.Remove(data);
         }
 
         /// <inheritdoc />
         public IEnumerable<ITreasureData> GetTreasureData() {
-            return ModFishing.Instance.TreasureConfig.PossibleLoot.Except(_removed).Concat(_added);
+            return ModEntry.Instance.TreasureConfig.PossibleLoot.Except(this._removed).Concat(this._added);
         }
 
         /// <inheritdoc />
         public bool AddTrashData(ITrashData data) {
-            return _trash.Add(data);
+            return this._trash.Add(data);
         }
 
         /// <inheritdoc />
         public bool RemoveTrashData(ITrashData data) {
-            return _trash.Remove(data);
+            return this._trash.Remove(data);
         }
 
         /// <inheritdoc />
         public IEnumerable<ITrashData> GetTrashData() {
-            return _trash;
+            return this._trash;
         }
 
         /// <inheritdoc />
         public IEnumerable<ITrashData> GetTrashData(Farmer who) {
             var w = SDVHelpers.ToWaterType(who.currentLocation?.getFishingLocation(who.getTileLocation()) ?? -1) ?? WaterType.Both;
             var mineLevel = who.currentLocation is MineShaft mine ? mine.mineLevel : -1;
-            return GetTrashData(who, who.currentLocation?.Name ?? "", w, SDate.Now(), Game1.isRaining ? Weather.Rainy : Weather.Sunny, Game1.timeOfDay, Game1.player.FishingLevel, mineLevel);
+            return this.GetTrashData(who, who.currentLocation?.Name ?? "", w, SDate.Now(), Game1.isRaining ? Weather.Rainy : Weather.Sunny, Game1.timeOfDay, Game1.player.FishingLevel, mineLevel);
         }
 
         /// <inheritdoc />
         public IEnumerable<ITrashData> GetTrashData(Farmer who, string locationName, WaterType waterType, SDate date, Weather weather, int time, int fishingLevel, int? mineLevel) {
-            return _trash.Where(t => t.MeetsCriteria(who, locationName, waterType, date, weather, time, fishingLevel, mineLevel));
+            return this._trash.Where(t => t.MeetsCriteria(who, locationName, waterType, date, weather, time, fishingLevel, mineLevel));
         }
 
         /// <inheritdoc />
         public IEnumerable<IWeightedElement<int?>> GetPossibleFish(Farmer who) {
             var w = SDVHelpers.ToWaterType(who.currentLocation?.getFishingLocation(who.getTileLocation()) ?? -1) ?? WaterType.Both;
             var mineLevel = who.currentLocation is MineShaft mine ? mine.mineLevel : -1;
-            return GetPossibleFish(who, who.currentLocation?.Name ?? "", w, SDate.Now(), Game1.isRaining ? Weather.Rainy : Weather.Sunny, Game1.timeOfDay, Game1.player.FishingLevel, mineLevel);
+            return this.GetPossibleFish(who, who.currentLocation?.Name ?? "", w, SDate.Now(), Game1.isRaining ? Weather.Rainy : Weather.Sunny, Game1.timeOfDay, Game1.player.FishingLevel, mineLevel);
         }
 
         /// <inheritdoc />
@@ -241,8 +241,8 @@ namespace TehPers.FishingOverhaul {
             if(string.Equals(locationName, "BeachNightMarket", StringComparison.OrdinalIgnoreCase)) {
                 locationName = "Beach";
             }
-            if (!string.Equals(locationName, "Farm", StringComparison.OrdinalIgnoreCase) || !GetFishableFarmFishing())
-                return GetPossibleFishInternal(who, locationName, GetFarmFishing(), water, date, weather, time, fishLevel, mineLevel);
+            if (!string.Equals(locationName, "Farm", StringComparison.OrdinalIgnoreCase) || !this.GetFishableFarmFishing())
+                return this.GetPossibleFishInternal(who, locationName, this.GetFarmFishing(), water, date, weather, time, fishLevel, mineLevel);
 
             // Custom handling for farm maps
             switch (Game1.whichFarm) {
@@ -252,50 +252,50 @@ namespace TehPers.FishingOverhaul {
                 }
                 case 1: {
                     // Riverland: forest fish + town fish + default farm fish
-                    var forestFish = GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.3);
-                    var townFish = GetPossibleFish(who, "Town", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.7);
-                    var farmFish = GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                    var forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.3);
+                    var townFish = this.GetPossibleFish(who, "Town", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.7);
+                    var farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
                     return forestFish.Concat(townFish).Concat(farmFish);
                 }
                 case 2: {
                     // Forest: forest fish + woodskip + default farm fish
                     var scale = 0.05F + (float) Game1.player.DailyLuck;
-                    var forestFish = GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(1 - scale);
+                    var forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(1 - scale);
                     IWeightedElement<int?>[] woodSkip = { new WeightedElement<int?>(734, scale) };
-                    var farmFish = GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                    var farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
                     return forestFish.Concat(woodSkip).Concat(farmFish);
                 }
                 case 3: {
                     // Hills: forest fish + default farm fish
-                    var forestFish = GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel);
-                    var farmFish = GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel);
+                    var forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel);
+                    var farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel);
                     return forestFish.Concat(farmFish);
                 }
                 case 4: {
                     // Wilderness: mountain fish + default farm fish
-                    var forestFish = GetPossibleFish(who, "Mountain", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.35);
-                    var farmFish = GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                    var forestFish = this.GetPossibleFish(who, "Mountain", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.35);
+                    var farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
                     return forestFish.Concat(farmFish);
                 }
                 case 5: {
                     // Four Corners: mountain fish + forest fish?
-                    var forestFish = GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.3);
-                    var mountainFish = GetPossibleFish(who, "Mountain", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.7);
-                    var farmFish = GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                    var forestFish = this.GetPossibleFish(who, "Forest", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.3);
+                    var mountainFish = this.GetPossibleFish(who, "Mountain", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.7);
+                    var farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
                     return forestFish.Concat(mountainFish).Concat(farmFish);
                 }
                 case 6: {
                     // Beach Farm: Ocean fish
-                    var beachFish = GetPossibleFish(who, "Beach", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.35);
-                    var farmFish = GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
+                    var beachFish = this.GetPossibleFish(who, "Beach", water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.35);
+                    var farmFish = this.GetPossibleFishInternal(who, locationName, true, water, date, weather, time, fishLevel, mineLevel).NormalizeTo(0.65);
                     return beachFish.Concat(farmFish);
                 }
                 default:
-                    return GetPossibleFishInternal(who, locationName, GetFarmFishing(), water, date, weather, time, fishLevel, mineLevel);
+                    return this.GetPossibleFishInternal(who, locationName, this.GetFarmFishing(), water, date, weather, time, fishLevel, mineLevel);
                 
             }
 
-            return GetPossibleFishInternal(who, locationName, GetFarmFishing(), water, date, weather, time, fishLevel, mineLevel);
+            return this.GetPossibleFishInternal(who, locationName, this.GetFarmFishing(), water, date, weather, time, fishLevel, mineLevel);
         }
 
         private IEnumerable<IWeightedElement<int?>> GetPossibleFishInternal(Farmer who, string locationName, bool allowFarmFish, WaterType water, SDate date, Weather weather, int time, int fishLevel, int? mineLevel = null) {
@@ -304,26 +304,26 @@ namespace TehPers.FishingOverhaul {
                 return new[] { new WeightedElement<int?>(null, 1) };
 
             // Get chance for fish
-            var fishChance = GetFishChance(who);
+            var fishChance = this.GetFishChance(who);
 
             // Get fish data for location
-            IEnumerable<KeyValuePair<int, IFishData>> locFish = GetFishData(locationName);
-            if (_mineLocRegex.IsMatch(locationName)) {
-                locFish = locFish.Concat(GetFishData("UndergroundMine"));
+            IEnumerable<KeyValuePair<int, IFishData>> locFish = this.GetFishData(locationName);
+            if (FishingApi._mineLocRegex.IsMatch(locationName)) {
+                locFish = locFish.Concat(this.GetFishData("UndergroundMine"));
             }
 
             // Filter all the fish that can be caught at that location
             var fish = locFish.Where(f => {
                 // Legendary fish criteria
-                if (!IsLegendary(f.Key))
+                if (!this.IsLegendary(f.Key))
                     return f.Value.MeetsCriteria(f.Key, water, date, weather, time, fishLevel, mineLevel);
                 // If custom legendaries is disabled, then don't include legendary fish. They are handled in CustomFishingRod
-                if (!ModFishing.Instance.MainConfig.CustomLegendaries) {
+                if (!ModEntry.Instance.MainConfig.CustomLegendaries) {
                     return false;
                 }
 
                 // If recatchable legendaries is disabled, then make sure this fish hasn't been caught yet
-                if (!ModFishing.Instance.MainConfig.RecatchableLegendaries && who.fishCaught.ContainsKey(f.Key)) {
+                if (!ModEntry.Instance.MainConfig.RecatchableLegendaries && who.fishCaught.ContainsKey(f.Key)) {
                     return false;
                 }
 
@@ -341,7 +341,7 @@ namespace TehPers.FishingOverhaul {
         /// <inheritdoc />
         public string GetFishName(int fish) {
             // Search registered fish names
-            if (_fishNameOverrides.TryGetValue(fish, out var name)) {
+            if (this._fishNameOverrides.TryGetValue(fish, out var name)) {
                 return name;
             }
 
@@ -353,71 +353,71 @@ namespace TehPers.FishingOverhaul {
 
         /// <inheritdoc />
         public void SetFishName(int fish, string name) {
-            _fishNameOverrides[fish] = name ?? string.Empty;
+            this._fishNameOverrides[fish] = name ?? string.Empty;
         }
 
         /// <inheritdoc />
         public bool ResetFishName(int fish) {
-            return _fishNameOverrides.Remove(fish);
+            return this._fishNameOverrides.Remove(fish);
         }
 
         /// <inheritdoc />
         public int GetStreak(Farmer who) {
-            return _streaks.TryGetValue(who, out var streak) ? streak : 0;
+            return this._streaks.TryGetValue(who, out var streak) ? streak : 0;
         }
 
         /// <inheritdoc />
         public void SetStreak(Farmer who, int streak) {
-            _streaks[who] = streak;
+            this._streaks[who] = streak;
         }
 
         /// <inheritdoc />
         public void HideFish(int fish) {
-            _hidden.Add(fish);
+            this._hidden.Add(fish);
         }
 
         /// <inheritdoc />
         public bool RevealFish(int fish) {
-            return _hidden.Remove(fish);
+            return this._hidden.Remove(fish);
         }
 
         /// <inheritdoc />
         public bool IsHidden(int fish) {
-            return _hidden.Contains(fish);
+            return this._hidden.Contains(fish);
         }
 
         /// <inheritdoc />
         public bool IsLegendary(int fish) {
-            return _legendaryOverrides.TryGetValue(fish, out var legendary) ? legendary : _defaultLegendary.Contains(fish);
+            return this._legendaryOverrides.TryGetValue(fish, out var legendary) ? legendary : this._defaultLegendary.Contains(fish);
         }
 
         /// <inheritdoc />
         public void SetLegendary(int fish, bool? legendary) {
             if (legendary.HasValue) {
-                _legendaryOverrides[fish] = legendary.Value;
+                this._legendaryOverrides[fish] = legendary.Value;
             } else {
-                _legendaryOverrides.Remove(fish);
+                this._legendaryOverrides.Remove(fish);
             }
         }
 
         private void WarnObsolete() {
-            if (_obsoleteWarning)
+            if (this._obsoleteWarning)
                 return;
 
-            ModFishing.Instance.Monitor.Log("A mod is using an obsolete trash command! The Nuget package cannot be updated right now, so go to https://github.com/TehPers/StardewValleyMods/tree/2.0-dev/FishingOverhaulApi for the latest version of the API.");
-            _obsoleteWarning = true;
+            ModEntry.Instance.Monitor.Log("A mod is using an obsolete trash command! The Nuget package cannot be updated right now, so go to https://github.com/TehPers/StardewValleyMods/tree/2.0-dev/FishingOverhaulApi for the latest version of the API.");
+            this._obsoleteWarning = true;
         }
 
         internal void OnBeforeFishCatching(FishingEventArgs e) {
-            BeforeFishCatching?.Invoke(this, e);
+            this.BeforeFishCatching?.Invoke(this, e);
         }
 
         internal virtual void OnFishCaught(FishingEventArgs e) {
-            FishCaught?.Invoke(this, e);
+            this.FishCaught?.Invoke(this, e);
         }
 
         internal virtual void OnTrashCaught(FishingEventArgs e) {
-            TrashCaught?.Invoke(this, e);
+            this.TrashCaught?.Invoke(this, e);
         }
     }
 }

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using StardewValley;
-using TehPers.Core.Json.Serialization;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Configs {
 
-    [JsonDescribe]
     public class TreasureData : ITreasureData {
 
         [Description("ID of the first (or only) item")]
@@ -39,27 +37,27 @@ namespace TehPers.FishingOverhaul.Configs {
         public bool AllowDuplicates { get; set; }
 
         public TreasureData(int id, double chance, int minAmount = 1, int maxAmount = 1, int minLevel = 0, int maxLevel = 10, int idRange = 1, bool meleeWeapon = false, bool allowDuplicates = true) {
-            Id = id;
-            Chance = chance;
-            MinAmount = Math.Max(1, minAmount);
-            MaxAmount = Math.Max(MinAmount, maxAmount);
-            MinLevel = minLevel;
-            MaxLevel = Math.Max(minLevel, maxLevel);
-            IdRange = Math.Max(1, idRange);
-            MeleeWeapon = meleeWeapon;
-            AllowDuplicates = allowDuplicates;
+            this.Id = id;
+            this.Chance = chance;
+            this.MinAmount = Math.Max(1, minAmount);
+            this.MaxAmount = Math.Max(this.MinAmount, maxAmount);
+            this.MinLevel = minLevel;
+            this.MaxLevel = Math.Max(minLevel, maxLevel);
+            this.IdRange = Math.Max(1, idRange);
+            this.MeleeWeapon = meleeWeapon;
+            this.AllowDuplicates = allowDuplicates;
         }
 
         public bool IsValid(Farmer who) {
-            return who.FishingLevel >= MinLevel && (MaxLevel >= 10 || who.FishingLevel <= MaxLevel);
+            return who.FishingLevel >= this.MinLevel && (this.MaxLevel >= 10 || who.FishingLevel <= this.MaxLevel);
         }
 
         public IList<int> PossibleIds() {
-            return Enumerable.Range(Id, Math.Max(1, IdRange)).ToList();
+            return Enumerable.Range(this.Id, Math.Max(1, this.IdRange)).ToList();
         }
 
         public double GetWeight() {
-            return Chance;
+            return this.Chance;
         }
     }
 }

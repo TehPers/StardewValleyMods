@@ -1,10 +1,8 @@
 ﻿using System.ComponentModel;
-using TehPers.Core.Json.Serialization;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Enums;
 
 namespace TehPers.FishingOverhaul.Configs {
-    [JsonDescribe]
     public class FishTraits : IFishTraits {
         [Description("The difficulty of this fish.")]
         public float Difficulty { get; set; }

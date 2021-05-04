@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using TehPers.Core.Api.Enums;
-using TehPers.Core.Json.Serialization;
 
 namespace TehPers.FishingOverhaul.Configs {
 
-    [JsonDescribe]
     public class ConfigTreasure {
 
         [Description("All the treasure that can be found while fishing")]

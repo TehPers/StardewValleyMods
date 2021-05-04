@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel;
-using TehPers.Core.Json.Serialization;
 
 namespace TehPers.FishingOverhaul.Configs {
 
-    [JsonDescribe]
     public class ConfigMain {
         [Description("Whether or not this mod should make changes to the game.")]
         public bool ModEnabled { get; set; } = true;
@@ -14,7 +12,7 @@ namespace TehPers.FishingOverhaul.Configs {
         [Description("Whether this mod affects legendary fish as well. If this is false, then you should never be able to catch legendary fish multiple times.")]
         public bool CustomLegendaries { get; set; } = true;
 
-        [Description("Whether you can catch legendary fish multiple times (including Legend). This setting only matters if " + nameof(CustomLegendaries) + " is true. False for vanilla")]
+        [Description("Whether you can catch legendary fish multiple times (including Legend). This setting only matters if " + nameof(ConfigMain.CustomLegendaries) + " is true. False for vanilla")]
         public bool RecatchableLegendaries { get; set; } = true;
 
         [Description("WIP, doesn't work yet - If legendary fish are recatchable, how many days you must wait before you can catch a particular legendary fish again. Set to 0 for no delay.")]
@@ -50,7 +48,6 @@ namespace TehPers.FishingOverhaul.Configs {
         [Description("Settings for the unaware fish event.")]
         public ConfigUnaware UnawareSettings { get; set; } = new ConfigUnaware();
 
-        [JsonDescribe]
         public class ConfigStreak {
             [Description("Required streak for an increase in quality. For example, 3 means that every 3 consecutive perfect catches increases your catch quality by 1.")]
             public int StreakForIncreasedQuality { get; set; } = 5;
@@ -59,7 +56,6 @@ namespace TehPers.FishingOverhaul.Configs {
             public float PerfectTreasureQualityMult { get; set; } = 5;
         }
 
-        [JsonDescribe]
         public class ConfigDifficulty {
             [Description("The difficulty multiplier for fishing. For example, 0.85 makes fishing 15% easier. 1.0 for vanilla")]
             public float BaseDifficultyMult { get; set; } = 0.85F;
@@ -86,7 +82,6 @@ namespace TehPers.FishingOverhaul.Configs {
             public bool PreventGoldOnNormalCatch { get; set; } = true;
         }
 
-        [JsonDescribe]
         public class ConfigGlobalFish {
             [Description("The base chance that you'll find a fish instead of trash.")]
             public float FishBaseChance { get; set; } = 0.5F;
@@ -113,7 +108,6 @@ namespace TehPers.FishingOverhaul.Configs {
             public float MaxFishChance { get; set; } = 1;
         }
 
-        [JsonDescribe]
         public class ConfigGlobalTreasure {
             [Description("Affects the base chance you will find treasure. 0.15 for vanilla")]
             public float TreasureChance { get; set; } = 0.15f;
@@ -158,7 +152,6 @@ namespace TehPers.FishingOverhaul.Configs {
             public int MaxTreasureQuantity { get; set; } = 3;
         }
 
-        [JsonDescribe]
         public class ConfigUnaware {
             [Description("Difficulty multiplier for unaware fish.")]
             public float UnawareMult { get; set; } = 0.5f;
