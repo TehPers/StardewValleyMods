@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Ninject;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using TehPers.Core.Api.DependencyInjection;

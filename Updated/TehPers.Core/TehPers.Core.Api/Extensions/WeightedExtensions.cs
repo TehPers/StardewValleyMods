@@ -5,7 +5,9 @@ using TehPers.Core.Api.Weighted;
 
 namespace TehPers.Core.Api.Extensions
 {
-    /// <summary>Extension methods for <see cref="IEnumerable{T}"/> for weighted random item selection.</summary>
+    /// <summary>
+    /// Extension methods for <see cref="IEnumerable{T}"/> for weighted random item selection.
+    /// </summary>
     public static class WeightedExtensions
     {
         /// <summary>Chooses a random item using the items' weights, or a default value if there are no items.</summary>

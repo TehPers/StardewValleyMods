@@ -22,10 +22,10 @@ namespace TehPers.Core.DependencyInjection
             _ = parent ?? throw new ArgumentNullException(nameof(parent));
             _ = binding ?? throw new ArgumentNullException(nameof(binding));
 
-            var exposedBinding = new ProxyBinding(binding, parent);
+            var proxyBinding = new ProxyBinding(binding, parent);
             lock (this.proxies)
             {
-                this.proxies.Add(binding.Service, exposedBinding);
+                this.proxies.Add(binding.Service, proxyBinding);
             }
         }
 

@@ -8,13 +8,15 @@ using TehPers.Core.Api.DependencyInjection.Lifecycle;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
+using TehPers.Core.Models;
 
 namespace TehPers.Core.Items
 {
-    public abstract class IndexRegistry : IIndexRegistry, IEventHandler<SaveLoadedEventArgs>, IEventHandler<ReturnedToTitleEventArgs>, IEventHandler<SavingEventArgs>
+    public class IndexRegistry : IIndexRegistry, IEventHandler<SaveLoadedEventArgs>, IEventHandler<ReturnedToTitleEventArgs>, IEventHandler<SavingEventArgs>
     {
         private readonly IJsonProvider json;
         private readonly IModHelper helper;
+        private readonly IMonitor monitor;
         private readonly string registryKey;
         private readonly int randomOffset;
         private readonly HashSet<int> fixedIndexes;
@@ -22,10 +24,11 @@ namespace TehPers.Core.Items
         private readonly Dictionary<NamespacedId, FixedReservation> fixedReservations;
         private readonly Dictionary<NamespacedId, RandomReservation> randomReservations;
 
-        protected IndexRegistry(IJsonProvider json, IModHelper helper, string registryKey, int randomOffset = 0)
+        public IndexRegistry(IJsonProvider json, IModHelper helper, IMonitor monitor, string registryKey, int randomOffset = 0)
         {
             this.json = json ?? throw new ArgumentNullException(nameof(json));
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
+            this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
             this.registryKey = registryKey ?? throw new ArgumentNullException(nameof(registryKey));
             this.randomOffset = randomOffset;
             this.fixedIndexes = new HashSet<int>();
@@ -36,7 +39,12 @@ namespace TehPers.Core.Items
 
         public IIndexReservation Reserve(NamespacedId id)
         {
-            return this.fixedReservations.TryGetValue(id, out var reservation) ? (IIndexReservation)reservation : this.randomReservations.GetOrAdd(id, () => new RandomReservation(this, id));
+            if (this.fixedReservations.TryGetValue(id, out var reservation))
+            {
+                return reservation;
+            }
+
+            return this.randomReservations.GetOrAdd(id, () => new RandomReservation(this, id));
         }
 
         public IIndexReservation Reserve(NamespacedId id, int index)
@@ -73,8 +81,8 @@ namespace TehPers.Core.Items
             }
 
             // Load index reservations
-            var serialized = this.helper.Data.ReadSaveData<string>($"indexes.{this.registryKey}");
-            var data = this.json.Deserialize<IndexRegistryData>(serialized);
+            var serialized = this.helper.Data.ReadSaveData<string>($"indexes.{this.registryKey}") ?? string.Empty;
+            var data = this.json.Deserialize<IndexRegistryData>(serialized) ?? new IndexRegistryData();
             var loadedIndexes = data.Version switch
             {
                 "1.0" => data.Indexes,
@@ -82,7 +90,7 @@ namespace TehPers.Core.Items
             };
 
             // Random index reservations
-            var index = this.randomOffset;
+            var nextIndex = this.randomOffset;
             foreach (var id in this.randomReservations.Keys)
             {
                 if (this.indexAssignments.ContainsKey(id))
@@ -97,13 +105,19 @@ namespace TehPers.Core.Items
                 }
 
                 // Find next available index
-                while (this.fixedIndexes.Contains(index) || !assigned.Add(index))
+                while (this.fixedIndexes.Contains(nextIndex) || !assigned.Add(nextIndex))
                 {
                     // Prevent overflow
-                    index = checked(index + 1);
+                    nextIndex = checked(nextIndex + 1);
                 }
 
-                this.indexAssignments.Add(id, index);
+                this.indexAssignments.Add(id, nextIndex);
+            }
+
+            this.monitor.Log($"Assigned indexes for {this.registryKey}:", LogLevel.Debug);
+            foreach (var (id, index) in this.indexAssignments)
+            {
+                this.monitor.Log($" - {id} -> {index}", LogLevel.Debug);
             }
         }
 
@@ -116,6 +130,7 @@ namespace TehPers.Core.Items
 
             var serialized = this.json.Serialize(data, minify: true);
             this.helper.Data.WriteSaveData($"indexes.{this.registryKey}", serialized);
+            this.monitor.Log($"Saved indexes for {this.registryKey}", LogLevel.Debug);
         }
 
         void IEventHandler<ReturnedToTitleEventArgs>.HandleEvent(object sender, ReturnedToTitleEventArgs args)

@@ -11,7 +11,7 @@ namespace TehPers.Core.DependencyInjection
         private readonly IGlobalKernel globalKernel;
         private readonly IKernel childKernel;
 
-        protected override IKernel KernelInstance => this.childKernel;
+        protected override IKernel KernelInstance => this.globalKernel;
 
         public ProxiedBindingRoot(IGlobalKernel globalKernel, IKernel childKernel)
         {

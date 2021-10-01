@@ -36,7 +36,8 @@ namespace TehPers.Core
             modKernel.Load(
                 new ItemProvidersModule(),
                 new CoreModModule(),
-                new JsonConvertersModule(this.Helper, this.Monitor)
+                new JsonModule(this.Helper, this.Monitor),
+                new IndexRegistriesModule()
             );
 
             this.Monitor.Log("Registering event managers", LogLevel.Info);

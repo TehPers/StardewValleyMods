@@ -9,6 +9,7 @@ using Ninject.Extensions.ContextPreservation;
 using Ninject.Infrastructure;
 using Ninject.Modules;
 using Ninject.Parameters;
+using Ninject.Planning.Bindings;
 using Ninject.Syntax;
 using StardewModdingAPI;
 using TehPers.Core.Api.Configuration;
@@ -24,10 +25,6 @@ namespace TehPers.Core.Api.Extensions
     /// </summary>
     public static class BindingExtensions
     {
-        private static readonly MethodInfo AddEventHandlerGenericMethod = typeof(BindingExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
-                                                                              .FirstOrDefault(method => method.Name == nameof(BindingExtensions.AddEventHandler) && method.GetGenericArguments().Length == 2)
-                                                                          ?? throw new InvalidOperationException($"The method {nameof(BindingExtensions.AddEventHandler)} could not be retrieved with reflection.");
-
         /// <summary>
         /// Gets the inherited parameters from a context.
         /// </summary>
@@ -124,91 +121,14 @@ namespace TehPers.Core.Api.Extensions
         }
 
         /// <summary>
-        /// Registers a service as a handler for all the events it can handle. This does not bind the service.
-        /// </summary>
-        /// <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
-        /// <param name="root">The binding root.</param>
-        public static void AddEventHandler<TService>(this IProxyBindable root)
-            where TService : class
-        {
-            _ = root ?? throw new ArgumentNullException(nameof(root));
-
-            var handlerTypes = BindingExtensions.GetHandlerTypes<TService>();
-            if (!handlerTypes.Any())
-            {
-                throw new ArgumentException($"Type does not implement {typeof(IEventHandler<>).FullName} so it cannot be bound as an event handler.");
-            }
-
-            foreach (var handlerType in handlerTypes)
-            {
-                BindingExtensions.AddEventHandlerGenericMethod.MakeGenericMethod(typeof(TService), handlerType.GenericTypeArguments[0]).Invoke(null, new object[] {root});
-            }
-        }
-
-        private static HashSet<Type> GetHandlerTypes<TService>()
-        {
-            var handlerTypes = new HashSet<Type>();
-            var queuedTypes = new Queue<Type>();
-            queuedTypes.Enqueue(typeof(TService));
-            while (queuedTypes.Any())
-            {
-                var curType = queuedTypes.Dequeue();
-                if (curType == typeof(object))
-                {
-                    continue;
-                }
-
-                // Add current type to set of types if it's an event handler
-                if (curType.IsGenericType && curType.GetGenericTypeDefinition() == typeof(IEventHandler<>))
-                {
-                    handlerTypes.Add(curType);
-                }
-
-                // Enqueue parent type
-                if (curType.BaseType != null)
-                {
-                    queuedTypes.Enqueue(curType.BaseType);
-                }
-
-                // Enqueue implemented interfaces
-                foreach (var type in curType.GetInterfaces())
-                {
-                    queuedTypes.Enqueue(type);
-                }
-            }
-
-            return handlerTypes;
-        }
-
-        /// <summary>
-        /// Binds a service as a proxy for another service, essentially giving it another name.
-        /// Whenever an instance of <typeparamref name="TProxy"/> is requested, an instance of <typeparamref name="TService"/> is provided instead.
+        /// Indicates that services should be bound to their event handler types as well.
         /// </summary>
         /// <param name="root">The binding root.</param>
-        /// <typeparam name="TProxy">The proxy service.</typeparam>
-        /// <typeparam name="TService">The provided service.</typeparam>
-        /// <returns>The syntax that can be used to configure the binding.</returns>
-        public static IBindingNamedWithOrOnSyntax<TService> BindProxy<TProxy, TService>(this IBindingRoot root)
-            where TService : TProxy
+        /// <returns>A new binding root which automatically binds services to event handlers.</returns>
+        public static IProxyBindable WithEvents(this IProxyBindable root)
         {
             _ = root ?? throw new ArgumentNullException(nameof(root));
-            return root.Bind<TProxy>()
-                .ToMethod(context => context.ContextPreservingGet<TService>())
-                .InTransientScope();
-        }
-
-        /// <summary>
-        /// Binds a service as a handler for a particular type of event.
-        /// </summary>
-        /// <param name="root">The mod's kernel.</param>
-        /// <typeparam name="TService">The type of service being bound as an event handler. This service should be injectible by your mod's kernel.</typeparam>
-        /// <typeparam name="TEventArgs">The type of arguments propagated by the event this service handles.</typeparam>
-        public static void AddEventHandler<TService, TEventArgs>(this IProxyBindable root)
-            where TService : IEventHandler<TEventArgs>
-            where TEventArgs : EventArgs
-        {
-            _ = root ?? throw new ArgumentNullException(nameof(root));
-            root.GlobalProxyRoot.BindProxy<IEventHandler<TEventArgs>, TService>();
+            return new WithEventsModBindingRoot(root);
         }
 
         /// <summary>

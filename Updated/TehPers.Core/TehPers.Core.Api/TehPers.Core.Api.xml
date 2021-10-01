@@ -455,6 +455,60 @@
             Called after loading the modules. A module can verify here if all other required modules are loaded.
             </summary>
         </member>
+        <member name="T:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot">
+            <summary>
+            A binding root that automatically adds global proxy bindings for an additional set of services whenever a service is bound.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.#ctor(Ninject.Syntax.IBindingRoot,System.Type[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot"/> class.
+            </summary>
+            <param name="originalRoot">The binding root to create bindings for.</param>
+            <param name="autoServices">The services which will have bindings created automatically for them.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Bind``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Bind``2">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Bind``3">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Bind``4">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Bind(System.Type[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Unbind``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Unbind(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Rebind``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Rebind``2">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Rebind``3">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Rebind``4">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.Rebind(System.Type[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.AddBinding(Ninject.Planning.Bindings.IBinding)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.DependencyInjection.CompoundBindingRoot.RemoveBinding(Ninject.Planning.Bindings.IBinding)">
+            <inheritdoc/>
+        </member>
         <member name="T:TehPers.Core.Api.DependencyInjection.ContentSourceAttribute">
             <summary>
             Constrains the source for an injected <see cref="T:TehPers.Core.Api.Content.IAssetProvider"/>.
@@ -1271,30 +1325,12 @@
             <typeparam name="TEventArgs">The type of arguments for the event.</typeparam>
             <returns>The syntax that can be used to configure the binding.</returns>
         </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``1(TehPers.Core.Api.DependencyInjection.IProxyBindable)">
+        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.WithEvents(TehPers.Core.Api.DependencyInjection.IProxyBindable)">
             <summary>
-            Registers a service as a handler for all the events it can handle. This does not bind the service.
-            </summary>
-            <typeparam name="TService">The type of service being bound as an event handler. This service should be registered to your mod's kernel separately.</typeparam>
-            <param name="root">The binding root.</param>
-        </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindProxy``2(Ninject.Syntax.IBindingRoot)">
-            <summary>
-            Binds a service as a proxy for another service, essentially giving it another name.
-            Whenever an instance of <typeparamref name="TProxy"/> is requested, an instance of <typeparamref name="TService"/> is provided instead.
+            Indicates that services should be bound to their event handler types as well.
             </summary>
             <param name="root">The binding root.</param>
-            <typeparam name="TProxy">The proxy service.</typeparam>
-            <typeparam name="TService">The provided service.</typeparam>
-            <returns>The syntax that can be used to configure the binding.</returns>
-        </member>
-        <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.AddEventHandler``2(TehPers.Core.Api.DependencyInjection.IProxyBindable)">
-            <summary>
-            Binds a service as a handler for a particular type of event.
-            </summary>
-            <param name="root">The mod's kernel.</param>
-            <typeparam name="TService">The type of service being bound as an event handler. This service should be injectible by your mod's kernel.</typeparam>
-            <typeparam name="TEventArgs">The type of arguments propagated by the event this service handles.</typeparam>
+            <returns>A new binding root which automatically binds services to event handlers.</returns>
         </member>
         <member name="M:TehPers.Core.Api.Extensions.BindingExtensions.BindConfiguration``1(TehPers.Core.Api.DependencyInjection.IModBindingRoot,System.String,StardewModdingAPI.ContentSource,System.Boolean)">
             <summary>
@@ -1570,6 +1606,361 @@
             <typeparam name="T">The type of item in the <see cref="T:System.Collections.Generic.IEnumerable`1"/>. It must implement <see cref="T:TehPers.Core.Api.Weighted.IWeighted"/>.</typeparam>
             <param name="source">The source <see cref="T:System.Collections.Generic.IEnumerable`1"/>.</param>
             <returns>The sum of the weights.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WithEventsBindingRoot">
+            <summary>
+            Provides a path to register bindings and automatically register them as even thandlers.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.#ctor(TehPers.Core.Api.DependencyInjection.IProxyBindable,Ninject.Syntax.IBindingRoot)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsBindingRoot"/> class.
+            </summary>
+            <param name="proxyRoot">The proxy binding root used for binding event handlers.</param>
+            <param name="serviceRoot">The binding root to bind the initial services.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Bind``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Bind``2">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Bind``3">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Bind``4">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Bind(System.Type[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Unbind``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Unbind(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Rebind``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Rebind``2">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Rebind``3">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Rebind``4">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.Rebind(System.Type[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.AddBinding(Ninject.Planning.Bindings.IBinding)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingRoot.RemoveBinding(Ninject.Planning.Bindings.IBinding)">
+            <inheritdoc/>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax">
+            <summary>
+            Used to define the target of a binding and automatically register it for events.
+            </summary>
+            <remarks>Heavily based off of Ninject's source: https://github.com/ninject/Ninject/blob/3.3.4/src/Ninject/Planning/Bindings/BindingBuilder.cs. </remarks>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.GetHandlerTypes(System.Type)">
+            <summary>
+            Gets all the handler types implemented by a particular type.
+            </summary>
+            <param name="searchType">The type to search.</param>
+            <returns>All the event handlers implemented by <paramref name="searchType"/>.</returns>
+        </member>
+        <member name="P:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.BindingConfiguration">
+            <inheritdoc />
+        </member>
+        <member name="P:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.Kernel">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.#ctor(TehPers.Core.Api.DependencyInjection.IProxyBindable,Ninject.IKernel,Ninject.Planning.Bindings.IBindingConfiguration,System.Type[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax"/> class.
+            </summary>
+            <param name="root">The root to create bindings in.</param>
+            <param name="kernel">The mod's kernel.</param>
+            <param name="bindingConfiguration">The binding configuration of the bindings being created.</param>
+            <param name="services">The services being bound (excluding event handler services).</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.InternalTo``1(System.Type)">
+            <summary>
+            Indicates that the service should be bound to a specific implementation type.
+            </summary>
+            <typeparam name="TImplementation">The implementation type (or a type it can be assigned to).</typeparam>
+            <param name="implementation">The concrete implementation type.</param>
+            <returns>The syntax.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.InternalToProvider``1(System.Type)">
+            <summary>
+            Indicates that the service should be bound to a specific type of provider.
+            </summary>
+            <typeparam name="TImplementation">The implementation type (or a type it can be assigned to).</typeparam>
+            <param name="provider">The provider's type.</param>
+            <returns>The syntax.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.InternalToProvider``2">
+            <summary>
+            Indicates that the service should be bound to a specific type of provider.
+            </summary>
+            <typeparam name="TProvider">The provider's type.</typeparam>
+            <typeparam name="TImplementation">The implementation type (or a type it can be assigned to).</typeparam>
+            <returns>The syntax.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.InternalToProvider``1(Ninject.Activation.IProvider{``0})">
+            <summary>
+            Indicates that the service should be bound to a specific type of provider.
+            </summary>
+            <typeparam name="TImplementation">The implementation type (or a type it can be assigned to).</typeparam>
+            <param name="provider">The provider.</param>
+            <returns>The syntax.</returns>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.AddConstructorArguments(System.Linq.Expressions.NewExpression,System.Linq.Expressions.ParameterExpression)">
+            <summary>
+            Adds the constructor arguments for the specified constructor expression.
+            </summary>
+            <param name="ctorExpression">The ctor expression.</param>
+            <param name="constructorArgumentSyntaxParameterExpression">The constructor argument syntax parameter expression.</param>
+            <remarks>Source: https://github.com/ninject/Ninject/blob/3.3.4/src/Ninject/Planning/Bindings/BindingBuilder.cs. </remarks>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.AddConstructorArgument(System.Linq.Expressions.Expression,System.String,System.Linq.Expressions.ParameterExpression)">
+            <summary>
+            Adds a constructor argument for the specified argument expression.
+            </summary>
+            <param name="argument">The argument.</param>
+            <param name="argumentName">Name of the argument.</param>
+            <param name="constructorArgumentSyntaxParameterExpression">The constructor argument syntax parameter expression.</param>
+            <remarks>Source (modified): https://github.com/ninject/Ninject/blob/3.3.4/src/Ninject/Planning/Bindings/BindingBuilder.cs. </remarks>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.ConstructorArgumentSyntax">
+            <summary>
+            Passed to ToConstructor to specify that a constructor value is Injected.
+            </summary>
+            <remarks>Source (modified): https://github.com/ninject/Ninject/blob/3.3.4/src/Ninject/Planning/Bindings/BindingBuilder.cs. </remarks>
+        </member>
+        <member name="P:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.ConstructorArgumentSyntax.Context">
+            <summary>
+            Gets the context.
+            </summary>
+            <value>The context.</value>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.ConstructorArgumentSyntax.#ctor(Ninject.Activation.IContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.ConstructorArgumentSyntax"/> class.
+            </summary>
+            <param name="context">The context.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax.ConstructorArgumentSyntax.Inject``1">
+            <summary>
+            Specifies that the argument is injected.
+            </summary>
+            <typeparam name="T1">The type of the parameter</typeparam>
+            <returns>Not used. This interface has no implementation.</returns>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4">
+            <inheritdoc cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax" />
+            <typeparam name="T1">The first service being bound.</typeparam>
+            <typeparam name="T2">The second service being bound.</typeparam>
+            <typeparam name="T3">The third service being bound.</typeparam>
+            <typeparam name="T4">The fourth service being bound.</typeparam>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.#ctor(TehPers.Core.Api.DependencyInjection.IProxyBindable,Ninject.IKernel,Ninject.Planning.Bindings.IBindingConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4"/> class.
+            </summary>
+            <param name="root">The binding root.</param>
+            <param name="kernel">The mod's kernel.</param>
+            <param name="bindingConfiguration">The binding configuration of the bindings being created.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.To``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.To(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.ToProvider``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.ToProvider``2">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.ToProvider(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.ToProvider``1(Ninject.Activation.IProvider{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.ToMethod``1(System.Func{Ninject.Activation.IContext,``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.ToConstant``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`4.ToConstructor``1(System.Linq.Expressions.Expression{System.Func{Ninject.Syntax.IConstructorArgumentSyntax,``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3">
+            <inheritdoc cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax" />
+            <typeparam name="T1">The first service being bound.</typeparam>
+            <typeparam name="T2">The second service being bound.</typeparam>
+            <typeparam name="T3">The third service being bound.</typeparam>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.#ctor(TehPers.Core.Api.DependencyInjection.IProxyBindable,Ninject.IKernel,Ninject.Planning.Bindings.IBindingConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3"/> class.
+            </summary>
+            <param name="root">The binding root.</param>
+            <param name="kernel">The mod's kernel.</param>
+            <param name="bindingConfiguration">The binding configuration of the bindings being created.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.To``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.To(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.ToProvider``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.ToProvider``2">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.ToProvider(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.ToProvider``1(Ninject.Activation.IProvider{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.ToMethod``1(System.Func{Ninject.Activation.IContext,``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.ToConstant``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`3.ToConstructor``1(System.Linq.Expressions.Expression{System.Func{Ninject.Syntax.IConstructorArgumentSyntax,``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2">
+            <inheritdoc cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax" />
+            <typeparam name="T1">The first service being bound.</typeparam>
+            <typeparam name="T2">The second service being bound.</typeparam>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.#ctor(TehPers.Core.Api.DependencyInjection.IProxyBindable,Ninject.IKernel,Ninject.Planning.Bindings.IBindingConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2"/> class.
+            </summary>
+            <param name="root">The binding root.</param>
+            <param name="kernel">The mod's kernel.</param>
+            <param name="bindingConfiguration">The binding configuration of the bindings being created.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.To``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.To(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.ToProvider``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.ToProvider``2">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.ToProvider(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.ToProvider``1(Ninject.Activation.IProvider{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.ToMethod``1(System.Func{Ninject.Activation.IContext,``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.ToConstant``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`2.ToConstructor``1(System.Linq.Expressions.Expression{System.Func{Ninject.Syntax.IConstructorArgumentSyntax,``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1">
+            <inheritdoc cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax" />
+            <typeparam name="T1">The service being bound.</typeparam>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.#ctor(TehPers.Core.Api.DependencyInjection.IProxyBindable,Ninject.IKernel,Ninject.Planning.Bindings.IBindingConfiguration)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1"/> class.
+            </summary>
+            <param name="root">The binding root.</param>
+            <param name="kernel">The mod's kernel.</param>
+            <param name="bindingConfiguration">The binding configuration of the bindings being created.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.#ctor(TehPers.Core.Api.DependencyInjection.IProxyBindable,Ninject.IKernel,Ninject.Planning.Bindings.IBindingConfiguration,System.Type[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1"/> class.
+            </summary>
+            <param name="root">The binding root to create the bindings in.</param>
+            <param name="kernel">The mod's kernel.</param>
+            <param name="bindingConfiguration">The binding configuration of the bindings being created.</param>
+            <param name="services">The services being configured.</param>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.ToSelf">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.To``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.To(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.ToProvider``1">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.ToProvider(System.Type)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.ToProvider``1(Ninject.Activation.IProvider{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.ToMethod(System.Func{Ninject.Activation.IContext,`0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.ToMethod``1(System.Func{Ninject.Activation.IContext,``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.ToConstant``1(``0)">
+            <inheritdoc/>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsBindingToSyntax`1.ToConstructor``1(System.Linq.Expressions.Expression{System.Func{Ninject.Syntax.IConstructorArgumentSyntax,``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WithEventsGlobalBindingRoot">
+            <summary>
+            Provides a path to register bindings and automatically register them globally as event handlers.
+            </summary>
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsGlobalBindingRoot.#ctor(TehPers.Core.Api.DependencyInjection.IProxyBindable)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsGlobalBindingRoot"/> class.
+            </summary>
+            <param name="root">The binding root.</param>
+        </member>
+        <member name="T:TehPers.Core.Api.Extensions.WithEventsModBindingRoot">
+            <summary>
+            Provides a path to register bindings and automatically register them as event handlers.
+            </summary>
+        </member>
+        <member name="P:TehPers.Core.Api.Extensions.WithEventsModBindingRoot.GlobalProxyRoot">
+            <inheritdoc />
+        </member>
+        <member name="M:TehPers.Core.Api.Extensions.WithEventsModBindingRoot.#ctor(TehPers.Core.Api.DependencyInjection.IProxyBindable)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TehPers.Core.Api.Extensions.WithEventsModBindingRoot"/> class.
+            </summary>
+            <param name="proxyRoot">The binding root.</param>
         </member>
         <member name="T:TehPers.Core.Api.FacingDirection">
             <summary>

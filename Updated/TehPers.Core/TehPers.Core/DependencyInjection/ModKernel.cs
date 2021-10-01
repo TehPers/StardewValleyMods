@@ -6,6 +6,7 @@ using Ninject;
 using Ninject.Activation;
 using Ninject.Infrastructure.Introspection;
 using Ninject.Modules;
+using Ninject.Planning.Bindings;
 using Ninject.Syntax;
 using StardewModdingAPI;
 using TehPers.Core.Api;
@@ -21,7 +22,7 @@ namespace TehPers.Core.DependencyInjection
 
         public IMod ParentMod { get; }
 
-        public IKernel GlobalKernel => this.globalKernel;
+        public IGlobalKernel GlobalKernel => this.globalKernel;
 
         public IBindingRoot GlobalProxyRoot { get; }
 
@@ -67,14 +68,29 @@ namespace TehPers.Core.DependencyInjection
             return base.Resolve(request);
         }
 
+        private bool IsProxyToThis(IBinding binding)
+        {
+            while (binding is ProxyBinding proxy)
+            {
+                if (proxy.ParentKernel == this)
+                {
+                    return true;
+                }
+
+                binding = proxy.ParentBinding;
+            }
+
+            return false;
+        }
+
         protected override IEnumerable<TService> Resolve<TService>(IRequest request, bool handleMissingBindings)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
 
             var modBindings = this.GetSatisfiedBindings(request).ToArray();
-            var bindingGroups = modBindings.Where(binding => !binding.Binding.IsImplicit).ToList().Yield()
-                .Append(this.globalKernel.GetSatisfiedBindings(request).ToList())
-                .Append(modBindings.Where(binding => binding.Binding.IsImplicit).ToList())
+            var bindingGroups = modBindings.Where(binding => !binding.IsImplicit).ToList().Yield()
+                .Append(this.globalKernel.GetSatisfiedBindings(request).Where(binding => !this.IsProxyToThis(binding)).ToList())
+                .Append(modBindings.Where(binding => binding.IsImplicit).ToList())
                 .ToList();
 
             var resolvedServices = new List<TService>();
@@ -86,7 +102,7 @@ namespace TehPers.Core.DependencyInjection
                 }
 
                 // Implicit bindings should only be added if there are no other matching bindings
-                if (resolvedServices.Any() && satisfiedBindings.Any(binding => binding.Binding.IsImplicit))
+                if (resolvedServices.Any() && satisfiedBindings.Any(binding => binding.IsImplicit))
                 {
                     break;
                 }
@@ -94,7 +110,7 @@ namespace TehPers.Core.DependencyInjection
                 if (request.IsUnique)
                 {
                     var firstTwo = satisfiedBindings.Take(2).ToList();
-                    if (firstTwo.Count > 1 && this.BindingPrecedenceComparer.Compare(firstTwo[0].Binding, firstTwo[1].Binding) == 0)
+                    if (firstTwo.Count > 1 && this.BindingPrecedenceComparer.Compare(firstTwo[0], firstTwo[1]) == 0)
                     {
                         if (request.IsOptional && !request.ForceUnique)
                         {
@@ -102,19 +118,19 @@ namespace TehPers.Core.DependencyInjection
                         }
 
                         var formattedBindings = satisfiedBindings
-                            .Select(binding => binding.Binding.Format(binding.Context))
+                            .Select(binding => binding.Format(this.CreateContext(request, binding)))
                             .ToArray();
 
                         throw new ActivationException(ExceptionFormatter.CouldNotUniquelyResolveBinding(request, formattedBindings));
                     }
 
-                    return firstTwo[0].Context.Resolve()
+                    return this.CreateContext(request, firstTwo[0]).Resolve()
                         .Forward(x => (TService)x)
                         .Yield();
                 }
 
                 resolvedServices.AddRange(satisfiedBindings
-                    .Select(binding => binding.Context.Resolve())
+                    .Select(binding => this.CreateContext(request, binding).Resolve())
                     .Cast<TService>());
             }
 

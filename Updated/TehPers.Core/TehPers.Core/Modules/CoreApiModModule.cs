@@ -2,10 +2,8 @@
 using StardewModdingAPI;
 using TehPers.Core.Api.Content;
 using TehPers.Core.Api.DependencyInjection;
-using TehPers.Core.Api.Json;
 using TehPers.Core.Content;
 using TehPers.Core.DependencyInjection;
-using TehPers.Core.Json;
 
 namespace TehPers.Core.Modules
 {
@@ -13,11 +11,6 @@ namespace TehPers.Core.Modules
     {
         public override void Load()
         {
-            // Json
-            this.Bind<IJsonProvider>()
-                .To<CommentedJsonProvider>()
-                .InSingletonScope();
-
             // Content
             this.Bind<IAssetProvider>()
                 .To<ModAssetProvider>()

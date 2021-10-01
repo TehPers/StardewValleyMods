@@ -5,7 +5,7 @@ namespace TehPers.Core.Api.DependencyInjection
     /// <summary>
     /// Indicates that an object has a proxy root for exposing services.
     /// </summary>
-    public interface IProxyBindable
+    public interface IProxyBindable : IBindingRoot
     {
         /// <summary>
         /// Gets an <see cref="IBindingRoot"/> which automatically creates proxy bindings in the global kernel when bindings are created.

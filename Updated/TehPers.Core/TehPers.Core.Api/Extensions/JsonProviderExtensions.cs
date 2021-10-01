@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ namespace TehPers.Core.Api.Extensions
     /// <summary>
     /// Extensions for <see cref="IJsonProvider"/>.
     /// </summary>
+    [SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "StreamReader/StreamWriter automatically close the stream on dispose, which is undesirable.")]
     public static class JsonProviderExtensions
     {
         /// <summary>
@@ -28,13 +30,14 @@ namespace TehPers.Core.Api.Extensions
             using var buffer = new MemoryStream();
 
             // This writer cannot be disposed before the stream is read
-            using var writer = new StreamWriter(buffer, Encoding.UTF8);
+            var writer = new StreamWriter(buffer, Encoding.UTF8);
             json.Serialize(data, writer, settings, minify);
 
             buffer.Position = 0;
             using var reader = new StreamReader(buffer, Encoding.UTF8);
             return reader.ReadToEnd();
         }
+
 
         /// <summary>
         /// Deserializes JSON text.
@@ -53,7 +56,7 @@ namespace TehPers.Core.Api.Extensions
             using var buffer = new MemoryStream();
 
             // This writer cannot be disposed before the stream is read
-            using var writer = new StreamWriter(buffer, Encoding.UTF8);
+            var writer = new StreamWriter(buffer, Encoding.UTF8);
             writer.Write(text);
 
             buffer.Position = 0;

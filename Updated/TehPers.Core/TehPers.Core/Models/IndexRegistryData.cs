@@ -3,7 +3,7 @@ using System.ComponentModel;
 using TehPers.Core.Api;
 using TehPers.Core.Api.Json;
 
-namespace TehPers.Core.Items
+namespace TehPers.Core.Models
 {
     [JsonDescribe]
     public class IndexRegistryData

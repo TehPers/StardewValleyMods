@@ -4,10 +4,9 @@ using Ninject.Modules;
 using Ninject.Parameters;
 using Ninject.Syntax;
 using StardewModdingAPI;
-using TehPers.Core.Api.DependencyInjection;
 using TehPers.Core.Api.Extensions;
 
-namespace TehPers.Core.Api
+namespace TehPers.Core.Api.DependencyInjection
 {
     /// <summary>Factory for creating an <see cref="IModKernel"/> for a <see cref="IMod"/>.</summary>
     public interface IModKernelFactory : IDisposable

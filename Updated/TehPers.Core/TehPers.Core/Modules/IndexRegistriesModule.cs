@@ -10,9 +10,14 @@ namespace TehPers.Core.Modules
         public override void Load()
         {
             // Objects
-            this.Bind<SObjectIndexRegistry>().ToSelf().InSingletonScope();
-            this.GlobalProxyRoot.BindProxy<IIndexRegistry, SObjectIndexRegistry>().Named("objects");
-            this.AddEventHandler<SObjectIndexRegistry>();
+            this.WithEvents()
+                .GlobalProxyRoot
+                .Bind<IIndexRegistry>()
+                .To<IndexRegistry>()
+                .InSingletonScope()
+                .Named("objects")
+                .WithConstructorArgument("registryKey", "objects")
+                .WithConstructorArgument("randomOffset", 1000000);
         }
     }
 }

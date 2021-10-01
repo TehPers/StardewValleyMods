@@ -34,7 +34,7 @@ namespace TehPers.Core.DependencyInjection
         public override bool CanResolve(IRequest request, bool ignoreImplicitBindings)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
-            return this.GetSatisfiedBindings(request).Any(binding => !(ignoreImplicitBindings && binding.Binding.IsImplicit));
+            return this.GetSatisfiedBindings(request).Any(binding => !(ignoreImplicitBindings && binding.IsImplicit));
         }
 
         public override IEnumerable<object> Resolve(IRequest request)
@@ -115,7 +115,7 @@ namespace TehPers.Core.DependencyInjection
             if (request.IsUnique)
             {
                 var firstTwo = satisfiedBindings.Take(2).ToArray();
-                if (firstTwo.Length > 1 && this.BindingPrecedenceComparer.Compare(firstTwo[0].Binding, firstTwo[1].Binding) == 0)
+                if (firstTwo.Length > 1 && this.BindingPrecedenceComparer.Compare(firstTwo[0], firstTwo[1]) == 0)
                 {
                     if (request.IsOptional && !request.ForceUnique)
                     {
@@ -123,48 +123,35 @@ namespace TehPers.Core.DependencyInjection
                     }
 
                     var formattedBindings = satisfiedBindings
-                        .Select(binding => binding.Binding.Format(binding.Context))
+                        .Select(binding => binding.Format(this.CreateContext(request, binding)))
                         .ToArray();
 
                     throw new ActivationException(ExceptionFormatter.CouldNotUniquelyResolveBinding(request, formattedBindings));
                 }
 
-                return firstTwo[0].Context.Resolve()
+                return this.CreateContext(request, firstTwo[0]).Resolve()
                     .Forward(x => (TService)x)
                     .Yield();
             }
 
-            if (satisfiedBindings.Any(binding => !binding.Binding.IsImplicit))
+            if (satisfiedBindings.Any(binding => !binding.IsImplicit))
             {
                 return satisfiedBindings
-                    .Where(binding => !binding.Binding.IsImplicit)
-                    .Select(binding => binding.Context.Resolve())
+                    .Where(binding => !binding.IsImplicit)
+                    .Select(binding => this.CreateContext(request, binding).Resolve())
                     .Cast<TService>();
             }
 
             return satisfiedBindings
-                .Select(binding => binding.Context.Resolve())
+                .Select(binding => this.CreateContext(request, binding).Resolve())
                 .Cast<TService>();
         }
 
-        public virtual IEnumerable<ContextualBinding> GetSatisfiedBindings(IRequest request)
+        public virtual IEnumerable<IBinding> GetSatisfiedBindings(IRequest request)
         {
+            var satifiesRequest = this.SatifiesRequest(request);
             return this.GetBindings(request.Service)
-                .Where(this.SatifiesRequest(request))
-                .Select(binding => new ContextualBinding(binding, this.CreateContext(request, binding)));
-        }
-
-        public class ContextualBinding
-        {
-            public IBinding Binding { get; }
-
-            public IContext Context { get; }
-
-            public ContextualBinding(IBinding binding, IContext context)
-            {
-                this.Binding = binding ?? throw new ArgumentNullException(nameof(binding));
-                this.Context = context ?? throw new ArgumentNullException(nameof(context));
-            }
+                .Where(satifiesRequest);
         }
     }
 }

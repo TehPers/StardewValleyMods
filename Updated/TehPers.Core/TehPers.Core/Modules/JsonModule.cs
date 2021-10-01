@@ -4,16 +4,17 @@ using System.Reflection;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using TehPers.Core.Api.DependencyInjection;
+using TehPers.Core.Api.Json;
 using TehPers.Core.Json;
 
 namespace TehPers.Core.Modules
 {
-    public class JsonConvertersModule : ModModule
+    public class JsonModule : ModModule
     {
         private readonly IModHelper helper;
         private readonly IMonitor monitor;
 
-        public JsonConvertersModule(IModHelper helper, IMonitor monitor)
+        public JsonModule(IModHelper helper, IMonitor monitor)
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
@@ -30,6 +31,8 @@ namespace TehPers.Core.Modules
             this.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(new NetConverter()).InSingletonScope();
             this.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(new DescriptiveJsonConverter()).InSingletonScope();
             this.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(new NamespacedIdJsonConverter()).InSingletonScope();
+
+            this.GlobalProxyRoot.Bind<IJsonProvider>().To<CommentedJsonProvider>().InSingletonScope();
         }
 
         private IEnumerable<JsonConverter> GetSmapiConverters()

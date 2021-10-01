@@ -18,7 +18,7 @@ namespace TehPers.Core.DependencyInjection
         public IKernel ParentKernel { get; }
 
         public ProxyBinding(IBinding binding, IKernel parentKernel)
-            : base(binding.Service)
+            : base(binding.Service, new ProxyBindingConfiguration(binding.BindingConfiguration))
         {
             this.ParentBinding = binding ?? throw new ArgumentNullException(nameof(binding));
             this.ParentKernel = parentKernel ?? throw new ArgumentNullException(nameof(parentKernel));

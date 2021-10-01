@@ -7,3 +7,4 @@
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "CA1303", Justification = "I don't have a localization team.")]
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "CA2208", Justification = "I don't have a localization team.")]
 [assembly: SuppressMessage("Naming", "CA1710:Identifiers should have correct suffix", Justification = "I'll call my types whatever I feel is appropriate. There are many cases where a collection type doesn't end in the word 'Collection', for example.")]
+[assembly: SuppressMessage("ReSharper", "AssignNullToNotNullAttribute", Justification = "Member's can't be marked as [NotNull] because those attributes don't exist in the target framework.")]
