@@ -9,15 +9,14 @@ using System.Linq;
 using StardewValley.Tools;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
-using TehPers.FishingOverhaul.Api.Messages;
 using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Extensions;
 using TehPers.FishingOverhaul.Extensions.Drawing;
-using TehPers.FishingOverhaul.Setup;
+using TehPers.FishingOverhaul.Services;
 
 namespace TehPers.FishingOverhaul.Gui
 {
-    internal class CustomBobberBar : BobberBar
+    internal sealed class CustomBobberBar : BobberBar
     {
         private readonly IReflectedField<bool> treasureField;
         private readonly IReflectedField<bool> treasureCaughtField;
@@ -40,7 +39,6 @@ namespace TehPers.FishingOverhaul.Gui
         private readonly IReflectedField<float> bobberPositionField;
         private readonly IReflectedField<bool> bossFishField;
         private readonly IReflectedField<int> motionTypeField;
-        private readonly IReflectedField<int> whichFishField;
         private readonly IReflectedField<int> fishSizeField;
         private readonly IReflectedField<int> minFishSizeField;
         private readonly IReflectedField<int> maxFishSizeField;
@@ -61,7 +59,6 @@ namespace TehPers.FishingOverhaul.Gui
         private readonly FishTraits fishTraits;
         private readonly FishConfig fishConfig;
         private readonly TreasureConfig treasureConfig;
-        private readonly FishingRodOverrider overrider;
         private readonly Farmer user;
         private readonly int initialQuality;
         private readonly int initialStreak;
@@ -72,19 +69,22 @@ namespace TehPers.FishingOverhaul.Gui
         private TreasureState treasureState;
         private bool notifiedFailOrSuccess;
 
+        public event EventHandler<CatchInfo.FishCatch>? CatchFish;
+        public event EventHandler? LostFish;
+
         public CustomBobberBar(
             IModHelper helper,
             IFishingHelper fishingHelper,
             FishConfig fishConfig,
             TreasureConfig treasureConfig,
-            FishingRodOverrider overrider,
             Farmer user,
             NamespacedKey fishKey,
             FishTraits fishTraits,
             Item fishItem,
             float fishSizePercent,
             bool treasure,
-            int bobber
+            int bobber,
+            bool fromFishPond
         )
             : base(0, fishSizePercent, treasure, bobber)
         {
@@ -95,7 +95,6 @@ namespace TehPers.FishingOverhaul.Gui
             this.fishItem = fishItem ?? throw new ArgumentNullException(nameof(fishItem));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
             this.treasureConfig = treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
-            this.overrider = overrider ?? throw new ArgumentNullException(nameof(overrider));
             this.user = user ?? throw new ArgumentNullException(nameof(user));
 
             this.lastDistanceFromCatching = 0f;
@@ -125,7 +124,6 @@ namespace TehPers.FishingOverhaul.Gui
             this.bobberPositionField = helper.Reflection.GetField<float>(this, "bobberPosition");
             this.bossFishField = helper.Reflection.GetField<bool>(this, "bossFish");
             this.motionTypeField = helper.Reflection.GetField<int>(this, "motionType");
-            this.whichFishField = helper.Reflection.GetField<int>(this, "whichFish");
             this.fishSizeField = helper.Reflection.GetField<int>(this, "fishSize");
             this.minFishSizeField = helper.Reflection.GetField<int>(this, "minFishSize");
             this.maxFishSizeField = helper.Reflection.GetField<int>(this, "maxFishSize");
@@ -152,6 +150,9 @@ namespace TehPers.FishingOverhaul.Gui
             this.minFishSizeField.SetValue(minFishSize);
             this.maxFishSizeField.SetValue(maxFishSize);
             this.fishSizeField.SetValue(fishSize);
+
+            // Track other information (not all tracked by vanilla)
+            this.fromFishPondField.SetValue(fromFishPond);
 
             // Adjust quality to be increased by streak
             var fishQuality = fishSizePercent switch
@@ -278,10 +279,11 @@ namespace TehPers.FishingOverhaul.Gui
                     if (distanceFromCatching > 0.9 && Game1.player.CurrentTool is FishingRod)
                     {
                         // Notify that a fish was caught
-                        var message = new FishCaughtMessage(
-                            this.user.UniqueMultiplayerID,
+                        var catchInfo = new CatchInfo.FishCatch(
                             this.fishKey,
+                            this.fishItem,
                             this.fishSizeField.GetValue(),
+                            this.fishTraits.IsLegendary,
                             this.fishQualityField.GetValue(),
                             (int)this.difficultyField.GetValue(),
                             this.treasureState is TreasureState.Caught,
@@ -289,8 +291,7 @@ namespace TehPers.FishingOverhaul.Gui
                             this.fromFishPondField.GetValue(),
                             caughtDouble
                         );
-                        this.helper.Multiplayer.SendMessage(message, FishingMessageTypes.FishCaught);
-                        this.overrider.CatchFish(message);
+                        this.OnCaughtFish(catchInfo);
                     }
                     else
                     {
@@ -302,7 +303,7 @@ namespace TehPers.FishingOverhaul.Gui
                     }
 
                     Game1.exitActiveMenu();
-                    Game1.setRichPresence("location", (object)Game1.currentLocation.Name);
+                    Game1.setRichPresence("location", Game1.currentLocation.Name);
                     return;
                 }
             }
@@ -364,13 +365,7 @@ namespace TehPers.FishingOverhaul.Gui
             if (!this.notifiedFailOrSuccess)
             {
                 this.notifiedFailOrSuccess = true;
-                this.fishingHelper.SetStreak(this.user, 0);
-                if (this.initialStreak >= this.fishConfig.StreakForIncreasedQuality)
-                {
-                    Game1.showGlobalMessage(
-                        this.helper.Translation.Get("text.streak.lost", new { streak = this.initialStreak })
-                    );
-                }
+                this.OnLostFish();
             }
 
             base.emergencyShutDown();
@@ -481,7 +476,7 @@ namespace TehPers.FishingOverhaul.Gui
                     new Rectangle(257, 1990, 5, 10),
                     Color.White,
                     reelRotation,
-                    new Vector2(2f, 10f),
+                    new(2f, 10f),
                     4f,
                     SpriteEffects.None,
                     0.9f
@@ -499,7 +494,7 @@ namespace TehPers.FishingOverhaul.Gui
                     new Rectangle(638, 1865, 20, 24),
                     Color.White,
                     0.0f,
-                    new Vector2(10f, 10f),
+                    new(10f, 10f),
                     2f * treasureScale,
                     SpriteEffects.None,
                     0.85f
@@ -560,7 +555,7 @@ namespace TehPers.FishingOverhaul.Gui
                         new Rectangle(614 + (bossFish ? 20 : 0), 1840, 20, 20),
                         Color.White,
                         0.0f,
-                        new Vector2(10f, 10f),
+                        new(10f, 10f),
                         2f,
                         SpriteEffects.None,
                         0.88f
@@ -569,7 +564,7 @@ namespace TehPers.FishingOverhaul.Gui
 
                 // Draw sparkle text
                 var sparkleText = this.sparkleTextField.GetValue();
-                sparkleText?.draw(b, new Vector2(this.xPositionOnScreen - 16, this.yPositionOnScreen - 64));
+                sparkleText?.draw(b, new(this.xPositionOnScreen - 16, this.yPositionOnScreen - 64));
             }
 
             if (Game1.player.fishCaught?.Any() == false)
@@ -597,7 +592,7 @@ namespace TehPers.FishingOverhaul.Gui
                     b.Draw(
                         Game1.controllerMaps,
                         position,
-                        Utility.controllerMapSourceRect(new Rectangle(681, 0, 96, 138)),
+                        Utility.controllerMapSourceRect(new(681, 0, 96, 138)),
                         Color.White,
                         0.0f,
                         Vector2.Zero,
@@ -623,6 +618,16 @@ namespace TehPers.FishingOverhaul.Gui
             NotCaught,
             Caught,
             None,
+        }
+
+        private void OnCaughtFish(CatchInfo.FishCatch e)
+        {
+            this.CatchFish?.Invoke(this, e);
+        }
+
+        private void OnLostFish()
+        {
+            this.LostFish?.Invoke(this, EventArgs.Empty);
         }
     }
 }

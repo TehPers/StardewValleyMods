@@ -8,25 +8,25 @@ using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
-using TehPers.FishingOverhaul.Loading;
+using TehPers.FishingOverhaul.Services;
 
 namespace TehPers.FishingOverhaul.Setup
 {
     public sealed class FishLoader : ISetup, IDisposable
     {
         private readonly IAssetProvider assetProvider;
-        private readonly FishingData fishingData;
+        private readonly FishData fishData;
         private readonly INamespaceRegistry namespaceRegistry;
 
         public FishLoader(
             [ContentSource(ContentSource.GameContent)]
             IAssetProvider assetProvider,
-            FishingData fishingData,
+            FishData fishData,
             INamespaceRegistry namespaceRegistry
         )
         {
             this.assetProvider = assetProvider ?? throw new ArgumentNullException(nameof(assetProvider));
-            this.fishingData = fishingData ?? throw new ArgumentNullException(nameof(fishingData));
+            this.fishData = fishData ?? throw new ArgumentNullException(nameof(fishData));
             this.namespaceRegistry = namespaceRegistry ?? throw new ArgumentNullException(nameof(namespaceRegistry));
         }
 
@@ -42,8 +42,8 @@ namespace TehPers.FishingOverhaul.Setup
 
         private void ReloadDefaultFishData(object? sender, EventArgs e)
         {
-            this.fishingData.FishAvailabilities.Clear();
-            this.fishingData.FishTraits.Clear();
+            this.fishData.FishAvailabilities.Clear();
+            this.fishData.FishTraits.Clear();
 
             // Parse the fish traits
             var fish = this.assetProvider.Load<Dictionary<int, string>>(@"Data\Fish.xnb");
@@ -67,7 +67,7 @@ namespace TehPers.FishingOverhaul.Setup
                 }
 
                 var fishKey = NamespacedKey.SdvObject(fishId);
-                this.fishingData.FishTraits[fishKey] = traits;
+                this.fishData.FishTraits[fishKey] = traits;
                 partialAvailabilities[fishId] = availabilities;
             }
 
@@ -80,7 +80,7 @@ namespace TehPers.FishingOverhaul.Setup
                 const int offset = 4;
 
                 // Parse each season's data
-                this.fishingData.FishAvailabilities[locationName] = new List<FishAvailability>();
+                this.fishData.FishAvailabilities[locationName] = new();
                 var seasons = Seasons.None;
                 foreach (var seasonData in locationData.Skip(offset).Take(4).Select(data => data.Split(' ')))
                 {
@@ -130,7 +130,7 @@ namespace TehPers.FishingOverhaul.Setup
                             continue;
                         }
 
-                        this.fishingData.FishAvailabilities[locationName].AddRange(
+                        this.fishData.FishAvailabilities[locationName].AddRange(
                             availabilities.Select(
                                 availability => new FishAvailability(
                                     fishKey: availability.FishKey,
@@ -226,7 +226,7 @@ namespace TehPers.FishingOverhaul.Setup
 
             // Parse times and populate spawn availabilities
             var times = fishInfo[5].Split(' ');
-            partialAvailability = new List<FishAvailability>(times.Length / 2);
+            partialAvailability = new(times.Length / 2);
             for (var i = 0; i < times.Length - 1; i += 2)
             {
                 // Start time
@@ -242,7 +242,7 @@ namespace TehPers.FishingOverhaul.Setup
                 }
 
                 partialAvailability.Add(
-                    new FishAvailability(
+                    new(
                         fishKey: NamespacedKey.SdvObject(fishId),
                         startTime: startTime,
                         endTime: endTime,
@@ -256,7 +256,7 @@ namespace TehPers.FishingOverhaul.Setup
             }
 
             // Set traits
-            traits = new FishTraits(dartFrequency, dartBehavior, minSize, maxSize);
+            traits = new(dartFrequency, dartBehavior, minSize, maxSize);
 
             return true;
         }

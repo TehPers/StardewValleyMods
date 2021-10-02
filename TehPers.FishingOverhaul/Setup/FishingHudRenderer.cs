@@ -17,24 +17,28 @@ namespace TehPers.FishingOverhaul.Setup
 {
     internal sealed class FishingHudRenderer : ISetup, IDisposable
     {
+        private readonly IModHelper helper;
         private readonly IFishingHelper fishingHelper;
+        private readonly FishingTracker fishingTracker;
         private readonly HudConfig hudConfig;
         private readonly INamespaceRegistry namespaceRegistry;
-        private readonly IModHelper helper;
+
         private readonly Texture2D whitePixel;
 
         public FishingHudRenderer(
             IModHelper helper,
             IFishingHelper fishingHelper,
+            FishingTracker fishingTracker,
             HudConfig hudConfig,
             INamespaceRegistry namespaceRegistry
         )
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.fishingHelper = fishingHelper ?? throw new ArgumentNullException(nameof(fishingHelper));
+            this.fishingTracker = fishingTracker ?? throw new ArgumentNullException(nameof(fishingTracker));
             this.hudConfig = hudConfig ?? throw new ArgumentNullException(nameof(hudConfig));
             this.namespaceRegistry = namespaceRegistry;
-            this.whitePixel = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
+            this.whitePixel = new(Game1.graphics.GraphicsDevice, 1, 1);
             this.whitePixel.SetData(new[] { Color.White });
         }
 
@@ -103,6 +107,15 @@ namespace TehPers.FishingOverhaul.Setup
             e.SpriteBatch.DrawStringWithShadow(font, trashText, boxBottomLeft, textColor, 1F);
             boxWidth = Math.Max(boxWidth, font.MeasureString(trashText).X);
             boxBottomLeft += new Vector2(0, lineHeight);
+
+            // (Debug) Draw fishing state
+            if (this.fishingTracker.ActiveFisherData.TryGetValue(farmer, out var activeFisher))
+            {
+                var stateText = $"Fishing state: {activeFisher.State}";
+                e.SpriteBatch.DrawStringWithShadow(font, stateText, boxBottomLeft, textColor, 1F);
+                boxWidth = Math.Max(boxWidth, font.MeasureString(stateText).X);
+                boxBottomLeft += new Vector2(0, lineHeight);
+            }
 
             // Draw fish chances
             var maxDisplayedFish = this.hudConfig.MaxFishTypes;
@@ -175,9 +188,9 @@ namespace TehPers.FishingOverhaul.Setup
             // TODO: use a nicer background
             e.SpriteBatch.Draw(
                 this.whitePixel,
-                new Rectangle((int)boxTopLeft.X, (int)boxTopLeft.Y, (int)boxWidth, (int)boxBottomLeft.Y),
+                new((int)boxTopLeft.X, (int)boxTopLeft.Y, (int)boxWidth, (int)boxBottomLeft.Y),
                 null,
-                new Color(0, 0, 0, 0.25F),
+                new(0, 0, 0, 0.25F),
                 0f,
                 Vector2.Zero,
                 SpriteEffects.None,

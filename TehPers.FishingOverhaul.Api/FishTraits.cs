@@ -10,6 +10,8 @@ namespace TehPers.FishingOverhaul.Api
         [property: Description("The minimum size the fish can be.")]
         int MinSize,
         [property: Description("The maximum size the fish can be.")]
-        int MaxSize
+        int MaxSize,
+        [property: Description("Whether the fish is legendary")]
+        bool IsLegendary = false
     );
 }

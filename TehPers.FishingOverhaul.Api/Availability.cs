@@ -2,57 +2,56 @@
 using System.ComponentModel;
 using Newtonsoft.Json;
 using TehPers.Core.Api.Gameplay;
-using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
 
 namespace TehPers.FishingOverhaul.Api
 {
     [JsonDescribe]
-    public readonly struct TrashAvailability
+    public class Availability
     {
-        [JsonRequired]
-        [Description("The item key.")]
-        public NamespacedKey ItemKey { get; }
-
-        [JsonRequired]
         [Description(
-            "The chance this trash will be caught. This is not a percentage chance, but rather a weight relative to all available trash."
+            "The chance this will be caught. This is not a percentage chance, but rather a weight relative to all available treasure."
         )]
-        public double WeightedChance { get; }
+        public double WeightedChance { get; set; }
 
-        [Description("Time the trash becomes available (inclusive).")]
-        public int StartTime { get; }
+        [Description("Time this becomes available (inclusive).")]
+        public int StartTime { get; set; }
 
-        [Description("Time the trash is no longer available (exclusive).")]
-        public int EndTime { get; }
+        [Description("Time this is no longer available (exclusive).")]
+        public int EndTime { get; set; }
 
-        [Description("Seasons the trash can be caught in.")]
-        public Seasons Seasons { get; }
+        [Description("Seasons this can be caught in.")]
+        public Seasons Seasons { get; set; }
 
-        [Description("Weathers the trash can be caught in.")]
-        public Weathers Weathers { get; }
-
-        [Description("The type of water this trash can be caught in. Each location handles this differently.")]
-        public WaterTypes WaterTypes { get; }
-
-        [Description("Required fishing level to see this trash.")]
-        public int MinFishingLevel { get; }
+        [Description("Weathers this can be caught in.")]
+        public Weathers Weathers { get; set; }
 
         [Description(
-            "List of locations the trash should be available in. Leaving this empty will make the trash available everywhere."
+            "The type of water this can be caught in. Each location handles this differently."
         )]
-        public List<string> IncludeLocations { get; }
+        public WaterTypes WaterTypes { get; set; }
+
+        [Description("Required fishing level to see this.")]
+        public int MinFishingLevel { get; set; }
+
+        [Description("Maximum fishing level required to see this, or null for no max.")]
+        public int? MaxFishingLevel { get; set; }
 
         [Description(
-            "List of locations the trash should not be available in. This takes priority over "
-            + nameof(TrashAvailability.IncludeLocations)
+            "List of locations this should be available in. Leaving this empty will make this "
+            + "available everywhere."
+        )]
+        public List<string> IncludeLocations { get; set; }
+
+        [Description(
+            "List of locations this should not be available in. This takes priority over "
+            + nameof(Availability.IncludeLocations)
             + "."
         )]
-        public List<string> ExcludeLocations { get; }
+        public List<string> ExcludeLocations { get; set; }
 
         [JsonConstructor]
-        public TrashAvailability(
-            NamespacedKey itemKey,
+        public Availability(
             double weightedChance,
             int startTime = 600,
             int endTime = 2600,
@@ -60,11 +59,11 @@ namespace TehPers.FishingOverhaul.Api
             Weathers weathers = Weathers.All,
             WaterTypes waterTypes = WaterTypes.All,
             int minFishingLevel = 0,
+            int? maxFishingLevel = null,
             List<string>? includeLocations = null,
             List<string>? excludeLocations = null
         )
         {
-            this.ItemKey = itemKey;
             this.WeightedChance = weightedChance;
             this.StartTime = startTime;
             this.EndTime = endTime;
@@ -72,11 +71,12 @@ namespace TehPers.FishingOverhaul.Api
             this.Weathers = weathers;
             this.WaterTypes = waterTypes;
             this.MinFishingLevel = minFishingLevel;
+            this.MaxFishingLevel = maxFishingLevel;
             this.IncludeLocations = includeLocations ?? new();
-            this.ExcludeLocations = includeLocations ?? new();
+            this.ExcludeLocations = excludeLocations ?? new();
         }
 
-        public double? GetWeightedChance(
+        public virtual double? GetWeightedChance(
             int time,
             Seasons season,
             Weathers weather,
@@ -109,7 +109,7 @@ namespace TehPers.FishingOverhaul.Api
             }
 
             // Verify fishing level is valid
-            if (fishingLevel < this.MinFishingLevel)
+            if (fishingLevel < this.MinFishingLevel || this.MaxFishingLevel is { } maxLevel && fishingLevel > maxLevel)
             {
                 return null;
             }

@@ -1,11 +1,11 @@
-﻿using Ninject;
+﻿using HarmonyLib;
+using Ninject;
+using StardewModdingAPI;
 using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Extensions;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Config;
-using TehPers.FishingOverhaul.Gui;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
-using TehPers.FishingOverhaul.Loading;
 using TehPers.FishingOverhaul.Services;
 using TehPers.FishingOverhaul.Setup;
 
@@ -18,18 +18,25 @@ namespace TehPers.FishingOverhaul
             // Initialization
             this.Bind<Startup>().ToSelf().InSingletonScope();
             this.Bind<ISetup>().To<FishingHudRenderer>().InSingletonScope();
-            this.Bind<ISetup, FishingRodOverrider>().To<FishingRodOverrider>().InSingletonScope();
             this.Bind<ISetup>().To<FishLoader>().InSingletonScope();
             this.Bind<ISetup>().To<FishingMessageHandler>().InSingletonScope();
             this.Bind<ISetup>().To<GenericModConfigMenuSetup>().InSingletonScope();
-            this.Bind<ISetup>().To<FishingController>().InSingletonScope();
+            this.Bind<ISetup>().ToMethod(FishingRodPatcher.Create).InSingletonScope();
 
             // Resources/services
             this.Bind<IFishingHelper>().To<FishingHelper>().InSingletonScope();
             this.Bind<ICustomBobberBarFactory>().To<CustomBobberBarFactory>().InSingletonScope();
-            this.Bind<FishingData>().ToConstant(new FishingData()).InSingletonScope();
+            this.Bind<FishData>().ToConstant(new FishData()).InSingletonScope();
             this.Bind<TrashData>().ToMethod(_ => TrashData.GetDefaultTrashData()).InSingletonScope();
+            this.Bind<TreasureData>().ToMethod(_ => TreasureData.GetDefaultTreasureData()).InSingletonScope();
             this.Bind<FishingTracker>().ToSelf().InSingletonScope();
+            this.Bind<Harmony>().ToMethod(
+                context =>
+                {
+                    var manifest = context.Kernel.Get<IManifest>();
+                    return new(manifest.UniqueID);
+                }
+            ).InSingletonScope();
 
             // Configs
             this.BindConfiguration<GeneralConfig>("config/general.json");

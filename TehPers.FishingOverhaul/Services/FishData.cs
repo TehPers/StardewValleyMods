@@ -2,14 +2,14 @@
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 
-namespace TehPers.FishingOverhaul.Loading
+namespace TehPers.FishingOverhaul.Services
 {
-    public class FishingData
+    public class FishData
     {
         public Dictionary<string, List<FishAvailability>> FishAvailabilities { get; }
         public Dictionary<NamespacedKey, FishTraits> FishTraits { get; }
 
-        public FishingData()
+        public FishData()
         {
             this.FishAvailabilities = new();
             this.FishTraits = new();

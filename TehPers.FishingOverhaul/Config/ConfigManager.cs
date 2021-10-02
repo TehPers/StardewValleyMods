@@ -25,7 +25,7 @@ namespace TehPers.FishingOverhaul.Config
             }
 
             // Create new config
-            config = new T();
+            config = new();
             config.Reset();
             return config;
         }

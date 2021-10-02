@@ -14,21 +14,18 @@ namespace TehPers.FishingOverhaul.Setup
         private readonly IModHelper helper;
         private readonly IMonitor monitor;
         private readonly INamespaceRegistry namespaceRegistry;
-        private readonly FishingRodOverrider rodOverrider;
 
         public FishingMessageHandler(
             IManifest manifest,
             IModHelper helper,
             IMonitor monitor,
-            INamespaceRegistry namespaceRegistry,
-            FishingRodOverrider rodOverrider
+            INamespaceRegistry namespaceRegistry
         )
         {
             this.manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
             this.namespaceRegistry = namespaceRegistry ?? throw new ArgumentNullException(nameof(namespaceRegistry));
-            this.rodOverrider = rodOverrider ?? throw new ArgumentNullException(nameof(rodOverrider));
         }
 
         public void Setup()

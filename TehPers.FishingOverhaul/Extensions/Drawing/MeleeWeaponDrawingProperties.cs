@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.Xna.Framework;
 using StardewValley.Tools;
 
@@ -12,21 +11,21 @@ namespace TehPers.FishingOverhaul.Extensions.Drawing
                 nameof(MeleeWeaponDrawingProperties.addedSwordScale),
                 BindingFlags.Static | BindingFlags.NonPublic
             )
-            ?? throw new Exception($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedSwordScale)}.");
+            ?? throw new($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedSwordScale)}.");
 
         private static readonly FieldInfo addedDaggerScale =
             typeof(MeleeWeapon).GetField(
                 nameof(MeleeWeaponDrawingProperties.addedDaggerScale),
                 BindingFlags.Static | BindingFlags.NonPublic
             )
-            ?? throw new Exception($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedDaggerScale)}.");
+            ?? throw new($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedDaggerScale)}.");
 
         private static readonly FieldInfo addedClubScale =
             typeof(MeleeWeapon).GetField(
                 nameof(MeleeWeaponDrawingProperties.addedClubScale),
                 BindingFlags.Static | BindingFlags.NonPublic
             )
-            ?? throw new Exception($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedClubScale)}.");
+            ?? throw new($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedClubScale)}.");
 
         public Vector2 SourceSize => new(16, 16);
 

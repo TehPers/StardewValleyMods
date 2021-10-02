@@ -6,9 +6,9 @@ using StardewValley;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Config;
-using TehPers.FishingOverhaul.Setup;
+using TehPers.FishingOverhaul.Gui;
 
-namespace TehPers.FishingOverhaul.Gui
+namespace TehPers.FishingOverhaul.Services
 {
     internal class CustomBobberBarFactory : ICustomBobberBarFactory
     {
@@ -24,7 +24,8 @@ namespace TehPers.FishingOverhaul.Gui
             NamespacedKey fishKey,
             float fishSizePercent,
             bool treasure,
-            int bobber
+            int bobber,
+            bool fromFishPond
         )
         {
             var fishingHelper = this.root.Get<IFishingHelper>();
@@ -39,19 +40,19 @@ namespace TehPers.FishingOverhaul.Gui
                 return null;
             }
 
-            return new CustomBobberBar(
+            return new(
                 this.root.Get<IModHelper>(),
                 this.root.Get<IFishingHelper>(),
                 this.root.Get<FishConfig>(),
                 this.root.Get<TreasureConfig>(),
-                this.root.Get<FishingRodOverrider>(),
                 user,
                 fishKey,
                 fishTraits,
                 fishFactory.Create(),
                 fishSizePercent,
                 treasure,
-                bobber
+                bobber,
+                fromFishPond
             );
         }
     }
