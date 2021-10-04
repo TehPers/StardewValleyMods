@@ -1,10 +1,10 @@
 ﻿{
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "TreasurePack",
+  "title": "FishPack",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "TreasureEntries"
+    "FishEntries"
   ],
   "properties": {
     "$schema": {
@@ -13,50 +13,37 @@
         "string"
       ]
     },
-    "TreasureEntries": {
+    "FishEntries": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/TreasureEntry"
+        "$ref": "#/definitions/FishEntry"
       }
     }
   },
   "definitions": {
-    "TreasureEntry": {
+    "FishEntry": {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "FishKey",
+        "Availability"
+      ],
       "properties": {
+        "FishKey": {
+          "type": "string",
+          "description": "The item key."
+        },
         "Availability": {
           "description": "The availability information.",
           "oneOf": [
             {
-              "$ref": "#/definitions/Availability"
+              "$ref": "#/definitions/FishAvailability"
             }
           ]
-        },
-        "ItemKeys": {
-          "type": "array",
-          "description": "The possible item keys.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "MinQuantity": {
-          "type": "integer",
-          "description": "The minimum quantity of this item to be added.",
-          "format": "int32"
-        },
-        "MaxQuantity": {
-          "type": "integer",
-          "description": "The maximum quantity of this item to be added.",
-          "format": "int32"
-        },
-        "AllowDuplicates": {
-          "type": "boolean",
-          "description": "Whether this can be found multiple times in one chest."
         }
       }
     },
-    "Availability": {
+    "FishAvailability": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -117,7 +104,7 @@
         },
         "IncludeLocations": {
           "type": "array",
-          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine#N', where N is the floor number (both location names are valid for the floor).",
+          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine/N', where N is the floor number (both location names are valid for the floor).",
           "items": {
             "type": "string"
           }
@@ -128,6 +115,18 @@
           "items": {
             "type": "string"
           }
+        },
+        "DepthMultiplier": {
+          "type": "number",
+          "description": "Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1.",
+          "format": "double",
+          "default": 0.1
+        },
+        "MaxDepth": {
+          "type": "integer",
+          "description": "The required fishing depth to maximize the chances of catching the fish.",
+          "format": "int32",
+          "default": 4
         }
       }
     },
@@ -175,17 +174,15 @@
       "x-enumFlags": true,
       "x-enumNames": [
         "None",
-        "Ocean",
         "River",
-        "Pond",
+        "PondOrOcean",
         "Freshwater",
         "All"
       ],
       "enum": [
         "None",
         "River",
-        "River",
-        "Pond",
+        "PondOrOcean",
         "Freshwater",
         "All"
       ]

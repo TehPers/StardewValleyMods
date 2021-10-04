@@ -1,10 +1,10 @@
 ﻿{
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "TrashPack",
+  "title": "TreasurePack",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "TrashEntries"
+    "TreasureEntries"
   ],
   "properties": {
     "$schema": {
@@ -13,22 +13,18 @@
         "string"
       ]
     },
-    "TrashEntries": {
+    "TreasureEntries": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/TrashEntry"
+        "$ref": "#/definitions/TreasureEntry"
       }
     }
   },
   "definitions": {
-    "TrashEntry": {
+    "TreasureEntry": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "ItemKey": {
-          "type": "string",
-          "description": "The item key."
-        },
         "Availability": {
           "description": "The availability information.",
           "oneOf": [
@@ -36,6 +32,27 @@
               "$ref": "#/definitions/Availability"
             }
           ]
+        },
+        "ItemKeys": {
+          "type": "array",
+          "description": "The possible item keys.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "MinQuantity": {
+          "type": "integer",
+          "description": "The minimum quantity of this item to be added.",
+          "format": "int32"
+        },
+        "MaxQuantity": {
+          "type": "integer",
+          "description": "The maximum quantity of this item to be added.",
+          "format": "int32"
+        },
+        "AllowDuplicates": {
+          "type": "boolean",
+          "description": "Whether this can be found multiple times in one chest."
         }
       }
     },
@@ -100,7 +117,7 @@
         },
         "IncludeLocations": {
           "type": "array",
-          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine#N', where N is the floor number (both location names are valid for the floor).",
+          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine/N', where N is the floor number (both location names are valid for the floor).",
           "items": {
             "type": "string"
           }
@@ -158,17 +175,15 @@
       "x-enumFlags": true,
       "x-enumNames": [
         "None",
-        "Ocean",
         "River",
-        "Pond",
+        "PondOrOcean",
         "Freshwater",
         "All"
       ],
       "enum": [
         "None",
         "River",
-        "River",
-        "Pond",
+        "PondOrOcean",
         "Freshwater",
         "All"
       ]

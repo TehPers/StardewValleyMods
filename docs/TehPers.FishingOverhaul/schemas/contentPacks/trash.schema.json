@@ -1,10 +1,10 @@
 ﻿{
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "FishPack",
+  "title": "TrashPack",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "FishEntries"
+    "TrashEntries"
   ],
   "properties": {
     "$schema": {
@@ -13,23 +13,19 @@
         "string"
       ]
     },
-    "FishEntries": {
+    "TrashEntries": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/FishEntry"
+        "$ref": "#/definitions/TrashEntry"
       }
     }
   },
   "definitions": {
-    "FishEntry": {
+    "TrashEntry": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "FishKey",
-        "Availability"
-      ],
       "properties": {
-        "FishKey": {
+        "ItemKey": {
           "type": "string",
           "description": "The item key."
         },
@@ -37,13 +33,13 @@
           "description": "The availability information.",
           "oneOf": [
             {
-              "$ref": "#/definitions/FishAvailability"
+              "$ref": "#/definitions/Availability"
             }
           ]
         }
       }
     },
-    "FishAvailability": {
+    "Availability": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -104,7 +100,7 @@
         },
         "IncludeLocations": {
           "type": "array",
-          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine#N', where N is the floor number (both location names are valid for the floor).",
+          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine/N', where N is the floor number (both location names are valid for the floor).",
           "items": {
             "type": "string"
           }
@@ -115,18 +111,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "DepthMultiplier": {
-          "type": "number",
-          "description": "Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1.",
-          "format": "double",
-          "default": 0.1
-        },
-        "MaxDepth": {
-          "type": "integer",
-          "description": "The required fishing depth to maximize the chances of catching the fish.",
-          "format": "int32",
-          "default": 4
         }
       }
     },
@@ -174,17 +158,15 @@
       "x-enumFlags": true,
       "x-enumNames": [
         "None",
-        "Ocean",
         "River",
-        "Pond",
+        "PondOrOcean",
         "Freshwater",
         "All"
       ],
       "enum": [
         "None",
         "River",
-        "River",
-        "Pond",
+        "PondOrOcean",
         "Freshwater",
         "All"
       ]

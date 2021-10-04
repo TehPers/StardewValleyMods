@@ -39,9 +39,10 @@ namespace TehPers.FishingOverhaul.SchemaGen
                 }
             );
 
+            // Generate the schemas
             Program.WriteFishingOverhaulSchemas(
                 schemaGenerator,
-                Path.Join(outDir, "TehPers.FishingOverhaul")
+                Path.Join(outDir, "TehPers.FishingOverhaul", "schemas")
             );
         }
 
