@@ -51,9 +51,11 @@ var fishingApi = kernel.Get<IFishingApi>();
 
 ### `IFishingApi`
 
-This interface exposes the primary fishing API. This interface primarily acts as a source of truth for how fishing should behave. New content cannot be added through this interface, however it can be used to see how fishing behaves with the content that is already loaded. For example, a separate fishing HUD mod could use this interface to see what fish can be caught by the current user, what the chances of catching those fish are, and which of those fish are legendary. Similarly, treasure and trash can be retrieved from this interface.
+This interface exposes the primary fishing API. This interface primarily acts as a source of truth for how fishing should behave. New content cannot be added through this interface, however it can be used to see how fishing behaves with the content that is already loaded. For example, a separate fishing HUD mod could use this interface to see what fish can be caught by a farmer, what the chances of catching those fish are, and which of those fish are legendary. Similarly, treasure and trash can be retrieved from this interface.
 
 Make sure to read the documentation for how to use the interface. To actually create instances of the items from their `NamespacedKey`s, look at `INamespaceRegistry` from Teh's Core API.
+
+TODO: maybe link to the core mod docs?
 
 ### `IFishingContentSource`
 
