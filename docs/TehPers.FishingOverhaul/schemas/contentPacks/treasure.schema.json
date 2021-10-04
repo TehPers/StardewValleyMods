@@ -15,6 +15,7 @@
     },
     "TreasureEntries": {
       "type": "array",
+      "description": "The treasure entries to add.",
       "items": {
         "$ref": "#/definitions/TreasureEntry"
       }
@@ -24,6 +25,10 @@
     "TreasureEntry": {
       "type": "object",
       "additionalProperties": false,
+      "required": [
+        "Availability",
+        "ItemKeys"
+      ],
       "properties": {
         "Availability": {
           "description": "The availability information.",
@@ -35,7 +40,7 @@
         },
         "ItemKeys": {
           "type": "array",
-          "description": "The possible item keys.",
+          "description": "The possible namespaced keys for the loot. The item key is chosen randomly.",
           "items": {
             "type": "string"
           }
@@ -43,16 +48,19 @@
         "MinQuantity": {
           "type": "integer",
           "description": "The minimum quantity of this item to be added.",
-          "format": "int32"
+          "format": "int32",
+          "default": 1
         },
         "MaxQuantity": {
           "type": "integer",
           "description": "The maximum quantity of this item to be added.",
-          "format": "int32"
+          "format": "int32",
+          "default": 1
         },
         "AllowDuplicates": {
           "type": "boolean",
-          "description": "Whether this can be found multiple times in one chest."
+          "description": "Whether this can be found multiple times in one chest.",
+          "default": true
         }
       }
     },

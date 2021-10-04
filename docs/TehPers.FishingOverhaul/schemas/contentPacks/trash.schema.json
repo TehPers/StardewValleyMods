@@ -15,6 +15,7 @@
     },
     "TrashEntries": {
       "type": "array",
+      "description": "The trash entries to add.",
       "items": {
         "$ref": "#/definitions/TrashEntry"
       }

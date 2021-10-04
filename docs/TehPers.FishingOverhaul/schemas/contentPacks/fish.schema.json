@@ -15,6 +15,7 @@
     },
     "FishEntries": {
       "type": "array",
+      "description": "The fish entries to add.",
       "items": {
         "$ref": "#/definitions/FishEntry"
       }

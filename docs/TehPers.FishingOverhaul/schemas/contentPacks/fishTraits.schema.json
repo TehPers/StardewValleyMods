@@ -15,6 +15,7 @@
     },
     "FishTraits": {
       "type": "object",
+      "description": "The fish traits to add.",
       "additionalProperties": {
         "$ref": "#/definitions/FishTraits"
       }

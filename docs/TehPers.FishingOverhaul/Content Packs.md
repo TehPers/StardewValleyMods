@@ -87,7 +87,7 @@ The availability uses the common availability properties.
 
 [**JSON Schema**][treasure schema]
 
-The `trash.json` file configures where and when trash can be caught.
+The `treasure.json` file configures where and when treasure can be caught.
 
 | Property          | Type     | Required | Value                    |
 | ----------------- | -------- | -------- | ------------------------ |
@@ -96,10 +96,13 @@ The `trash.json` file configures where and when trash can be caught.
 
 Treasure entries each configure when a specific treasure can be made available. Multiple entries may refer to the same treasure item, allowing complex customization over when a treasure is available and what the chances of catching that treasure are.
 
-| Property       | Type     | Required | Value                                     |
-| -------------- | -------- | -------- | ----------------------------------------- |
-| `TreasureKey`  | `string` | Yes      | The namespaced key for the treasure item. |
-| `Availability` | `object` | Yes      | The availability data for the entry.      |
+| Property          | Type      | Required | Value                                                                       |
+| ----------------- | --------- | -------- | --------------------------------------------------------------------------- |
+| `Availability`    | `object`  | Yes      | The availability data for the entry.                                        |
+| `ItemKeys`        | `array`   | Yes      | The possible namespaced keys for the loot. The item key is chosen randomly. |
+| `MinQuantity`     | `integer` | No       | The minimum quantity of the item. This is only valid for stackable items.   |
+| `MaxQuantity`     | `integer` | No       | The maximum quantity of the item. This is only valid for stackable items.   |
+| `AllowDuplicates` | `boolean` | No       | Whether this can be found multiple times in one chest.                      |
 
 The availability uses the common availability properties.
 

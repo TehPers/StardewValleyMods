@@ -10,19 +10,24 @@ namespace TehPers.FishingOverhaul.Api
     [JsonDescribe]
     public class TreasureEntry
     {
+        [JsonRequired]
         [Description("The availability information.")]
         public Availability Availability { get; set; }
 
-        [Description("The possible item keys.")]
+        [JsonRequired]
+        [Description("The possible namespaced keys for the loot. The item key is chosen randomly.")]
         public List<NamespacedKey> ItemKeys { get; set; }
         
         [Description("The minimum quantity of this item to be added.")]
+        [DefaultValue(1)]
         public int MinQuantity { get; set; }
 
         [Description("The maximum quantity of this item to be added.")]
+        [DefaultValue(1)]
         public int MaxQuantity { get; set; }
 
         [Description("Whether this can be found multiple times in one chest.")]
+        [DefaultValue(true)]
         public bool AllowDuplicates { get; set; }
 
         [JsonConstructor]
