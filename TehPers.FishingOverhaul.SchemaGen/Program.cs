@@ -34,7 +34,6 @@ namespace TehPers.FishingOverhaul.SchemaGen
                         ObjectCreationHandling = ObjectCreationHandling.Replace,
                         Converters = new List<JsonConverter> { new StringEnumConverter() },
                     },
-                    GenerateExamples = true,
                     FlattenInheritanceHierarchy = true,
                 }
             );

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewValley.Buildings;
+using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Gameplay;
@@ -48,10 +49,7 @@ namespace TehPers.FishingOverhaul.Api
         /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
         /// <param name="depth">The bobber depth.</param>
         /// <returns>The catchable fish and their chances of being caught.</returns>
-        IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(
-            Farmer farmer,
-            int depth = 4
-        )
+        IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(Farmer farmer, int depth = 4)
         {
             var location = farmer.currentLocation;
             var season = location.GetSeasonForLocation() switch
@@ -94,21 +92,16 @@ namespace TehPers.FishingOverhaul.Api
         /// <param name="bobberTile">The tile the bobber is on.</param>
         /// <param name="takeFish">If <see langword="false"/>, simulates taking the fish. Otherwise, actually pulls the fish from the pond.</param>
         /// <returns>The fish to get from the pond, if any.</returns>
-        NamespacedKey? GetFishPondFish(
-            Farmer farmer,
-            Vector2 bobberTile,
-            bool takeFish = false
-        )
+        NamespacedKey? GetFishPondFish(Farmer farmer, Vector2 bobberTile, bool takeFish = false)
         {
-            // Fish ponds are only on farms
-            if (farmer.currentLocation is not Farm farm)
+            // Fish ponds are buildings
+            if (farmer.currentLocation is not BuildableGameLocation buildableLocation)
             {
                 return null;
             }
 
             // Get the fish in that fish pond, if any
-            return farm.buildings
-                .OfType<FishPond>()
+            return buildableLocation.buildings.OfType<FishPond>()
                 .Where(pond => pond.isTileFishable(bobberTile))
                 .Select(
                     pond =>
@@ -157,9 +150,7 @@ namespace TehPers.FishingOverhaul.Api
         /// </summary>
         /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
         /// <returns>The catchable trash and their chances of being caught.</returns>
-        public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(
-            Farmer farmer
-        )
+        public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(Farmer farmer)
         {
             var location = farmer.currentLocation;
             var season = location.GetSeasonForLocation() switch
@@ -183,7 +174,14 @@ namespace TehPers.FishingOverhaul.Api
                 _ => WaterTypes.All,
             };
 
-            return this.GetTrashChances(location, season, weather, waterType, Game1.timeOfDay, farmer.FishingLevel);
+            return this.GetTrashChances(
+                location,
+                season,
+                weather,
+                waterType,
+                Game1.timeOfDay,
+                farmer.FishingLevel
+            );
         }
 
         /// <summary>
@@ -210,9 +208,7 @@ namespace TehPers.FishingOverhaul.Api
         /// </summary>
         /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
         /// <returns>The catchable treasure and their chances of being caught.</returns>
-        public IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(
-            Farmer farmer
-        )
+        public IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(Farmer farmer)
         {
             var location = farmer.currentLocation;
             var season = location.GetSeasonForLocation() switch
@@ -236,7 +232,14 @@ namespace TehPers.FishingOverhaul.Api
                 _ => WaterTypes.All,
             };
 
-            return this.GetTreasureChances(location, season, weather, waterType, Game1.timeOfDay, farmer.FishingLevel);
+            return this.GetTreasureChances(
+                location,
+                season,
+                weather,
+                waterType,
+                Game1.timeOfDay,
+                farmer.FishingLevel
+            );
         }
 
         /// <summary>

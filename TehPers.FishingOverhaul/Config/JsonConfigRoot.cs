@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel;
+using Newtonsoft.Json;
 
 namespace TehPers.FishingOverhaul.Config
 {
@@ -8,6 +9,7 @@ namespace TehPers.FishingOverhaul.Config
         /// For JSON schema. Adds an optional '$schema' attribute.
         /// </summary>
         [JsonProperty("$schema", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [Description("Optional schema URL.")]
         public string? Schema { get; set; }
     }
 }

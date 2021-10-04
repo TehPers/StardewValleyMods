@@ -18,11 +18,11 @@ namespace TehPers.FishingOverhaul.Api
         [Description("The possible namespaced keys for the loot. The item key is chosen randomly.")]
         public List<NamespacedKey> ItemKeys { get; set; }
         
-        [Description("The minimum quantity of this item to be added.")]
+        [Description("The minimum quantity of this item. This is only valid for stackable items.")]
         [DefaultValue(1)]
         public int MinQuantity { get; set; }
 
-        [Description("The maximum quantity of this item to be added.")]
+        [Description("The maximum quantity of this item. This is only valid for stackable items.")]
         [DefaultValue(1)]
         public int MaxQuantity { get; set; }
 

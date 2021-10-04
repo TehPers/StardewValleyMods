@@ -44,7 +44,10 @@ namespace TehPers.FishingOverhaul.Api.Extensions
             var totalWeight = sourceArray.SumWeights();
             if (Math.Abs(totalWeight) < double.Epsilon * 10)
             {
-                throw new ArgumentException("Source must have a non-zero total weight", nameof(source));
+                throw new ArgumentException(
+                    "Source must have a non-zero total weight",
+                    nameof(source)
+                );
             }
 
             var n = rand.NextDouble();
@@ -59,7 +62,10 @@ namespace TehPers.FishingOverhaul.Api.Extensions
                 n -= chance;
             }
 
-            throw new ArgumentException("Source should contain positively weighted entries", nameof(source));
+            throw new ArgumentException(
+                "Source should contain positively weighted entries",
+                nameof(source)
+            );
         }
 
         /// <summary>Converts the items in an <see cref="IEnumerable{T}"/> to <see cref="IWeightedValue{T}"/>.</summary>
@@ -88,7 +94,9 @@ namespace TehPers.FishingOverhaul.Api.Extensions
             Func<TSource, TEntry> elementSelector
         )
         {
-            return source.Select(e => new WeightedValue<TEntry>(elementSelector(e), weightSelector(e))).ToArray();
+            return source
+                .Select(e => new WeightedValue<TEntry>(elementSelector(e), weightSelector(e)))
+                .ToArray();
         }
 
         /// <summary>Normalizes the weights of each item and returns a new <see cref="IEnumerable{T}"/> with the normalized items.</summary>
@@ -96,17 +104,25 @@ namespace TehPers.FishingOverhaul.Api.Extensions
         /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
         /// <param name="weight">The weight to normalize to.</param>
         /// <returns>A new <see cref="IEnumerable{T}"/> containing new, normalized items in the same order.</returns>
-        public static IEnumerable<IWeightedValue<T>> Normalize<T>(this IEnumerable<T> source, double weight = 1D)
+        public static IEnumerable<IWeightedValue<T>> Normalize<T>(
+            this IEnumerable<T> source,
+            double weight = 1D
+        )
             where T : IWeighted
         {
             var enumeratedSource = source as T[] ?? source.ToArray();
             var totalWeight = enumeratedSource.SumWeights();
             if (Math.Abs(totalWeight) < double.Epsilon)
             {
-                throw new ArgumentException("The weights of all of the source items sum to zero.", nameof(source));
+                throw new ArgumentException(
+                    "The weights of all of the source items sum to zero.",
+                    nameof(source)
+                );
             }
 
-            return enumeratedSource.Select(e => new WeightedValue<T>(e, weight * e.Weight / totalWeight)).ToArray();
+            return enumeratedSource
+                .Select(e => new WeightedValue<T>(e, weight * e.Weight / totalWeight))
+                .ToArray();
         }
 
         /// <summary>Normalizes the weights of each <see cref="IWeightedValue{T}"/> and returns a new <see cref="IEnumerable{T}"/> with the normalized items.</summary>
@@ -128,10 +144,32 @@ namespace TehPers.FishingOverhaul.Api.Extensions
             var totalWeight = enumeratedSource.SumWeights();
             if (Math.Abs(totalWeight) < double.Epsilon)
             {
-                throw new ArgumentException("The weights of all of the source items sum to zero.", nameof(source));
+                throw new ArgumentException(
+                    "The weights of all of the source items sum to zero.",
+                    nameof(source)
+                );
             }
 
-            return enumeratedSource.Select(e => new WeightedValue<T>(e.Value, weight * e.Weight / totalWeight));
+            return enumeratedSource.Select(
+                e => new WeightedValue<T>(e.Value, weight * e.Weight / totalWeight)
+            );
+        }
+
+        /// <summary>
+        /// Groups equivalent values together and calculates the condensed weights of each value.
+        /// </summary>
+        /// <typeparam name="T">The type of value in the <see cref="IWeightedValue{T}"/>.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
+        /// <returns>A new <see cref="IEnumerable{T}"/> containing each value only once and the sum of the weights for those values from the source.</returns>
+        public static IEnumerable<IWeightedValue<T>> Condense<T>(
+            this IEnumerable<IWeightedValue<T>> source
+        )
+        {
+            return source.GroupBy(weightedValue => weightedValue.Value)
+                .ToWeighted(
+                    group => group.Sum(weightedValue => weightedValue.Weight),
+                    group => group.Key
+                );
         }
 
         /// <summary>Sums all of the weights of the items in the <see cref="IEnumerable{T}"/>.</summary>
@@ -164,9 +202,7 @@ namespace TehPers.FishingOverhaul.Api.Extensions
             for (var n = source.Count - 1; n >= 0; n--)
             {
                 var k = rand.Next(n + 1);
-                var value = source[k];
-                source[k] = source[n];
-                source[n] = value;
+                (source[k], source[n]) = (source[n], source[k]);
             }
         }
     }

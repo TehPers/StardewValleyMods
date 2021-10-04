@@ -36,8 +36,9 @@ Two APIs are available for this mod:
 - The simplified API can be retrieved through SMAPI's mod registry.
 - The full API can be accessed by using Teh's Core Mod. The core mod can be an optional dependency, but it is needed to access all the types used by the full API because SMAPI's mod registry doesn't support complex APIs.
 
-TODO: add a link to a document explaining how to use the APIs
+To use the API, check out the [API docs][api docs].
 
 [gmcm]: https://www.nexusmods.com/stardewvalley/mods/5098
 [create a content pack]: https://stardewvalleywiki.com/Modding:Content_packs#Create_a_content_pack
 [content pack docs]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/docs/TehPers.FishingOverhaul/Content%20Packs.md
+[api docs]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/docs/TehPers.FishingOverhaul/API.md

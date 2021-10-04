@@ -9,6 +9,6 @@
         /// dependency in your mod's manifest. If you do not need the core mod to be loaded for
         /// your mod to function, then you may add it as an optional dependency instead.
         /// </summary>
-        public static IModKernelFactory Factory { get; internal set; }
+        public static IModKernelFactory? Factory { get; internal set; }
     }
 }
