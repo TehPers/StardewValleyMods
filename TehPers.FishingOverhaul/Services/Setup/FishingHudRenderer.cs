@@ -13,12 +13,12 @@ using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Extensions;
 using TehPers.FishingOverhaul.Extensions.Drawing;
 
-namespace TehPers.FishingOverhaul.Setup
+namespace TehPers.FishingOverhaul.Services.Setup
 {
     internal sealed class FishingHudRenderer : ISetup, IDisposable
     {
         private readonly IModHelper helper;
-        private readonly IFishingHelper fishingHelper;
+        private readonly IFishingApi fishingApi;
         private readonly FishingTracker fishingTracker;
         private readonly HudConfig hudConfig;
         private readonly INamespaceRegistry namespaceRegistry;
@@ -27,14 +27,14 @@ namespace TehPers.FishingOverhaul.Setup
 
         public FishingHudRenderer(
             IModHelper helper,
-            IFishingHelper fishingHelper,
+            IFishingApi fishingApi,
             FishingTracker fishingTracker,
             HudConfig hudConfig,
             INamespaceRegistry namespaceRegistry
         )
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
-            this.fishingHelper = fishingHelper ?? throw new ArgumentNullException(nameof(fishingHelper));
+            this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
             this.fishingTracker = fishingTracker ?? throw new ArgumentNullException(nameof(fishingTracker));
             this.hudConfig = hudConfig ?? throw new ArgumentNullException(nameof(hudConfig));
             this.namespaceRegistry = namespaceRegistry;
@@ -70,7 +70,7 @@ namespace TehPers.FishingOverhaul.Setup
             var lineHeight = (float)font.LineSpacing;
             var boxTopLeft = new Vector2(this.hudConfig.TopLeftX, this.hudConfig.TopLeftY);
             var boxBottomLeft = boxTopLeft;
-            var fishChances = this.fishingHelper.GetFishChances(farmer)
+            var fishChances = this.fishingApi.GetFishChances(farmer)
                 .Normalize()
                 .OrderByDescending(fishChance => fishChance.Weight)
                 .ToArray();
@@ -82,14 +82,14 @@ namespace TehPers.FishingOverhaul.Setup
             // Draw streak chances
             var streakText = this.helper.Translation.Get(
                 "text.streak",
-                new { streak = this.fishingHelper.GetStreak(farmer) }
+                new { streak = this.fishingApi.GetStreak(farmer) }
             );
             e.SpriteBatch.DrawStringWithShadow(font, streakText, boxBottomLeft, textColor, 1F);
             boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
             boxBottomLeft += new Vector2(0, lineHeight);
 
             // Draw treasure chances
-            var treasureChance = this.fishingHelper.GetChanceForTreasure(farmer);
+            var treasureChance = this.fishingApi.GetChanceForTreasure(farmer);
             var treasureText = this.helper.Translation.Get(
                 "text.treasure",
                 new { chance = $"{treasureChance:P2}" }
@@ -99,7 +99,7 @@ namespace TehPers.FishingOverhaul.Setup
             boxBottomLeft += new Vector2(0, lineHeight);
 
             // Draw trash chances
-            var trashChance = fishChances.Length == 0 ? 1.0 : 1.0 - this.fishingHelper.GetChanceForFish(farmer);
+            var trashChance = fishChances.Length == 0 ? 1.0 : 1.0 - this.fishingApi.GetChanceForFish(farmer);
             var trashText = this.helper.Translation.Get(
                 "text.trash",
                 new { chance = $"{trashChance:P2}" }

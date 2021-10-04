@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewValley.Buildings;
 using StardewValley.Tools;
+using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api.Weighted;
@@ -12,9 +13,9 @@ using TehPers.FishingOverhaul.Api.Weighted;
 namespace TehPers.FishingOverhaul.Api
 {
     /// <summary>
-    /// Helper for working with fishing.
+    /// API for working with fishing.
     /// </summary>
-    public interface IFishingHelper
+    public interface IFishingApi
     {
         /// <summary>
         /// Gets the weighted chances of catching any fish. This does not take into account fish
@@ -37,7 +38,7 @@ namespace TehPers.FishingOverhaul.Api
             int time,
             int fishingLevel,
             double dailyLuck,
-            double depth = 4.0D
+            int depth = 4
         );
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace TehPers.FishingOverhaul.Api
         /// <returns>The catchable fish and their chances of being caught.</returns>
         IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(
             Farmer farmer,
-            double depth = 4.0D
+            int depth = 4
         )
         {
             var location = farmer.currentLocation;
@@ -69,7 +70,7 @@ namespace TehPers.FishingOverhaul.Api
             var waterType = location.getFishingLocation(farmer.getTileLocation()) switch
             {
                 0 => WaterTypes.River,
-                1 => WaterTypes.Pond,
+                1 => WaterTypes.PondOrOcean,
                 2 => WaterTypes.Freshwater,
                 _ => WaterTypes.All,
             };
@@ -110,9 +111,16 @@ namespace TehPers.FishingOverhaul.Api
                 .OfType<FishPond>()
                 .Where(pond => pond.isTileFishable(bobberTile))
                 .Select(
-                    pond => (NamespacedKey?)NamespacedKey.SdvObject(
-                        takeFish ? pond.CatchFish().ParentSheetIndex : pond.fishType.Value
-                    )
+                    pond =>
+                    {
+                        int? parentSheetIndex = takeFish switch
+                        {
+                            true when pond.CatchFish() is { ParentSheetIndex: var id } => id,
+                            false when pond.currentOccupants.Value > 0 => pond.fishType.Value,
+                            _ => null,
+                        };
+                        return parentSheetIndex.Map(NamespacedKey.SdvObject);
+                    }
                 )
                 .FirstOrDefault();
         }
@@ -170,7 +178,7 @@ namespace TehPers.FishingOverhaul.Api
             var waterType = location.getFishingLocation(farmer.getTileLocation()) switch
             {
                 0 => WaterTypes.River,
-                1 => WaterTypes.Pond,
+                1 => WaterTypes.PondOrOcean,
                 2 => WaterTypes.Freshwater,
                 _ => WaterTypes.All,
             };
@@ -223,7 +231,7 @@ namespace TehPers.FishingOverhaul.Api
             var waterType = location.getFishingLocation(farmer.getTileLocation()) switch
             {
                 0 => WaterTypes.River,
-                1 => WaterTypes.Pond,
+                1 => WaterTypes.PondOrOcean,
                 2 => WaterTypes.Freshwater,
                 _ => WaterTypes.All,
             };
@@ -283,5 +291,10 @@ namespace TehPers.FishingOverhaul.Api
         /// <param name="farmer">The <see cref="Farmer"/> that caught treasure.</param>
         /// <returns>Possible loot from a treasure chest.</returns>
         IList<Item> GetPossibleTreasure(Farmer farmer);
+
+        /// <summary>
+        /// Requests fishing data to be reloaded.
+        /// </summary>
+        void RequestReload();
     }
 }

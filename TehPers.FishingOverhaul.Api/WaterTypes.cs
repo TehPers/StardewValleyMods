@@ -9,11 +9,10 @@ namespace TehPers.FishingOverhaul.Api
     public enum WaterTypes
     {
         River = 0b1,
-        Pond = 0b10,
-        Ocean = WaterTypes.River, // Pond and ocean use the same ID
+        PondOrOcean = 0b10, // Pond and ocean use the same ID
         Freshwater = 0b100,
 
         None = 0,
-        All = WaterTypes.River | WaterTypes.Pond | WaterTypes.Freshwater
+        All = WaterTypes.River | WaterTypes.PondOrOcean | WaterTypes.Freshwater
     }
 }

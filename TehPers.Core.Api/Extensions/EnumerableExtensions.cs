@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace TehPers.Core.Api.Extensions
@@ -10,6 +11,8 @@ namespace TehPers.Core.Api.Extensions
     /// </summary>
     public static class EnumerableExtensions
     {
+        private static readonly Dictionary<Type, object> enumAggregators = new();
+
         /// <summary>Shuffles a list.</summary>
         /// <typeparam name="T">The type of the elements of <paramref name="source"/>.</typeparam>
         /// <param name="source">An <see cref="IList{T}"/> to shuffle.</param>
@@ -32,9 +35,7 @@ namespace TehPers.Core.Api.Extensions
             {
                 n--;
                 var k = rand.Next(n + 1);
-                var value = source[k];
-                source[k] = source[n];
-                source[n] = value;
+                (source[k], source[n]) = (source[n], source[k]);
             }
         }
 
@@ -44,7 +45,10 @@ namespace TehPers.Core.Api.Extensions
         /// <param name="comparer">The comparer for the hash set.</param>
         /// <returns>A <see cref="HashSet{T}"/> that contains values of type <typeparamref name="TSource"/> selected from the input sequence.</returns>
         /// <remarks>In framework versions 4.7.2+, this method can be removed.</remarks>
-        public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
+        public static HashSet<TSource> ToHashSet<TSource>(
+            this IEnumerable<TSource> source,
+            IEqualityComparer<TSource> comparer
+        )
         {
             return new HashSet<TSource>(source.ToArray(), comparer);
         }
@@ -54,7 +58,10 @@ namespace TehPers.Core.Api.Extensions
         /// <typeparam name="TValue">The type of the values in the <paramref name="source"/>.</typeparam>
         /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
         /// <returns>A dictionary containing all the <see cref="KeyValuePair{TKey,TValue}"/> entries in the <paramref name="source"/>.</returns>
-        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source)
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(
+            this IEnumerable<KeyValuePair<TKey, TValue>> source
+        )
+            where TKey : notnull
         {
             return source.ToDictionary(kv => kv.Key, kv => kv.Value);
         }
@@ -65,7 +72,11 @@ namespace TehPers.Core.Api.Extensions
         /// <param name="source">The source <see cref="IEnumerable{T}"/>.</param>
         /// <param name="comparer">The comparer used to compare keys in the dictionary.</param>
         /// <returns>A dictionary containing all the <see cref="KeyValuePair{TKey,TValue}"/> entries in the <paramref name="source"/>.</returns>
-        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source, IEqualityComparer<TKey> comparer)
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(
+            this IEnumerable<KeyValuePair<TKey, TValue>> source,
+            IEqualityComparer<TKey> comparer
+        )
+            where TKey : notnull
         {
             return source.ToDictionary(kv => kv.Key, kv => kv.Value, comparer);
         }
@@ -89,9 +100,7 @@ namespace TehPers.Core.Api.Extensions
                 throw new ArgumentOutOfRangeException(nameof(second));
             }
 
-            var tmp = source[first];
-            source[first] = source[second];
-            source[second] = tmp;
+            (source[first], source[second]) = (source[second], source[first]);
         }
 
         /// <summary>Retrieves a value from a <see cref="IDictionary{TKey,TValue}"/> with the given fallback value.</summary>
@@ -101,7 +110,11 @@ namespace TehPers.Core.Api.Extensions
         /// <param name="key">The key of the value to retrieve.</param>
         /// <param name="fallback">The fallback value if the key doesn't exist in the dictionary.</param>
         /// <returns>If the key exists in <paramref name="source"/>, the value associated with <paramref name="key"/>, otherwise <paramref name="fallback"/>.</returns>
-        public static TVal GetDefault<TKey, TVal>(this IDictionary<TKey, TVal> source, TKey key, TVal fallback = default)
+        public static TVal? GetDefault<TKey, TVal>(
+            this IDictionary<TKey, TVal> source,
+            TKey key,
+            TVal? fallback = default
+        )
         {
             _ = source ?? throw new ArgumentNullException(nameof(source));
 
@@ -159,7 +172,11 @@ namespace TehPers.Core.Api.Extensions
         /// <param name="key">The key.</param>
         /// <param name="factory">A function which returns a value to put in the dictionary if the key doesn't exist.</param>
         /// <returns>The existing item with the given key in the source dictionary, or the factory-generated value if the key doesn't already exist.</returns>
-        public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, Func<TValue> factory)
+        public static TValue GetOrAdd<TKey, TValue>(
+            this IDictionary<TKey, TValue> source,
+            TKey key,
+            Func<TValue> factory
+        )
         {
             _ = factory ?? throw new ArgumentNullException(nameof(factory));
             _ = source ?? throw new ArgumentNullException(nameof(source));
@@ -203,6 +220,62 @@ namespace TehPers.Core.Api.Extensions
         public static IEnumerable<T> Yield<T>(this T item)
         {
             yield return item;
+        }
+
+        /// <summary>
+        /// Splits an enum with <see cref="FlagsAttribute"/> into its component flags.
+        /// </summary>
+        /// <typeparam name="T">The enum type.</typeparam>
+        /// <param name="item">The item being split.</param>
+        /// <returns>The split value.</returns>
+        public static IEnumerable<T> Split<T>(this T item)
+            where T : Enum
+        {
+            // Check if flags enum
+            if (!typeof(T).GetCustomAttributes(typeof(FlagsAttribute), false).Any())
+            {
+                throw new ArgumentException("T must be a flags-style enum.", nameof(T));
+            }
+
+            // Split into flags
+            return Enum.GetValues(typeof(T))
+                .Cast<T>()
+                .Where(flag => !item.Equals(flag) && item.HasFlag(flag));
+        }
+
+        /// <summary>
+        /// Joins values of an enum with <see cref="FlagsAttribute"/> into a single value.
+        /// </summary>
+        /// <typeparam name="T">The enum type.</typeparam>
+        /// <param name="flags">The flags to join.</param>
+        /// <returns>The joined enum. If no values are passed in, then the default value is returned.</returns>
+        public static T? Join<T>(this IEnumerable<T> flags)
+            where T : Enum
+        {
+            // Check if flags enum
+            if (!typeof(T).GetCustomAttributes(typeof(FlagsAttribute), false).Any())
+            {
+                throw new ArgumentException("T must be a flags-style enum.", nameof(T));
+            }
+
+            // Create the aggregator if needed
+            if (!EnumerableExtensions.enumAggregators.TryGetValue(typeof(T), out var cached)
+                || cached is not Func<T?, T, T?> aggregator)
+            {
+                Type underlyingType = typeof(T);
+                var currentParameter = Expression.Parameter(typeof(T), "current");
+                var nextParameter = Expression.Parameter(typeof(T), "next");
+                aggregator = Expression.Lambda<Func<T?, T, T?>>(
+                        Expression.Or(currentParameter, nextParameter),
+                        currentParameter,
+                        nextParameter
+                    )
+                    .Compile();
+                EnumerableExtensions.enumAggregators[typeof(T)] = aggregator;
+            }
+
+            // Split into flags
+            return flags.Aggregate(default, aggregator);
         }
     }
 }

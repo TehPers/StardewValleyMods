@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using StardewValley;
 using StardewValley.Tools;
+using TehPers.FishingOverhaul.Services.Data;
 
-namespace TehPers.FishingOverhaul.Setup
+namespace TehPers.FishingOverhaul.Services.Setup
 {
     internal class FishingTracker
     {

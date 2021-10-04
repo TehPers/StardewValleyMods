@@ -1,7 +1,6 @@
 ﻿using TehPers.Core.Api.Items;
-using TehPers.FishingOverhaul.Services;
 
-namespace TehPers.FishingOverhaul.Setup
+namespace TehPers.FishingOverhaul.Services.Data
 {
     internal abstract record FishingState
     {

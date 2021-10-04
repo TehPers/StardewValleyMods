@@ -9,6 +9,6 @@ namespace TehPers.Core.Api.Gameplay
         Rainy = 0b10,
      
         None = 0,
-        All = Sunny | Rainy,
+        All = Weathers.Sunny | Weathers.Rainy,
     }
 }

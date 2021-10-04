@@ -6,7 +6,7 @@ using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 namespace TehPers.FishingOverhaul.Config
 {
     [JsonDescribe]
-    public sealed class HudConfig : IModConfig
+    public sealed class HudConfig : JsonConfigRoot, IModConfig
     {
         [Description(
             "Whether or not to show current streak, chance for treasure, chance for each fish, "

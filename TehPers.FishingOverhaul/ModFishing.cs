@@ -1,10 +1,16 @@
-﻿using Ninject;
+﻿using System.Diagnostics.CodeAnalysis;
+using Ninject;
 using StardewModdingAPI;
 using TehPers.Core.Api.DI;
 
 namespace TehPers.FishingOverhaul
 {
-    public class ModFishing : Mod
+    [SuppressMessage(
+        "ReSharper",
+        "UnusedMember.Global",
+        Justification = "Class initialized and used by SMAPI."
+    )]
+    internal class ModFishing : Mod
     {
         public override void Entry(IModHelper helper)
         {

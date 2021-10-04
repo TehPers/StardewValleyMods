@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using TehPers.Core.Api.DI;
-using TehPers.Core.Api.Json;
 using TehPers.Core.Json;
 
 namespace TehPers.Core.Modules
 {
-    public class JsonModule : ModModule
+    public class GlobalJsonModule : ModModule
     {
         private readonly IModHelper helper;
         private readonly IMonitor monitor;
 
-        public JsonModule(IModHelper helper, IMonitor monitor)
+        public GlobalJsonModule(IModHelper helper, IMonitor monitor)
         {
-            this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
-            this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+            this.helper = helper;
+            this.monitor = monitor;
         }
 
         public override void Load()
@@ -28,21 +26,28 @@ namespace TehPers.Core.Modules
                 this.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(converter).InSingletonScope();
             }
 
-            this.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(new NetConverter()).InSingletonScope();
-            this.GlobalProxyRoot.Bind<JsonConverter>().ToConstant(new DescriptiveJsonConverter()).InSingletonScope();
-
-            this.GlobalProxyRoot.Bind<IJsonProvider>().To<CommentedJsonProvider>().InSingletonScope();
+            // Custom converters
+            this.GlobalProxyRoot.Bind<JsonConverter>().To<NetConverter>().InSingletonScope();
+            this.GlobalProxyRoot.Bind<JsonConverter>()
+                .To<DescriptiveJsonConverter>()
+                .InSingletonScope();
+            this.GlobalProxyRoot.Bind<JsonConverter>()
+                .To<NamespacedKeyJsonConverter>()
+                .InSingletonScope();
         }
 
         private IEnumerable<JsonConverter> GetSmapiConverters()
         {
             var smapiJsonHelper = this.helper.Data.GetType()
-                .GetField("JsonHelper", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(this.helper.Data);
-            var smapiJsonSettings = smapiJsonHelper?.GetType().GetProperty(
-                "JsonSettings",
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
-            )?.GetValue(smapiJsonHelper);
-            if (smapiJsonSettings is JsonSerializerSettings {Converters: { } smapiConverters})
+                .GetField("JsonHelper", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?.GetValue(this.helper.Data);
+            var smapiJsonSettings = smapiJsonHelper?.GetType()
+                .GetProperty(
+                    "JsonSettings",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
+                )
+                ?.GetValue(smapiJsonHelper);
+            if (smapiJsonSettings is JsonSerializerSettings { Converters: { } smapiConverters })
             {
                 // Add all the converters SMAPI uses to this API's serializer settings
                 foreach (var converter in smapiConverters)

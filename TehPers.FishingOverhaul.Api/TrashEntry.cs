@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Newtonsoft.Json;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
@@ -21,7 +22,7 @@ namespace TehPers.FishingOverhaul.Api
         )
         {
             this.ItemKey = itemKey;
-            this.Availability = availability;
+            this.Availability = availability ?? throw new ArgumentNullException(nameof(availability));
         }
     }
 }

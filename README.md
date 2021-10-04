@@ -3,6 +3,8 @@
 - Teh's Core Mod
 - Teh's Fishing Overhaul
 
-# License
+Available schemas can be found under the [docs](./docs/schemas) folder.
+
+## License
 
 These mods are licensed under the [MIT License](./LICENSE).

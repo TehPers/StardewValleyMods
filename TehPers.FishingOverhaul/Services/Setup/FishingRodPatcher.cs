@@ -19,17 +19,21 @@ using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Extensions;
 using TehPers.FishingOverhaul.Extensions.Drawing;
-using TehPers.FishingOverhaul.Services;
+using TehPers.FishingOverhaul.Services.Data;
 using SObject = StardewValley.Object;
 
-namespace TehPers.FishingOverhaul.Setup
+namespace TehPers.FishingOverhaul.Services.Setup
 {
     [SuppressMessage(
         "ReSharper",
         "InconsistentNaming",
         Justification = "Harmony patches have a specific naming convention."
     )]
-    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Intentionally non-standard naming convention.")]
+    [SuppressMessage(
+        "Style",
+        "IDE1006:Naming Styles",
+        Justification = "Intentionally non-standard naming convention."
+    )]
     internal class FishingRodPatcher : ISetup, IDisposable
     {
         private static FishingRodPatcher? Instance { get; set; }
@@ -38,7 +42,7 @@ namespace TehPers.FishingOverhaul.Setup
         private readonly IMonitor monitor;
         private readonly Harmony harmony;
         private readonly FishingTracker fishingTracker;
-        private readonly IFishingHelper fishingHelper;
+        private readonly IFishingApi fishingApi;
         private readonly ICustomBobberBarFactory customBobberBarFactory;
         private readonly FishConfig fishConfig;
         private readonly INamespaceRegistry namespaceRegistry;
@@ -53,7 +57,7 @@ namespace TehPers.FishingOverhaul.Setup
             IMonitor monitor,
             Harmony harmony,
             FishingTracker fishingTracker,
-            IFishingHelper fishingHelper,
+            IFishingApi fishingApi,
             ICustomBobberBarFactory customBobberBarFactory,
             FishConfig fishConfig,
             INamespaceRegistry namespaceRegistry
@@ -62,12 +66,14 @@ namespace TehPers.FishingOverhaul.Setup
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
             this.harmony = harmony ?? throw new ArgumentNullException(nameof(harmony));
-            this.fishingTracker = fishingTracker ?? throw new ArgumentNullException(nameof(fishingTracker));
-            this.fishingHelper = fishingHelper ?? throw new ArgumentNullException(nameof(fishingHelper));
+            this.fishingTracker =
+                fishingTracker ?? throw new ArgumentNullException(nameof(fishingTracker));
+            this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
             this.customBobberBarFactory = customBobberBarFactory
                 ?? throw new ArgumentNullException(nameof(customBobberBarFactory));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
-            this.namespaceRegistry = namespaceRegistry ?? throw new ArgumentNullException(nameof(namespaceRegistry));
+            this.namespaceRegistry = namespaceRegistry
+                ?? throw new ArgumentNullException(nameof(namespaceRegistry));
 
             this.initialized = false;
             this.updatePatch = null;
@@ -82,7 +88,7 @@ namespace TehPers.FishingOverhaul.Setup
                 context.Kernel.Get<IMonitor>(),
                 context.Kernel.Get<Harmony>(),
                 context.Kernel.Get<FishingTracker>(),
-                context.Kernel.Get<IFishingHelper>(),
+                context.Kernel.Get<IFishingApi>(),
                 context.Kernel.Get<ICustomBobberBarFactory>(),
                 context.Kernel.Get<FishConfig>(),
                 context.Kernel.Get<INamespaceRegistry>()
@@ -102,15 +108,30 @@ namespace TehPers.FishingOverhaul.Setup
             // Apply patches
             this.updatePatch = this.harmony.Patch(
                 AccessTools.Method(typeof(FishingRod), nameof(FishingRod.tickUpdate)),
-                prefix: new(AccessTools.Method(typeof(FishingRodPatcher), nameof(FishingRodPatcher.update_Prefix)))
+                prefix: new(
+                    AccessTools.Method(
+                        typeof(FishingRodPatcher),
+                        nameof(FishingRodPatcher.update_Prefix)
+                    )
+                )
             );
             this.doFunctionPatch = this.harmony.Patch(
                 AccessTools.Method(typeof(FishingRod), nameof(FishingRod.DoFunction)),
-                prefix: new(AccessTools.Method(typeof(FishingRodPatcher), nameof(FishingRodPatcher.DoFunction_Prefix)))
+                prefix: new(
+                    AccessTools.Method(
+                        typeof(FishingRodPatcher),
+                        nameof(FishingRodPatcher.DoFunction_Prefix)
+                    )
+                )
             );
             this.drawPatch = this.harmony.Patch(
                 AccessTools.Method(typeof(FishingRod), nameof(FishingRod.draw)),
-                prefix: new(AccessTools.Method(typeof(FishingRodPatcher), nameof(FishingRodPatcher.draw_Prefix)))
+                prefix: new(
+                    AccessTools.Method(
+                        typeof(FishingRodPatcher),
+                        nameof(FishingRodPatcher.draw_Prefix)
+                    )
+                )
             );
         }
 
@@ -158,8 +179,11 @@ namespace TehPers.FishingOverhaul.Setup
         )
         {
             // Update user
-            this.fishingTracker.ActiveFisherData[user] = new(rod, new FishingState.Fishing(fishKey));
-            var beginReelingEvent = this.helper.Reflection.GetField<NetEvent0>(rod, "beginReelingEvent").GetValue();
+            this.fishingTracker.ActiveFisherData[user] =
+                new(rod, new FishingState.Fishing(fishKey));
+            var beginReelingEvent = this.helper.Reflection
+                .GetField<NetEvent0>(rod, "beginReelingEvent")
+                .GetValue();
             beginReelingEvent.Fire();
             rod.isReeling = true;
             rod.hit = false;
@@ -176,16 +200,22 @@ namespace TehPers.FishingOverhaul.Setup
             // Open fishing minigame
             var sizeDepthFactor = 1f * (bobberDepth / 5f);
             var sizeLevelFactor = 1 + user.FishingLevel / 2;
-            var sizeFactor = sizeDepthFactor * Game1.random.Next(sizeLevelFactor, Math.Max(6, sizeLevelFactor)) / 5f;
+            var sizeFactor = sizeDepthFactor
+                * Game1.random.Next(sizeLevelFactor, Math.Max(6, sizeLevelFactor))
+                / 5f;
             if (rod.favBait)
             {
                 sizeFactor *= 1.2f;
             }
 
-            var fishSizePercent = Math.Clamp(sizeFactor * (1.0f + Game1.random.Next(-10, 11) / 100.0f), 0.0f, 1.0f);
+            var fishSizePercent = Math.Clamp(
+                sizeFactor * (1.0f + Game1.random.Next(-10, 11) / 100.0f),
+                0.0f,
+                1.0f
+            );
             var treasure = !Game1.isFestival()
                 && user.fishCaught?.Count() > 1
-                && Game1.random.NextDouble() < this.fishingHelper.GetChanceForTreasure(user);
+                && Game1.random.NextDouble() < this.fishingApi.GetChanceForTreasure(user);
             var customBobber = this.customBobberBarFactory.Create(
                 user,
                 fishKey,
@@ -198,21 +228,35 @@ namespace TehPers.FishingOverhaul.Setup
             {
                 customBobber.LostFish += (_, _) =>
                 {
-                    var initialStreak = this.fishingHelper.GetStreak(user);
+                    var initialStreak = this.fishingApi.GetStreak(user);
                     if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
                     {
                         Game1.showGlobalMessage(
-                            this.helper.Translation.Get("text.streak.lost", new { streak = initialStreak })
+                            this.helper.Translation.Get(
+                                "text.streak.lost",
+                                new { streak = initialStreak }
+                            )
                         );
                     }
 
-                    this.fishingHelper.SetStreak(user, 0);
+                    this.fishingApi.SetStreak(user, 0);
                 };
 
                 customBobber.CatchFish += (_, info) =>
                 {
-                    var initialStreak = this.fishingHelper.GetStreak(user);
-                    this.fishingHelper.SetStreak(user, initialStreak + 1);
+                    // Update fishing streak
+                    switch (info.PerfectState)
+                    {
+                        case PerfectState.No:
+                            this.fishingApi.SetStreak(user, 0);
+                            break;
+                        case PerfectState.Yes:
+                            var initialStreak = this.fishingApi.GetStreak(user);
+                            this.fishingApi.SetStreak(user, initialStreak + 1);
+                            break;
+                    }
+
+                    // Catch item
                     this.CatchItem(user, rod, info);
                 };
 
@@ -232,8 +276,9 @@ namespace TehPers.FishingOverhaul.Setup
             this.monitor.Log($"{user.Name} caught {info.ItemKey}.");
 
             var (_, item, fromFishPond) = info;
-            if (info is CatchInfo.FishCatch (_, _, var fishSize, var isLegendary, var fishQuality, var fishDifficulty,
-                var wasTreasureCaught, var wasPerfectCatch, _, var caughtDouble))
+            if (info is CatchInfo.FishCatch (_, _, var fishSize, var isLegendary, var fishQuality,
+                var fishDifficulty,
+                var treasureState, var perfectState, _, var caughtDouble))
             {
                 // Update caught item
                 if (item is SObject obj)
@@ -247,9 +292,12 @@ namespace TehPers.FishingOverhaul.Setup
                 }
 
                 // Update fishing rod
+                var wasTreasureCaught = treasureState is TreasureState.Caught;
+                var wasPerfectCatch = perfectState is PerfectState.Yes;
                 rod.treasureCaught = wasTreasureCaught;
                 this.helper.Reflection.GetField<int>(rod, "fishSize").SetValue(fishSize);
-                this.helper.Reflection.GetField<int>(rod, "fishQuality").SetValue(Math.Max(fishQuality, 0));
+                this.helper.Reflection.GetField<int>(rod, "fishQuality")
+                    .SetValue(Math.Max(fishQuality, 0));
                 this.helper.Reflection.GetField<int>(rod, "whichFish").SetValue(0);
                 rod.fromFishPond = fromFishPond;
                 rod.caughtDoubleFish = caughtDouble;
@@ -519,7 +567,12 @@ namespace TehPers.FishingOverhaul.Setup
             {
                 if (!Game1.isFestival())
                 {
-                    rod.recordSize = user.caughtFish(parentSheetIndex, fishSize, fromFishPond, stack);
+                    rod.recordSize = user.caughtFish(
+                        parentSheetIndex,
+                        fishSize,
+                        fromFishPond,
+                        stack
+                    );
                     user.faceDirection(2);
                 }
                 else
@@ -532,7 +585,9 @@ namespace TehPers.FishingOverhaul.Setup
 
             if (info is CatchInfo.FishCatch { IsLegendary: true })
             {
-                Game1.showGlobalMessage(Game1.content.LoadString(@"Strings\StringsFromCSFiles:FishingRod.cs.14068"));
+                Game1.showGlobalMessage(
+                    Game1.content.LoadString(@"Strings\StringsFromCSFiles:FishingRod.cs.14068")
+                );
                 string str = info.Item.DisplayName;
                 var multiplayer = (Multiplayer)typeof(Game1).GetField(
                     "multiplayer",
@@ -614,26 +669,30 @@ namespace TehPers.FishingOverhaul.Setup
                 // Start fishing
                 case FishingState.NotFishing:
                 {
-                    patcher.fishingTracker.ActiveFisherData[who] = new(__instance, new FishingState.WaitingForBite());
+                    patcher.fishingTracker.ActiveFisherData[who] = new(
+                        __instance,
+                        new FishingState.WaitingForBite()
+                    );
                     return true;
                 }
 
                 // Pull line from water
                 case FishingState.WaitingForBite:
                 {
+                    // Update farmer's appearance
                     who.FarmerSprite.PauseForSingleAnimation = false;
-                    who.FarmerSprite.animateBackwardsOnce(
-                        who.FacingDirection switch
-                        {
-                            0 => 299,
-                            1 => 300,
-                            2 => 301,
-                            3 => 302,
-                            // TODO: what should go here?
-                            _ => 301,
-                        },
-                        35f
-                    );
+                    int? nextAnim = who.FacingDirection switch
+                    {
+                        0 => 299,
+                        1 => 300,
+                        2 => 301,
+                        3 => 302,
+                        _ => null,
+                    };
+                    if (nextAnim is { } anim)
+                    {
+                        who.FarmerSprite.animateBackwardsOnce(anim, 35f);
+                    }
 
                     // Check if fish is nibbling
                     if (!__instance.isNibbling)
@@ -645,8 +704,11 @@ namespace TehPers.FishingOverhaul.Setup
                     var bobberTile = patcher.helper.Reflection
                         .GetMethod(__instance, "calculateBobberTile")
                         .Invoke<Vector2>();
-                    var fromFishPond = location.isTileBuildingFishable((int)bobberTile.X, (int)bobberTile.Y);
-                    if (patcher.fishingHelper.GetFishPondFish(who, bobberTile, true) is { } fishKey)
+                    var fromFishPond = location.isTileBuildingFishable(
+                        (int)bobberTile.X,
+                        (int)bobberTile.Y
+                    );
+                    if (patcher.fishingApi.GetFishPondFish(who, bobberTile, true) is { } fishKey)
                     {
                         if (patcher.namespaceRegistry.TryGetItemFactory(fishKey, out var factory))
                         {
@@ -660,24 +722,22 @@ namespace TehPers.FishingOverhaul.Setup
                                     false,
                                     0,
                                     0,
-                                    false,
-                                    false,
+                                    TreasureState.None,
+                                    PerfectState.No,
                                     true
                                 )
                             );
                             return false;
                         }
-                        else
-                        {
-                            patcher.monitor.Log(
-                                $"No provider for {fishKey} (from fish pond)! Defaulting to normal fishing behavior.",
-                                LogLevel.Error
-                            );
-                        }
+
+                        patcher.monitor.Log(
+                            $"No provider for {fishKey} (from fish pond)! Defaulting to normal fishing behavior.",
+                            LogLevel.Error
+                        );
                     }
 
                     // Select an item to catch
-                    var (itemKey, catchType) = patcher.fishingHelper.GetPossibleCatch(
+                    var (itemKey, catchType) = patcher.fishingApi.GetPossibleCatch(
                         who,
                         __instance,
                         ___clearWaterDistance
@@ -739,12 +799,19 @@ namespace TehPers.FishingOverhaul.Setup
                         case PossibleCatch.Type.Trash:
                         {
                             ___lastCatchWasJunk = true;
-                            if (patcher.namespaceRegistry.TryGetItemFactory(itemKey, out var factory))
+                            if (patcher.namespaceRegistry.TryGetItemFactory(
+                                itemKey,
+                                out var factory
+                            ))
                             {
                                 patcher.CatchItem(
                                     who,
                                     __instance,
-                                    new CatchInfo.TrashCatch(itemKey, factory.Create(), fromFishPond)
+                                    new CatchInfo.TrashCatch(
+                                        itemKey,
+                                        factory.Create(),
+                                        fromFishPond
+                                    )
                                 );
                             }
                             else
@@ -756,7 +823,11 @@ namespace TehPers.FishingOverhaul.Setup
                                 patcher.CatchItem(
                                     who,
                                     __instance,
-                                    new CatchInfo.TrashCatch(itemKey, new SObject(0, 1), fromFishPond)
+                                    new CatchInfo.TrashCatch(
+                                        itemKey,
+                                        new SObject(0, 1),
+                                        fromFishPond
+                                    )
                                 );
                             }
 
@@ -767,12 +838,19 @@ namespace TehPers.FishingOverhaul.Setup
                         case PossibleCatch.Type.Special:
                         {
                             ___lastCatchWasJunk = true;
-                            if (patcher.namespaceRegistry.TryGetItemFactory(itemKey, out var factory))
+                            if (patcher.namespaceRegistry.TryGetItemFactory(
+                                itemKey,
+                                out var factory
+                            ))
                             {
                                 patcher.CatchItem(
                                     who,
                                     __instance,
-                                    new CatchInfo.SpecialCatch(itemKey, factory.Create(), fromFishPond)
+                                    new CatchInfo.SpecialCatch(
+                                        itemKey,
+                                        factory.Create(),
+                                        fromFishPond
+                                    )
                                 );
                             }
                             else
@@ -784,7 +862,11 @@ namespace TehPers.FishingOverhaul.Setup
                                 patcher.CatchItem(
                                     who,
                                     __instance,
-                                    new CatchInfo.SpecialCatch(itemKey, new SObject(0, 1), fromFishPond)
+                                    new CatchInfo.SpecialCatch(
+                                        itemKey,
+                                        new SObject(0, 1),
+                                        fromFishPond
+                                    )
                                 );
                             }
 
@@ -804,7 +886,11 @@ namespace TehPers.FishingOverhaul.Setup
             }
         }
 
-        public static bool update_Prefix(FishingRod __instance, ref int ___recastTimerMs, int ___clearWaterDistance)
+        public static bool update_Prefix(
+            FishingRod __instance,
+            ref int ___recastTimerMs,
+            int ___clearWaterDistance
+        )
         {
             if (FishingRodPatcher.Instance is not { } patcher)
             {
@@ -868,7 +954,10 @@ namespace TehPers.FishingOverhaul.Setup
                     if (!user.IsLocalPlayer
                         || Game1.input.GetMouseState().LeftButton != ButtonState.Pressed
                         && !Game1.didPlayerJustClickAtAll()
-                        && !Game1.isOneOfTheseKeysDown(Game1.oldKBState, Game1.options.useToolButton))
+                        && !Game1.isOneOfTheseKeysDown(
+                            Game1.oldKBState,
+                            Game1.options.useToolButton
+                        ))
                     {
                         return true;
                     }
@@ -877,12 +966,14 @@ namespace TehPers.FishingOverhaul.Setup
                     if (item is SObject caughtObj)
                     {
                         // Quest items
-                        if (object.Equals(itemKey, NamespacedKey.SdvObject(GameLocation.CAROLINES_NECKLACE_ITEM)))
+                        if (itemKey.Equals(
+                            NamespacedKey.SdvObject(GameLocation.CAROLINES_NECKLACE_ITEM)
+                        ))
                         {
                             caughtObj.questItem.Value = true;
                         }
-                        else if (object.Equals(itemKey, NamespacedKey.SdvObject(79))
-                            || object.Equals(itemKey, NamespacedKey.SdvObject(842)))
+                        else if (itemKey.Equals(NamespacedKey.SdvObject(79))
+                            || itemKey.Equals(NamespacedKey.SdvObject(842)))
                         {
                             item = user.currentLocation.tryToCreateUnseenSecretNote(user);
                             if (item == null)
@@ -894,7 +985,9 @@ namespace TehPers.FishingOverhaul.Setup
 
                     user.currentLocation.localSound("coin");
                     var fromFishPond = __instance.fromFishPond;
-                    if (!Game1.isFestival() && !fromFishPond && Game1.player.team.specialOrders is { } specialOrders)
+                    if (!Game1.isFestival()
+                        && !fromFishPond
+                        && Game1.player.team.specialOrders is { } specialOrders)
                     {
                         foreach (SpecialOrder specialOrder in specialOrders)
                         {
@@ -919,14 +1012,15 @@ namespace TehPers.FishingOverhaul.Setup
                         }
 
                         Game1.activeClickableMenu =
-                            new ItemGrabMenu(new List<Item> { item }, __instance).setEssential(true);
+                            new ItemGrabMenu(new List<Item> { item }, __instance)
+                                .setEssential(true);
                     }
                     else
                     {
                         __instance.fishCaught = false;
                         __instance.showingTreasure = true;
                         user.UsingTool = true;
-                        var treasure = patcher.fishingHelper.GetPossibleTreasure(user);
+                        var treasure = patcher.fishingApi.GetPossibleTreasure(user);
                         if (!user.addItemToInventoryBool(item))
                         {
                             treasure.Add(item);
@@ -992,7 +1086,10 @@ namespace TehPers.FishingOverhaul.Setup
                     }
 
                     // Transition fishing state
-                    patcher.fishingTracker.ActiveFisherData[user] = new(__instance, new FishingState.OpeningTreasure());
+                    patcher.fishingTracker.ActiveFisherData[user] = new(
+                        __instance,
+                        new FishingState.OpeningTreasure()
+                    );
                     return false;
                 }
             }
@@ -1104,7 +1201,8 @@ namespace TehPers.FishingOverhaul.Setup
                             Game1.viewport,
                             user.Position
                             + new Vector2(
-                                (float)(26.0 - Game1.smallFont.MeasureString(info.Item.DisplayName).X / 2.0),
+                                (float)(26.0
+                                    - Game1.smallFont.MeasureString(info.Item.DisplayName).X / 2.0),
                                 y - 278f
                             )
                         ),
@@ -1122,7 +1220,9 @@ namespace TehPers.FishingOverhaul.Setup
                         // Draw fish length label
                         b.DrawString(
                             Game1.smallFont,
-                            Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingRod.cs.14082"),
+                            Game1.content.LoadString(
+                                "Strings\\StringsFromCSFiles:FishingRod.cs.14082"
+                            ),
                             Game1.GlobalToLocal(
                                 Game1.viewport,
                                 user.Position + new Vector2(20f, y - 214f)

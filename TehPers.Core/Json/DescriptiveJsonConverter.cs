@@ -5,42 +5,15 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
 
 namespace TehPers.Core.Json
 {
-    internal class NamespacedKeyConverter : JsonConverter<NamespacedKey>
-    {
-        public override void WriteJson(JsonWriter writer, NamespacedKey value, JsonSerializer serializer)
-        {
-            writer.WriteValue(value.ToString());
-        }
-
-        public override NamespacedKey ReadJson(
-            JsonReader reader,
-            Type objectType,
-            NamespacedKey existingValue,
-            bool hasExistingValue,
-            JsonSerializer serializer
-        )
-        {
-            var raw = (string)reader.Value ?? throw new JsonException("Expected string.");
-            var parts = raw.Split(':', 2);
-            if (parts.Length < 2)
-            {
-                throw new JsonException("Expected colon-delimited string in the format 'namespace:key'.");
-            }
-
-            return new NamespacedKey(parts[0], parts[1]);
-        }
-    }
-
     internal class DescriptiveJsonConverter : JsonConverter
     {
         private bool enabled = true;
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             if (writer is not DescriptiveJsonWriter commentableWriter)
             {
@@ -82,7 +55,12 @@ namespace TehPers.Core.Json
             // Get all the field descriptions
             foreach (var field in value.GetType().GetFields())
             {
-                DescriptiveJsonConverter.GetMemberData(field, field.GetValue(value), childrenValues, descriptions);
+                DescriptiveJsonConverter.GetMemberData(
+                    field,
+                    field.GetValue(value),
+                    childrenValues,
+                    descriptions
+                );
             }
 
             // Write the object
@@ -139,7 +117,7 @@ namespace TehPers.Core.Json
         public override object ReadJson(
             JsonReader reader,
             Type objectType,
-            object existingValue,
+            object? existingValue,
             JsonSerializer serializer
         )
         {

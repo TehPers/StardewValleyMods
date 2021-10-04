@@ -4,15 +4,13 @@ using TehPers.Core.Api.DI;
 using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
-namespace TehPers.FishingOverhaul.Setup
+namespace TehPers.FishingOverhaul.Services.Setup
 {
     internal class GenericModConfigMenuSetup : ISetup
     {
         private readonly IModHelper helper;
         private readonly IManifest manifest;
         private readonly Func<IOptional<IGenericModConfigMenuApi>> configApiFactory;
-        private readonly GeneralConfig generalConfig;
-        private readonly ConfigManager<GeneralConfig> generalConfigManager;
         private readonly HudConfig hudConfig;
         private readonly ConfigManager<HudConfig> hudConfigManager;
         private readonly FishConfig fishConfig;
@@ -24,8 +22,6 @@ namespace TehPers.FishingOverhaul.Setup
             IModHelper helper,
             IManifest manifest,
             Func<IOptional<IGenericModConfigMenuApi>> configApiFactory,
-            GeneralConfig generalConfig,
-            ConfigManager<GeneralConfig> generalConfigManager,
             HudConfig hudConfig,
             ConfigManager<HudConfig> hudConfigManager,
             FishConfig fishConfig,
@@ -37,9 +33,6 @@ namespace TehPers.FishingOverhaul.Setup
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
             this.configApiFactory = configApiFactory ?? throw new ArgumentNullException(nameof(configApiFactory));
-            this.generalConfig = generalConfig ?? throw new ArgumentNullException(nameof(generalConfig));
-            this.generalConfigManager =
-                generalConfigManager ?? throw new ArgumentNullException(nameof(generalConfigManager));
             this.hudConfig = hudConfig ?? throw new ArgumentNullException(nameof(hudConfig));
             this.hudConfigManager = hudConfigManager ?? throw new ArgumentNullException(nameof(hudConfigManager));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
@@ -65,14 +58,12 @@ namespace TehPers.FishingOverhaul.Setup
                     this.manifest,
                     () =>
                     {
-                        this.generalConfig.Reset();
                         this.hudConfig.Reset();
                         this.fishConfig.Reset();
                         this.treasureConfig.Reset();
                     },
                     () =>
                     {
-                        this.generalConfigManager.Save(this.generalConfig);
                         this.hudConfigManager.Save(this.hudConfig);
                         this.fishConfigManager.Save(this.fishConfig);
                         this.treasureConfigManager.Save(this.treasureConfig);
@@ -80,14 +71,9 @@ namespace TehPers.FishingOverhaul.Setup
                 );
 
                 configApi.SetDefaultIngameOptinValue(this.manifest, true);
-                configApi.RegisterPageLabel(this.manifest, Name("general"), Desc("general"), Name("general"));
                 configApi.RegisterPageLabel(this.manifest, Name("hud"), Desc("hud"), Name("hud"));
                 configApi.RegisterPageLabel(this.manifest, Name("fish"), Desc("fish"), Name("fish"));
                 configApi.RegisterPageLabel(this.manifest, Name("treasure"), Desc("treasure"), Name("treasure"));
-
-                // General config settings
-                configApi.StartNewPage(this.manifest, Name("general"));
-                this.generalConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
 
                 // HUD config settings
                 configApi.StartNewPage(this.manifest, Name("hud"));

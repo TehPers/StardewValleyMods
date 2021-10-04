@@ -12,7 +12,7 @@ using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Extensions;
 using TehPers.FishingOverhaul.Extensions.Drawing;
-using TehPers.FishingOverhaul.Services;
+using TehPers.FishingOverhaul.Services.Data;
 
 namespace TehPers.FishingOverhaul.Gui
 {
@@ -53,7 +53,7 @@ namespace TehPers.FishingOverhaul.Gui
         private readonly IReflectedField<SparklingText?> sparkleTextField;
 
         private readonly IModHelper helper;
-        private readonly IFishingHelper fishingHelper;
+        private readonly IFishingApi fishingApi;
         private readonly NamespacedKey fishKey;
         private readonly Item fishItem;
         private readonly FishTraits fishTraits;
@@ -74,7 +74,7 @@ namespace TehPers.FishingOverhaul.Gui
 
         public CustomBobberBar(
             IModHelper helper,
-            IFishingHelper fishingHelper,
+            IFishingApi fishingApi,
             FishConfig fishConfig,
             TreasureConfig treasureConfig,
             Farmer user,
@@ -89,12 +89,13 @@ namespace TehPers.FishingOverhaul.Gui
             : base(0, fishSizePercent, treasure, bobber)
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
-            this.fishingHelper = fishingHelper ?? throw new ArgumentNullException(nameof(fishingHelper));
+            this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
             this.fishKey = fishKey;
             this.fishTraits = fishTraits ?? throw new ArgumentNullException(nameof(fishTraits));
             this.fishItem = fishItem ?? throw new ArgumentNullException(nameof(fishItem));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
-            this.treasureConfig = treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
+            this.treasureConfig =
+                treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
             this.user = user ?? throw new ArgumentNullException(nameof(user));
 
             this.lastDistanceFromCatching = 0f;
@@ -105,12 +106,16 @@ namespace TehPers.FishingOverhaul.Gui
 
             this.treasureField = helper.Reflection.GetField<bool>(this, "treasure");
             this.treasureCaughtField = helper.Reflection.GetField<bool>(this, "treasureCaught");
-            this.treasurePositionField = helper.Reflection.GetField<float>(this, "treasurePosition");
-            this.treasureAppearTimerField = helper.Reflection.GetField<float>(this, "treasureAppearTimer");
+            this.treasurePositionField =
+                helper.Reflection.GetField<float>(this, "treasurePosition");
+            this.treasureAppearTimerField =
+                helper.Reflection.GetField<float>(this, "treasureAppearTimer");
             this.treasureScaleField = helper.Reflection.GetField<float>(this, "treasureScale");
 
-            this.distanceFromCatchingField = helper.Reflection.GetField<float>(this, "distanceFromCatching");
-            this.treasureCatchLevelField = helper.Reflection.GetField<float>(this, "treasureCatchLevel");
+            this.distanceFromCatchingField =
+                helper.Reflection.GetField<float>(this, "distanceFromCatching");
+            this.treasureCatchLevelField =
+                helper.Reflection.GetField<float>(this, "treasureCatchLevel");
 
             this.bobberBarPosField = helper.Reflection.GetField<float>(this, "bobberBarPos");
             this.bobberInBarField = helper.Reflection.GetField<bool>(this, "bobberInBar");
@@ -132,15 +137,17 @@ namespace TehPers.FishingOverhaul.Gui
             this.barShakeField = helper.Reflection.GetField<Vector2>(this, "barShake");
             this.fishShakeField = helper.Reflection.GetField<Vector2>(this, "fishShake");
             this.treasureShakeField = helper.Reflection.GetField<Vector2>(this, "treasureShake");
-            this.everythingShakeField = helper.Reflection.GetField<Vector2>(this, "everythingShake");
+            this.everythingShakeField =
+                helper.Reflection.GetField<Vector2>(this, "everythingShake");
             this.fadeOutField = helper.Reflection.GetField<bool>(this, "fadeOut");
 
             this.sparkleTextField = helper.Reflection.GetField<SparklingText?>(this, "sparkleText");
 
             // Track player streak
-            this.initialStreak = fishingHelper.GetStreak(user);
+            this.initialStreak = fishingApi.GetStreak(user);
             this.perfectField.SetValue(true);
-            var fishSizeReductionTimerField = helper.Reflection.GetField<int>(this, "fishSizeReductionTimer");
+            var fishSizeReductionTimerField =
+                helper.Reflection.GetField<int>(this, "fishSizeReductionTimer");
             fishSizeReductionTimerField.SetValue(800);
 
             // Fish size
@@ -180,8 +187,10 @@ namespace TehPers.FishingOverhaul.Gui
 
             // Track original quality and apply streak bonus
             this.initialQuality = fishQuality;
-            var qualityBonus = (int)Math.Floor((double)this.initialStreak / fishConfig.StreakForIncreasedQuality);
-            fishQuality = Math.Min(fishQuality + qualityBonus, 3);
+            var qualityBonus = (int)Math.Floor(
+                (double)this.initialStreak / fishConfig.StreakForIncreasedQuality
+            );
+            fishQuality = Math.Min(fishQuality + qualityBonus, this.fishConfig.MaxFishQuality);
             if (fishQuality > 2)
             {
                 fishQuality += 1;
@@ -229,7 +238,8 @@ namespace TehPers.FishingOverhaul.Gui
                     this.perfectState = PerfectState.Restored;
 
                     // Restore initial boosted quality
-                    var qualityBonus = (int)((double)this.initialStreak / this.fishConfig.StreakForIncreasedQuality);
+                    var qualityBonus = (int)((double)this.initialStreak
+                        / this.fishConfig.StreakForIncreasedQuality);
                     var quality = Math.Min(this.initialQuality + qualityBonus, 3);
                     if (quality == 3)
                     {
@@ -237,7 +247,7 @@ namespace TehPers.FishingOverhaul.Gui
                     }
 
                     this.fishQualityField.SetValue(quality);
-                    this.fishingHelper.SetStreak(this.user, this.initialStreak);
+                    this.fishingApi.SetStreak(this.user, this.initialStreak);
                     break;
 
                 // Lost perfect streak (and haven't caught the treasure)
@@ -249,7 +259,7 @@ namespace TehPers.FishingOverhaul.Gui
                         ? Math.Min(this.initialQuality, maxNormalQuality)
                         : this.initialQuality;
                     this.fishQualityField.SetValue(newQuality);
-                    this.fishingHelper.SetStreak(this.user, 0);
+                    this.fishingApi.SetStreak(this.user, 0);
                     if (this.initialStreak >= this.fishConfig.StreakForIncreasedQuality)
                     {
                         var message = this.treasureState switch
@@ -258,7 +268,10 @@ namespace TehPers.FishingOverhaul.Gui
                             _ => "text.streak.lost",
                         };
                         Game1.showGlobalMessage(
-                            this.helper.Translation.Get(message, new { streak = this.initialStreak })
+                            this.helper.Translation.Get(
+                                message,
+                                new { streak = this.initialStreak }
+                            )
                         );
                     }
 
@@ -286,8 +299,8 @@ namespace TehPers.FishingOverhaul.Gui
                             this.fishTraits.IsLegendary,
                             this.fishQualityField.GetValue(),
                             (int)this.difficultyField.GetValue(),
-                            this.treasureState is TreasureState.Caught,
-                            this.perfectState is PerfectState.Yes or PerfectState.Restored,
+                            this.treasureState,
+                            this.perfectState,
                             this.fromFishPondField.GetValue(),
                             caughtDouble
                         );
@@ -326,7 +339,10 @@ namespace TehPers.FishingOverhaul.Gui
                     if (treasure && this.initialStreak >= this.fishConfig.StreakForIncreasedQuality)
                     {
                         Game1.showGlobalMessage(
-                            this.helper.Translation.Get("text.streak.lost", new { streak = this.initialStreak })
+                            this.helper.Translation.Get(
+                                "text.streak.lost",
+                                new { streak = this.initialStreak }
+                            )
                         );
                     }
 
@@ -338,7 +354,7 @@ namespace TehPers.FishingOverhaul.Gui
                     switch (this.perfectState)
                     {
                         case PerfectState.Yes:
-                            this.fishingHelper.SetStreak(this.user, this.initialStreak + 1);
+                            this.fishingApi.SetStreak(this.user, this.initialStreak + 1);
                             break;
                         case PerfectState.Restored:
                             if (this.initialStreak >= this.fishConfig.StreakForIncreasedQuality)
@@ -351,7 +367,7 @@ namespace TehPers.FishingOverhaul.Gui
                                 );
                             }
 
-                            this.fishingHelper.SetStreak(this.user, this.initialStreak);
+                            this.fishingApi.SetStreak(this.user, this.initialStreak);
                             break;
                     }
 
@@ -380,7 +396,10 @@ namespace TehPers.FishingOverhaul.Gui
             var scale = this.scaleField.GetValue();
             b.Draw(
                 Game1.mouseCursors,
-                new Vector2(this.xPositionOnScreen - (flipBubble ? 44 : 20) + 104, this.yPositionOnScreen - 16 + 314)
+                new Vector2(
+                    this.xPositionOnScreen - (flipBubble ? 44 : 20) + 104,
+                    this.yPositionOnScreen - 16 + 314
+                )
                 + everythingShake,
                 new Rectangle(652, 1685, 52, 157),
                 Color.White * 0.6f * scale,
@@ -392,7 +411,8 @@ namespace TehPers.FishingOverhaul.Gui
             );
             b.Draw(
                 Game1.mouseCursors,
-                new Vector2(this.xPositionOnScreen + 70, this.yPositionOnScreen + 296) + everythingShake,
+                new Vector2(this.xPositionOnScreen + 70, this.yPositionOnScreen + 296)
+                + everythingShake,
                 new Rectangle(644, 1999, 37, 150),
                 Color.White * scale,
                 0.0f,
@@ -414,13 +434,19 @@ namespace TehPers.FishingOverhaul.Gui
                     ? Color.White
                     : Color.White
                     * 0.25f
-                    * ((float)Math.Round(Math.Sin(Game1.currentGameTime.TotalGameTime.TotalMilliseconds / 100.0), 2)
+                    * ((float)Math.Round(
+                            Math.Sin(Game1.currentGameTime.TotalGameTime.TotalMilliseconds / 100.0),
+                            2
+                        )
                         + 2f);
 
                 // Draw background and components
                 b.Draw(
                     Game1.mouseCursors,
-                    new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int)bobberBarPos)
+                    new Vector2(
+                        this.xPositionOnScreen + 64,
+                        this.yPositionOnScreen + 12 + (int)bobberBarPos
+                    )
                     + barShake
                     + everythingShake,
                     new Rectangle(682, 2078, 9, 2),
@@ -433,7 +459,10 @@ namespace TehPers.FishingOverhaul.Gui
                 );
                 b.Draw(
                     Game1.mouseCursors,
-                    new Vector2(this.xPositionOnScreen + 64, this.yPositionOnScreen + 12 + (int)bobberBarPos + 8)
+                    new Vector2(
+                        this.xPositionOnScreen + 64,
+                        this.yPositionOnScreen + 12 + (int)bobberBarPos + 8
+                    )
                     + barShake
                     + everythingShake,
                     new Rectangle(682, 2081, 9, 1),
@@ -472,7 +501,8 @@ namespace TehPers.FishingOverhaul.Gui
                 );
                 b.Draw(
                     Game1.mouseCursors,
-                    new Vector2(this.xPositionOnScreen + 18, this.yPositionOnScreen + 514) + everythingShake,
+                    new Vector2(this.xPositionOnScreen + 18, this.yPositionOnScreen + 514)
+                    + everythingShake,
                     new Rectangle(257, 1990, 5, 10),
                     Color.White,
                     reelRotation,
@@ -488,7 +518,10 @@ namespace TehPers.FishingOverhaul.Gui
                 var treasureScale = this.treasureScaleField.GetValue();
                 b.Draw(
                     Game1.mouseCursors,
-                    new Vector2(this.xPositionOnScreen + 64 + 18, this.yPositionOnScreen + 12 + 24 + treasurePosition)
+                    new Vector2(
+                        this.xPositionOnScreen + 64 + 18,
+                        this.yPositionOnScreen + 12 + 24 + treasurePosition
+                    )
                     + treasureShake
                     + everythingShake,
                     new Rectangle(638, 1865, 20, 24),
@@ -604,20 +637,6 @@ namespace TehPers.FishingOverhaul.Gui
             }
 
             Game1.EndWorldDrawInUI(b);
-        }
-
-        private enum PerfectState
-        {
-            Yes,
-            No,
-            Restored,
-        }
-
-        private enum TreasureState
-        {
-            NotCaught,
-            Caught,
-            None,
         }
 
         private void OnCaughtFish(CatchInfo.FishCatch e)

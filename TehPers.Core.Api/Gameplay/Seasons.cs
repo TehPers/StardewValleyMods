@@ -11,6 +11,6 @@ namespace TehPers.Core.Api.Gameplay
         Winter = 0b1000,
 
         None = 0,
-        All = Spring | Summer | Fall | Winter,
+        All = Seasons.Spring | Seasons.Summer | Seasons.Fall | Seasons.Winter,
     }
 }

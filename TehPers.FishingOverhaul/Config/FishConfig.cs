@@ -6,7 +6,7 @@ using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 namespace TehPers.FishingOverhaul.Config
 {
     [JsonDescribe]
-    public sealed class FishConfig : IModConfig
+    public sealed class FishConfig : JsonConfigRoot, IModConfig
     {
         [Description(
             "Whether this mod affects vanilla legendary fish at all. If false, vanilla legendary "
@@ -41,6 +41,12 @@ namespace TehPers.FishingOverhaul.Config
         [Description("The chance that you'll find a fish instead of trash.")]
         public FishingChances FishChances { get; init; } = new();
 
+        [Description(
+            "The max quality fish that can be caught. 0 = normal, 1 = silver, 2 = gold, 3 = "
+            + "iridium, 4+ = beyond iridium."
+        )]
+        public int MaxFishQuality { get; set; }
+
         public void Reset()
         {
             this.ShouldOverrideVanillaLegendaries = true;
@@ -50,6 +56,7 @@ namespace TehPers.FishingOverhaul.Config
             this.DrainSpeed = 1f;
             this.StreakForIncreasedQuality = 3;
             this.MaxNormalFishQuality = null;
+            this.MaxFishQuality = 3;
 
             // Fish chances
             this.FishChances.BaseChance = 0.5;
@@ -98,7 +105,7 @@ namespace TehPers.FishingOverhaul.Config
                 () => this.CatchSpeed,
                 val => this.CatchSpeed = val,
                 0f,
-                10f
+                3f
             );
             configApi.RegisterClampedOption(
                 manifest,
@@ -107,7 +114,7 @@ namespace TehPers.FishingOverhaul.Config
                 () => this.DrainSpeed,
                 val => this.DrainSpeed = val,
                 0f,
-                10f
+                3f
             );
             configApi.RegisterClampedOption(
                 manifest,
@@ -138,7 +145,16 @@ namespace TehPers.FishingOverhaul.Config
                     }
                 },
                 0,
-                100
+                4
+            );
+            configApi.RegisterClampedOption(
+                manifest,
+                Name("maxFishQuality"),
+                Desc("maxFishQuality"),
+                () => this.MaxFishQuality,
+                val => this.MaxFishQuality = val,
+                0,
+                3
             );
 
             // Fish chances

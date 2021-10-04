@@ -8,9 +8,6 @@
   "text.streak.lost": "You lost your perfect fishing streak of {{streak}}.",
   "text.streak.warning": "Catch the treasure and the fish to keep your streak of {{streak}}!",
   "text.streak.restored": "You kept your perfect fishing streak!",
-  // General config
-  "text.config.general.name": "General",
-  "text.config.general.desc": "General configuration options",
   // HUD config
   "text.config.hud.name": "HUD",
   "text.config.hud.desc": "Configure how the fishing HUD looks",
@@ -45,6 +42,9 @@
     "Determines the max quality fish a non-perfect catch can get, or null for no restrictions.",
   "text.config.fish.maxNormalFishQuality.name": "Max normal fish quality",
   "text.config.fish.maxNormalFishQuality.desc": "The chance that you'll find a fish instead of trash.",
+  "text.config.fish.maxFishQuality.name": "Max fish quality",
+  "text.config.fish.maxFishQuality.desc":
+    "The max quality fish that can be caught. 0 = normal, 1 = silver, 2 = gold, 3 = iridium, 4+ = beyond iridium.",
   "text.config.fish.fishChances.name": "Chances of hitting a fish",
   "text.config.fish.fishChances.desc": "Configuration options for how likely it is to hit a fish instead of trash.",
   // Treasure config

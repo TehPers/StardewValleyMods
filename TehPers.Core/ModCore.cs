@@ -28,14 +28,18 @@ namespace TehPers.Core
         public override void Entry(IModHelper helper)
         {
             // Add processors
-            ModServices.Factory.AddKernelProcessor(kernel => kernel.Load(new JsonModule(this.Helper, this.Monitor)));
+            ModServices.Factory.AddKernelProcessor(
+                kernel => kernel.Load(new ModJsonModule(this.Helper, this.Monitor))
+            );
 
             // Add 
             var kernel = ModServices.Factory.GetKernel(this);
+            kernel.Load(new GlobalJsonModule(helper, this.Monitor));
             kernel.Load<NamespaceModule>();
 
             // Reload namespace registry on save loaded
-            helper.Events.GameLoop.SaveLoaded += (_, _) => kernel.Get<INamespaceRegistry>().Reload();
+            helper.Events.GameLoop.SaveLoaded +=
+                (_, _) => kernel.Get<INamespaceRegistry>().Reload();
         }
     }
 }

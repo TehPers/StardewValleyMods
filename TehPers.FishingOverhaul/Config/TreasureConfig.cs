@@ -6,7 +6,7 @@ using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 namespace TehPers.FishingOverhaul.Config
 {
     [JsonDescribe]
-    public sealed class TreasureConfig : IModConfig
+    public sealed class TreasureConfig : JsonConfigRoot, IModConfig
     {
         [Description("Maximum amount of treasure you can find in a single chest while fishing.")]
         public int MaxTreasureQuantity { get; set; }
@@ -31,9 +31,7 @@ namespace TehPers.FishingOverhaul.Config
             + "fails or the max number of items have been added to the loot."
         )]
         public FishingChances AdditionalLootChances { get; init; } = new();
-
-        // TODO: treasure quality config values for increased quality at higher streak levels and such
-
+        
         public void Reset()
         {
             this.MaxTreasureQuantity = 3;
@@ -67,12 +65,14 @@ namespace TehPers.FishingOverhaul.Config
             Translation Name(string key) => translations.Get($"text.config.treasure.{key}.name");
             Translation Desc(string key) => translations.Get($"text.config.treasure.{key}.desc");
 
-            configApi.RegisterSimpleOption(
+            configApi.RegisterClampedOption(
                 manifest,
                 Name("maxTreasureQuantity"),
                 Desc("maxTreasureQuantity"),
                 () => this.MaxTreasureQuantity,
-                val => this.MaxTreasureQuantity = val
+                val => this.MaxTreasureQuantity = val,
+                0,
+                36
             );
             configApi.RegisterSimpleOption(
                 manifest,
@@ -81,19 +81,23 @@ namespace TehPers.FishingOverhaul.Config
                 () => this.AllowDuplicateLoot,
                 val => this.AllowDuplicateLoot = val
             );
-            configApi.RegisterSimpleOption(
+            configApi.RegisterClampedOption(
                 manifest,
                 Name("catchSpeed"),
                 Desc("catchSpeed"),
                 () => this.CatchSpeed,
-                val => this.CatchSpeed = val
+                val => this.CatchSpeed = val,
+                0f,
+                3f
             );
-            configApi.RegisterSimpleOption(
+            configApi.RegisterClampedOption(
                 manifest,
                 Name("drainSpeed"),
                 Desc("drainSpeed"),
                 () => this.DrainSpeed,
-                val => this.DrainSpeed = val
+                val => this.DrainSpeed = val,
+                0f,
+                3f
             );
 
             // Treasure chances

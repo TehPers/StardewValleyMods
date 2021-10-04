@@ -1,8 +1,9 @@
 ﻿using System;
 using Ninject;
 using TehPers.Core.Api.Json;
+using TehPers.FishingOverhaul.Config;
 
-namespace TehPers.FishingOverhaul.Config
+namespace TehPers.FishingOverhaul.Services
 {
     internal class ConfigManager<T>
         where T : class, IModConfig, new()

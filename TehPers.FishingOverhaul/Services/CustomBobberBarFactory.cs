@@ -28,7 +28,7 @@ namespace TehPers.FishingOverhaul.Services
             bool fromFishPond
         )
         {
-            var fishingHelper = this.root.Get<IFishingHelper>();
+            var fishingHelper = this.root.Get<IFishingApi>();
             if (!fishingHelper.TryGetFishTraits(fishKey, out var fishTraits))
             {
                 return null;
@@ -42,7 +42,7 @@ namespace TehPers.FishingOverhaul.Services
 
             return new(
                 this.root.Get<IModHelper>(),
-                this.root.Get<IFishingHelper>(),
+                this.root.Get<IFishingApi>(),
                 this.root.Get<FishConfig>(),
                 this.root.Get<TreasureConfig>(),
                 user,

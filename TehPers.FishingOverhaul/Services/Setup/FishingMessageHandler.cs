@@ -6,7 +6,7 @@ using StardewValley.Tools;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api.Messages;
 
-namespace TehPers.FishingOverhaul.Setup
+namespace TehPers.FishingOverhaul.Services.Setup
 {
     internal sealed class FishingMessageHandler : ISetup, IDisposable
     {

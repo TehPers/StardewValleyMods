@@ -30,7 +30,8 @@ namespace TehPers.Core.Api.DI
         {
             _ = metadata ?? throw new ArgumentNullException(nameof(metadata));
 
-            return metadata.Has(nameof(ContentSource)) && metadata.Get<ContentSource>(nameof(ContentSource)) == this.Source;
+            return metadata.Has(nameof(ContentSource))
+                && metadata.Get<ContentSource>(nameof(ContentSource)) == this.Source;
         }
     }
 }

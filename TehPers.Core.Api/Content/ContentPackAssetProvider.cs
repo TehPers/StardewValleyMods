@@ -1,28 +1,25 @@
 ﻿using System.IO;
 using StardewModdingAPI;
-using TehPers.Core.Api.Content;
 
-namespace TehPers.Core.Content
+namespace TehPers.Core.Api.Content
 {
-    public class ModAssetProvider : IAssetProvider
+    public class ContentPackAssetProvider : IAssetProvider
     {
-        private readonly IContentHelper contentHelper;
-        private readonly string modPath;
+        private readonly IContentPack contentPack;
 
-        public ModAssetProvider(IModHelper helper)
+        public ContentPackAssetProvider(IContentPack contentPack)
         {
-            this.contentHelper = helper.Content;
-            this.modPath = helper.DirectoryPath;
+            this.contentPack = contentPack;
         }
 
         public T Load<T>(string path)
         {
-            return this.contentHelper.Load<T>(path);
+            return this.contentPack.LoadAsset<T>(path);
         }
 
         public Stream Open(string path, FileMode mode)
         {
-            var fullPath = Path.Combine(this.modPath, path);
+            var fullPath = Path.Combine(this.contentPack.DirectoryPath, path);
             var createMode =
                 mode is FileMode.Create or FileMode.CreateNew or FileMode.OpenOrCreate or FileMode
                     .Append;

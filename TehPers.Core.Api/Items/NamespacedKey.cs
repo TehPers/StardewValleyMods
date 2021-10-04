@@ -1,8 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Globalization;
 using StardewModdingAPI;
 
 namespace TehPers.Core.Api.Items
 {
+    [TypeConverter(typeof(TypeConverter))]
     public readonly struct NamespacedKey : IEquatable<NamespacedKey>
     {
         public const string StardewValleyNamespace = "StardewValley";
@@ -24,6 +27,44 @@ namespace TehPers.Core.Api.Items
         public override string ToString()
         {
             return $"{this.Namespace}:{this.Key}";
+        }
+
+        public bool Equals(NamespacedKey other)
+        {
+            return this.Namespace == other.Namespace && this.Key == other.Key;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is NamespacedKey other && this.Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(this.Namespace, this.Key);
+        }
+
+        public static bool operator ==(NamespacedKey left, NamespacedKey right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(NamespacedKey left, NamespacedKey right)
+        {
+            return !(left == right);
+        }
+
+        public static bool TryParse(string raw, out NamespacedKey key)
+        {
+            var parts = raw.Split(':', 2);
+            if (parts.Length < 2)
+            {
+                key = default;
+                return false;
+            }
+
+            key = new(parts[0], parts[1]);
+            return true;
         }
 
         public static NamespacedKey SdvTool(string toolType)
@@ -91,20 +132,47 @@ namespace TehPers.Core.Api.Items
             return new NamespacedKey(NamespacedKey.StardewValleyNamespace, $"{itemType}/{key}");
         }
 
-        public bool Equals(NamespacedKey other)
+        internal class TypeConverter : System.ComponentModel.TypeConverter
         {
-            return this.Namespace == other.Namespace
-                && this.Key == other.Key;
-        }
+            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+            }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is NamespacedKey other && this.Equals(other);
-        }
+            public override object ConvertFrom(
+                ITypeDescriptorContext context,
+                CultureInfo culture,
+                object value
+            )
+            {
+                if (value is string raw && NamespacedKey.TryParse(raw, out var key))
+                {
+                    return key;
+                }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(this.Namespace, this.Key);
+                return base.ConvertFrom(context, culture, value)!;
+            }
+
+            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+            {
+                return destinationType == typeof(string)
+                    || base.CanConvertTo(context, destinationType);
+            }
+
+            public override object ConvertTo(
+                ITypeDescriptorContext context,
+                CultureInfo culture,
+                object value,
+                Type destinationType
+            )
+            {
+                if (value is NamespacedKey key && destinationType == typeof(string))
+                {
+                    return key.ToString();
+                }
+
+                return base.ConvertTo(context, culture, value, destinationType)!;
+            }
         }
     }
 }

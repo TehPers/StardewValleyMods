@@ -15,7 +15,7 @@ namespace TehPers.FishingOverhaul.Api
 
         [Description("The possible item keys.")]
         public List<NamespacedKey> ItemKeys { get; set; }
-
+        
         [Description("The minimum quantity of this item to be added.")]
         public int MinQuantity { get; set; }
 
@@ -34,8 +34,8 @@ namespace TehPers.FishingOverhaul.Api
             bool allowDuplicates = true
         )
         {
-            this.ItemKeys = itemKeys ?? throw new ArgumentNullException(nameof(itemKeys));
             this.Availability = availability ?? throw new ArgumentNullException(nameof(availability));
+            this.ItemKeys = itemKeys ?? throw new ArgumentNullException(nameof(itemKeys));
             this.MinQuantity = minQuantity;
             this.MaxQuantity = maxQuantity;
             this.AllowDuplicates = allowDuplicates;
