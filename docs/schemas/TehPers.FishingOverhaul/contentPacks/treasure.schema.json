@@ -1,0 +1,191 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "TreasurePack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "TreasureEntries"
+  ],
+  "properties": {
+    "$schema": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "TreasureEntries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/TreasureEntry"
+      }
+    }
+  },
+  "definitions": {
+    "TreasureEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Availability": {
+          "description": "The availability information.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/Availability"
+            }
+          ]
+        },
+        "ItemKeys": {
+          "type": "array",
+          "description": "The possible item keys.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "MinQuantity": {
+          "type": "integer",
+          "description": "The minimum quantity of this item to be added.",
+          "format": "int32"
+        },
+        "MaxQuantity": {
+          "type": "integer",
+          "description": "The maximum quantity of this item to be added.",
+          "format": "int32"
+        },
+        "AllowDuplicates": {
+          "type": "boolean",
+          "description": "Whether this can be found multiple times in one chest."
+        }
+      }
+    },
+    "Availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "BaseChance"
+      ],
+      "properties": {
+        "BaseChance": {
+          "type": "number",
+          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available treasure.",
+          "format": "double"
+        },
+        "StartTime": {
+          "type": "integer",
+          "description": "Time this becomes available (inclusive).",
+          "format": "int32"
+        },
+        "EndTime": {
+          "type": "integer",
+          "description": "Time this is no longer available (exclusive).",
+          "format": "int32"
+        },
+        "Seasons": {
+          "type": "array",
+          "description": "Seasons this can be caught in.",
+          "items": {
+            "$ref": "#/definitions/Seasons"
+          }
+        },
+        "Weathers": {
+          "type": "array",
+          "description": "Weathers this can be caught in.",
+          "items": {
+            "$ref": "#/definitions/Weathers"
+          }
+        },
+        "WaterTypes": {
+          "type": "array",
+          "description": "The type of water this can be caught in. Each location handles this differently.",
+          "items": {
+            "$ref": "#/definitions/WaterTypes"
+          }
+        },
+        "MinFishingLevel": {
+          "type": "integer",
+          "description": "Required fishing level to see this.",
+          "format": "int32"
+        },
+        "MaxFishingLevel": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Maximum fishing level required to see this, or null for no max.",
+          "format": "int32"
+        },
+        "IncludeLocations": {
+          "type": "array",
+          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine#N', where N is the floor number (both location names are valid for the floor).",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ExcludeLocations": {
+          "type": "array",
+          "description": "List of locations this should not be available in. This takes priority over IncludeLocations.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Seasons": {
+      "type": "string",
+      "description": "",
+      "x-enumFlags": true,
+      "x-enumNames": [
+        "None",
+        "Spring",
+        "Summer",
+        "Fall",
+        "Winter",
+        "All"
+      ],
+      "enum": [
+        "None",
+        "Spring",
+        "Summer",
+        "Fall",
+        "Winter",
+        "All"
+      ]
+    },
+    "Weathers": {
+      "type": "string",
+      "description": "",
+      "x-enumFlags": true,
+      "x-enumNames": [
+        "None",
+        "Sunny",
+        "Rainy",
+        "All"
+      ],
+      "enum": [
+        "None",
+        "Sunny",
+        "Rainy",
+        "All"
+      ]
+    },
+    "WaterTypes": {
+      "type": "string",
+      "description": "",
+      "x-enumFlags": true,
+      "x-enumNames": [
+        "None",
+        "Ocean",
+        "River",
+        "Pond",
+        "Freshwater",
+        "All"
+      ],
+      "enum": [
+        "None",
+        "River",
+        "River",
+        "Pond",
+        "Freshwater",
+        "All"
+      ]
+    }
+  }
+}

@@ -1,0 +1,54 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "FishTraitsPack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "FishTraits"
+  ],
+  "properties": {
+    "$schema": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "FishTraits": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/FishTraits"
+      }
+    }
+  },
+  "definitions": {
+    "FishTraits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "DartFrequency": {
+          "type": "integer",
+          "description": "How often the fish darts in the fishing minigame.",
+          "format": "int32"
+        },
+        "DartBehavior": {
+          "type": "string",
+          "description": "How the fish darts during the fishing minigame."
+        },
+        "MinSize": {
+          "type": "integer",
+          "description": "The minimum size the fish can be.",
+          "format": "int32"
+        },
+        "MaxSize": {
+          "type": "integer",
+          "description": "The maximum size the fish can be.",
+          "format": "int32"
+        },
+        "IsLegendary": {
+          "type": "boolean",
+          "description": "Whether the fish is legendary"
+        }
+      }
+    }
+  }
+}
