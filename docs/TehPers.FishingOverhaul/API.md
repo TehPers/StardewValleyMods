@@ -81,6 +81,6 @@ This interface allows custom fishing content to be added to the game. Fishing co
 
 The interface is fairly straightforward, so make sure to read the documentation for it. Whenever fishing content should be reloaded, make sure to invoke `IFishingApi.RequestReload()`.
 
-[simplified interface]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/TehPers.FishingOverhaul.Api/ISimplifiedFishingApi
+[simplified interface]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/TehPers.FishingOverhaul.Api/ISimplifiedFishingApi.cs
 [content pack docs]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/docs/TehPers.FishingOverhaul/Content%20Packs.md
 [ninject docs]: https://github.com/ninject/ninject/wiki
