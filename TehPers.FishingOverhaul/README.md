@@ -17,11 +17,11 @@ Completely reworks fishing. Changes include:
 
 Most config settings can be modified in-game with [Generic Mod Config Menu][gmcm]. For more fine-tuned control over the settings, the configs can also be modified through their respective `.json` files in the mod's `config` folder.
 
-| File            | Purpose                                                     |
-| --------------- | ----------------------------------------------------------- |
-| `fish.json`     | Config settings regarding fishing and the fishing minigame. |
-| `treasure.json` | Config settings regarding treasure.                         |
-| `hud.json`      | Config settings regarding the fishing HUD.                  |
+| File            | Purpose                           |
+| --------------- | --------------------------------- |
+| `fish.json`     | Fishing and the fishing minigame. |
+| `treasure.json` | Treasure found while fishing.     |
+| `hud.json`      | The fishing HUD.                  |
 
 If you want to configure which fish, trash, or treasure are available to catch and when you can catch them, [create][create a content pack] or install a content pack.
 
@@ -38,7 +38,12 @@ Two APIs are available for this mod:
 
 To use the API, check out the [API docs][api docs].
 
+## Source code & License
+
+This mod is licensed under MIT License. The source code and full license text can be found on the [GitHub repository][github repo].
+
 [gmcm]: https://www.nexusmods.com/stardewvalley/mods/5098
 [create a content pack]: https://stardewvalleywiki.com/Modding:Content_packs#Create_a_content_pack
 [content pack docs]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/docs/TehPers.FishingOverhaul/Content%20Packs.md
 [api docs]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/docs/TehPers.FishingOverhaul/API.md
+[github repo]: https://github.com/TehPers/StardewValleyMods

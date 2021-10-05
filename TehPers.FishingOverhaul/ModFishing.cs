@@ -2,6 +2,7 @@
 using Ninject;
 using StardewModdingAPI;
 using TehPers.Core.Api.DI;
+using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul
 {
@@ -12,6 +13,8 @@ namespace TehPers.FishingOverhaul
     )]
     internal class ModFishing : Mod
     {
+        private IModKernel? kernel = null;
+
         public override void Entry(IModHelper helper)
         {
             if (ModServices.Factory is not { } kernelFactory)
@@ -24,11 +27,16 @@ namespace TehPers.FishingOverhaul
                 return;
             }
 
-            var kernel = kernelFactory.GetKernel(this);
-            kernel.Load<FishingModule>();
+            this.kernel = kernelFactory.GetKernel(this);
+            this.kernel.Load<FishingModule>();
 
-            var startup = kernel.Get<Startup>();
+            var startup = this.kernel.Get<Startup>();
             startup.Initialize();
+        }
+
+        public override object? GetApi()
+        {
+            return this.kernel?.Get<ISimplifiedFishingApi>();
         }
     }
 }

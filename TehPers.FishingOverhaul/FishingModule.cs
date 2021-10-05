@@ -26,7 +26,7 @@ namespace TehPers.FishingOverhaul
             // TODO: this.Bind<ISetup>().To<FishingMessageHandler>().InSingletonScope();
 
             // Resources/services
-            this.Bind<IFishingApi>().To<FishingApi>().InSingletonScope();
+            this.Bind<IFishingApi, ISimplifiedFishingApi>().To<FishingApi>().InSingletonScope();
             this.Bind<ICustomBobberBarFactory>().To<CustomBobberBarFactory>().InSingletonScope();
             this.Bind<FishingTracker>().ToSelf().InSingletonScope();
             this.Bind<Harmony>()
@@ -45,17 +45,25 @@ namespace TehPers.FishingOverhaul
             this.BindConfiguration<TreasureConfig>("config/treasure.json");
 
             // Content
-            this.GlobalProxyRoot.Bind<IFishingContentSource>().To<ContentPackSource>().InSingletonScope();
-            this.GlobalProxyRoot.Bind<IFishingContentSource>().To<DefaultFishingSource>().InSingletonScope();
+            this.GlobalProxyRoot.Bind<IFishingContentSource>()
+                .To<ContentPackSource>()
+                .InSingletonScope();
+            this.GlobalProxyRoot.Bind<IFishingContentSource>()
+                .To<DefaultFishingSource>()
+                .InSingletonScope();
 
             // Foreign APIs
-            this.BindForeignModApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu").InSingletonScope();
+            this.BindForeignModApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu")
+                .InSingletonScope();
         }
 
         private void BindConfiguration<T>(string path)
             where T : class, IModConfig, new()
         {
-            this.Bind<ConfigManager<T>>().ToSelf().InSingletonScope().WithConstructorArgument("path", path);
+            this.Bind<ConfigManager<T>>()
+                .ToSelf()
+                .InSingletonScope()
+                .WithConstructorArgument("path", path);
             this.Bind<IModConfig, T>()
                 .ToMethod(context => context.Kernel.Get<ConfigManager<T>>().Load())
                 .InSingletonScope();

@@ -3,7 +3,7 @@
 - Teh's Core Mod
 - Teh's Fishing Overhaul
 
-Available schemas can be found under the [docs](./docs/schemas) folder.
+Mod-specific docs can be found under the [docs](./docs) folder.
 
 ## License
 

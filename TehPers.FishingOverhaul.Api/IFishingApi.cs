@@ -16,7 +16,7 @@ namespace TehPers.FishingOverhaul.Api
     /// <summary>
     /// API for working with fishing.
     /// </summary>
-    public interface IFishingApi
+    public interface IFishingApi : ISimplifiedFishingApi
     {
         /// <summary>
         /// Gets the weighted chances of catching any fish. This does not take into account fish
@@ -85,6 +85,12 @@ namespace TehPers.FishingOverhaul.Api
             );
         }
 
+        IEnumerable<string> ISimplifiedFishingApi.GetCatchableFish(Farmer farmer, int depth)
+        {
+            return this.GetFishChances(farmer, depth)
+                .Select(weightedValue => weightedValue.Value.ToString());
+        }
+
         /// <summary>
         /// Gets the fish from a <see cref="FishPond"/> at the given tile if possible.
         /// </summary>
@@ -117,14 +123,6 @@ namespace TehPers.FishingOverhaul.Api
                 )
                 .FirstOrDefault();
         }
-
-        /// <summary>
-        /// Tries to get the traits for a fish.
-        /// </summary>
-        /// <param name="fishKey">The fish's <see cref="NamespacedKey"/>.</param>
-        /// <param name="traits">The fish's traits.</param>
-        /// <returns><see langword="true"/> if the fish has registered traits, otherwise <see langword="false"/>.</returns>
-        bool TryGetFishTraits(NamespacedKey fishKey, [NotNullWhen(true)] out FishTraits? traits);
 
         /// <summary>
         /// Gets the weighted chances of catching any trash.
@@ -182,6 +180,12 @@ namespace TehPers.FishingOverhaul.Api
                 Game1.timeOfDay,
                 farmer.FishingLevel
             );
+        }
+
+        IEnumerable<string> ISimplifiedFishingApi.GetCatchableTrash(Farmer farmer)
+        {
+            return this.GetTrashChances(farmer)
+                .Select(weightedValue => weightedValue.Value.ItemKey.ToString());
         }
 
         /// <summary>
@@ -242,21 +246,21 @@ namespace TehPers.FishingOverhaul.Api
             );
         }
 
-        /// <summary>
-        /// Gets the chance that a fish would be caught. This does not take into account whether
-        /// there are actually fish to catch at the <see cref="Farmer"/>'s location. If no fish
-        /// can be caught, then the <see cref="Farmer"/> will always catch trash.
-        /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> catching the fish.</param>
-        /// <returns>The chance a fish would be caught instead of trash.</returns>
-        double GetChanceForFish(Farmer farmer);
+        IEnumerable<string> ISimplifiedFishingApi.GetCatchableTreasure(Farmer farmer)
+        {
+            return this.GetTreasureChances(farmer)
+                .SelectMany(weightedValue => weightedValue.Value.ItemKeys)
+                .Select(key => key.ToString())
+                .Distinct();
+        }
 
         /// <summary>
-        /// Gets the chance that treasure will be found during the fishing minigame.
+        /// Tries to get the traits for a fish.
         /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> catching the treasure.</param>
-        /// <returns>The chance for treasure to appear during the fishing minigame.</returns>
-        double GetChanceForTreasure(Farmer farmer);
+        /// <param name="fishKey">The fish's <see cref="NamespacedKey"/>.</param>
+        /// <param name="traits">The fish's traits.</param>
+        /// <returns><see langword="true"/> if the fish has registered traits, otherwise <see langword="false"/>.</returns>
+        bool TryGetFishTraits(NamespacedKey fishKey, [NotNullWhen(true)] out FishTraits? traits);
 
         /// <summary>
         /// Gets whether a fish is legendary.
@@ -265,19 +269,10 @@ namespace TehPers.FishingOverhaul.Api
         /// <returns>Whether that fish is legendary.</returns>
         bool IsLegendary(NamespacedKey fishKey);
 
-        /// <summary>
-        /// Gets a <see cref="Farmer"/>'s current fishing streak.
-        /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> to get the streak of.</param>
-        /// <returns>The <see cref="Farmer"/>'s streak.</returns>
-        int GetStreak(Farmer farmer);
-
-        /// <summary>
-        /// Sets a <see cref="Farmer"/>'s current fishing streak.
-        /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> to set the streak of.</param>
-        /// <param name="streak">The <see cref="Farmer"/>'s streak.</param>
-        void SetStreak(Farmer farmer, int streak);
+        bool ISimplifiedFishingApi.IsLegendary(string fishKey)
+        {
+            return NamespacedKey.TryParse(fishKey, out var key) && this.IsLegendary(key);
+        }
 
         /// <summary>
         /// Selects a random catch. A player may catch either a fish or trash item.
@@ -288,12 +283,17 @@ namespace TehPers.FishingOverhaul.Api
         /// <returns>A possible catch.</returns>
         PossibleCatch GetPossibleCatch(Farmer farmer, FishingRod rod, int bobberDepth);
 
-        /// <summary>
-        /// Selects random treasure.
-        /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> that caught treasure.</param>
-        /// <returns>Possible loot from a treasure chest.</returns>
-        IList<Item> GetPossibleTreasure(Farmer farmer);
+        string ISimplifiedFishingApi.GetPossibleCatch(
+            Farmer farmer,
+            FishingRod rod,
+            int bobberDepth,
+            out bool isFish
+        )
+        {
+            var (fishKey, catchType) = this.GetPossibleCatch(farmer, rod, bobberDepth);
+            isFish = catchType is PossibleCatch.Type.Fish;
+            return fishKey.ToString();
+        }
 
         /// <summary>
         /// Requests fishing data to be reloaded.
