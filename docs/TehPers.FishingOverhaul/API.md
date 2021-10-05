@@ -17,7 +17,7 @@ Each of the methods on the simplified API should be documented, so make sure to 
 
 ## Full API
 
-Unfortunately, due to the restrictive nature of SMAPI's built in mod API support, it isn't possible to expose the full API through the mod registry. Instead, the full API is accessible through Teh's Core Mod. Accessing it is fairly straightforward, you just need to request the type from something called your mod kernel either directly or through dependency injection. For more details on what "kernels" and "dependency injection" are, visit the [Ninject docs]. However, it isn't necessary to know either of those things to access the fishing API.
+Unfortunately, due to the restrictive nature of SMAPI's built in mod API support, it isn't possible to expose the full API through the mod registry. Instead, the full API is accessible through Teh's Core Mod. Accessing it is fairly straightforward, you just need to request the type from something called your mod kernel either directly or through dependency injection. For more details on what "kernels" and "dependency injection" are, visit the [Ninject docs][ninject docs]. However, it isn't necessary to know either of those things to access the fishing API.
 
 To access the full API, add a reference to the following NuGet package:
 
@@ -83,3 +83,4 @@ The interface is fairly straightforward, so make sure to read the documentation 
 
 [simplified interface]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/TehPers.FishingOverhaul.Api/ISimplifiedFishingApi
 [content pack docs]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/docs/TehPers.FishingOverhaul/Content%20Packs.md
+[ninject docs]: https://github.com/ninject/ninject/wiki
