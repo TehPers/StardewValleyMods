@@ -53,13 +53,11 @@ namespace TehPers.FishingOverhaul.Gui
         private readonly IReflectedField<SparklingText?> sparkleTextField;
 
         private readonly IModHelper helper;
-        private readonly IFishingApi fishingApi;
         private readonly NamespacedKey fishKey;
         private readonly Item fishItem;
         private readonly FishTraits fishTraits;
         private readonly FishConfig fishConfig;
         private readonly TreasureConfig treasureConfig;
-        private readonly Farmer user;
         private readonly int initialQuality;
         private readonly int initialStreak;
 
@@ -69,7 +67,19 @@ namespace TehPers.FishingOverhaul.Gui
         private TreasureState treasureState;
         private bool notifiedFailOrSuccess;
 
+        /// <summary>
+        /// Invoked whenever a fish is caught.
+        /// </summary>
         public event EventHandler<CatchInfo.FishCatch>? CatchFish;
+
+        /// <summary>
+        /// Invoked whenever a perfect streak is lost.
+        /// </summary>
+        public event EventHandler<State>? LostPerfect;
+
+        /// <summary>
+        /// Invoked whenever the fish is not caught.
+        /// </summary>
         public event EventHandler? LostFish;
 
         public CustomBobberBar(
@@ -89,14 +99,12 @@ namespace TehPers.FishingOverhaul.Gui
             : base(0, fishSizePercent, treasure, bobber)
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
-            this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
             this.fishKey = fishKey;
             this.fishTraits = fishTraits ?? throw new ArgumentNullException(nameof(fishTraits));
             this.fishItem = fishItem ?? throw new ArgumentNullException(nameof(fishItem));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
             this.treasureConfig =
                 treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
-            this.user = user ?? throw new ArgumentNullException(nameof(user));
 
             this.lastDistanceFromCatching = 0f;
             this.lastTreasureCatchLevel = 0f;
@@ -180,22 +188,12 @@ namespace TehPers.FishingOverhaul.Gui
             }
 
             // Beginner rod
-            if (Game1.player.CurrentTool is FishingRod { UpgradeLevel: 1 })
+            if (user.CurrentTool is FishingRod { UpgradeLevel: 1 })
             {
                 fishQuality = 0;
             }
 
-            // Track original quality and apply streak bonus
-            this.initialQuality = fishQuality;
-            var qualityBonus = (int)Math.Floor(
-                (double)this.initialStreak / fishConfig.StreakForIncreasedQuality
-            );
-            fishQuality = Math.Min(fishQuality + qualityBonus, this.fishConfig.MaxFishQuality);
-            if (fishQuality > 2)
-            {
-                fishQuality += 1;
-            }
-
+            // Don't bump quality from 3 -> 4 here, that will be done later
             this.fishQualityField.SetValue(fishQuality);
         }
 
@@ -236,45 +234,12 @@ namespace TehPers.FishingOverhaul.Gui
                 case (TreasureState.Caught, PerfectState.Yes) when !perfect:
                 case (TreasureState.Caught, PerfectState.No) when treasureCaught:
                     this.perfectState = PerfectState.Restored;
-
-                    // Restore initial boosted quality
-                    var qualityBonus = (int)((double)this.initialStreak
-                        / this.fishConfig.StreakForIncreasedQuality);
-                    var quality = Math.Min(this.initialQuality + qualityBonus, 3);
-                    if (quality == 3)
-                    {
-                        quality++;
-                    }
-
-                    this.fishQualityField.SetValue(quality);
-                    this.fishingApi.SetStreak(this.user, this.initialStreak);
                     break;
 
                 // Lost perfect streak (and haven't caught the treasure)
                 case (_, PerfectState.Yes) when !perfect:
                     this.perfectState = PerfectState.No;
-
-                    // Restore initial non-boosted quality
-                    var newQuality = this.fishConfig.MaxNormalFishQuality is { } maxNormalQuality
-                        ? Math.Min(this.initialQuality, maxNormalQuality)
-                        : this.initialQuality;
-                    this.fishQualityField.SetValue(newQuality);
-                    this.fishingApi.SetStreak(this.user, 0);
-                    if (this.initialStreak >= this.fishConfig.StreakForIncreasedQuality)
-                    {
-                        var message = this.treasureState switch
-                        {
-                            TreasureState.NotCaught => "text.streak.warning",
-                            _ => "text.streak.lost",
-                        };
-                        Game1.showGlobalMessage(
-                            this.helper.Translation.Get(
-                                message,
-                                new { streak = this.initialStreak }
-                            )
-                        );
-                    }
-
+                    this.OnLostPerfect(new(this.perfectState, this.treasureState));
                     break;
             }
 
@@ -323,56 +288,6 @@ namespace TehPers.FishingOverhaul.Gui
 
             // Base call
             base.update(time);
-
-            // Check if done fishing
-            distanceFromCatching = this.distanceFromCatchingField.GetValue();
-            if (this.notifiedFailOrSuccess)
-            {
-                return;
-            }
-
-            switch (distanceFromCatching)
-            {
-                // Failed to catch fish
-                case <= 0f:
-                    this.notifiedFailOrSuccess = true;
-                    if (treasure && this.initialStreak >= this.fishConfig.StreakForIncreasedQuality)
-                    {
-                        Game1.showGlobalMessage(
-                            this.helper.Translation.Get(
-                                "text.streak.lost",
-                                new { streak = this.initialStreak }
-                            )
-                        );
-                    }
-
-                    break;
-
-                // Succeeded in catching the fish
-                case >= 1f:
-                    this.notifiedFailOrSuccess = true;
-                    switch (this.perfectState)
-                    {
-                        case PerfectState.Yes:
-                            this.fishingApi.SetStreak(this.user, this.initialStreak + 1);
-                            break;
-                        case PerfectState.Restored:
-                            if (this.initialStreak >= this.fishConfig.StreakForIncreasedQuality)
-                            {
-                                Game1.showGlobalMessage(
-                                    this.helper.Translation.Get(
-                                        "text.streak.restored",
-                                        new { streak = this.initialStreak }
-                                    )
-                                );
-                            }
-
-                            this.fishingApi.SetStreak(this.user, this.initialStreak);
-                            break;
-                    }
-
-                    break;
-            }
         }
 
         public override void emergencyShutDown()
@@ -648,5 +563,12 @@ namespace TehPers.FishingOverhaul.Gui
         {
             this.LostFish?.Invoke(this, EventArgs.Empty);
         }
+
+        private void OnLostPerfect(State e)
+        {
+            this.LostPerfect?.Invoke(this, e);
+        }
+
+        public record State(PerfectState Perfect, TreasureState Treasure);
     }
 }

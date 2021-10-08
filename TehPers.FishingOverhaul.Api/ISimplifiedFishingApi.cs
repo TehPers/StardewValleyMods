@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using StardewValley;
 using StardewValley.Tools;
-using TehPers.Core.Api.Items;
 
 namespace TehPers.FishingOverhaul.Api
 {
@@ -15,21 +14,21 @@ namespace TehPers.FishingOverhaul.Api
         /// </summary>
         /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
         /// <param name="depth">The bobber depth.</param>
-        /// <returns>The catchable fish as stringified <see cref="NamespacedKey"/>s.</returns>
+        /// <returns>The catchable fish as stringified namespaced keys.</returns>
         IEnumerable<string> GetCatchableFish(Farmer farmer, int depth = 4);
 
         /// <summary>
         /// Gets the trash that can be caught.
         /// </summary>
         /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
-        /// <returns>The catchable trash as stringified <see cref="NamespacedKey"/>s.</returns>
+        /// <returns>The catchable trash as stringified namespaced keys.</returns>
         IEnumerable<string> GetCatchableTrash(Farmer farmer);
 
         /// <summary>
         /// Gets the treasure that can be caught.
         /// </summary>
         /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
-        /// <returns>The catchable treasure as stringified <see cref="NamespacedKey"/>s.</returns>
+        /// <returns>The catchable treasure as stringified namespaced keys.</returns>
         IEnumerable<string> GetCatchableTreasure(Farmer farmer);
 
         /// <summary>
@@ -51,7 +50,7 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// Gets whether a fish is legendary.
         /// </summary>
-        /// <param name="fishKey">The item key of the fish as a stringified <see cref="NamespacedKey"/>.</param>
+        /// <param name="fishKey">The item key of the fish as a stringified namespaced key.</param>
         /// <returns>Whether that fish is legendary.</returns>
         bool IsLegendary(string fishKey);
 

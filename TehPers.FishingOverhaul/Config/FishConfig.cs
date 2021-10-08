@@ -9,10 +9,11 @@ namespace TehPers.FishingOverhaul.Config
     public sealed class FishConfig : JsonConfigRoot, IModConfig
     {
         [Description(
-            "Whether this mod affects vanilla legendary fish at all. If false, vanilla legendary "
-            + "fish will be caught in the same places and with the same chances as the vanilla game."
+            "Whether this mod affects legendary fish at all. If false, legendary fish will be "
+            + "caught as though this mod were not installed. This also affects legendary fish added"
+            + "through other mods."
         )]
-        public bool ShouldOverrideVanillaLegendaries { get; set; }
+        public bool ShouldOverrideLegendaries { get; set; }
 
         [Description("Whether all farm types should have fish.")]
         public bool AllowFishOnAllFarms { get; set; }
@@ -49,7 +50,7 @@ namespace TehPers.FishingOverhaul.Config
 
         public void Reset()
         {
-            this.ShouldOverrideVanillaLegendaries = true;
+            this.ShouldOverrideLegendaries = true;
             this.AllowFishOnAllFarms = false;
             this.ShowFishInMinigame = false;
             this.CatchSpeed = 1f;
@@ -81,8 +82,8 @@ namespace TehPers.FishingOverhaul.Config
                 manifest,
                 Name("shouldOverrideVanillaLegendaries"),
                 Desc("shouldOverrideVanillaLegendaries"),
-                () => this.ShouldOverrideVanillaLegendaries,
-                val => this.ShouldOverrideVanillaLegendaries = val
+                () => this.ShouldOverrideLegendaries,
+                val => this.ShouldOverrideLegendaries = val
             );
             configApi.RegisterSimpleOption(
                 manifest,

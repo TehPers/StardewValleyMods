@@ -30,6 +30,7 @@ namespace TehPers.FishingOverhaul.Api
         /// <param name="fishingLevel">The <see cref="Farmer"/>'s fishing level.</param>
         /// <param name="dailyLuck">The <see cref="Farmer"/>'s daily luck.</param>
         /// <param name="depth">The bobber depth.</param>
+        /// <param name="rod">The fishing rod being fished with, or <see langword="null"/> if not applicable.</param>
         /// <returns>The catchable fish and their chances of being caught.</returns>
         IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(
             GameLocation location,
@@ -39,7 +40,8 @@ namespace TehPers.FishingOverhaul.Api
             int time,
             int fishingLevel,
             double dailyLuck,
-            int depth = 4
+            int depth = 4,
+            FishingRod? rod = null
         );
 
         /// <summary>
@@ -81,7 +83,8 @@ namespace TehPers.FishingOverhaul.Api
                 Game1.timeOfDay,
                 farmer.FishingLevel,
                 farmer.DailyLuck,
-                depth
+                depth,
+                farmer.CurrentTool as FishingRod
             );
         }
 

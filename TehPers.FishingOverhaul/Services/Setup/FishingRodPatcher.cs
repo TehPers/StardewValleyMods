@@ -226,9 +226,11 @@ namespace TehPers.FishingOverhaul.Services.Setup
             );
             if (customBobber is not null)
             {
+                var initialStreak = this.fishingApi.GetStreak(user);
+
                 customBobber.LostFish += (_, _) =>
                 {
-                    var initialStreak = this.fishingApi.GetStreak(user);
+                    // Notify user
                     if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
                     {
                         Game1.showGlobalMessage(
@@ -239,21 +241,62 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         );
                     }
 
+                    // Update streak
                     this.fishingApi.SetStreak(user, 0);
                 };
-
+                customBobber.LostPerfect += (_, state) =>
+                {
+                    // Notify user - streak is updated when fish is either caught or not caught
+                    if (initialStreak >= this.fishConfig.StreakForIncreasedQuality
+                        && state.Treasure is TreasureState.NotCaught)
+                    {
+                        Game1.showGlobalMessage(
+                            this.helper.Translation.Get(
+                                "text.streak.warning",
+                                new { streak = initialStreak }
+                            )
+                        );
+                    }
+                };
                 customBobber.CatchFish += (_, info) =>
                 {
                     // Update fishing streak
                     switch (info.PerfectState)
                     {
                         case PerfectState.No:
+                        {
                             this.fishingApi.SetStreak(user, 0);
+                            if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
+                            {
+                                Game1.showGlobalMessage(
+                                    this.helper.Translation.Get(
+                                        "text.streak.lost",
+                                        new { streak = initialStreak }
+                                    )
+                                );
+                            }
+
                             break;
+                        }
                         case PerfectState.Yes:
-                            var initialStreak = this.fishingApi.GetStreak(user);
+                        {
                             this.fishingApi.SetStreak(user, initialStreak + 1);
                             break;
+                        }
+                        case PerfectState.Restored:
+                        {
+                            if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
+                            {
+                                Game1.showGlobalMessage(
+                                    this.helper.Translation.Get(
+                                        "text.streak.restored",
+                                        new { streak = initialStreak }
+                                    )
+                                );
+                            }
+
+                            break;
+                        }
                     }
 
                     // Catch item
@@ -277,8 +320,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
             var (_, item, fromFishPond) = info;
             if (info is CatchInfo.FishCatch (_, _, var fishSize, var isLegendary, var fishQuality,
-                var fishDifficulty,
-                var treasureState, var perfectState, _, var caughtDouble))
+                var fishDifficulty, var treasureState, var perfectState, _, var caughtDouble))
             {
                 // Update caught item
                 if (item is SObject obj)
@@ -625,7 +667,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
             rod.doneFishing(user, true);
 
             // Show menu
-            var menu = new ItemGrabMenu(treasure, rod) { source = 3, }.setEssential(true);
+            var menu = new ItemGrabMenu(treasure, rod)
+            {
+                source = 3,
+            }.setEssential(true);
             Game1.activeClickableMenu = menu;
             user.completelyStopAnimatingOrDoingAction();
 

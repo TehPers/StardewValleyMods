@@ -71,7 +71,8 @@ namespace TehPers.FishingOverhaul.Services
             int time,
             int fishingLevel,
             double dailyLuck,
-            int depth = 4
+            int depth = 4,
+            FishingRod? rod = null
         )
         {
             // Reload data if necessary
@@ -82,7 +83,6 @@ namespace TehPers.FishingOverhaul.Services
 
             IEnumerable<IWeightedValue<NamespacedKey>> GetNormalFishChances()
             {
-                // TODO: curiosity lure
                 return this.fishEntries.SelectMany(
                         entry => entry.Availability.GetWeightedChance(
                                 time,
@@ -97,7 +97,7 @@ namespace TehPers.FishingOverhaul.Services
                             .ToWeighted(weightedChance => weightedChance, _ => entry.FishKey)
                     )
                     .Where(
-                        value => this.fishConfig.ShouldOverrideVanillaLegendaries
+                        value => this.fishConfig.ShouldOverrideLegendaries
                             || !this.IsLegendary(value.Value)
                     );
             }
@@ -113,7 +113,8 @@ namespace TehPers.FishingOverhaul.Services
                         time,
                         fishingLevel,
                         dailyLuck,
-                        depth
+                        depth,
+                        rod
                     )
                     : Enumerable.Empty<IWeightedValue<NamespacedKey>>();
             }
@@ -152,7 +153,19 @@ namespace TehPers.FishingOverhaul.Services
                 _ => GetNormalFishChances(),
             };
 
-            return chances.Condense();
+            chances = chances.Condense();
+
+            // Curiosity lure
+            if (rod?.getBobberAttachmentIndex() is 856)
+            {
+                chances = chances.ToWeighted(
+                    weightedValue =>
+                        weightedValue.Weight >= 0 ? Math.Log(weightedValue.Weight + 1) : 0,
+                    weightedValue => weightedValue.Value
+                );
+            }
+
+            return chances;
         }
 
         public bool TryGetFishTraits(
@@ -274,9 +287,9 @@ namespace TehPers.FishingOverhaul.Services
             var location = farmer.currentLocation;
 
             // Handle non-overridden legendary fish
-            if (!this.fishConfig.ShouldOverrideVanillaLegendaries)
+            if (!this.fishConfig.ShouldOverrideLegendaries)
             {
-                // Check if a legendary would be caught
+                // Setup some values needed to simulate fishing
                 var baitValue = rod.attachments[0]?.Price / 10.0 ?? 0.0;
                 var bubblyZone = location.fishSplashPoint is { } splashPoint
                     && splashPoint.Value != Point.Zero
@@ -284,16 +297,37 @@ namespace TehPers.FishingOverhaul.Services
                         new((int)rod.bobber.X - 80, (int)rod.bobber.Y - 80, 64, 64)
                     );
                 var bobberTile = new Vector2(rod.bobber.X / 64f, rod.bobber.Y / 64f);
+
+                // Create simulated farmer
+                var simulatedFarmer = new Farmer
+                {
+                    currentLocation = farmer.currentLocation,
+                    CurrentTool = farmer.CurrentTool,
+                    FishingLevel = farmer.FishingLevel,
+                    LuckLevel = farmer.LuckLevel,
+                };
+                simulatedFarmer.mailReceived.CopyFrom(farmer.mailReceived);
+                simulatedFarmer.setTileLocation(farmer.getTileLocation());
+                simulatedFarmer.secretNotesSeen.CopyFrom(farmer.secretNotesSeen);
+                foreach (var item in farmer.fishCaught)
+                {
+                    simulatedFarmer.fishCaught.Add(item);
+                }
+
+                // Simulate fishing
+                var oldPlayer = Game1.player;
+                Game1.player = simulatedFarmer;
                 var normalFish = location.getFish(
                     rod.fishingNibbleAccumulator,
                     rod.attachments[0]?.ParentSheetIndex ?? -1,
                     bobberDepth + (bubblyZone ? 1 : 0),
-                    farmer,
+                    simulatedFarmer,
                     baitValue + (bubblyZone ? 0.4 : 0.0),
                     bobberTile
                 );
+                Game1.player = oldPlayer;
 
-                // If so, select that fish
+                // If a legendary fish would be caught, select that fish
                 var legendaryFishKey = NamespacedKey.SdvObject(normalFish.ParentSheetIndex);
                 if (this.IsLegendary(legendaryFishKey))
                 {
