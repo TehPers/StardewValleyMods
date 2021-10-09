@@ -15,4 +15,8 @@
     <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="$(GameModsPath)/ContentPatcher/ContentPatcher.dll" />
+  </ItemGroup>
+
 </Project>

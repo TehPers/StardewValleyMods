@@ -11,7 +11,8 @@
       "type": [
         "null",
         "string"
-      ]
+      ],
+      "description": "Optional schema URL."
     },
     "FishTraits": {
       "type": "object",

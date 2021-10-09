@@ -7,22 +7,19 @@ using TehPers.Core.Api.Json;
 namespace TehPers.FishingOverhaul.Api
 {
     [JsonDescribe]
-    public class TrashEntry
+    public class TrashEntry : Entry<AvailabilityInfo>
     {
+        [JsonRequired]
         [Description("The item key.")]
         public NamespacedKey ItemKey { get; set; }
 
-        [Description("The availability information.")]
-        public Availability Availability { get; set; }
-
         [JsonConstructor]
-        public TrashEntry(
-            NamespacedKey itemKey,
-            Availability availability
-        )
+        public TrashEntry(NamespacedKey itemKey, AvailabilityInfo availabilityInfo)
+            : base(availabilityInfo)
         {
             this.ItemKey = itemKey;
-            this.Availability = availability ?? throw new ArgumentNullException(nameof(availability));
+            this.AvailabilityInfo = availabilityInfo
+                ?? throw new ArgumentNullException(nameof(availabilityInfo));
         }
     }
 }

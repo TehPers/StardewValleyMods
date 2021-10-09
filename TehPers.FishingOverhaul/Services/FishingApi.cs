@@ -8,7 +8,6 @@ using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
@@ -20,7 +19,7 @@ using SObject = StardewValley.Object;
 namespace TehPers.FishingOverhaul.Services
 {
     /// <inheritdoc cref="IFishingApi" />
-    internal class FishingApi : IFishingApi
+    public class FishingApi : IFishingApi
     {
         private readonly IMonitor monitor;
         private readonly INamespaceRegistry namespaceRegistry;
@@ -28,21 +27,32 @@ namespace TehPers.FishingOverhaul.Services
         private readonly TreasureConfig treasureConfig;
         private readonly Func<IEnumerable<IFishingContentSource>> contentSourcesFactory;
 
+        private readonly EntryManagerFactory<FishEntry, FishAvailabilityInfo>
+            fishEntryManagerFactory;
+
+        private readonly EntryManagerFactory<TrashEntry, AvailabilityInfo> trashEntryManagerFactory;
+
+        private readonly EntryManagerFactory<TreasureEntry, AvailabilityInfo>
+            treasureEntryManagerFactory;
+
         private readonly Dictionary<NamespacedKey, FishTraits> fishTraits;
-        private readonly List<FishEntry> fishEntries;
-        private readonly List<TrashEntry> trashEntries;
-        private readonly List<TreasureEntry> treasureEntries;
+        private readonly List<EntryManager<FishEntry, FishAvailabilityInfo>> fishEntries;
+        private readonly List<EntryManager<TrashEntry, AvailabilityInfo>> trashEntries;
+        private readonly List<EntryManager<TreasureEntry, AvailabilityInfo>> treasureEntries;
         private readonly string stateKey;
 
         private bool reloadRequested;
 
-        public FishingApi(
+        internal FishingApi(
             IMonitor monitor,
             IManifest manifest,
             INamespaceRegistry namespaceRegistry,
             FishConfig fishConfig,
             TreasureConfig treasureConfig,
-            Func<IEnumerable<IFishingContentSource>> contentSourcesFactory
+            Func<IEnumerable<IFishingContentSource>> contentSourcesFactory,
+            EntryManagerFactory<FishEntry, FishAvailabilityInfo> fishEntryManagerFactory,
+            EntryManagerFactory<TrashEntry, AvailabilityInfo> trashEntryManagerFactory,
+            EntryManagerFactory<TreasureEntry, AvailabilityInfo> treasureEntryManagerFactory
         )
         {
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
@@ -53,6 +63,12 @@ namespace TehPers.FishingOverhaul.Services
                 treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
             this.contentSourcesFactory = contentSourcesFactory
                 ?? throw new ArgumentNullException(nameof(contentSourcesFactory));
+            this.fishEntryManagerFactory = fishEntryManagerFactory
+                ?? throw new ArgumentNullException(nameof(fishEntryManagerFactory));
+            this.trashEntryManagerFactory = trashEntryManagerFactory
+                ?? throw new ArgumentNullException(nameof(trashEntryManagerFactory));
+            this.treasureEntryManagerFactory = treasureEntryManagerFactory
+                ?? throw new ArgumentNullException(nameof(treasureEntryManagerFactory));
 
             this.fishTraits = new();
             this.fishEntries = new();
@@ -65,12 +81,8 @@ namespace TehPers.FishingOverhaul.Services
 
         public IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(
             GameLocation location,
-            Seasons seasons,
-            Weathers weathers,
             WaterTypes waterTypes,
-            int time,
             int fishingLevel,
-            double dailyLuck,
             int depth = 4,
             FishingRod? rod = null
         )
@@ -84,17 +96,13 @@ namespace TehPers.FishingOverhaul.Services
             IEnumerable<IWeightedValue<NamespacedKey>> GetNormalFishChances()
             {
                 return this.fishEntries.SelectMany(
-                        entry => entry.Availability.GetWeightedChance(
-                                time,
-                                seasons,
-                                weathers,
-                                fishingLevel,
-                                locationNames,
-                                waterTypes,
-                                depth
-                            )
+                        manager => manager.ChanceCalculator
+                            .GetWeightedChance(fishingLevel, locationNames, waterTypes, depth)
                             .AsEnumerable()
-                            .ToWeighted(weightedChance => weightedChance, _ => entry.FishKey)
+                            .ToWeighted(
+                                weightedChance => weightedChance,
+                                _ => manager.Entry.FishKey
+                            )
                     )
                     .Where(
                         value => this.fishConfig.ShouldOverrideLegendaries
@@ -105,17 +113,7 @@ namespace TehPers.FishingOverhaul.Services
             IEnumerable<IWeightedValue<NamespacedKey>> GetLocationFish(string locationName)
             {
                 return Game1.getLocationFromName(locationName) is { } location
-                    ? this.GetFishChances(
-                        location,
-                        seasons,
-                        weathers,
-                        waterTypes,
-                        time,
-                        fishingLevel,
-                        dailyLuck,
-                        depth,
-                        rod
-                    )
+                    ? this.GetFishChances(location, waterTypes, fishingLevel, depth, rod)
                     : Enumerable.Empty<IWeightedValue<NamespacedKey>>();
             }
 
@@ -130,10 +128,7 @@ namespace TehPers.FishingOverhaul.Services
                     // Forest: forest + woodskip + default farm fish
                     2 => GetLocationFish("Forest")
                         .Append(
-                            new WeightedValue<NamespacedKey>(
-                                NamespacedKey.SdvObject(734),
-                                0.05 + dailyLuck
-                            )
+                            new WeightedValue<NamespacedKey>(NamespacedKey.SdvObject(734), 0.05)
                         ),
                     // Hills: forest + default farm fish
                     3 => GetLocationFish("Forest"),
@@ -181,11 +176,9 @@ namespace TehPers.FishingOverhaul.Services
 
         public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(
             GameLocation location,
-            Seasons seasons,
-            Weathers weathers,
             WaterTypes waterTypes,
-            int time,
-            int fishingLevel
+            int fishingLevel,
+            int depth = 4
         )
         {
             // Reload data if necessary
@@ -195,15 +188,9 @@ namespace TehPers.FishingOverhaul.Services
             var locationNames = this.GetLocationNames(location);
 
             return this.trashEntries.SelectMany(
-                    entry => entry.Availability.GetWeightedChance(
-                            time,
-                            seasons,
-                            weathers,
-                            fishingLevel,
-                            locationNames,
-                            waterTypes
-                        )
-                        .Map(weight => (entry, weight))
+                    manager => manager.ChanceCalculator
+                        .GetWeightedChance(fishingLevel, locationNames, waterTypes, depth)
+                        .Map(weight => (entry: manager.Entry, weight))
                         .AsEnumerable()
                 )
                 .ToWeighted(item => item.weight, item => item.entry)
@@ -212,11 +199,9 @@ namespace TehPers.FishingOverhaul.Services
 
         public IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(
             GameLocation location,
-            Seasons seasons,
-            Weathers weathers,
             WaterTypes waterTypes,
-            int time,
-            int fishingLevel
+            int fishingLevel,
+            int depth = 4
         )
         {
             // Reload data if necessary
@@ -226,15 +211,9 @@ namespace TehPers.FishingOverhaul.Services
             var locationNames = this.GetLocationNames(location);
 
             return this.treasureEntries.SelectMany(
-                    entry => entry.Availability.GetWeightedChance(
-                            time,
-                            seasons,
-                            weathers,
-                            fishingLevel,
-                            locationNames,
-                            waterTypes
-                        )
-                        .Map(weight => (entry, weight))
+                    manager => manager.ChanceCalculator
+                        .GetWeightedChance(fishingLevel, locationNames, waterTypes, depth)
+                        .Map(weight => (entry: manager.Entry, weight))
                         .AsEnumerable()
                 )
                 .ToWeighted(item => item.weight, item => item.entry)
@@ -508,13 +487,25 @@ namespace TehPers.FishingOverhaul.Services
                 }
 
                 // Fish entries
-                this.fishEntries.AddRange(content.FishEntries);
+                this.fishEntries.AddRange(
+                    content.FishEntries.Select(
+                        entry => this.fishEntryManagerFactory.Create(content.Mod, entry)
+                    )
+                );
 
                 // Trash entries
-                this.trashEntries.AddRange(content.TrashEntries);
+                this.trashEntries.AddRange(
+                    content.TrashEntries.Select(
+                        entry => this.trashEntryManagerFactory.Create(content.Mod, entry)
+                    )
+                );
 
                 // Treasure entries
-                this.treasureEntries.AddRange(content.TreasureEntries);
+                this.treasureEntries.AddRange(
+                    content.TreasureEntries.Select(
+                        entry => this.treasureEntryManagerFactory.Create(content.Mod, entry)
+                    )
+                );
             }
         }
     }

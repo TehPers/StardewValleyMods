@@ -6,21 +6,17 @@ using TehPers.Core.Api.Json;
 namespace TehPers.FishingOverhaul.Api
 {
     [JsonDescribe]
-    public class FishEntry
+    public class FishEntry : Entry<FishAvailabilityInfo>
     {
         [JsonRequired]
         [Description("The item key.")]
         public NamespacedKey FishKey { get; set; }
 
-        [JsonRequired]
-        [Description("The availability information.")]
-        public FishAvailability Availability { get; set; }
-
         [JsonConstructor]
-        public FishEntry(NamespacedKey fishKey, FishAvailability availability)
+        public FishEntry(NamespacedKey fishKey, FishAvailabilityInfo availabilityInfo)
+            : base(availabilityInfo)
         {
             this.FishKey = fishKey;
-            this.Availability = availability;
         }
     }
 }

@@ -17,4 +17,8 @@
     <ProjectReference Include="..\TehPers.FishingOverhaul.Api\TehPers.FishingOverhaul.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="$(GameModsPath)/ContentPatcher/ContentPatcher.dll" />
+  </ItemGroup>
+
 </Project>

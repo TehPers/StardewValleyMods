@@ -11,7 +11,8 @@
       "type": [
         "null",
         "string"
-      ]
+      ],
+      "description": "Optional schema URL."
     },
     "FishEntries": {
       "type": "array",
@@ -26,25 +27,25 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "FishKey",
-        "Availability"
+        "AvailabilityInfo",
+        "FishKey"
       ],
       "properties": {
-        "FishKey": {
-          "type": "string",
-          "description": "The item key."
-        },
-        "Availability": {
+        "AvailabilityInfo": {
           "description": "The availability information.",
           "oneOf": [
             {
-              "$ref": "#/definitions/FishAvailability"
+              "$ref": "#/definitions/FishAvailabilityInfo"
             }
           ]
+        },
+        "FishKey": {
+          "type": "string",
+          "description": "The item key."
         }
       }
     },
-    "FishAvailability": {
+    "FishAvailabilityInfo": {
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -55,32 +56,6 @@
           "type": "number",
           "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries.",
           "format": "double"
-        },
-        "StartTime": {
-          "type": "integer",
-          "description": "Time this becomes available (inclusive).",
-          "format": "int32",
-          "default": 600
-        },
-        "EndTime": {
-          "type": "integer",
-          "description": "Time this is no longer available (exclusive).",
-          "format": "int32",
-          "default": 2600
-        },
-        "Seasons": {
-          "type": "array",
-          "description": "Seasons this can be caught in. Default is all.",
-          "items": {
-            "$ref": "#/definitions/Seasons"
-          }
-        },
-        "Weathers": {
-          "type": "array",
-          "description": "Weathers this can be caught in. Default is all.",
-          "items": {
-            "$ref": "#/definitions/Weathers"
-          }
         },
         "WaterTypes": {
           "type": "array",
@@ -117,6 +92,13 @@
             "type": "string"
           }
         },
+        "When": {
+          "type": "object",
+          "description": "Content Patcher conditions for when this is available.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "DepthMultiplier": {
           "type": "number",
           "description": "Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1.",
@@ -130,44 +112,6 @@
           "default": 4
         }
       }
-    },
-    "Seasons": {
-      "type": "string",
-      "description": "",
-      "x-enumFlags": true,
-      "x-enumNames": [
-        "None",
-        "Spring",
-        "Summer",
-        "Fall",
-        "Winter",
-        "All"
-      ],
-      "enum": [
-        "None",
-        "Spring",
-        "Summer",
-        "Fall",
-        "Winter",
-        "All"
-      ]
-    },
-    "Weathers": {
-      "type": "string",
-      "description": "",
-      "x-enumFlags": true,
-      "x-enumNames": [
-        "None",
-        "Sunny",
-        "Rainy",
-        "All"
-      ],
-      "enum": [
-        "None",
-        "Sunny",
-        "Rainy",
-        "All"
-      ]
     },
     "WaterTypes": {
       "type": "string",

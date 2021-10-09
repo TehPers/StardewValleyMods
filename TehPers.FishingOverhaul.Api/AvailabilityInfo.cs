@@ -3,13 +3,12 @@ using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json;
 using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Json;
 
 namespace TehPers.FishingOverhaul.Api
 {
     [JsonDescribe]
-    public class Availability
+    public class AvailabilityInfo
     {
         [JsonRequired]
         [Description(
@@ -18,46 +17,10 @@ namespace TehPers.FishingOverhaul.Api
         )]
         public double BaseChance { get; set; }
 
-        [Description("Time this becomes available (inclusive).")]
-        [DefaultValue(600)]
-        public int StartTime { get; set; } = 600;
-
-        [Description("Time this is no longer available (exclusive).")]
-        [DefaultValue(2600)]
-        public int EndTime { get; set; } = 2600;
-
-        /// <summary>
-        /// Used for JSON serialization. Prefer <see cref="Seasons"/>.
-        /// </summary>
-        [JsonProperty(nameof(Availability.Seasons))]
-        [Description("Seasons this can be caught in. Default is all.")]
-        public IEnumerable<Seasons> SeasonsSplit
-        {
-            get => this.Seasons.Split();
-            set => this.Seasons = value.Join();
-        }
-
-        [JsonIgnore]
-        public Seasons Seasons { get; set; } = Seasons.All;
-
-        /// <summary>
-        /// Used for JSON serialization. Prefer <see cref="Weathers"/>.
-        /// </summary>
-        [JsonProperty(nameof(Availability.Weathers))]
-        [Description("Weathers this can be caught in. Default is all.")]
-        public IEnumerable<Weathers> WeathersSplit
-        {
-            get => this.Weathers.Split();
-            set => this.Weathers = value.Join();
-        }
-
-        [JsonIgnore]
-        public Weathers Weathers { get; set; } = Weathers.All;
-
         /// <summary>
         /// Used for JSON serialization. Prefer <see cref="WaterTypes"/>.
         /// </summary>
-        [JsonProperty(nameof(Availability.WaterTypes))]
+        [JsonProperty(nameof(AvailabilityInfo.WaterTypes))]
         [Description(
             "The type of water this can be caught in. Each location handles this differently. "
             + "Default is all."
@@ -89,50 +52,32 @@ namespace TehPers.FishingOverhaul.Api
 
         [Description(
             "List of locations this should not be available in. This takes priority over "
-            + nameof(Availability.IncludeLocations)
+            + nameof(AvailabilityInfo.IncludeLocations)
             + "."
         )]
         public List<string> ExcludeLocations { get; init; } = new();
 
+        [Description("Content Patcher conditions for when this is available.")]
+        public Dictionary<string, string> When { get; init; } = new();
+
         [JsonConstructor]
-        private Availability()
+        private AvailabilityInfo()
         {
             // Used for JSON deserialization
         }
 
-        public Availability(double baseChance)
+        public AvailabilityInfo(double baseChance)
         {
             this.BaseChance = baseChance;
         }
 
         public virtual double? GetWeightedChance(
-            int time,
-            Seasons seasons,
-            Weathers weathers,
             int fishingLevel,
             IEnumerable<string> locations,
             WaterTypes waterTypes = WaterTypes.All,
             int depth = 4
         )
         {
-            // Verify time is valid
-            if (time < this.StartTime || time >= this.EndTime)
-            {
-                return null;
-            }
-
-            // Verify season is valid
-            if ((this.Seasons & seasons) == Seasons.None)
-            {
-                return null;
-            }
-
-            // Verify weather is valid
-            if ((this.Weathers & weathers) == Weathers.None)
-            {
-                return null;
-            }
-
             // Verify water type is valid
             if ((this.WaterTypes & waterTypes) == WaterTypes.None)
             {

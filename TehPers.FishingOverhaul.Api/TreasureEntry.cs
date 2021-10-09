@@ -8,16 +8,12 @@ using TehPers.Core.Api.Json;
 namespace TehPers.FishingOverhaul.Api
 {
     [JsonDescribe]
-    public class TreasureEntry
+    public class TreasureEntry : Entry<AvailabilityInfo>
     {
-        [JsonRequired]
-        [Description("The availability information.")]
-        public Availability Availability { get; set; }
-
         [JsonRequired]
         [Description("The possible namespaced keys for the loot. The item key is chosen randomly.")]
         public List<NamespacedKey> ItemKeys { get; set; }
-        
+
         [Description("The minimum quantity of this item. This is only valid for stackable items.")]
         [DefaultValue(1)]
         public int MinQuantity { get; set; }
@@ -32,14 +28,16 @@ namespace TehPers.FishingOverhaul.Api
 
         [JsonConstructor]
         public TreasureEntry(
-            Availability availability,
+            AvailabilityInfo availabilityInfo,
             List<NamespacedKey> itemKeys,
             int minQuantity = 1,
             int maxQuantity = 1,
             bool allowDuplicates = true
         )
+            : base(availabilityInfo)
         {
-            this.Availability = availability ?? throw new ArgumentNullException(nameof(availability));
+            this.AvailabilityInfo = availabilityInfo
+                ?? throw new ArgumentNullException(nameof(availabilityInfo));
             this.ItemKeys = itemKeys ?? throw new ArgumentNullException(nameof(itemKeys));
             this.MinQuantity = minQuantity;
             this.MaxQuantity = maxQuantity;

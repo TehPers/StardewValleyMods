@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using ContentPatcher;
 using Newtonsoft.Json;
 using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Gameplay;
 
 namespace TehPers.FishingOverhaul.Api
 {
-    public class FishAvailability : Availability
+    public class FishAvailabilityInfo : AvailabilityInfo
     {
         [Description(
             "Effect that sending the bobber by less than the max distance has on the chance. This "
@@ -21,31 +21,19 @@ namespace TehPers.FishingOverhaul.Api
         public int MaxDepth { get; set; } = 4;
 
         [JsonConstructor]
-        public FishAvailability(double baseChance)
+        public FishAvailabilityInfo(double baseChance)
             : base(baseChance)
         {
         }
 
         public override double? GetWeightedChance(
-            int time,
-            Seasons season,
-            Weathers weather,
             int fishingLevel,
             IEnumerable<string> locations,
             WaterTypes waterTypes = WaterTypes.All,
             int depth = 4
         )
         {
-            return base
-                .GetWeightedChance(
-                    time,
-                    season,
-                    weather,
-                    fishingLevel,
-                    locations,
-                    waterTypes,
-                    depth
-                )
+            return base.GetWeightedChance(fishingLevel, locations, waterTypes, depth)
                 .Map(
                     baseChance =>
                         baseChance * (1 - Math.Max(0, this.MaxDepth - depth) * this.DepthMultiplier)

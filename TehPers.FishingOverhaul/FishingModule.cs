@@ -1,8 +1,12 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using ContentPatcher;
+using HarmonyLib;
 using Ninject;
 using StardewModdingAPI;
 using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config;
@@ -26,7 +30,21 @@ namespace TehPers.FishingOverhaul
             // TODO: this.Bind<ISetup>().To<FishingMessageHandler>().InSingletonScope();
 
             // Resources/services
-            this.Bind<IFishingApi, ISimplifiedFishingApi>().To<FishingApi>().InSingletonScope();
+            this.Bind<IFishingApi, ISimplifiedFishingApi>()
+                .ToMethod(
+                    context => new FishingApi(
+                        context.Kernel.Get<IMonitor>(),
+                        context.Kernel.Get<IManifest>(),
+                        context.Kernel.Get<INamespaceRegistry>(),
+                        context.Kernel.Get<FishConfig>(),
+                        context.Kernel.Get<TreasureConfig>(),
+                        context.Kernel.Get<Func<IEnumerable<IFishingContentSource>>>(),
+                        context.Kernel.Get<EntryManagerFactory<FishEntry, FishAvailabilityInfo>>(),
+                        context.Kernel.Get<EntryManagerFactory<TrashEntry, AvailabilityInfo>>(),
+                        context.Kernel.Get<EntryManagerFactory<TreasureEntry, AvailabilityInfo>>()
+                    )
+                )
+                .InSingletonScope();
             this.Bind<ICustomBobberBarFactory>().To<CustomBobberBarFactory>().InSingletonScope();
             this.Bind<FishingTracker>().ToSelf().InSingletonScope();
             this.Bind<Harmony>()
@@ -38,6 +56,8 @@ namespace TehPers.FishingOverhaul
                     }
                 )
                 .InSingletonScope();
+            this.Bind(typeof(ChanceCalculatorFactory<>)).ToSelf().InSingletonScope();
+            this.Bind(typeof(EntryManagerFactory<,>)).ToSelf().InSingletonScope();
 
             // Configs
             this.BindConfiguration<HudConfig>("config/hud.json");
@@ -54,6 +74,8 @@ namespace TehPers.FishingOverhaul
 
             // Foreign APIs
             this.BindForeignModApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu")
+                .InSingletonScope();
+            this.BindForeignModApi<IContentPatcherAPI>("Pathoschild.ContentPatcher")
                 .InSingletonScope();
         }
 

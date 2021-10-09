@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using StardewModdingAPI;
 using TehPers.Core.Api.Content;
 using TehPers.Core.Api.DI;
+using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
@@ -14,6 +16,13 @@ namespace TehPers.FishingOverhaul.Services
 {
     internal sealed class DefaultFishingSource : IFishingContentSource
     {
+        private static readonly Seasons[] formatSeasons =
+        {
+            Seasons.Spring, Seasons.Summer, Seasons.Fall, Seasons.Winter
+        };
+
+        private static readonly Weathers[] formatWeathers = { Weathers.Sunny, Weathers.Rainy };
+
         private readonly IManifest manifest;
         private readonly IMonitor monitor;
         private readonly IAssetProvider assetProvider;
@@ -62,7 +71,7 @@ namespace TehPers.FishingOverhaul.Services
 
             // Parse the fish traits
             var fish = this.assetProvider.Load<Dictionary<int, string>>(@"Data\Fish.xnb");
-            var partialAvailabilities = new Dictionary<int, List<FishAvailability>>(fish.Count);
+            var partialAvailabilities = new Dictionary<int, List<FishAvailabilityInfo>>(fish.Count);
             foreach (var (fishId, rawFishInfo) in fish)
             {
                 var fishInfo = rawFishInfo.Split('/');
@@ -152,21 +161,37 @@ namespace TehPers.FishingOverhaul.Services
 
                         this.fishEntries.AddRange(
                             availabilities.Select(
-                                availability => new FishEntry(
-                                    NamespacedKey.SdvObject(fishId),
-                                    new(availability.BaseChance)
+                                availability =>
+                                {
+                                    // Clone the 'When' condition
+                                    var when = new Dictionary<string, string>();
+                                    foreach (var (key, value) in availability.When)
                                     {
-                                        DepthMultiplier = availability.DepthMultiplier,
-                                        MaxDepth = availability.MaxDepth,
-                                        StartTime = availability.StartTime,
-                                        EndTime = availability.EndTime,
-                                        Seasons = seasons,
-                                        Weathers = availability.Weathers,
-                                        WaterTypes = waterTypes,
-                                        MinFishingLevel = availability.MinFishingLevel,
-                                        IncludeLocations = new() { locationName },
+                                        when[key] = value;
                                     }
-                                )
+
+                                    // Add other conditions
+                                    if (DefaultFishingSource.FormatSeasons(
+                                        seasons,
+                                        out var formattedSeasons
+                                    ))
+                                    {
+                                        when["Season"] = formattedSeasons;
+                                    }
+
+                                    return new FishEntry(
+                                        NamespacedKey.SdvObject(fishId),
+                                        new(availability.BaseChance)
+                                        {
+                                            DepthMultiplier = availability.DepthMultiplier,
+                                            MaxDepth = availability.MaxDepth,
+                                            WaterTypes = waterTypes,
+                                            MinFishingLevel = availability.MinFishingLevel,
+                                            IncludeLocations = new() { locationName },
+                                            When = when,
+                                        }
+                                    );
+                                }
                             )
                         );
                     }
@@ -208,11 +233,14 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            EndTime = 2000,
                             WaterTypes = WaterTypes.River,
-                            Seasons = Seasons.Summer,
                             MinFishingLevel = 5,
                             IncludeLocations = new() { "Beach" },
+                            When = new()
+                            {
+                                ["Time"] = "{{Range: 0600, 2000}}",
+                                ["Season"] = "Summer",
+                            },
                         }
                     ),
                     new(
@@ -220,9 +248,12 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            Seasons = Seasons.Fall,
                             MinFishingLevel = 3,
                             IncludeLocations = new() { "Town" },
+                            When = new()
+                            {
+                                ["Season"] = "Fall",
+                            }
                         }
                     ),
                     new(
@@ -230,12 +261,15 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            EndTime = 2300,
                             WaterTypes = WaterTypes.PondOrOcean,
-                            Seasons = Seasons.Spring,
-                            Weathers = Weathers.Rainy,
                             MinFishingLevel = 10,
                             IncludeLocations = new() { "Mountain" },
+                            When = new()
+                            {
+                                ["Time"] = "{{Range: 0600, 2300}}",
+                                ["Season"] = "Spring",
+                                ["Weather"] = "Rain, Storm",
+                            }
                         }
                     ),
                     new(
@@ -251,11 +285,14 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            EndTime = 2000,
                             WaterTypes = WaterTypes.River,
-                            Seasons = Seasons.Winter,
                             MinFishingLevel = 6,
                             IncludeLocations = new() { "Forest" },
+                            When = new()
+                            {
+                                ["Time"] = "{{Range: 0600, 2000}}",
+                                ["Season"] = "Winter",
+                            }
                         }
                     ),
 
@@ -345,10 +382,64 @@ namespace TehPers.FishingOverhaul.Services
             this.ReloadRequested?.Invoke(this, EventArgs.Empty);
         }
 
+        private static bool FormatSeasons(
+            Seasons seasons,
+            [NotNullWhen(true)] out string? formattedSeasons
+        )
+        {
+            switch (seasons)
+            {
+                case Seasons.None:
+                    formattedSeasons = "None";
+                    return true;
+                case Seasons.All:
+                    formattedSeasons = default;
+                    return false;
+                default:
+                    formattedSeasons = string.Join(
+                        ", ",
+                        DefaultFishingSource.formatSeasons.Where(s => seasons.HasFlag(s))
+                    );
+                    return true;
+            }
+        }
+
+        private static bool FormatWeathers(
+            Weathers weathers,
+            [NotNullWhen(true)] out string? formattedWeathers
+        )
+        {
+            switch (weathers)
+            {
+                case Weathers.None:
+                    formattedWeathers = "None";
+                    return true;
+                case Weathers.All:
+                    formattedWeathers = default;
+                    return false;
+                default:
+                    formattedWeathers = string.Join(
+                        ", ",
+                        DefaultFishingSource.formatWeathers.Where(w => weathers.HasFlag(w))
+                            .SelectMany(
+                                w => w switch
+                                {
+                                    Weathers.Sunny => new[] { "Sun" },
+                                    Weathers.Rainy => new[] { "Rain", "Storm" },
+                                    Weathers.None => Array.Empty<string>(),
+                                    Weathers.All => Array.Empty<string>(),
+                                    _ => throw new ArgumentOutOfRangeException(nameof(w), w, null)
+                                }
+                            )
+                    );
+                    return true;
+            }
+        }
+
         private static bool TryParseFishInfo(
             IReadOnlyList<string> fishInfo,
             [NotNullWhen(true)] out FishTraits? traits,
-            [NotNullWhen(true)] out List<FishAvailability>? partialAvailability
+            [NotNullWhen(true)] out List<FishAvailabilityInfo>? partialAvailability
         )
         {
             traits = default;
@@ -438,15 +529,23 @@ namespace TehPers.FishingOverhaul.Services
                     continue;
                 }
 
+                var when = new Dictionary<string, string>
+                {
+                    ["Time"] = $"{{{{ Range: {startTime:0000}, {endTime:0000} }}}}",
+                };
+
+                if (DefaultFishingSource.FormatWeathers(weathers, out var formattedWeathers))
+                {
+                    when["Weather"] = formattedWeathers;
+                }
+
                 partialAvailability.Add(
                     new(weightedChance)
                     {
                         DepthMultiplier = depthMultiplier,
                         MaxDepth = maxDepth,
-                        StartTime = startTime,
-                        EndTime = endTime,
-                        Weathers = weathers,
                         MinFishingLevel = minFishingLevel,
+                        When = when,
                     }
                 );
             }
