@@ -8,11 +8,11 @@ namespace TehPers.FishingOverhaul.Services
     internal class ChanceCalculatorFactory<T>
         where T : AvailabilityInfo
     {
-        private readonly Func<IContentPatcherAPI> contentPatcherApiFactory;
+        private readonly Lazy<IContentPatcherAPI> contentPatcherApiFactory;
         private readonly IManifest fishingManifest;
 
         public ChanceCalculatorFactory(
-            Func<IContentPatcherAPI> contentPatcherApiFactory,
+            Lazy<IContentPatcherAPI> contentPatcherApiFactory,
             IManifest fishingManifest
         )
         {
@@ -25,7 +25,7 @@ namespace TehPers.FishingOverhaul.Services
         public ChanceCalculator<T> Create(IManifest owner, T availabilityInfo)
         {
             return new(
-                this.contentPatcherApiFactory(),
+                this.contentPatcherApiFactory.Value,
                 this.fishingManifest,
                 owner,
                 availabilityInfo

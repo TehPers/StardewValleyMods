@@ -7,6 +7,7 @@ using StardewValley.Buildings;
 using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api.Weighted;
 
@@ -22,6 +23,9 @@ namespace TehPers.FishingOverhaul.Api
         /// ponds.
         /// </summary>
         /// <param name="location">The location being fished in.</param>
+        /// <param name="time">The time of day to get fish for.</param>
+        /// <param name="seasons">The seasons to get fish for.</param>
+        /// <param name="weathers">The weathers to get fish for.</param>
         /// <param name="waterTypes">The water types to get fish for.</param>
         /// <param name="fishingLevel">The <see cref="Farmer"/>'s fishing level.</param>
         /// <param name="depth">The bobber depth.</param>
@@ -29,6 +33,9 @@ namespace TehPers.FishingOverhaul.Api
         /// <returns>The catchable fish and their chances of being caught.</returns>
         IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(
             GameLocation location,
+            int time,
+            Seasons seasons,
+            Weathers weathers,
             WaterTypes waterTypes,
             int fishingLevel,
             int depth = 4,
@@ -45,6 +52,19 @@ namespace TehPers.FishingOverhaul.Api
         IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(Farmer farmer, int depth = 4)
         {
             var location = farmer.currentLocation;
+            var season = location.GetSeasonForLocation() switch
+            {
+                "spring" => Seasons.Spring,
+                "summer" => Seasons.Summer,
+                "fall" => Seasons.Fall,
+                "winter" => Seasons.Winter,
+                _ => Seasons.None,
+            };
+            var weather = Game1.isRaining switch
+            {
+                true => Weathers.Rainy,
+                false => Weathers.Sunny,
+            };
             var waterType = location.getFishingLocation(farmer.getTileLocation()) switch
             {
                 0 => WaterTypes.River,
@@ -55,6 +75,9 @@ namespace TehPers.FishingOverhaul.Api
 
             return this.GetFishChances(
                 location,
+                Game1.timeOfDay,
+                season,
+                weather,
                 waterType,
                 farmer.FishingLevel,
                 depth,
@@ -95,7 +118,7 @@ namespace TehPers.FishingOverhaul.Api
                             false when pond.currentOccupants.Value > 0 => pond.fishType.Value,
                             _ => null,
                         };
-                        return parentSheetIndex.Map(NamespacedKey.SdvObject);
+                        return parentSheetIndex.Select(NamespacedKey.SdvObject);
                     }
                 )
                 .FirstOrDefault();
@@ -105,12 +128,18 @@ namespace TehPers.FishingOverhaul.Api
         /// Gets the weighted chances of catching any trash.
         /// </summary>
         /// <param name="location">The location being fished in.</param>
+        /// <param name="time">The time of day to get fish for.</param>
+        /// <param name="seasons">The seasons to get fish for.</param>
+        /// <param name="weathers">The weathers to get fish for.</param>
         /// <param name="waterTypes">The water types to get trash for.</param>
         /// <param name="fishingLevel">The <see cref="Farmer"/>'s fishing level.</param>
         /// <param name="depth"></param>
         /// <returns>The catchable trash and their chances of being caught.</returns>
         IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(
             GameLocation location,
+            int time,
+            Seasons seasons,
+            Weathers weathers,
             WaterTypes waterTypes,
             int fishingLevel,
             int depth = 4
@@ -124,6 +153,19 @@ namespace TehPers.FishingOverhaul.Api
         public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(Farmer farmer)
         {
             var location = farmer.currentLocation;
+            var season = location.GetSeasonForLocation() switch
+            {
+                "spring" => Seasons.Spring,
+                "summer" => Seasons.Summer,
+                "fall" => Seasons.Fall,
+                "winter" => Seasons.Winter,
+                _ => Seasons.None,
+            };
+            var weather = Game1.isRaining switch
+            {
+                true => Weathers.Rainy,
+                false => Weathers.Sunny,
+            };
             var waterType = location.getFishingLocation(farmer.getTileLocation()) switch
             {
                 0 => WaterTypes.River,
@@ -132,7 +174,14 @@ namespace TehPers.FishingOverhaul.Api
                 _ => WaterTypes.All,
             };
 
-            return this.GetTrashChances(location, waterType, farmer.FishingLevel);
+            return this.GetTrashChances(
+                location,
+                Game1.timeOfDay,
+                season,
+                weather,
+                waterType,
+                farmer.FishingLevel
+            );
         }
 
         IEnumerable<string> ISimplifiedFishingApi.GetCatchableTrash(Farmer farmer)
@@ -145,12 +194,18 @@ namespace TehPers.FishingOverhaul.Api
         /// Gets the weighted chances of catching any treasure.
         /// </summary>
         /// <param name="location">The location being fished in.</param>
+        /// <param name="time">The time of day to get fish for.</param>
+        /// <param name="seasons">The seasons to get fish for.</param>
+        /// <param name="weathers">The weathers to get fish for.</param>
         /// <param name="waterTypes">The water types to get treasure for.</param>
         /// <param name="fishingLevel">The <see cref="Farmer"/>'s fishing level.</param>
         /// <param name="depth"></param>
         /// <returns>The catchable treasure and their chances of being caught.</returns>
         IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(
             GameLocation location,
+            int time,
+            Seasons seasons,
+            Weathers weathers,
             WaterTypes waterTypes,
             int fishingLevel,
             int depth = 4
@@ -164,6 +219,19 @@ namespace TehPers.FishingOverhaul.Api
         public IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(Farmer farmer)
         {
             var location = farmer.currentLocation;
+            var season = location.GetSeasonForLocation() switch
+            {
+                "spring" => Seasons.Spring,
+                "summer" => Seasons.Summer,
+                "fall" => Seasons.Fall,
+                "winter" => Seasons.Winter,
+                _ => Seasons.None,
+            };
+            var weather = Game1.isRaining switch
+            {
+                true => Weathers.Rainy,
+                false => Weathers.Sunny,
+            };
             var waterType = location.getFishingLocation(farmer.getTileLocation()) switch
             {
                 0 => WaterTypes.River,
@@ -172,7 +240,14 @@ namespace TehPers.FishingOverhaul.Api
                 _ => WaterTypes.All,
             };
 
-            return this.GetTreasureChances(location, waterType, farmer.FishingLevel);
+            return this.GetTreasureChances(
+                location,
+                Game1.timeOfDay,
+                season,
+                weather,
+                waterType,
+                farmer.FishingLevel
+            );
         }
 
         IEnumerable<string> ISimplifiedFishingApi.GetCatchableTreasure(Farmer farmer)

@@ -148,8 +148,8 @@ Fish, trash, and treasure have availability information to determine when they c
 
 Some locations have multiple names. For example, the mines have the location name "UndergroundMine", but each floor has the same location name. To specify which floor an item should be available on, use the name "UndergroundMine/N", where "N" is the floor number. Each floor can be referenced by either the name "UndergroundMine" or "UndergroundMine/N". This means that an item can be added to all floors in the mines by including it in the location "UndergroundMine", and can optionally be excluded from specific floors with "UndergroundMine/N".
 
-[fish-traits schema]: https://github.com/TehPers/StardewValleyMods/raw/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fishTraits.schema.json
-[fish schema]: https://github.com/TehPers/StardewValleyMods/raw/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fish.schema.json
-[trash schema]: https://github.com/TehPers/StardewValleyMods/raw/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/trash.schema.json
-[treasure schema]: https://github.com/TehPers/StardewValleyMods/raw/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/treasure.schema.json
+[fish-traits schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fishTraits.schema.json
+[fish schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fish.schema.json
+[trash schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/trash.schema.json
+[treasure schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/treasure.schema.json
 [conditions]: https://github.com/Pathoschild/StardewMods/blob/stable/ContentPatcher/docs/author-tokens-guide.md#conditions

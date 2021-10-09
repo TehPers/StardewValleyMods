@@ -8,6 +8,7 @@ using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
@@ -81,6 +82,9 @@ namespace TehPers.FishingOverhaul.Services
 
         public IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(
             GameLocation location,
+            int time,
+            Seasons seasons,
+            Weathers weathers,
             WaterTypes waterTypes,
             int fishingLevel,
             int depth = 4,
@@ -97,7 +101,15 @@ namespace TehPers.FishingOverhaul.Services
             {
                 return this.fishEntries.SelectMany(
                         manager => manager.ChanceCalculator
-                            .GetWeightedChance(fishingLevel, locationNames, waterTypes, depth)
+                            .GetWeightedChance(
+                                time,
+                                seasons,
+                                weathers,
+                                fishingLevel,
+                                locationNames,
+                                waterTypes,
+                                depth
+                            )
                             .AsEnumerable()
                             .ToWeighted(
                                 weightedChance => weightedChance,
@@ -113,7 +125,16 @@ namespace TehPers.FishingOverhaul.Services
             IEnumerable<IWeightedValue<NamespacedKey>> GetLocationFish(string locationName)
             {
                 return Game1.getLocationFromName(locationName) is { } location
-                    ? this.GetFishChances(location, waterTypes, fishingLevel, depth, rod)
+                    ? this.GetFishChances(
+                        location,
+                        time,
+                        seasons,
+                        weathers,
+                        waterTypes,
+                        fishingLevel,
+                        depth,
+                        rod
+                    )
                     : Enumerable.Empty<IWeightedValue<NamespacedKey>>();
             }
 
@@ -176,6 +197,9 @@ namespace TehPers.FishingOverhaul.Services
 
         public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(
             GameLocation location,
+            int time,
+            Seasons seasons,
+            Weathers weathers,
             WaterTypes waterTypes,
             int fishingLevel,
             int depth = 4
@@ -189,8 +213,16 @@ namespace TehPers.FishingOverhaul.Services
 
             return this.trashEntries.SelectMany(
                     manager => manager.ChanceCalculator
-                        .GetWeightedChance(fishingLevel, locationNames, waterTypes, depth)
-                        .Map(weight => (entry: manager.Entry, weight))
+                        .GetWeightedChance(
+                            time,
+                            seasons,
+                            weathers,
+                            fishingLevel,
+                            locationNames,
+                            waterTypes,
+                            depth
+                        )
+                        .Select(weight => (entry: manager.Entry, weight))
                         .AsEnumerable()
                 )
                 .ToWeighted(item => item.weight, item => item.entry)
@@ -199,6 +231,9 @@ namespace TehPers.FishingOverhaul.Services
 
         public IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(
             GameLocation location,
+            int time,
+            Seasons seasons,
+            Weathers weathers,
             WaterTypes waterTypes,
             int fishingLevel,
             int depth = 4
@@ -212,8 +247,16 @@ namespace TehPers.FishingOverhaul.Services
 
             return this.treasureEntries.SelectMany(
                     manager => manager.ChanceCalculator
-                        .GetWeightedChance(fishingLevel, locationNames, waterTypes, depth)
-                        .Map(weight => (entry: manager.Entry, weight))
+                        .GetWeightedChance(
+                            time,
+                            seasons,
+                            weathers,
+                            fishingLevel,
+                            locationNames,
+                            waterTypes,
+                            depth
+                        )
+                        .Select(weight => (entry: manager.Entry, weight))
                         .AsEnumerable()
                 )
                 .ToWeighted(item => item.weight, item => item.entry)

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using StardewModdingAPI;
 using TehPers.Core.Api.Content;
 using TehPers.Core.Api.DI;
-using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
@@ -16,13 +15,6 @@ namespace TehPers.FishingOverhaul.Services
 {
     internal sealed class DefaultFishingSource : IFishingContentSource
     {
-        private static readonly Seasons[] formatSeasons =
-        {
-            Seasons.Spring, Seasons.Summer, Seasons.Fall, Seasons.Winter
-        };
-
-        private static readonly Weathers[] formatWeathers = { Weathers.Sunny, Weathers.Rainy };
-
         private readonly IManifest manifest;
         private readonly IMonitor monitor;
         private readonly IAssetProvider assetProvider;
@@ -161,37 +153,15 @@ namespace TehPers.FishingOverhaul.Services
 
                         this.fishEntries.AddRange(
                             availabilities.Select(
-                                availability =>
-                                {
-                                    // Clone the 'When' condition
-                                    var when = new Dictionary<string, string>();
-                                    foreach (var (key, value) in availability.When)
+                                availability => new FishEntry(
+                                    NamespacedKey.SdvObject(fishId),
+                                    availability with
                                     {
-                                        when[key] = value;
+                                        Seasons = seasons,
+                                        WaterTypes = waterTypes,
+                                        IncludeLocations = ImmutableArray.Create(locationName)
                                     }
-
-                                    // Add other conditions
-                                    if (DefaultFishingSource.FormatSeasons(
-                                        seasons,
-                                        out var formattedSeasons
-                                    ))
-                                    {
-                                        when["Season"] = formattedSeasons;
-                                    }
-
-                                    return new FishEntry(
-                                        NamespacedKey.SdvObject(fishId),
-                                        new(availability.BaseChance)
-                                        {
-                                            DepthMultiplier = availability.DepthMultiplier,
-                                            MaxDepth = availability.MaxDepth,
-                                            WaterTypes = waterTypes,
-                                            MinFishingLevel = availability.MinFishingLevel,
-                                            IncludeLocations = new() { locationName },
-                                            When = when,
-                                        }
-                                    );
-                                }
+                                )
                             )
                         );
                     }
@@ -233,14 +203,12 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
+                            StartTime = 600,
+                            EndTime = 2000,
+                            Seasons = Seasons.Summer,
                             WaterTypes = WaterTypes.River,
                             MinFishingLevel = 5,
-                            IncludeLocations = new() { "Beach" },
-                            When = new()
-                            {
-                                ["Time"] = "{{Range: 0600, 2000}}",
-                                ["Season"] = "Summer",
-                            },
+                            IncludeLocations = ImmutableArray.Create("Beach"),
                         }
                     ),
                     new(
@@ -248,12 +216,9 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
+                            Seasons = Seasons.Fall,
                             MinFishingLevel = 3,
-                            IncludeLocations = new() { "Town" },
-                            When = new()
-                            {
-                                ["Season"] = "Fall",
-                            }
+                            IncludeLocations = ImmutableArray.Create("Town"),
                         }
                     ),
                     new(
@@ -261,15 +226,13 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
+                            StartTime = 600,
+                            EndTime = 2300,
+                            Seasons = Seasons.Spring,
+                            Weathers = Weathers.Rainy,
                             WaterTypes = WaterTypes.PondOrOcean,
                             MinFishingLevel = 10,
-                            IncludeLocations = new() { "Mountain" },
-                            When = new()
-                            {
-                                ["Time"] = "{{Range: 0600, 2300}}",
-                                ["Season"] = "Spring",
-                                ["Weather"] = "Rain, Storm",
-                            }
+                            IncludeLocations = ImmutableArray.Create("Mountain"),
                         }
                     ),
                     new(
@@ -277,7 +240,7 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            IncludeLocations = new() { "Sewer" },
+                            IncludeLocations = ImmutableArray.Create("Sewer"),
                         }
                     ),
                     new(
@@ -285,14 +248,12 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
+                            StartTime = 600,
+                            EndTime = 2000,
+                            Seasons = Seasons.Winter,
                             WaterTypes = WaterTypes.River,
                             MinFishingLevel = 6,
-                            IncludeLocations = new() { "Forest" },
-                            When = new()
-                            {
-                                ["Time"] = "{{Range: 0600, 2000}}",
-                                ["Season"] = "Winter",
-                            }
+                            IncludeLocations = ImmutableArray.Create("Forest"),
                         }
                     ),
 
@@ -302,11 +263,10 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            IncludeLocations = new()
-                            {
+                            IncludeLocations = ImmutableArray.Create(
                                 "UndergroundMine/0",
                                 "UndergroundMine/10"
-                            },
+                            ),
                         }
                     ),
                     new(
@@ -314,7 +274,7 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.015)
                         {
                             DepthMultiplier = 0.015 / 4,
-                            IncludeLocations = new() { "UndergroundMine/40" },
+                            IncludeLocations = ImmutableArray.Create("UndergroundMine/40"),
                         }
                     ),
                     new(
@@ -322,7 +282,7 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.01)
                         {
                             DepthMultiplier = 0.01 / 4,
-                            IncludeLocations = new() { "UndergroundMine/80" },
+                            IncludeLocations = ImmutableArray.Create("UndergroundMine/80"),
                         }
                     ),
 
@@ -332,7 +292,7 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.05)
                         {
                             DepthMultiplier = 0.05 / 4,
-                            IncludeLocations = new() { "Submarine" },
+                            IncludeLocations = ImmutableArray.Create("Submarine"),
                         }
                     ),
                     new(
@@ -340,7 +300,7 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.08)
                         {
                             DepthMultiplier = 0.08 / 4,
-                            IncludeLocations = new() { "Submarine" },
+                            IncludeLocations = ImmutableArray.Create("Submarine"),
                         }
                     ),
                     new(
@@ -348,7 +308,7 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.05)
                         {
                             DepthMultiplier = 0.05 / 4,
-                            IncludeLocations = new() { "Submarine" },
+                            IncludeLocations = ImmutableArray.Create("Submarine"),
                         }
                     ),
                     new(
@@ -356,7 +316,7 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.28)
                         {
                             DepthMultiplier = 0.28 / 4,
-                            IncludeLocations = new() { "Submarine" },
+                            IncludeLocations = ImmutableArray.Create("Submarine"),
                         }
                     ),
                     new(
@@ -364,7 +324,7 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.18)
                         {
                             DepthMultiplier = 0.18 / 4,
-                            IncludeLocations = new() { "Submarine" },
+                            IncludeLocations = ImmutableArray.Create("Submarine"),
                         }
                     ),
                     new(
@@ -372,7 +332,7 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.1)
                         {
                             DepthMultiplier = 0.1 / 4,
-                            IncludeLocations = new() { "Submarine" },
+                            IncludeLocations = ImmutableArray.Create("Submarine"),
                         }
                     ),
                 }
@@ -380,60 +340,6 @@ namespace TehPers.FishingOverhaul.Services
 
             // Request reload
             this.ReloadRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        private static bool FormatSeasons(
-            Seasons seasons,
-            [NotNullWhen(true)] out string? formattedSeasons
-        )
-        {
-            switch (seasons)
-            {
-                case Seasons.None:
-                    formattedSeasons = "None";
-                    return true;
-                case Seasons.All:
-                    formattedSeasons = default;
-                    return false;
-                default:
-                    formattedSeasons = string.Join(
-                        ", ",
-                        DefaultFishingSource.formatSeasons.Where(s => seasons.HasFlag(s))
-                    );
-                    return true;
-            }
-        }
-
-        private static bool FormatWeathers(
-            Weathers weathers,
-            [NotNullWhen(true)] out string? formattedWeathers
-        )
-        {
-            switch (weathers)
-            {
-                case Weathers.None:
-                    formattedWeathers = "None";
-                    return true;
-                case Weathers.All:
-                    formattedWeathers = default;
-                    return false;
-                default:
-                    formattedWeathers = string.Join(
-                        ", ",
-                        DefaultFishingSource.formatWeathers.Where(w => weathers.HasFlag(w))
-                            .SelectMany(
-                                w => w switch
-                                {
-                                    Weathers.Sunny => new[] { "Sun" },
-                                    Weathers.Rainy => new[] { "Rain", "Storm" },
-                                    Weathers.None => Array.Empty<string>(),
-                                    Weathers.All => Array.Empty<string>(),
-                                    _ => throw new ArgumentOutOfRangeException(nameof(w), w, null)
-                                }
-                            )
-                    );
-                    return true;
-            }
         }
 
         private static bool TryParseFishInfo(
@@ -529,23 +435,15 @@ namespace TehPers.FishingOverhaul.Services
                     continue;
                 }
 
-                var when = new Dictionary<string, string>
-                {
-                    ["Time"] = $"{{{{ Range: {startTime:0000}, {endTime:0000} }}}}",
-                };
-
-                if (DefaultFishingSource.FormatWeathers(weathers, out var formattedWeathers))
-                {
-                    when["Weather"] = formattedWeathers;
-                }
-
                 partialAvailability.Add(
                     new(weightedChance)
                     {
                         DepthMultiplier = depthMultiplier,
                         MaxDepth = maxDepth,
+                        StartTime = startTime,
+                        EndTime = endTime,
+                        Weathers = weathers,
                         MinFishingLevel = minFishingLevel,
-                        When = when,
                     }
                 );
             }
@@ -563,73 +461,65 @@ namespace TehPers.FishingOverhaul.Services
                 // Joja Cola
                 new(
                     NamespacedKey.SdvObject(167),
-                    new(1.0D) { ExcludeLocations = new() { "Submarine" } }
+                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
                 ),
                 // Trash
                 new(
                     NamespacedKey.SdvObject(168),
-                    new(1.0D) { ExcludeLocations = new() { "Submarine" } }
+                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
                 ),
                 // Driftwood
                 new(
                     NamespacedKey.SdvObject(169),
-                    new(1.0D) { ExcludeLocations = new() { "Submarine" } }
+                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
                 ),
                 // Broken Glasses
                 new(
                     NamespacedKey.SdvObject(170),
-                    new(1.0D) { ExcludeLocations = new() { "Submarine" } }
+                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
                 ),
                 // Broken CD
                 new(
                     NamespacedKey.SdvObject(171),
-                    new(1.0D) { ExcludeLocations = new() { "Submarine" } }
+                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
                 ),
                 // Soggy Newspaper
                 new(
                     NamespacedKey.SdvObject(172),
-                    new(1.0D) { ExcludeLocations = new() { "Submarine" } }
+                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
                 ),
                 // Seaweed
                 new(
                     NamespacedKey.SdvObject(152),
-                    new(1.0D) { ExcludeLocations = new() { "Submarine" } }
+                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
                 ),
                 // Green Algae
                 new(
                     NamespacedKey.SdvObject(153),
-                    new(1.0D)
-                    {
-                        ExcludeLocations = new()
-                        {
-                            "Farm",
-                            "Submarine"
-                        }
-                    }
+                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Farm", "Submarine") }
                 ),
                 // White Algae
                 new(
                     NamespacedKey.SdvObject(157),
                     new(1.0D)
                     {
-                        IncludeLocations = new()
-                        {
+                        IncludeLocations = ImmutableArray.Create(
                             "BugLand",
                             "Sewers",
                             "WitchSwamp",
-                            "UndergroundMines",
-                        }
+                            "UndergroundMines"
+                        )
                     }
                 ),
                 // Pearl
                 new(
                     NamespacedKey.SdvObject(797),
-                    new(0.01D) { IncludeLocations = new() { "Submarine" } }
+                    new(0.01D) { IncludeLocations = ImmutableArray.Create("Submarine") }
                 ),
                 // Seaweed
                 new(
                     NamespacedKey.SdvObject(152),
-                    new(0.99D) { IncludeLocations = new() { "Submarine" } }
+                    new(0.99D) { IncludeLocations = ImmutableArray.Create("Submarine") }
                 ),
             };
         }

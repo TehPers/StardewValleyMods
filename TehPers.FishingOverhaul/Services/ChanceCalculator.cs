@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ContentPatcher;
 using StardewModdingAPI;
+using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Gameplay;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Services
@@ -11,7 +13,7 @@ namespace TehPers.FishingOverhaul.Services
         where T : AvailabilityInfo
     {
         private readonly T availabilityInfo;
-        private readonly IManagedConditions managedConditions;
+        private readonly IManagedConditions? managedConditions;
 
         public ChanceCalculator(
             IContentPatcherAPI contentPatcherApi,
@@ -35,33 +37,52 @@ namespace TehPers.FishingOverhaul.Services
                     nameof(fishingManifest)
                 );
 
-            this.managedConditions = contentPatcherApi.ParseConditions(
-                owner,
-                availabilityInfo.When,
-                version,
-                new[] { fishingManifest.UniqueID }
-            );
+            if (availabilityInfo.When.Any())
+            {
+                this.managedConditions = contentPatcherApi.ParseConditions(
+                    owner,
+                    availabilityInfo.When,
+                    version,
+                    new[] { fishingManifest.UniqueID }
+                );
+            }
         }
 
         public double? GetWeightedChance(
+            int time,
+            Seasons seasons,
+            Weathers weathers,
             int fishingLevel,
             IEnumerable<string> locations,
             WaterTypes waterTypes = WaterTypes.All,
             int depth = 4
         )
         {
-            this.managedConditions.UpdateContext();
-            if (!this.managedConditions.IsMatch)
-            {
-                return null;
-            }
-
             return this.availabilityInfo.GetWeightedChance(
-                fishingLevel,
-                locations,
-                waterTypes,
-                depth
-            );
+                    time,
+                    seasons,
+                    weathers,
+                    fishingLevel,
+                    locations,
+                    waterTypes,
+                    depth
+                )
+                .Where(
+                    _ =>
+                    {
+                        if (this.managedConditions is not { } conditions)
+                        {
+                            return true;
+                        }
+
+                        if (conditions.IsMutable)
+                        {
+                            conditions.UpdateContext();
+                        }
+
+                        return conditions.IsMatch;
+                    }
+                );
         }
     }
 }
