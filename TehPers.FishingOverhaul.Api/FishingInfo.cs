@@ -70,7 +70,7 @@ namespace TehPers.FishingOverhaul.Api
         /// </summary>
         public Vector2 BobberPosition { get; init; } =
             User.CurrentTool is FishingRod { bobber: { Value: var bobberPos } }
-                ? bobberPos
+                ? bobberPos / 64
                 : User.getStandingPosition();
 
         /// <summary>

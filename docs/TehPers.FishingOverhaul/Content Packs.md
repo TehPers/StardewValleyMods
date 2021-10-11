@@ -50,18 +50,18 @@ The `fish.json` file configures where and when fish can be caught.
 
 Fish entries each configure when a specific fish can be made available. Multiple entries may refer to the same fish, allowing complex customization over when a fish is available and what the chances of catching that fish are.
 
-| Property           | Type     | Required | Default | Description                               |
-| ------------------ | -------- | -------- | ------- | ----------------------------------------- |
-| `FishKey`          | `string` | Yes      | N/A     | The namespaced key for the fish.          |
-| `AvailabilityInfo` | `object` | Yes      | N/A     | The fish availability data for the entry. |
+| Property                    | Type     | Required | Default | Description                               |
+| --------------------------- | -------- | -------- | ------- | ----------------------------------------- |
+| [`FishKey`][namespaced key] | `string` | Yes      | N/A     | The namespaced key for the fish.          |
+| `AvailabilityInfo`          | `object` | Yes      | N/A     | The fish availability data for the entry. |
 
 Fish availability determines when a fish is available and includes all the normal availability properties as well.
 
-| Property          | Type      | Required | Default | Description                                                                                                                          |
-| ----------------- | --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `DepthMultiplier` | `number`  | No       | 0.1     | Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1. Default is 0.1. |
-| `MaxDepth`        | `integer` | No       | 4       | The required fishing depth to maximize the chances of catching the fish. Default is 4.                                               |
-| ...               | ...       | ...      | ...     | Other common availability properties.                                                                                                |
+| Property                               | Type      | Required | Default | Description                                                                                                                          |
+| -------------------------------------- | --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `DepthMultiplier`                      | `number`  | No       | 0.1     | Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1. Default is 0.1. |
+| `MaxDepth`                             | `integer` | No       | 4       | The required fishing depth to maximize the chances of catching the fish. Default is 4.                                               |
+| [Common fields...][`availabilityinfo`] | ...       | ...      | ...     | Other common availability properties.                                                                                                |
 
 ## Trash
 
@@ -76,10 +76,10 @@ The `trash.json` file configures where and when trash can be caught.
 
 Trash entries each configure when a specific trash can be made available. Multiple entries may refer to the same trash item, allowing complex customization over when a trash is available and what the chances of catching that trash are.
 
-| Property           | Type     | Required | Default | Description                            |
-| ------------------ | -------- | -------- | ------- | -------------------------------------- |
-| `TrashKey`         | `string` | Yes      | N/A     | The namespaced key for the trash item. |
-| `AvailabilityInfo` | `object` | Yes      | N/A     | The availability data for the entry.   |
+| Property                     | Type     | Required | Default | Description                            |
+| ---------------------------- | -------- | -------- | ------- | -------------------------------------- |
+| [`TrashKey`][namespaced key] | `string` | Yes      | N/A     | The namespaced key for the trash item. |
+| [`AvailabilityInfo`]         | `object` | Yes      | N/A     | The availability data for the entry.   |
 
 The availability uses the common availability properties.
 
@@ -96,13 +96,13 @@ The `treasure.json` file configures where and when treasure can be caught.
 
 Treasure entries each configure when a specific treasure can be made available. Multiple entries may refer to the same treasure item, allowing complex customization over when a treasure is available and what the chances of catching that treasure are.
 
-| Property           | Type      | Required | Default | Description                                                                 |
-| ------------------ | --------- | -------- | ------- | --------------------------------------------------------------------------- |
-| `AvailabilityInfo` | `object`  | Yes      | N/A     | The availability data for the entry.                                        |
-| `ItemKeys`         | `array`   | Yes      | N/A     | The possible namespaced keys for the loot. The item key is chosen randomly. |
-| `MinQuantity`      | `integer` | No       | 1       | The minimum quantity of the item. This is only valid for stackable items.   |
-| `MaxQuantity`      | `integer` | No       | 1       | The maximum quantity of the item. This is only valid for stackable items.   |
-| `AllowDuplicates`  | `boolean` | No       | `true`  | Whether this can be found multiple times in one chest.                      |
+| Property                     | Type      | Required | Default | Description                                                                 |
+| ---------------------------- | --------- | -------- | ------- | --------------------------------------------------------------------------- |
+| [`AvailabilityInfo`]         | `object`  | Yes      | N/A     | The availability data for the entry.                                        |
+| [`ItemKeys`][namespaced key] | `array`   | Yes      | N/A     | The possible namespaced keys for the loot. The item key is chosen randomly. |
+| `MinQuantity`                | `integer` | No       | 1       | The minimum quantity of the item. This is only valid for stackable items.   |
+| `MaxQuantity`                | `integer` | No       | 1       | The maximum quantity of the item. This is only valid for stackable items.   |
+| `AllowDuplicates`            | `boolean` | No       | `true`  | Whether this can be found multiple times in one chest.                      |
 
 The availability uses the common availability properties.
 
@@ -146,12 +146,31 @@ Fish, trash, and treasure have availability information to determine when they c
 | `MaxFishingLevel`  | `integer?` | No       | `null`    | Maximum fishing level required to see this, or null for no max.                                                                |
 | `IncludeLocations` | `array`    | No       | `[]`      | List of locations this should be available in. (see below)                                                                     |
 | `ExcludeLocations` | `array`    | No       | `[]`      | List of locations this should not be available in. This takes priority over `IncludeLocations`.                                |
+| `Position`         | `object`   | No       | `{}`      | Bobber tile position constraints for the availability.                                                                         |
 | `When`             | `object`   | No       | `{}`      | Content Patcher [conditions] for when this should be available.                                                                |
 
 `IncludeLocations` and `ExcludeLocations` are arrays of location names. If `IncludeLocations` is empty, then it is assumed that all locations (except locations in `ExcludeLocations`) are valid. Additionally, `ExcludeLocations` takes priority over `IncludeLocations`. If a location appears in both arrays, then the item will not be available at that location.
 
 Some locations have multiple names. For example, the mines have the location name "UndergroundMine", but each floor has the same location name. To specify which floor an item should be available on, use the name "UndergroundMine/N", where "N" is the floor number. Each floor can be referenced by either the name "UndergroundMine" or "UndergroundMine/N". This means that an item can be added to all floors in the mines by including it in the location "UndergroundMine", and can optionally be excluded from specific floors with "UndergroundMine/N".
 
+Position constraints control where a bobber is allowed to be on a map for the item to be available:
+
+| Property | Type      | Required | Default | Description                       |
+| -------- | --------- | -------- | ------- | --------------------------------- |
+| `X`      | `object?` | No       | `null`  | Constraints for the x-coordinate. |
+| `Y`      | `object?` | No       | `null`  | Constraints for the y-coordinate. |
+
+Coordinate constraints give a bit of flexibility on what coordinates are allowed:
+
+| Property        | Type      | Required | Default | Description                                             |
+| --------------- | --------- | -------- | ------- | ------------------------------------------------------- |
+| `GreaterThan`   | `number?` | No       | `null`  | Coordinate value must be greater than this.             |
+| `GreaterThanEq` | `number?` | No       | `null`  | Coordinate value must be greater than or equal to this. |
+| `LessThan`      | `number?` | No       | `null`  | Coordinate value must be less than this.                |
+| `LessThanEq`    | `number?` | No       | `null`  | Coordinate value must be less than or equal to this.    |
+
+[namespaced key]: #Namespaced%20key
+[`availabilityinfo`]: #Availability
 [fish-traits schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fishTraits.schema.json
 [fish schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fish.schema.json
 [trash schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/trash.schema.json
