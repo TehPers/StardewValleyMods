@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using Namotion.Reflection;
@@ -86,7 +87,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
 
             // Generate schema
             var definitionMap = new DefinitionMap(knownDefinitions);
-            var schema = definitionMap.Register(typeof(T).ToContextualType());
+            var schema = definitionMap.Register(typeof(T).ToContextualType(), true);
 
             // Add standard properties
             schema["$schema"] = "http://json-schema.org/draft-04/schema#";

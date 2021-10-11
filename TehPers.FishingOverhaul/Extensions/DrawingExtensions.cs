@@ -112,8 +112,8 @@ namespace TehPers.FishingOverhaul.Extensions
                 Wallpaper { isFloor: { Value: true } } => new FlooringDrawingProperties(),
                 // Wallpaper
                 Wallpaper => new WallpaperDrawingProperties(),
-                // TODO: Furniture
-                Furniture { sourceRect: { Value: var sourceRect } } f => new
+                // Furniture
+                Furniture { sourceRect: { Value: var sourceRect } } => new
                     FurnitureDrawingProperties(
                         new(sourceRect.Width, sourceRect.Height),
                         (sourceRect.Width / 16, sourceRect.Height / 16) switch

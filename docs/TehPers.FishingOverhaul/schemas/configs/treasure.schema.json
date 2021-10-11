@@ -1,9 +1,6 @@
 ﻿{
   "oneOf": [
     {
-      "type": "null"
-    },
-    {
       "$ref": "#/definitions/TehPers.FishingOverhaul.Config.TreasureConfig"
     }
   ],
@@ -21,11 +18,7 @@
           "description": "Maximum amount of treasure you can find in a single chest while fishing."
         },
         "AllowDuplicateLoot": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/System.Boolean"
-            }
-          ],
+          "type": "boolean",
           "description": "Whether the treasure randomizer should be allowed to select the same loot option multiple times. Some loot can't be repeated even if duplicate loot is enabled."
         },
         "CatchSpeed": {
@@ -64,10 +57,6 @@
           "description": "Optional schema URL."
         }
       }
-    },
-    "System.Boolean": {
-      "type": "object",
-      "additionalProperties": false
     },
     "TehPers.FishingOverhaul.Config.TreasureChances": {
       "type": "object",

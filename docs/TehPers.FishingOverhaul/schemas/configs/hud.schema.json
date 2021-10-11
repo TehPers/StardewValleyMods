@@ -1,9 +1,6 @@
 ﻿{
   "oneOf": [
     {
-      "type": "null"
-    },
-    {
       "$ref": "#/definitions/TehPers.FishingOverhaul.Config.HudConfig"
     }
   ],
@@ -15,11 +12,7 @@
       "additionalProperties": false,
       "properties": {
         "ShowFishingHud": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/System.Boolean"
-            }
-          ],
+          "type": "boolean",
           "description": "Whether or not to show current streak, chance for treasure, chance for each fish, etc. while fishing."
         },
         "TopLeftX": {
@@ -52,10 +45,6 @@
           "description": "Optional schema URL."
         }
       }
-    },
-    "System.Boolean": {
-      "type": "object",
-      "additionalProperties": false
     }
   }
 }

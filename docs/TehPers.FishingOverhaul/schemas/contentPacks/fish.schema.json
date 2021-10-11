@@ -1,9 +1,6 @@
 ﻿{
   "oneOf": [
     {
-      "type": "null"
-    },
-    {
       "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.FishPack"
     }
   ],
@@ -91,13 +88,15 @@
       "properties": {
         "DepthMultiplier": {
           "type": "number",
-          "description": "Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1."
+          "description": "Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1.",
+          "default": 0.1
         },
         "MaxDepth": {
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "The required fishing depth to maximize the chances of catching the fish."
+          "description": "The required fishing depth to maximize the chances of catching the fish.",
+          "default": 4
         },
         "BaseChance": {
           "type": "number",
@@ -107,13 +106,15 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Time this becomes available (inclusive)."
+          "description": "Time this becomes available (inclusive).",
+          "default": 600
         },
         "EndTime": {
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Time this is no longer available (exclusive)."
+          "description": "Time this is no longer available (exclusive).",
+          "default": 2600
         },
         "Seasons": {
           "type": "array",
@@ -152,7 +153,8 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Required fishing level to see this."
+          "description": "Required fishing level to see this.",
+          "default": 0
         },
         "MaxFishingLevel": {
           "oneOf": [
@@ -165,7 +167,8 @@
               "maximum": 2147483647
             }
           ],
-          "description": "Maximum fishing level required to see this, or null for no max."
+          "description": "Maximum fishing level required to see this, or null for no max.",
+          "default": null
         },
         "IncludeLocations": {
           "type": "array",

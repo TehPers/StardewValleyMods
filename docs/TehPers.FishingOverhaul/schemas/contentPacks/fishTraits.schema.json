@@ -1,9 +1,6 @@
 ﻿{
   "oneOf": [
     {
-      "type": "null"
-    },
-    {
       "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.FishTraitsPack"
     }
   ],
@@ -78,12 +75,9 @@
           "description": "The maximum size the fish can be."
         },
         "IsLegendary": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/System.Boolean"
-            }
-          ],
-          "description": "Whether the fish is legendary."
+          "type": "boolean",
+          "description": "Whether the fish is legendary.",
+          "default": false
         }
       }
     },
@@ -96,10 +90,6 @@
         "Sink",
         "Floater"
       ]
-    },
-    "System.Boolean": {
-      "type": "object",
-      "additionalProperties": false
     }
   }
 }

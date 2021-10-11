@@ -1,9 +1,6 @@
 ﻿{
   "oneOf": [
     {
-      "type": "null"
-    },
-    {
       "$ref": "#/definitions/TehPers.FishingOverhaul.Config.FishConfig"
     }
   ],
@@ -15,27 +12,15 @@
       "additionalProperties": false,
       "properties": {
         "ShouldOverrideLegendaries": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/System.Boolean"
-            }
-          ],
+          "type": "boolean",
           "description": "Whether this mod affects legendary fish at all. If false, legendary fish will be caught as though this mod were not installed. This also affects legendary fish addedthrough other mods."
         },
         "AllowFishOnAllFarms": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/System.Boolean"
-            }
-          ],
+          "type": "boolean",
           "description": "Whether all farm types should have fish."
         },
         "ShowFishInMinigame": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/System.Boolean"
-            }
-          ],
+          "type": "boolean",
           "description": "Whether to show the fish being caught in the fishing minigame."
         },
         "CatchSpeed": {
@@ -91,10 +76,6 @@
           "description": "Optional schema URL."
         }
       }
-    },
-    "System.Boolean": {
-      "type": "object",
-      "additionalProperties": false
     },
     "TehPers.FishingOverhaul.Config.FishingChances": {
       "type": "object",

@@ -1,9 +1,6 @@
 ﻿{
   "oneOf": [
     {
-      "type": "null"
-    },
-    {
       "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.TreasurePack"
     }
   ],
@@ -64,21 +61,20 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "The minimum quantity of this item. This is only valid for stackable items."
+          "description": "The minimum quantity of this item. This is only valid for stackable items.",
+          "default": 1
         },
         "MaxQuantity": {
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "The maximum quantity of this item. This is only valid for stackable items."
+          "description": "The maximum quantity of this item. This is only valid for stackable items.",
+          "default": 1
         },
         "AllowDuplicates": {
-          "oneOf": [
-            {
-              "$ref": "#/definitions/System.Boolean"
-            }
-          ],
-          "description": "Whether this can be found multiple times in one chest."
+          "type": "boolean",
+          "description": "Whether this can be found multiple times in one chest.",
+          "default": true
         },
         "AvailabilityInfo": {
           "oneOf": [
@@ -105,10 +101,6 @@
       "type": "string",
       "pattern": "(?<namespace>[^:].+):(?<key>.*)"
     },
-    "System.Boolean": {
-      "type": "object",
-      "additionalProperties": false
-    },
     "TehPers.FishingOverhaul.Api.Content.AvailabilityInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -124,13 +116,15 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Time this becomes available (inclusive)."
+          "description": "Time this becomes available (inclusive).",
+          "default": 600
         },
         "EndTime": {
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Time this is no longer available (exclusive)."
+          "description": "Time this is no longer available (exclusive).",
+          "default": 2600
         },
         "Seasons": {
           "type": "array",
@@ -169,7 +163,8 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Required fishing level to see this."
+          "description": "Required fishing level to see this.",
+          "default": 0
         },
         "MaxFishingLevel": {
           "oneOf": [
@@ -182,7 +177,8 @@
               "maximum": 2147483647
             }
           ],
-          "description": "Maximum fishing level required to see this, or null for no max."
+          "description": "Maximum fishing level required to see this, or null for no max.",
+          "default": null
         },
         "IncludeLocations": {
           "type": "array",

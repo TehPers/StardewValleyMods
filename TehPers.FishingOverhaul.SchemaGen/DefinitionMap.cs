@@ -14,6 +14,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
     {
         private static readonly Dictionary<Type, JObject> predefinedSchemas = new()
         {
+            [typeof(bool)] = new() { ["type"] = "boolean" },
             [typeof(string)] = new() { ["type"] = "string" },
             [typeof(byte)] = new()
             {
@@ -131,9 +132,9 @@ namespace TehPers.FishingOverhaul.SchemaGen
             return this.Definitions.TryAdd(this.GetDefinitionName(type), schema);
         }
 
-        public JObject Register(ContextualType contextualType)
+        public JObject Register(ContextualType contextualType, bool forceNotNull = false)
         {
-            var schemaChoices = this.CreateSchemas(contextualType).ToList();
+            var schemaChoices = this.CreateSchemas(contextualType, forceNotNull).ToList();
             if (schemaChoices.Count == 1 && !schemaChoices[0].ContainsKey("$ref"))
             {
                 // Single choice - just return the definition itself
@@ -153,10 +154,10 @@ namespace TehPers.FishingOverhaul.SchemaGen
             };
         }
 
-        private IEnumerable<JObject> CreateSchemas(ContextualType contextualType)
+        private IEnumerable<JObject> CreateSchemas(ContextualType contextualType, bool forceNotNull)
         {
             // Nullable types
-            if (contextualType.Nullability is not Nullability.NotNullable)
+            if (!forceNotNull && contextualType.Nullability is not Nullability.NotNullable)
             {
                 yield return new() { ["type"] = "null" };
             }
@@ -403,6 +404,14 @@ namespace TehPers.FishingOverhaul.SchemaGen
             if (description is not null)
             {
                 schema["description"] = description;
+            }
+
+            // Add default value
+            var defaultValue = info.GetCustomAttributes<DefaultValueAttribute>(true)
+                .FirstOrDefault();
+            if (defaultValue is { Value: var val })
+            {
+                schema["default"] = val is not null ? JToken.FromObject(val) : JValue.CreateNull();
             }
 
             return schema;
