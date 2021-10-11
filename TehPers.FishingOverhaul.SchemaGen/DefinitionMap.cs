@@ -107,13 +107,28 @@ namespace TehPers.FishingOverhaul.SchemaGen
 
         public Dictionary<string, JObject> Definitions { get; } = new();
 
-        private string GetDefinitionName(ContextualType refType)
+        private readonly Dictionary<string, JObject> knownDefinitions;
+
+        public DefinitionMap()
         {
-            return refType.Type.FullName
-                ?? throw new ArgumentException(
-                    "Type not supported for definitions",
-                    nameof(refType)
-                );
+            this.knownDefinitions = new();
+        }
+
+        public DefinitionMap(DefinitionMap knownDefinitions)
+        {
+            this.knownDefinitions =
+                knownDefinitions.Definitions.ToDictionary(kv => kv.Key, kv => kv.Value);
+        }
+
+        private string GetDefinitionName(Type type)
+        {
+            return type.FullName
+                ?? throw new ArgumentException("Type not supported for definitions", nameof(type));
+        }
+
+        public bool Assign(Type type, JObject schema)
+        {
+            return this.Definitions.TryAdd(this.GetDefinitionName(type), schema);
         }
 
         public JObject Register(ContextualType contextualType)
@@ -150,7 +165,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
             var innerType = contextualType.Type;
 
             // Predefined schemas
-            if (predefinedSchemas.TryGetValue(innerType, out var predefinedDef))
+            if (DefinitionMap.predefinedSchemas.TryGetValue(innerType, out var predefinedDef))
             {
                 // Predefined type
                 yield return (JObject)predefinedDef.DeepClone();
@@ -197,7 +212,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
                 if (DefinitionMap.dictionaryTypes.Contains(genericDef))
                 {
                     // TODO: support keys that can be converted to strings
-                    if (!this.Stringish(contextualType.GenericArguments[0]))
+                    if (!this.IsStringish(contextualType.GenericArguments[0]))
                     {
                         throw new InvalidOperationException(
                             "Schema generation doesn't work with dictionaries with non-string keys."
@@ -218,7 +233,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
             yield return this.CreateRef(contextualType);
         }
 
-        private bool Stringish(ContextualType contextualType)
+        private bool IsStringish(ContextualType contextualType)
         {
             // Check type
             var innerType = contextualType.Type;
@@ -235,9 +250,18 @@ namespace TehPers.FishingOverhaul.SchemaGen
 
         private JObject CreateRef(ContextualType contextualType)
         {
-            var definitionName = this.GetDefinitionName(contextualType);
+            var definitionName = this.GetDefinitionName(contextualType.Type);
+
+            // Check if already defined
             if (this.Definitions.ContainsKey(definitionName))
             {
+                return this.CreateRefObject(definitionName);
+            }
+
+            // Check if known definition
+            if (this.knownDefinitions.Remove(definitionName, out var knownDefinition))
+            {
+                this.Definitions[definitionName] = knownDefinition;
                 return this.CreateRefObject(definitionName);
             }
 
@@ -261,8 +285,8 @@ namespace TehPers.FishingOverhaul.SchemaGen
 
             return type switch
             {
-                { IsClass: true } or { IsValueType: true } => GenerateForClassOrStruct(),
                 { IsEnum: true } => GenerateForEnum(),
+                { IsClass: true } or { IsValueType: true } => GenerateForClassOrStruct(),
                 _ => throw new InvalidOperationException(),
             };
 
@@ -301,7 +325,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
 
                 var required = new JArray();
                 var properties = new JObject();
-                
+
                 // Properties
                 var propertyMembers = type
                     .GetProperties(BindingFlags.Public | BindingFlags.Instance)

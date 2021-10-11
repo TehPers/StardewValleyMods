@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="Namotion.Reflection" Version="2.0.3" />
-    <PackageReference Include="NJsonSchema" Version="10.5.2" />
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0-beta.20210916" />
   </ItemGroup>
 

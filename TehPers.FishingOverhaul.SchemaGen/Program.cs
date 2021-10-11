@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Text;
 using Namotion.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Config.ContentPacks;
 
@@ -34,23 +33,51 @@ namespace TehPers.FishingOverhaul.SchemaGen
 
         private static void WriteFishingOverhaulSchemas(string outDir)
         {
+            // Known definitions
+            var knownDefinitions = new DefinitionMap();
+            knownDefinitions.Assign(
+                typeof(NamespacedKey),
+                new()
+                {
+                    ["type"] = "string",
+                    ["pattern"] = @"(?<namespace>[^:].+):(?<key>.*)"
+                }
+            );
+
             // Content packs
             Program.WriteSchema<FishTraitsPack>(
+                knownDefinitions,
                 Path.Join(outDir, "contentPacks/fishTraits.schema.json")
             );
-            Program.WriteSchema<FishPack>(Path.Join(outDir, "contentPacks/fish.schema.json"));
-            Program.WriteSchema<TrashPack>(Path.Join(outDir, "contentPacks/trash.schema.json"));
+            Program.WriteSchema<FishPack>(
+                knownDefinitions,
+                Path.Join(outDir, "contentPacks/fish.schema.json")
+            );
+            Program.WriteSchema<TrashPack>(
+                knownDefinitions,
+                Path.Join(outDir, "contentPacks/trash.schema.json")
+            );
             Program.WriteSchema<TreasurePack>(
+                knownDefinitions,
                 Path.Join(outDir, "contentPacks/treasure.schema.json")
             );
 
             // Configs
-            Program.WriteSchema<FishConfig>(Path.Join(outDir, "configs/fish.schema.json"));
-            Program.WriteSchema<TreasureConfig>(Path.Join(outDir, "configs/treasure.schema.json"));
-            Program.WriteSchema<HudConfig>(Path.Join(outDir, "configs/hud.schema.json"));
+            Program.WriteSchema<FishConfig>(
+                knownDefinitions,
+                Path.Join(outDir, "configs/fish.schema.json")
+            );
+            Program.WriteSchema<TreasureConfig>(
+                knownDefinitions,
+                Path.Join(outDir, "configs/treasure.schema.json")
+            );
+            Program.WriteSchema<HudConfig>(
+                knownDefinitions,
+                Path.Join(outDir, "configs/hud.schema.json")
+            );
         }
 
-        private static void WriteSchema<T>(string path)
+        private static void WriteSchema<T>(DefinitionMap knownDefinitions, string path)
         {
             Console.WriteLine($"Generating {path} from {typeof(T).FullName}");
             Program.EnsurePath(path);
@@ -58,7 +85,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
             using var writer = new StreamWriter(outFile, Encoding.UTF8);
 
             // Generate schema
-            var definitionMap = new DefinitionMap();
+            var definitionMap = new DefinitionMap(knownDefinitions);
             var schema = definitionMap.Register(typeof(FishPack).ToContextualType());
 
             // Add standard properties

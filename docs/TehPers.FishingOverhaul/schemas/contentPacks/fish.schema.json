@@ -79,16 +79,8 @@
       }
     },
     "TehPers.Core.Api.Items.NamespacedKey": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "Namespace": {
-          "type": "string"
-        },
-        "Key": {
-          "type": "string"
-        }
-      }
+      "type": "string",
+      "pattern": "(?<namespace>[^:].+):(?<key>.*)"
     },
     "TehPers.FishingOverhaul.Api.Content.FishAvailabilityInfo": {
       "type": "object",
@@ -207,37 +199,34 @@
       }
     },
     "TehPers.Core.Api.Gameplay.Seasons": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "value__": {
-          "type": "integer",
-          "minimum": -2147483648,
-          "maximum": 2147483647
-        }
-      }
+      "type": "string",
+      "enum": [
+        "None",
+        "Spring",
+        "Summer",
+        "Fall",
+        "Winter",
+        "All"
+      ]
     },
     "TehPers.Core.Api.Gameplay.Weathers": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "value__": {
-          "type": "integer",
-          "minimum": -2147483648,
-          "maximum": 2147483647
-        }
-      }
+      "type": "string",
+      "enum": [
+        "None",
+        "Sunny",
+        "Rainy",
+        "All"
+      ]
     },
     "TehPers.FishingOverhaul.Api.WaterTypes": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "value__": {
-          "type": "integer",
-          "minimum": -2147483648,
-          "maximum": 2147483647
-        }
-      }
+      "type": "string",
+      "enum": [
+        "None",
+        "River",
+        "PondOrOcean",
+        "Freshwater",
+        "All"
+      ]
     },
     "TehPers.FishingOverhaul.Api.Content.PositionConstraint": {
       "type": "object",

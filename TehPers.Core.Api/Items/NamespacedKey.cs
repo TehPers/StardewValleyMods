@@ -62,14 +62,14 @@ namespace TehPers.Core.Api.Items
 
         public static bool TryParse(string raw, out NamespacedKey key)
         {
-            var parts = raw.Split(':', 2);
+            var parts = raw.Split(':');
             if (parts.Length < 2)
             {
                 key = default;
                 return false;
             }
 
-            key = new(parts[0], parts[1]);
+            key = new(parts[0], string.Join(':', parts[1..]));
             return true;
         }
 
