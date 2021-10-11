@@ -86,11 +86,11 @@ namespace TehPers.FishingOverhaul.SchemaGen
 
             // Generate schema
             var definitionMap = new DefinitionMap(knownDefinitions);
-            var schema = definitionMap.Register(typeof(FishPack).ToContextualType());
+            var schema = definitionMap.Register(typeof(T).ToContextualType());
 
             // Add standard properties
             schema["$schema"] = "http://json-schema.org/draft-04/schema#";
-            schema["title"] = nameof(FishPack);
+            schema["title"] = typeof(T).Name;
 
             // Add definitions
             var definitions = new JObject();

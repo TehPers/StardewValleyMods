@@ -4,29 +4,29 @@
       "type": "null"
     },
     {
-      "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.FishPack"
+      "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.TreasurePack"
     }
   ],
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "FishPack",
+  "title": "TreasurePack",
   "definitions": {
-    "TehPers.FishingOverhaul.Config.ContentPacks.FishPack": {
+    "TehPers.FishingOverhaul.Config.ContentPacks.TreasurePack": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "FishEntries"
+        "TreasureEntries"
       ],
       "properties": {
-        "FishEntries": {
+        "TreasureEntries": {
           "type": "array",
           "items": {
             "oneOf": [
               {
-                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishEntry"
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.TreasureEntry"
               }
             ]
           },
-          "description": "The fish entries to add."
+          "description": "The treasure entries to add."
         },
         "$schema": {
           "oneOf": [
@@ -41,26 +41,49 @@
         }
       }
     },
-    "TehPers.FishingOverhaul.Api.Content.FishEntry": {
+    "TehPers.FishingOverhaul.Api.Content.TreasureEntry": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "FishKey",
+        "ItemKeys",
         "AvailabilityInfo"
       ],
       "properties": {
-        "FishKey": {
+        "ItemKeys": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+              }
+            ]
+          },
+          "description": "The possible namespaced keys for the loot. The item key is chosen randomly."
+        },
+        "MinQuantity": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "The minimum quantity of this item. This is only valid for stackable items."
+        },
+        "MaxQuantity": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "The maximum quantity of this item. This is only valid for stackable items."
+        },
+        "AllowDuplicates": {
           "oneOf": [
             {
-              "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+              "$ref": "#/definitions/System.Boolean"
             }
           ],
-          "description": "The item key."
+          "description": "Whether this can be found multiple times in one chest."
         },
         "AvailabilityInfo": {
           "oneOf": [
             {
-              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishAvailabilityInfo"
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.AvailabilityInfo"
             }
           ],
           "description": "The availability information."
@@ -82,23 +105,17 @@
       "type": "string",
       "pattern": "(?<namespace>[^:].+):(?<key>.*)"
     },
-    "TehPers.FishingOverhaul.Api.Content.FishAvailabilityInfo": {
+    "System.Boolean": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "TehPers.FishingOverhaul.Api.Content.AvailabilityInfo": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "BaseChance"
       ],
       "properties": {
-        "DepthMultiplier": {
-          "type": "number",
-          "description": "Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1."
-        },
-        "MaxDepth": {
-          "type": "integer",
-          "minimum": -2147483648,
-          "maximum": 2147483647,
-          "description": "The required fishing depth to maximize the chances of catching the fish."
-        },
         "BaseChance": {
           "type": "number",
           "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries."

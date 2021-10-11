@@ -4,29 +4,29 @@
       "type": "null"
     },
     {
-      "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.FishPack"
+      "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.TrashPack"
     }
   ],
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "FishPack",
+  "title": "TrashPack",
   "definitions": {
-    "TehPers.FishingOverhaul.Config.ContentPacks.FishPack": {
+    "TehPers.FishingOverhaul.Config.ContentPacks.TrashPack": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "FishEntries"
+        "TrashEntries"
       ],
       "properties": {
-        "FishEntries": {
+        "TrashEntries": {
           "type": "array",
           "items": {
             "oneOf": [
               {
-                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishEntry"
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.TrashEntry"
               }
             ]
           },
-          "description": "The fish entries to add."
+          "description": "The trash entries to add."
         },
         "$schema": {
           "oneOf": [
@@ -41,15 +41,15 @@
         }
       }
     },
-    "TehPers.FishingOverhaul.Api.Content.FishEntry": {
+    "TehPers.FishingOverhaul.Api.Content.TrashEntry": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "FishKey",
+        "ItemKey",
         "AvailabilityInfo"
       ],
       "properties": {
-        "FishKey": {
+        "ItemKey": {
           "oneOf": [
             {
               "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
@@ -60,7 +60,7 @@
         "AvailabilityInfo": {
           "oneOf": [
             {
-              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishAvailabilityInfo"
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.AvailabilityInfo"
             }
           ],
           "description": "The availability information."
@@ -82,23 +82,13 @@
       "type": "string",
       "pattern": "(?<namespace>[^:].+):(?<key>.*)"
     },
-    "TehPers.FishingOverhaul.Api.Content.FishAvailabilityInfo": {
+    "TehPers.FishingOverhaul.Api.Content.AvailabilityInfo": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "BaseChance"
       ],
       "properties": {
-        "DepthMultiplier": {
-          "type": "number",
-          "description": "Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1."
-        },
-        "MaxDepth": {
-          "type": "integer",
-          "minimum": -2147483648,
-          "maximum": 2147483647,
-          "description": "The required fishing depth to maximize the chances of catching the fish."
-        },
         "BaseChance": {
           "type": "number",
           "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries."
