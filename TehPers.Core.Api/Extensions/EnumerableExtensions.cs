@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 
 namespace TehPers.Core.Api.Extensions
@@ -220,62 +219,6 @@ namespace TehPers.Core.Api.Extensions
         public static IEnumerable<T> Yield<T>(this T item)
         {
             yield return item;
-        }
-
-        /// <summary>
-        /// Splits an enum with <see cref="FlagsAttribute"/> into its component flags.
-        /// </summary>
-        /// <typeparam name="T">The enum type.</typeparam>
-        /// <param name="item">The item being split.</param>
-        /// <returns>The split value.</returns>
-        public static IEnumerable<T> Split<T>(this T item)
-            where T : Enum
-        {
-            // Check if flags enum
-            if (!typeof(T).GetCustomAttributes(typeof(FlagsAttribute), false).Any())
-            {
-                throw new ArgumentException("T must be a flags-style enum.", nameof(T));
-            }
-
-            // Split into flags
-            return Enum.GetValues(typeof(T))
-                .Cast<T>()
-                .Where(flag => !item.Equals(flag) && item.HasFlag(flag));
-        }
-
-        /// <summary>
-        /// Joins values of an enum with <see cref="FlagsAttribute"/> into a single value.
-        /// </summary>
-        /// <typeparam name="T">The enum type.</typeparam>
-        /// <param name="flags">The flags to join.</param>
-        /// <returns>The joined enum. If no values are passed in, then the default value is returned.</returns>
-        public static T? Join<T>(this IEnumerable<T> flags)
-            where T : Enum
-        {
-            // Check if flags enum
-            if (!typeof(T).GetCustomAttributes(typeof(FlagsAttribute), false).Any())
-            {
-                throw new ArgumentException("T must be a flags-style enum.", nameof(T));
-            }
-
-            // Create the aggregator if needed
-            if (!EnumerableExtensions.enumAggregators.TryGetValue(typeof(T), out var cached)
-                || cached is not Func<T?, T, T?> aggregator)
-            {
-                Type underlyingType = typeof(T);
-                var currentParameter = Expression.Parameter(typeof(T), "current");
-                var nextParameter = Expression.Parameter(typeof(T), "next");
-                aggregator = Expression.Lambda<Func<T?, T, T?>>(
-                        Expression.Or(currentParameter, nextParameter),
-                        currentParameter,
-                        nextParameter
-                    )
-                    .Compile();
-                EnumerableExtensions.enumAggregators[typeof(T)] = aggregator;
-            }
-
-            // Split into flags
-            return flags.Aggregate(default, aggregator);
         }
     }
 }

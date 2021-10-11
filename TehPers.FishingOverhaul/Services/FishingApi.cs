@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
@@ -20,7 +17,7 @@ using SObject = StardewValley.Object;
 namespace TehPers.FishingOverhaul.Services
 {
     /// <inheritdoc cref="IFishingApi" />
-    public class FishingApi : IFishingApi
+    public sealed class FishingApi : IFishingApi
     {
         private readonly IMonitor monitor;
         private readonly INamespaceRegistry namespaceRegistry;
@@ -43,6 +40,10 @@ namespace TehPers.FishingOverhaul.Services
         private readonly string stateKey;
 
         private bool reloadRequested;
+
+        public event EventHandler<CatchInfo>? CaughtItem;
+        public event EventHandler<List<Item>>? OpenedChest;
+        public event EventHandler<CustomEvent>? CustomEvent;
 
         internal FishingApi(
             IMonitor monitor,
@@ -80,99 +81,64 @@ namespace TehPers.FishingOverhaul.Services
             this.reloadRequested = true;
         }
 
-        public IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(
-            GameLocation location,
-            int time,
-            Seasons seasons,
-            Weathers weathers,
-            WaterTypes waterTypes,
-            int fishingLevel,
-            int depth = 4,
-            FishingRod? rod = null
-        )
+        public IEnumerable<IWeightedValue<FishEntry>> GetFishChances(FishingInfo fishingInfo)
         {
             // Reload data if necessary
             this.ReloadIfRequested();
 
-            // Get location names
-            var locationNames = this.GetLocationNames(location);
-
-            IEnumerable<IWeightedValue<NamespacedKey>> GetNormalFishChances()
+            // TODO: redo how legendaries work
+            IEnumerable<IWeightedValue<FishEntry>> GetNormalFishChances()
             {
                 return this.fishEntries.SelectMany(
-                        manager => manager.ChanceCalculator
-                            .GetWeightedChance(
-                                time,
-                                seasons,
-                                weathers,
-                                fishingLevel,
-                                locationNames,
-                                waterTypes,
-                                depth
-                            )
+                        manager => manager.ChanceCalculator.GetWeightedChance(fishingInfo)
                             .AsEnumerable()
-                            .ToWeighted(
-                                weightedChance => weightedChance,
-                                _ => manager.Entry.FishKey
-                            )
+                            .ToWeighted(weight => weight, _ => manager.Entry)
                     )
                     .Where(
                         value => this.fishConfig.ShouldOverrideLegendaries
-                            || !this.IsLegendary(value.Value)
+                            || !this.IsLegendary(value.Value.FishKey)
                     );
             }
 
-            IEnumerable<IWeightedValue<NamespacedKey>> GetLocationFish(string locationName)
+            IEnumerable<IWeightedValue<FishEntry>> GetLocationFish(string locationName)
             {
                 return Game1.getLocationFromName(locationName) is { } location
                     ? this.GetFishChances(
-                        location,
-                        time,
-                        seasons,
-                        weathers,
-                        waterTypes,
-                        fishingLevel,
-                        depth,
-                        rod
+                        fishingInfo with
+                        {
+                            Locations = FishingInfo.GetDefaultLocationNames(location)
+                        }
                     )
-                    : Enumerable.Empty<IWeightedValue<NamespacedKey>>();
+                    : Enumerable.Empty<IWeightedValue<FishEntry>>();
             }
 
-            IEnumerable<IWeightedValue<NamespacedKey>> GetFarmFishChances()
+            IEnumerable<IWeightedValue<FishEntry>> GetFarmFishChances(string locationName)
             {
-                return Game1.whichFarm switch
+                return locationName switch
                 {
                     // Standard: default farm fish
-                    0 => Enumerable.Empty<IWeightedValue<NamespacedKey>>(),
+                    "Farm/Standard" => Enumerable.Empty<IWeightedValue<FishEntry>>(),
                     // Riverland: forest + town + default farm fish
-                    1 => GetLocationFish("Forest").Concat(GetLocationFish("Town")),
-                    // Forest: forest + woodskip + default farm fish
-                    2 => GetLocationFish("Forest")
-                        .Append(
-                            new WeightedValue<NamespacedKey>(NamespacedKey.SdvObject(734), 0.05)
-                        ),
+                    "Farm/Riverland" => GetLocationFish("Forest").Concat(GetLocationFish("Town")),
+                    // Forest: forest + woodskip + default farm fish (woodskip added in content source)
+                    "Farm/Forest" => GetLocationFish("Forest"),
                     // Hills: forest + default farm fish
-                    3 => GetLocationFish("Forest"),
+                    "Farm/Hills" => GetLocationFish("Forest"),
                     // Wilderness: mountain + default farm fish
-                    4 => GetLocationFish("Mountain"),
+                    "Farm/Mountain" => GetLocationFish("Mountain"),
                     // Four corners: forest + mountain + default farm fish
-                    5 => GetLocationFish("Forest").Concat(GetLocationFish("Mountain")),
-                    _ => Enumerable.Empty<IWeightedValue<NamespacedKey>>()
+                    "Farm/FourCorners" => GetLocationFish("Forest")
+                        .Concat(GetLocationFish("Mountain")),
+                    _ => Enumerable.Empty<IWeightedValue<FishEntry>>()
                 };
             }
 
-            var chances = location.Name switch
-            {
-                "Farm" when this.fishConfig.AllowFishOnAllFarms => GetFarmFishChances()
-                    .Concat(GetNormalFishChances()),
-                "Farm" => GetFarmFishChances(),
-                _ => GetNormalFishChances(),
-            };
-
-            chances = chances.Condense();
+            var chances = GetNormalFishChances()
+                .Concat(fishingInfo.Locations.SelectMany(GetFarmFishChances));
 
             // Curiosity lure
-            if (rod?.getBobberAttachmentIndex() is 856)
+            if (fishingInfo.User.CurrentTool is FishingRod rod
+                && rod.getBobberAttachmentIndex() is 856)
             {
                 chances = chances.ToWeighted(
                     weightedValue =>
@@ -195,33 +161,13 @@ namespace TehPers.FishingOverhaul.Services
             return this.fishTraits.TryGetValue(fishKey, out traits);
         }
 
-        public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(
-            GameLocation location,
-            int time,
-            Seasons seasons,
-            Weathers weathers,
-            WaterTypes waterTypes,
-            int fishingLevel,
-            int depth = 4
-        )
+        public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(FishingInfo fishingInfo)
         {
             // Reload data if necessary
             this.ReloadIfRequested();
 
-            // Get location names
-            var locationNames = this.GetLocationNames(location);
-
             return this.trashEntries.SelectMany(
-                    manager => manager.ChanceCalculator
-                        .GetWeightedChance(
-                            time,
-                            seasons,
-                            weathers,
-                            fishingLevel,
-                            locationNames,
-                            waterTypes,
-                            depth
-                        )
+                    manager => manager.ChanceCalculator.GetWeightedChance(fishingInfo)
                         .Select(weight => (entry: manager.Entry, weight))
                         .AsEnumerable()
                 )
@@ -230,46 +176,19 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         public IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(
-            GameLocation location,
-            int time,
-            Seasons seasons,
-            Weathers weathers,
-            WaterTypes waterTypes,
-            int fishingLevel,
-            int depth = 4
+            FishingInfo fishingInfo
         )
         {
             // Reload data if necessary
             this.ReloadIfRequested();
 
-            // Get location names
-            var locationNames = this.GetLocationNames(location);
-
             return this.treasureEntries.SelectMany(
-                    manager => manager.ChanceCalculator
-                        .GetWeightedChance(
-                            time,
-                            seasons,
-                            weathers,
-                            fishingLevel,
-                            locationNames,
-                            waterTypes,
-                            depth
-                        )
+                    manager => manager.ChanceCalculator.GetWeightedChance(fishingInfo)
                         .Select(weight => (entry: manager.Entry, weight))
                         .AsEnumerable()
                 )
                 .ToWeighted(item => item.weight, item => item.entry)
                 .Condense();
-        }
-
-        private IEnumerable<string> GetLocationNames(GameLocation location)
-        {
-            return location switch
-            {
-                MineShaft mine => new[] { mine.Name, $"{mine.Name}/{mine.mineLevel}" },
-                _ => new[] { location.Name },
-            };
         }
 
         public double GetChanceForFish(Farmer farmer)
@@ -304,12 +223,13 @@ namespace TehPers.FishingOverhaul.Services
             farmer.modData[key] = streak.ToString();
         }
 
-        public PossibleCatch GetPossibleCatch(Farmer farmer, FishingRod rod, int bobberDepth)
+        public PossibleCatch GetPossibleCatch(FishingInfo fishingInfo)
         {
-            var location = farmer.currentLocation;
+            var location = fishingInfo.User.currentLocation;
 
             // Handle non-overridden legendary fish
-            if (!this.fishConfig.ShouldOverrideLegendaries)
+            // TODO: remove this - screw vanilla logic
+            /*if (!this.fishConfig.ShouldOverrideLegendaries)
             {
                 // Setup some values needed to simulate fishing
                 var baitValue = rod.attachments[0]?.Price / 10.0 ?? 0.0;
@@ -355,29 +275,28 @@ namespace TehPers.FishingOverhaul.Services
                 {
                     return new(legendaryFishKey, PossibleCatch.Type.Fish);
                 }
-            }
+            }*/
 
             // TODO: handle special items (void mayonnaise, etc)
 
             // Choose a random fish if one hasn't been chosen yet
-            var fishChance = this.GetChanceForFish(farmer);
-            var fish = ((IFishingApi)this).GetFishChances(farmer, bobberDepth)
-                .ToWeighted(val => val.Weight, val => (NamespacedKey?)val.Value)
-                .Normalize(fishChance)
-                .Append(new WeightedValue<NamespacedKey?>(null, 1 - fishChance))
+            var fishChance = this.GetChanceForFish(fishingInfo.User);
+            IEnumerable<IWeightedValue<FishEntry?>> possibleFish = this.GetFishChances(fishingInfo)
+                .Normalize(fishChance);
+            var fishEntry = possibleFish.Append(new WeightedValue<FishEntry?>(null, 1 - fishChance))
                 .ChooseOrDefault(Game1.random)
                 ?.Value;
 
             // Return if a fish was chosen
-            if (fish is { } fishKey)
+            if (fishEntry is not null)
             {
-                return new(fishKey, PossibleCatch.Type.Fish);
+                return new PossibleCatch.Fish(fishEntry);
             }
 
             // Secret note
-            if (farmer.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08)
+            if (fishingInfo.User.hasMagnifyingGlass && Game1.random.NextDouble() < 0.08)
             {
-                if (location.tryToCreateUnseenSecretNote(farmer) is
+                if (location.tryToCreateUnseenSecretNote(fishingInfo.User) is
                 {
                     ParentSheetIndex: var secretNoteId
                 })
@@ -386,31 +305,29 @@ namespace TehPers.FishingOverhaul.Services
                         ItemTypes.Object,
                         $"SecretNote/{secretNoteId}"
                     );
-                    return new(secretNoteKey, PossibleCatch.Type.Special);
+                    return new PossibleCatch.Trash(new(secretNoteKey, new(0.0)));
                 }
             }
 
             // Trash
-            var trash = ((IFishingApi)this).GetTrashChances(farmer)
-                .ChooseOrDefault(Game1.random)
-                ?.Value;
-            if (trash is { ItemKey: var trashKey })
+            var trashEntry = this.GetTrashChances(fishingInfo).ChooseOrDefault(Game1.random)?.Value;
+            if (trashEntry is not null)
             {
-                return new(trashKey, PossibleCatch.Type.Trash);
+                return new PossibleCatch.Trash(trashEntry);
             }
 
             // Default trash item
             this.monitor.Log("No valid trash, selecting a default item.", LogLevel.Warn);
             var defaultTrashKey = NamespacedKey.SdvObject(168);
-            return new(defaultTrashKey, PossibleCatch.Type.Trash);
+            return new PossibleCatch.Trash(new(defaultTrashKey, new(0.0)));
         }
 
-        public IList<Item> GetPossibleTreasure(Farmer farmer)
+        public IList<Item> GetPossibleTreasure(FishingInfo fishingInfo)
         {
             // Select rewards
             var rewards = new List<Item>();
-            var possibleLoot = ((IFishingApi)this).GetTreasureChances(farmer).ToList();
-            var streak = this.GetStreak(farmer);
+            var possibleLoot = this.GetTreasureChances(fishingInfo).ToList();
+            var streak = this.GetStreak(fishingInfo.User);
             var chance = 1d;
             while (possibleLoot.Any()
                 && rewards.Count < this.treasureConfig.MaxTreasureQuantity
@@ -419,13 +336,14 @@ namespace TehPers.FishingOverhaul.Services
                 var treasure = possibleLoot.Choose(Game1.random);
 
                 // Choose an ID for the treasure
-                if (treasure.Value.ItemKeys.ToWeighted(_ => 1).ChooseOrDefault(Game1.random) is not
-                {
-                    Value: var key
-                })
+                if (!treasure.Value.TryCreateItem(
+                    fishingInfo,
+                    this.namespaceRegistry,
+                    out var item
+                ))
                 {
                     this.monitor.Log(
-                        "No possible treasure in one of the entries! Choosing another.",
+                        "Could not create item for one of the treasure entries! Choosing another.",
                         LogLevel.Warn
                     );
                     possibleLoot.Remove(treasure);
@@ -433,10 +351,10 @@ namespace TehPers.FishingOverhaul.Services
                 }
 
                 // Lost books have custom handling
-                if (key.Equals(NamespacedKey.SdvObject(102)))
+                if (item.Item is SObject { ParentSheetIndex: 102 })
                 {
-                    if (farmer.archaeologyFound == null
-                        || !farmer.archaeologyFound.TryGetValue(102, out var value)
+                    if (fishingInfo.User.archaeologyFound is not { } archaeologyFound
+                        || !archaeologyFound.TryGetValue(102, out var value)
                         || value[0] >= 21)
                     {
                         // Books already found
@@ -449,29 +367,8 @@ namespace TehPers.FishingOverhaul.Services
                     );
                 }
 
-                // Create reward item
-                if (this.namespaceRegistry.TryGetItemFactory(key, out var factory))
-                {
-                    var reward = factory.Create();
-                    if (reward is SObject obj)
-                    {
-                        // Random quantity
-                        obj.Stack = Game1.random.Next(
-                            treasure.Value.MinQuantity,
-                            treasure.Value.MaxQuantity
-                        );
-                    }
-
-                    // Add the reward
-                    rewards.Add(reward);
-                }
-                else
-                {
-                    this.monitor.Log(
-                        $"No provider for treasure item {key}. Skipping it.",
-                        LogLevel.Error
-                    );
-                }
+                // Add the reward
+                rewards.Add(item.Item);
 
                 // Check if this reward shouldn't be duplicated
                 if (!this.treasureConfig.AllowDuplicateLoot || !treasure.Value.AllowDuplicates)
@@ -480,7 +377,10 @@ namespace TehPers.FishingOverhaul.Services
                 }
 
                 // Update chance
-                chance *= this.treasureConfig.AdditionalLootChances.GetChance(farmer, streak);
+                chance *= this.treasureConfig.AdditionalLootChances.GetChance(
+                    fishingInfo.User,
+                    streak
+                );
             }
 
             // Add bait if no rewards were selected.
@@ -494,6 +394,11 @@ namespace TehPers.FishingOverhaul.Services
             }
 
             return rewards;
+        }
+
+        public void RaiseCustomEvent(CustomEvent customEvent)
+        {
+            this.CustomEvent?.Invoke(this, customEvent);
         }
 
         public void RequestReload()
@@ -550,6 +455,16 @@ namespace TehPers.FishingOverhaul.Services
                     )
                 );
             }
+        }
+
+        public void OnCaughtItem(CatchInfo e)
+        {
+            this.CaughtItem?.Invoke(this, e);
+        }
+
+        public void OnOpenedChest(List<Item> e)
+        {
+            this.OpenedChest?.Invoke(this, e);
         }
     }
 }

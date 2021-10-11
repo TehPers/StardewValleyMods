@@ -1,208 +1,354 @@
 ﻿{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "TreasurePack",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "TreasureEntries"
-  ],
-  "properties": {
-    "$schema": {
-      "type": [
-        "null",
-        "string"
-      ],
-      "description": "Optional schema URL."
+  "oneOf": [
+    {
+      "type": "null"
     },
-    "TreasureEntries": {
-      "type": "array",
-      "description": "The treasure entries to add.",
-      "items": {
-        "$ref": "#/definitions/TreasureEntry"
-      }
+    {
+      "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.FishPack"
     }
-  },
+  ],
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "FishPack",
   "definitions": {
-    "TreasureEntry": {
+    "TehPers.FishingOverhaul.Config.ContentPacks.FishPack": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "AvailabilityInfo",
-        "ItemKeys"
+        "FishEntries"
       ],
       "properties": {
-        "AvailabilityInfo": {
-          "description": "The availability information.",
+        "FishEntries": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishEntry"
+              }
+            ]
+          },
+          "description": "The fish entries to add."
+        },
+        "$schema": {
           "oneOf": [
             {
-              "$ref": "#/definitions/AvailabilityInfo"
+              "type": "null"
+            },
+            {
+              "type": "string"
             }
-          ]
-        },
-        "ItemKeys": {
-          "type": "array",
-          "description": "The possible namespaced keys for the loot. The item key is chosen randomly.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "MinQuantity": {
-          "type": "integer",
-          "description": "The minimum quantity of this item. This is only valid for stackable items.",
-          "format": "int32",
-          "default": 1
-        },
-        "MaxQuantity": {
-          "type": "integer",
-          "description": "The maximum quantity of this item. This is only valid for stackable items.",
-          "format": "int32",
-          "default": 1
-        },
-        "AllowDuplicates": {
-          "type": "boolean",
-          "description": "Whether this can be found multiple times in one chest.",
-          "default": true
+          ],
+          "description": "Optional schema URL."
         }
       }
     },
-    "AvailabilityInfo": {
+    "TehPers.FishingOverhaul.Api.Content.FishEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "FishKey",
+        "AvailabilityInfo"
+      ],
+      "properties": {
+        "FishKey": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+            }
+          ],
+          "description": "The item key."
+        },
+        "AvailabilityInfo": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishAvailabilityInfo"
+            }
+          ],
+          "description": "The availability information."
+        },
+        "OnCatch": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.CatchActions"
+            }
+          ],
+          "description": "Actions to perform when this is caught."
+        }
+      }
+    },
+    "TehPers.Core.Api.Items.NamespacedKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Namespace": {
+          "type": "string"
+        },
+        "Key": {
+          "type": "string"
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.Content.FishAvailabilityInfo": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "BaseChance"
       ],
       "properties": {
+        "DepthMultiplier": {
+          "type": "number",
+          "description": "Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1."
+        },
+        "MaxDepth": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "The required fishing depth to maximize the chances of catching the fish."
+        },
         "BaseChance": {
           "type": "number",
-          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries.",
-          "format": "double"
+          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries."
         },
         "StartTime": {
           "type": "integer",
-          "description": "Time this becomes available (inclusive).",
-          "format": "int32",
-          "default": 600
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Time this becomes available (inclusive)."
         },
         "EndTime": {
           "type": "integer",
-          "description": "Time this is no longer available (exclusive).",
-          "format": "int32",
-          "default": 2600
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Time this is no longer available (exclusive)."
         },
         "Seasons": {
           "type": "array",
-          "description": "Seasons this can be caught in. Default is all.",
           "items": {
-            "$ref": "#/definitions/Seasons"
-          }
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Gameplay.Seasons"
+              }
+            ]
+          },
+          "description": "Seasons this can be caught in. Default is all."
         },
         "Weathers": {
           "type": "array",
-          "description": "Weathers this can be caught in. Default is all.",
           "items": {
-            "$ref": "#/definitions/Weathers"
-          }
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Gameplay.Weathers"
+              }
+            ]
+          },
+          "description": "Weathers this can be caught in. Default is all."
         },
         "WaterTypes": {
           "type": "array",
-          "description": "The type of water this can be caught in. Each location handles this differently. Default is all.",
           "items": {
-            "$ref": "#/definitions/WaterTypes"
-          }
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.WaterTypes"
+              }
+            ]
+          },
+          "description": "The type of water this can be caught in. Each location handles this differently. Default is all."
         },
         "MinFishingLevel": {
           "type": "integer",
-          "description": "Required fishing level to see this.",
-          "format": "int32",
-          "default": 0
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Required fishing level to see this."
         },
         "MaxFishingLevel": {
-          "type": [
-            "integer",
-            "null"
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            }
           ],
-          "description": "Maximum fishing level required to see this, or null for no max.",
-          "format": "int32"
+          "description": "Maximum fishing level required to see this, or null for no max."
         },
         "IncludeLocations": {
           "type": "array",
-          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine/N', where N is the floor number (both location names are valid for the floor).",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine/N', where N is the floor number (both location names are valid for the floor)."
         },
         "ExcludeLocations": {
           "type": "array",
-          "description": "List of locations this should not be available in. This takes priority over IncludeLocations.",
           "items": {
             "type": "string"
-          }
+          },
+          "description": "List of locations this should not be available in. This takes priority over IncludeLocations."
+        },
+        "Position": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
+            }
+          ],
+          "description": "Constraints on the position of the bobber in the map when fishing."
         },
         "When": {
           "type": "object",
-          "description": "Content Patcher conditions for when this is available.",
           "additionalProperties": {
             "type": "string"
-          }
+          },
+          "description": "Content Patcher conditions for when this is available."
         }
       }
     },
-    "Seasons": {
-      "type": "string",
-      "description": "",
-      "x-enumFlags": true,
-      "x-enumNames": [
-        "None",
-        "Spring",
-        "Summer",
-        "Fall",
-        "Winter",
-        "All"
-      ],
-      "enum": [
-        "None",
-        "Spring",
-        "Summer",
-        "Fall",
-        "Winter",
-        "All"
-      ]
+    "TehPers.Core.Api.Gameplay.Seasons": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value__": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        }
+      }
     },
-    "Weathers": {
-      "type": "string",
-      "description": "",
-      "x-enumFlags": true,
-      "x-enumNames": [
-        "None",
-        "Sunny",
-        "Rainy",
-        "All"
-      ],
-      "enum": [
-        "None",
-        "Sunny",
-        "Rainy",
-        "All"
-      ]
+    "TehPers.Core.Api.Gameplay.Weathers": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value__": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        }
+      }
     },
-    "WaterTypes": {
-      "type": "string",
-      "description": "",
-      "x-enumFlags": true,
-      "x-enumNames": [
-        "None",
-        "River",
-        "PondOrOcean",
-        "Freshwater",
-        "All"
-      ],
-      "enum": [
-        "None",
-        "River",
-        "PondOrOcean",
-        "Freshwater",
-        "All"
-      ]
+    "TehPers.FishingOverhaul.Api.WaterTypes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value__": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.Content.PositionConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "X": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.CoordinateConstraint"
+            }
+          ],
+          "description": "Constraints for the x-coordinate."
+        },
+        "Y": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.CoordinateConstraint"
+            }
+          ],
+          "description": "Constraints for the Y-coordinate."
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.Content.CoordinateConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "GreaterThan": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Coordinate value must be greater than this."
+        },
+        "GreaterThanEq": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Coordinate value must be greater than or equal to this."
+        },
+        "LessThan": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Coordinate value must be less than this."
+        },
+        "LessThanEq": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "description": "Coordinate value must be less than or equal to this."
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.Content.CatchActions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "CustomEvents": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+              }
+            ]
+          },
+          "description": "Raise custom events with this name to notify SMAPI mods that this was caught. Event key format is '<namespace>:<key>' (for example 'TehPers.FishingOverhaul:GoldenWalnut')."
+        },
+        "SetFlags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Sets one or more mail flags."
+        },
+        "StartQuests": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "description": "Sets one or more quests as active."
+        }
+      }
     }
   }
 }

@@ -7,12 +7,11 @@ using StardewValley.Menus;
 using System;
 using System.Linq;
 using StardewValley.Tools;
-using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Extensions;
 using TehPers.FishingOverhaul.Extensions.Drawing;
-using TehPers.FishingOverhaul.Services.Data;
 
 namespace TehPers.FishingOverhaul.Gui
 {
@@ -52,20 +51,16 @@ namespace TehPers.FishingOverhaul.Gui
 
         private readonly IReflectedField<SparklingText?> sparkleTextField;
 
-        private readonly IModHelper helper;
-        private readonly NamespacedKey fishKey;
+        private readonly FishEntry fishEntry;
         private readonly Item fishItem;
         private readonly FishTraits fishTraits;
         private readonly FishConfig fishConfig;
         private readonly TreasureConfig treasureConfig;
-        private readonly int initialQuality;
-        private readonly int initialStreak;
+        private readonly FishingInfo fishingInfo;
 
         private float lastDistanceFromCatching;
         private float lastTreasureCatchLevel;
-        private PerfectState perfectState;
-        private TreasureState treasureState;
-        private bool notifiedFailOrSuccess;
+        private MinigameState state;
 
         /// <summary>
         /// Invoked whenever a fish is caught.
@@ -75,7 +70,7 @@ namespace TehPers.FishingOverhaul.Gui
         /// <summary>
         /// Invoked whenever a perfect streak is lost.
         /// </summary>
-        public event EventHandler<State>? LostPerfect;
+        public event EventHandler<MinigameState>? StateChanged;
 
         /// <summary>
         /// Invoked whenever the fish is not caught.
@@ -84,11 +79,10 @@ namespace TehPers.FishingOverhaul.Gui
 
         public CustomBobberBar(
             IModHelper helper,
-            IFishingApi fishingApi,
             FishConfig fishConfig,
             TreasureConfig treasureConfig,
-            Farmer user,
-            NamespacedKey fishKey,
+            FishingInfo fishingInfo,
+            FishEntry fishEntry,
             FishTraits fishTraits,
             Item fishItem,
             float fishSizePercent,
@@ -98,19 +92,14 @@ namespace TehPers.FishingOverhaul.Gui
         )
             : base(0, fishSizePercent, treasure, bobber)
         {
-            this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
-            this.fishKey = fishKey;
-            this.fishTraits = fishTraits ?? throw new ArgumentNullException(nameof(fishTraits));
-            this.fishItem = fishItem ?? throw new ArgumentNullException(nameof(fishItem));
+            _ = helper ?? throw new ArgumentNullException(nameof(helper));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
             this.treasureConfig =
                 treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
-
-            this.lastDistanceFromCatching = 0f;
-            this.lastTreasureCatchLevel = 0f;
-            this.perfectState = PerfectState.Yes;
-            this.treasureState = treasure ? TreasureState.NotCaught : TreasureState.None;
-            this.notifiedFailOrSuccess = false;
+            this.fishingInfo = fishingInfo ?? throw new ArgumentNullException(nameof(fishingInfo));
+            this.fishEntry = fishEntry;
+            this.fishTraits = fishTraits ?? throw new ArgumentNullException(nameof(fishTraits));
+            this.fishItem = fishItem ?? throw new ArgumentNullException(nameof(fishItem));
 
             this.treasureField = helper.Reflection.GetField<bool>(this, "treasure");
             this.treasureCaughtField = helper.Reflection.GetField<bool>(this, "treasureCaught");
@@ -151,8 +140,12 @@ namespace TehPers.FishingOverhaul.Gui
 
             this.sparkleTextField = helper.Reflection.GetField<SparklingText?>(this, "sparkleText");
 
+            // Track state
+            this.lastDistanceFromCatching = 0f;
+            this.lastTreasureCatchLevel = 0f;
+            this.state = new(true, treasure ? TreasureState.NotCaught : TreasureState.None);
+
             // Track player streak
-            this.initialStreak = fishingApi.GetStreak(user);
             this.perfectField.SetValue(true);
             var fishSizeReductionTimerField =
                 helper.Reflection.GetField<int>(this, "fishSizeReductionTimer");
@@ -188,13 +181,27 @@ namespace TehPers.FishingOverhaul.Gui
             }
 
             // Beginner rod
-            if (user.CurrentTool is FishingRod { UpgradeLevel: 1 })
+            if (fishingInfo.User.CurrentTool is FishingRod { UpgradeLevel: 1 })
             {
                 fishQuality = 0;
             }
 
             // Don't bump quality from 3 -> 4 here, that will be done later
             this.fishQualityField.SetValue(fishQuality);
+
+            // Adjust fish difficulty
+            this.difficultyField.SetValue(fishTraits.DartFrequency);
+            this.motionTypeField.SetValue(
+                fishTraits.DartBehavior switch
+                {
+                    DartBehavior.Mixed => BobberBar.mixed,
+                    DartBehavior.Dart => BobberBar.dart,
+                    DartBehavior.Smooth => BobberBar.smooth,
+                    DartBehavior.Sink => BobberBar.sink,
+                    DartBehavior.Floater => BobberBar.floater,
+                    _ => throw new ArgumentOutOfRangeException()
+                }
+            );
         }
 
         public override void update(GameTime time)
@@ -219,28 +226,20 @@ namespace TehPers.FishingOverhaul.Gui
             var treasure = this.treasureField.GetValue();
             var treasureCaught = this.treasureCaughtField.GetValue();
 
-            // Transition treasure state
-            this.treasureState = (treasure, treasureCaught) switch
+            // Update state
+            var newState = new MinigameState(
+                perfect,
+                (treasure, treasureCaught) switch
+                {
+                    (false, _) => TreasureState.None,
+                    (_, false) => TreasureState.NotCaught,
+                    (_, true) => TreasureState.Caught,
+                }
+            );
+            if (this.state != newState)
             {
-                (false, _) => TreasureState.None,
-                (_, false) => TreasureState.NotCaught,
-                (_, true) => TreasureState.Caught,
-            };
-
-            // Transition perfect catch state
-            switch (this.treasureState, this.perfectState)
-            {
-                // Lost perfect streak but caught the treasure
-                case (TreasureState.Caught, PerfectState.Yes) when !perfect:
-                case (TreasureState.Caught, PerfectState.No) when treasureCaught:
-                    this.perfectState = PerfectState.Restored;
-                    break;
-
-                // Lost perfect streak (and haven't caught the treasure)
-                case (_, PerfectState.Yes) when !perfect:
-                    this.perfectState = PerfectState.No;
-                    this.OnLostPerfect(new(this.perfectState, this.treasureState));
-                    break;
+                this.OnStateChanged(newState);
+                this.state = newState;
             }
 
             // Override post-catch logic
@@ -258,14 +257,14 @@ namespace TehPers.FishingOverhaul.Gui
                     {
                         // Notify that a fish was caught
                         var catchInfo = new CatchInfo.FishCatch(
-                            this.fishKey,
+                            this.fishingInfo,
+                            this.fishEntry,
                             this.fishItem,
                             this.fishSizeField.GetValue(),
                             this.fishTraits.IsLegendary,
                             this.fishQualityField.GetValue(),
                             (int)this.difficultyField.GetValue(),
-                            this.treasureState,
-                            this.perfectState,
+                            this.state,
                             this.fromFishPondField.GetValue(),
                             caughtDouble
                         );
@@ -293,12 +292,7 @@ namespace TehPers.FishingOverhaul.Gui
         public override void emergencyShutDown()
         {
             // Failed to catch fish
-            if (!this.notifiedFailOrSuccess)
-            {
-                this.notifiedFailOrSuccess = true;
-                this.OnLostFish();
-            }
-
+            this.OnLostFish();
             base.emergencyShutDown();
         }
 
@@ -564,11 +558,9 @@ namespace TehPers.FishingOverhaul.Gui
             this.LostFish?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnLostPerfect(State e)
+        private void OnStateChanged(MinigameState e)
         {
-            this.LostPerfect?.Invoke(this, e);
+            this.StateChanged?.Invoke(this, e);
         }
-
-        public record State(PerfectState Perfect, TreasureState Treasure);
     }
 }

@@ -137,6 +137,10 @@ Fish, trash, and treasure have availability information to determine when they c
 | Property           | Type       | Required | Default   | Description                                                                                                                    |
 | ------------------ | ---------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `BaseChance`       | `number`   | Yes      | N/A       | The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries.   |
+| `StartTime`        | `integer`  | No       | 600       | Time this becomes available (inclusive).                                                                                       |
+| `EndTime`          | `integer`  | No       | 2600      | Time this is no longer available (exclusive).                                                                                  |
+| `Seasons`          | `array`    | No       | `["All"]` | Seasons this can be caught in. Default is all. ("Spring", "Summer", "Fall", "Winter", "All")                                   |
+| `Weathers`         | `array`    | No       | `["All"]` | Weathers this can be caught in. Default is all. ("Sunny", "Rainy", "All")                                                      |
 | `WaterTypes`       | `array`    | No       | `["All"]` | The type of water this can be caught in. Each location handles this differently. ("River", "PondOrOcean", "Freshwater", "All") |
 | `MinFishingLevel`  | `integer`  | No       | 0         | Required fishing level to see this.                                                                                            |
 | `MaxFishingLevel`  | `integer?` | No       | `null`    | Maximum fishing level required to see this, or null for no max.                                                                |

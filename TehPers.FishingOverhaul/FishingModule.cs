@@ -27,10 +27,12 @@ namespace TehPers.FishingOverhaul
             this.Bind<ISetup>().To<GenericModConfigMenuSetup>().InSingletonScope();
             this.Bind<ISetup>().ToMethod(FishingRodPatcher.Create).InSingletonScope();
             this.Bind<ISetup>().To<DefaultContentReloader>().InSingletonScope();
+            this.Bind<ISetup>().To<ContentPatcherSetup>().InSingletonScope();
+            this.Bind<ISetup>().To<DefaultCustomEvents>().InSingletonScope();
             // TODO: this.Bind<ISetup>().To<FishingMessageHandler>().InSingletonScope();
 
             // Resources/services
-            this.Bind<IFishingApi, ISimplifiedFishingApi>()
+            this.Bind<IFishingApi, ISimplifiedFishingApi, FishingApi>()
                 .ToMethod(
                     context => new FishingApi(
                         context.Kernel.Get<IMonitor>(),

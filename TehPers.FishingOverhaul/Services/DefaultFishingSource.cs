@@ -10,6 +10,7 @@ using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
+using TehPers.FishingOverhaul.Content;
 
 namespace TehPers.FishingOverhaul.Services
 {
@@ -39,7 +40,7 @@ namespace TehPers.FishingOverhaul.Services
 
             this.fishTraits = new();
             this.fishEntries = new();
-            this.trashEntries = DefaultFishingSource.GetDefaultTrashData();
+            this.trashEntries = this.GetDefaultTrashData();
             this.treasureEntries = DefaultFishingSource.GetDefaultTreasureData();
         }
 
@@ -194,6 +195,10 @@ namespace TehPers.FishingOverhaul.Services
             }
 
             // Special entries
+            var hasCaughtFish = new Dictionary<string, string>()
+            {
+                ["HasValue:{{HasCaughtFish}}"] = "true",
+            }.ToImmutableDictionary();
             this.fishEntries.AddRange(
                 new FishEntry[]
                 {
@@ -209,6 +214,7 @@ namespace TehPers.FishingOverhaul.Services
                             WaterTypes = WaterTypes.River,
                             MinFishingLevel = 5,
                             IncludeLocations = ImmutableArray.Create("Beach"),
+                            When = hasCaughtFish,
                         }
                     ),
                     new(
@@ -219,6 +225,7 @@ namespace TehPers.FishingOverhaul.Services
                             Seasons = Seasons.Fall,
                             MinFishingLevel = 3,
                             IncludeLocations = ImmutableArray.Create("Town"),
+                            When = hasCaughtFish,
                         }
                     ),
                     new(
@@ -233,6 +240,7 @@ namespace TehPers.FishingOverhaul.Services
                             WaterTypes = WaterTypes.PondOrOcean,
                             MinFishingLevel = 10,
                             IncludeLocations = ImmutableArray.Create("Mountain"),
+                            When = hasCaughtFish,
                         }
                     ),
                     new(
@@ -241,6 +249,7 @@ namespace TehPers.FishingOverhaul.Services
                         {
                             DepthMultiplier = 0.02 / 4,
                             IncludeLocations = ImmutableArray.Create("Sewer"),
+                            When = hasCaughtFish,
                         }
                     ),
                     new(
@@ -254,6 +263,18 @@ namespace TehPers.FishingOverhaul.Services
                             WaterTypes = WaterTypes.River,
                             MinFishingLevel = 6,
                             IncludeLocations = ImmutableArray.Create("Forest"),
+                            When = hasCaughtFish,
+                        }
+                    ),
+
+                    // Forest farm
+                    // TODO: make sure this works
+                    new(
+                        NamespacedKey.SdvObject(734),
+                        new(0.05)
+                        {
+                            DepthMultiplier = 0.05 / 4,
+                            IncludeLocations = ImmutableArray.Create("Farm/Forest"),
                         }
                     ),
 
@@ -362,7 +383,15 @@ namespace TehPers.FishingOverhaul.Services
             }
 
             // Dart behavior
-            var dartBehavior = fishInfo[2];
+            var dartBehavior = fishInfo[2] switch
+            {
+                "mixed" => DartBehavior.Mixed,
+                "dart" => DartBehavior.Dart,
+                "smooth" => DartBehavior.Smooth,
+                "sink" => DartBehavior.Sink,
+                "floater" => DartBehavior.Floater,
+                _ => DartBehavior.Mixed,
+            };
 
             // Min size
             if (!int.TryParse(fishInfo[3], out var minSize))
@@ -454,7 +483,7 @@ namespace TehPers.FishingOverhaul.Services
             return true;
         }
 
-        private static List<TrashEntry> GetDefaultTrashData()
+        private List<TrashEntry> GetDefaultTrashData()
         {
             return new()
             {
@@ -521,6 +550,86 @@ namespace TehPers.FishingOverhaul.Services
                     NamespacedKey.SdvObject(152),
                     new(0.99D) { IncludeLocations = ImmutableArray.Create("Submarine") }
                 ),
+                // Random golden walnuts
+                new GoldenWalnutEntry(
+                    new(50.5)
+                    {
+                        When = new Dictionary<string, string>
+                        {
+                            ["LocationContext"] = "Island",
+                            ["TehPers.FishingOverhaul/RandomGoldenWalnuts"] = "{{Range: 0, 4}}",
+                            // TODO: remove once CP fixes mods not being able to use their own tokens
+                            ["HasMod"] = "TehPers.FishingOverhaul",
+                        }.ToImmutableDictionary(),
+                    }
+                )
+                {
+                    OnCatch = new()
+                    {
+                        CustomEvents = ImmutableArray.Create(
+                            new NamespacedKey(this.manifest, "RandomGoldenWalnut")
+                        )
+                    }
+                },
+                // Tidepool golden walnut
+                new GoldenWalnutEntry(
+                    new(1)
+                    {
+                        IncludeLocations = ImmutableArray.Create("Island Southeast"),
+                        Position = new()
+                        {
+                            X = new()
+                            {
+                                GreaterThanEq = 18,
+                                LessThan = 20,
+                            },
+                            Y = new()
+                            {
+                                GreaterThanEq = 20,
+                                LessThan = 22,
+                            },
+                        },
+                        When = new Dictionary<string, string>
+                        {
+                            ["TehPers.FishingOverhaul/TidePoolGoldenWalnut"] = "false",
+                            // TODO: remove once CP fixes mods not being able to use their own tokens
+                            ["HasMod"] = "TehPers.FishingOverhaul",
+                        }.ToImmutableDictionary(),
+                    }
+                )
+                {
+                    OnCatch = new()
+                    {
+                        CustomEvents = ImmutableArray.Create(
+                            new NamespacedKey(this.manifest, "TidePoolGoldenWalnut")
+                        ),
+                    },
+                },
+                // Iridium Krobus
+                new(
+                    NamespacedKey.SdvFurniture(2396),
+                    new(1)
+                    {
+                        IncludeLocations = ImmutableArray.Create("Forest"),
+                        Position = new()
+                        {
+                            Y = new()
+                            {
+                                GreaterThan = 108,
+                            },
+                        },
+                        When = new Dictionary<string, string>
+                        {
+                            ["HasFlag |contains=caughtIridiumKrobus"] = "false",
+                        }.ToImmutableDictionary(),
+                    }
+                )
+                {
+                    OnCatch = new()
+                    {
+                        SetFlags = ImmutableArray.Create("caughtIridiumKrobus"),
+                    },
+                },
             };
         }
 
@@ -533,63 +642,114 @@ namespace TehPers.FishingOverhaul.Services
             return new()
             {
                 // Dressed spinner
-                new(
-                    new(0.025) { MinFishingLevel = 6 },
-                    new() { NamespacedKey.SdvObject(687) },
-                    allowDuplicates: false
-                ),
+                new(new(0.025) { MinFishingLevel = 6 }, new() { NamespacedKey.SdvObject(687) })
+                {
+                    AllowDuplicates = false
+                },
 
                 // Bait
-                new(new(0.25), new() { NamespacedKey.SdvObject(685) }, 2, 4),
+                new(new(0.25), new() { NamespacedKey.SdvObject(685) })
+                {
+                    MinQuantity = 2,
+                    MaxQuantity = 4
+                },
 
                 // Archaeology
-                new(new(0.025), new() { NamespacedKey.SdvObject(102) }, allowDuplicates: false),
+                new(new(0.025), new() { NamespacedKey.SdvObject(102) }) { AllowDuplicates = false },
                 new(new(0.0625), Enumerable.Range(585, 4).Select(NamespacedKey.SdvObject).ToList()),
                 new(new(0.125), Enumerable.Range(96, 32).Select(NamespacedKey.SdvObject).ToList()),
 
                 // Geodes
-                new(new(0.2), new() { NamespacedKey.SdvObject(535) }, 1, 3),
-                new(new(0.125), new() { NamespacedKey.SdvObject(536) }, 1, 3),
-                new(new(0.125), new() { NamespacedKey.SdvObject(537) }, 1, 3),
-                new(new(0.0625), new() { NamespacedKey.SdvObject(749) }, 1, 3),
+                new(new(0.2), new() { NamespacedKey.SdvObject(535) })
+                {
+                    MinQuantity = 1,
+                    MaxQuantity = 3
+                },
+                new(new(0.125), new() { NamespacedKey.SdvObject(536) })
+                {
+                    MinQuantity = 1,
+                    MaxQuantity = 3
+                },
+                new(new(0.125), new() { NamespacedKey.SdvObject(537) })
+                {
+                    MinQuantity = 1,
+                    MaxQuantity = 3
+                },
+                new(new(0.0625), new() { NamespacedKey.SdvObject(749) })
+                {
+                    MinQuantity = 1,
+                    MaxQuantity = 3
+                },
 
                 // Ores + coal
-                new(new(0.0075), new() { NamespacedKey.SdvObject(386) }, 1, 3),
-                new(new(0.15), new() { NamespacedKey.SdvObject(384) }, 3, 10),
-                new(new(0.15), new() { NamespacedKey.SdvObject(380) }, 3, 10),
-                new(new(0.15), new() { NamespacedKey.SdvObject(378) }, 3, 10),
-                new(new(0.3), new() { NamespacedKey.SdvObject(382) }, 3, 10),
+                new(new(0.0075), new() { NamespacedKey.SdvObject(386) })
+                {
+                    MinQuantity = 1,
+                    MaxQuantity = 3
+                },
+                new(new(0.15), new() { NamespacedKey.SdvObject(384) })
+                {
+                    MinQuantity = 3,
+                    MaxQuantity = 10
+                },
+                new(new(0.15), new() { NamespacedKey.SdvObject(380) })
+                {
+                    MinQuantity = 3,
+                    MaxQuantity = 10
+                },
+                new(new(0.15), new() { NamespacedKey.SdvObject(378) })
+                {
+                    MinQuantity = 3,
+                    MaxQuantity = 10
+                },
+                new(new(0.3), new() { NamespacedKey.SdvObject(382) })
+                {
+                    MinQuantity = 3,
+                    MaxQuantity = 10
+                },
 
                 // Junk
-                new(new(0.25), new() { NamespacedKey.SdvObject(388) }, 10, 25),
-                new(new(0.25), new() { NamespacedKey.SdvObject(390) }, 10, 25),
-                new(new(0.5) { MaxFishingLevel = 1 }, new() { NamespacedKey.SdvObject(770) }, 3, 5),
-                new(new(0.005), new() { NamespacedKey.SdvObject(166) }, allowDuplicates: false),
-                new(new(0.00025), new() { NamespacedKey.SdvObject(74) }, allowDuplicates: false),
+                new(new(0.25), new() { NamespacedKey.SdvObject(388) })
+                {
+                    MinQuantity = 10,
+                    MaxQuantity = 25
+                },
+                new(new(0.25), new() { NamespacedKey.SdvObject(390) })
+                {
+                    MinQuantity = 10,
+                    MaxQuantity = 25
+                },
+                new(new(0.5) { MaxFishingLevel = 1 }, new() { NamespacedKey.SdvObject(770) })
+                {
+                    MinQuantity = 3,
+                    MaxQuantity = 5
+                },
+                new(new(0.005), new() { NamespacedKey.SdvObject(166) }) { AllowDuplicates = false },
+                new(
+                    new(0.00025),
+                    new() { NamespacedKey.SdvObject(74) }
+                ) { AllowDuplicates = false },
 
                 // Weapons
-                new(new(0.001), new() { NamespacedKey.SdvWeapon(14) }, allowDuplicates: false),
-                new(new(0.001), new() { NamespacedKey.SdvWeapon(51) }, allowDuplicates: false),
+                new(new(0.001), new() { NamespacedKey.SdvWeapon(14) }) { AllowDuplicates = false },
+                new(new(0.001), new() { NamespacedKey.SdvWeapon(51) }) { AllowDuplicates = false },
 
                 // Boots
-                new(
-                    new(0.005),
-                    Enumerable.Range(504, 10).Select(NamespacedKey.SdvBoots).ToList(),
-                    allowDuplicates: false
-                ),
+                new(new(0.005), Enumerable.Range(504, 10).Select(NamespacedKey.SdvBoots).ToList())
+                {
+                    AllowDuplicates = false
+                },
 
                 // Rings
-                new(new(0.0025), new() { NamespacedKey.SdvRing(527) }, allowDuplicates: false),
-                new(
-                    new(0.005),
-                    Enumerable.Range(516, 4).Select(NamespacedKey.SdvRing).ToList(),
-                    allowDuplicates: false
-                ),
-                new(
-                    new(0.005),
-                    Enumerable.Range(529, 6).Select(NamespacedKey.SdvRing).ToList(),
-                    allowDuplicates: false
-                ),
+                new(new(0.0025), new() { NamespacedKey.SdvRing(527) }) { AllowDuplicates = false },
+                new(new(0.005), Enumerable.Range(516, 4).Select(NamespacedKey.SdvRing).ToList())
+                {
+                    AllowDuplicates = false
+                },
+                new(new(0.005), Enumerable.Range(529, 6).Select(NamespacedKey.SdvRing).ToList())
+                {
+                    AllowDuplicates = false
+                },
             };
         }
     }

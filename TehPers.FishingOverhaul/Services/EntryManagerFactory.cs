@@ -1,6 +1,6 @@
 ﻿using System;
 using StardewModdingAPI;
-using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Services
 {

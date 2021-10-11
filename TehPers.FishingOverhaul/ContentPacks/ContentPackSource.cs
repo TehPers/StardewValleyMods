@@ -4,7 +4,6 @@ using StardewModdingAPI;
 using TehPers.Core.Api.Content;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
-using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config.ContentPacks;
 

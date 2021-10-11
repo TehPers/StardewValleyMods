@@ -24,6 +24,12 @@ namespace TehPers.Core.Api.Items
         {
         }
 
+        public void Deconstruct(out string @namespace, out string key)
+        {
+            @namespace = this.Namespace;
+            key = this.Key;
+        }
+
         public override string ToString()
         {
             return $"{this.Namespace}:{this.Key}";

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using ContentPatcher;
 using StardewModdingAPI;
 using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Gameplay;
 using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Services
 {
@@ -16,12 +15,14 @@ namespace TehPers.FishingOverhaul.Services
         private readonly IManagedConditions? managedConditions;
 
         public ChanceCalculator(
+            IMonitor monitor,
             IContentPatcherAPI contentPatcherApi,
             IManifest fishingManifest,
             IManifest owner,
             T availabilityInfo
         )
         {
+            _ = monitor ?? throw new ArgumentNullException(nameof(monitor));
             _ = contentPatcherApi ?? throw new ArgumentNullException(nameof(contentPatcherApi));
             _ = owner ?? throw new ArgumentNullException(nameof(owner));
             this.availabilityInfo = availabilityInfo
@@ -45,28 +46,20 @@ namespace TehPers.FishingOverhaul.Services
                     version,
                     new[] { fishingManifest.UniqueID }
                 );
+
+                if (!this.managedConditions.IsValid)
+                {
+                    monitor.Log(
+                        $"Validation error in CP conditions: {this.managedConditions.ValidationError}",
+                        LogLevel.Error
+                    );
+                }
             }
         }
 
-        public double? GetWeightedChance(
-            int time,
-            Seasons seasons,
-            Weathers weathers,
-            int fishingLevel,
-            IEnumerable<string> locations,
-            WaterTypes waterTypes = WaterTypes.All,
-            int depth = 4
-        )
+        public double? GetWeightedChance(FishingInfo fishingInfo)
         {
-            return this.availabilityInfo.GetWeightedChance(
-                    time,
-                    seasons,
-                    weathers,
-                    fishingLevel,
-                    locations,
-                    waterTypes,
-                    depth
-                )
+            return this.availabilityInfo.GetWeightedChance(fishingInfo)
                 .Where(
                     _ =>
                     {
@@ -75,11 +68,7 @@ namespace TehPers.FishingOverhaul.Services
                             return true;
                         }
 
-                        if (conditions.IsMutable)
-                        {
-                            conditions.UpdateContext();
-                        }
-
+                        conditions.UpdateContext();
                         return conditions.IsMatch;
                     }
                 );

@@ -1,14 +1,14 @@
-﻿using StardewValley;
+﻿using System;
+using StardewValley;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewValley.Buildings;
 using StardewValley.Locations;
-using StardewValley.Tools;
 using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
+using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Api.Weighted;
 
 namespace TehPers.FishingOverhaul.Api
@@ -19,76 +19,32 @@ namespace TehPers.FishingOverhaul.Api
     public interface IFishingApi : ISimplifiedFishingApi
     {
         /// <summary>
-        /// Gets the weighted chances of catching any fish. This does not take into account fish
-        /// ponds.
+        /// Invoked whenever an item is caught from the water.
         /// </summary>
-        /// <param name="location">The location being fished in.</param>
-        /// <param name="time">The time of day to get fish for.</param>
-        /// <param name="seasons">The seasons to get fish for.</param>
-        /// <param name="weathers">The weathers to get fish for.</param>
-        /// <param name="waterTypes">The water types to get fish for.</param>
-        /// <param name="fishingLevel">The <see cref="Farmer"/>'s fishing level.</param>
-        /// <param name="depth">The bobber depth.</param>
-        /// <param name="rod">The fishing rod being fished with, or <see langword="null"/> if not applicable.</param>
-        /// <returns>The catchable fish and their chances of being caught.</returns>
-        IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(
-            GameLocation location,
-            int time,
-            Seasons seasons,
-            Weathers weathers,
-            WaterTypes waterTypes,
-            int fishingLevel,
-            int depth = 4,
-            FishingRod? rod = null
-        );
+        public event EventHandler<CatchInfo>? CaughtItem;
+
+        /// <summary>
+        /// Invoked whenever a treasure chest is opened.
+        /// </summary>
+        public event EventHandler<List<Item>>? OpenedChest;
+
+        /// <summary>
+        /// Invoked whenever an item is caught and raises a custom event.
+        /// </summary>
+        public event EventHandler<CustomEvent>? CustomEvent;
 
         /// <summary>
         /// Gets the weighted chances of catching any fish. This does not take into account fish
         /// ponds.
         /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
-        /// <param name="depth">The bobber depth.</param>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
         /// <returns>The catchable fish and their chances of being caught.</returns>
-        IEnumerable<IWeightedValue<NamespacedKey>> GetFishChances(Farmer farmer, int depth = 4)
-        {
-            var location = farmer.currentLocation;
-            var season = location.GetSeasonForLocation() switch
-            {
-                "spring" => Seasons.Spring,
-                "summer" => Seasons.Summer,
-                "fall" => Seasons.Fall,
-                "winter" => Seasons.Winter,
-                _ => Seasons.None,
-            };
-            var weather = Game1.isRaining switch
-            {
-                true => Weathers.Rainy,
-                false => Weathers.Sunny,
-            };
-            var waterType = location.getFishingLocation(farmer.getTileLocation()) switch
-            {
-                0 => WaterTypes.River,
-                1 => WaterTypes.PondOrOcean,
-                2 => WaterTypes.Freshwater,
-                _ => WaterTypes.All,
-            };
-
-            return this.GetFishChances(
-                location,
-                Game1.timeOfDay,
-                season,
-                weather,
-                waterType,
-                farmer.FishingLevel,
-                depth,
-                farmer.CurrentTool as FishingRod
-            );
-        }
+        IEnumerable<IWeightedValue<FishEntry>> GetFishChances(FishingInfo fishingInfo);
 
         IEnumerable<string> ISimplifiedFishingApi.GetCatchableFish(Farmer farmer, int depth)
         {
-            return this.GetFishChances(farmer, depth)
-                .Select(weightedValue => weightedValue.Value.ToString());
+            return this.GetFishChances(new(farmer) { BobberDepth = depth })
+                .Select(weightedValue => weightedValue.Value.FishKey.ToString());
         }
 
         /// <summary>
@@ -127,132 +83,26 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// Gets the weighted chances of catching any trash.
         /// </summary>
-        /// <param name="location">The location being fished in.</param>
-        /// <param name="time">The time of day to get fish for.</param>
-        /// <param name="seasons">The seasons to get fish for.</param>
-        /// <param name="weathers">The weathers to get fish for.</param>
-        /// <param name="waterTypes">The water types to get trash for.</param>
-        /// <param name="fishingLevel">The <see cref="Farmer"/>'s fishing level.</param>
-        /// <param name="depth"></param>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
         /// <returns>The catchable trash and their chances of being caught.</returns>
-        IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(
-            GameLocation location,
-            int time,
-            Seasons seasons,
-            Weathers weathers,
-            WaterTypes waterTypes,
-            int fishingLevel,
-            int depth = 4
-        );
-
-        /// <summary>
-        /// Gets the weighted chances of catching any trash.
-        /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
-        /// <returns>The catchable trash and their chances of being caught.</returns>
-        public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(Farmer farmer)
-        {
-            var location = farmer.currentLocation;
-            var season = location.GetSeasonForLocation() switch
-            {
-                "spring" => Seasons.Spring,
-                "summer" => Seasons.Summer,
-                "fall" => Seasons.Fall,
-                "winter" => Seasons.Winter,
-                _ => Seasons.None,
-            };
-            var weather = Game1.isRaining switch
-            {
-                true => Weathers.Rainy,
-                false => Weathers.Sunny,
-            };
-            var waterType = location.getFishingLocation(farmer.getTileLocation()) switch
-            {
-                0 => WaterTypes.River,
-                1 => WaterTypes.PondOrOcean,
-                2 => WaterTypes.Freshwater,
-                _ => WaterTypes.All,
-            };
-
-            return this.GetTrashChances(
-                location,
-                Game1.timeOfDay,
-                season,
-                weather,
-                waterType,
-                farmer.FishingLevel
-            );
-        }
+        IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(FishingInfo fishingInfo);
 
         IEnumerable<string> ISimplifiedFishingApi.GetCatchableTrash(Farmer farmer)
         {
-            return this.GetTrashChances(farmer)
+            return this.GetTrashChances(new(farmer))
                 .Select(weightedValue => weightedValue.Value.ItemKey.ToString());
         }
 
         /// <summary>
         /// Gets the weighted chances of catching any treasure.
         /// </summary>
-        /// <param name="location">The location being fished in.</param>
-        /// <param name="time">The time of day to get fish for.</param>
-        /// <param name="seasons">The seasons to get fish for.</param>
-        /// <param name="weathers">The weathers to get fish for.</param>
-        /// <param name="waterTypes">The water types to get treasure for.</param>
-        /// <param name="fishingLevel">The <see cref="Farmer"/>'s fishing level.</param>
-        /// <param name="depth"></param>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
         /// <returns>The catchable treasure and their chances of being caught.</returns>
-        IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(
-            GameLocation location,
-            int time,
-            Seasons seasons,
-            Weathers weathers,
-            WaterTypes waterTypes,
-            int fishingLevel,
-            int depth = 4
-        );
-
-        /// <summary>
-        /// Gets the weighted chances of catching any treasure.
-        /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
-        /// <returns>The catchable treasure and their chances of being caught.</returns>
-        public IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(Farmer farmer)
-        {
-            var location = farmer.currentLocation;
-            var season = location.GetSeasonForLocation() switch
-            {
-                "spring" => Seasons.Spring,
-                "summer" => Seasons.Summer,
-                "fall" => Seasons.Fall,
-                "winter" => Seasons.Winter,
-                _ => Seasons.None,
-            };
-            var weather = Game1.isRaining switch
-            {
-                true => Weathers.Rainy,
-                false => Weathers.Sunny,
-            };
-            var waterType = location.getFishingLocation(farmer.getTileLocation()) switch
-            {
-                0 => WaterTypes.River,
-                1 => WaterTypes.PondOrOcean,
-                2 => WaterTypes.Freshwater,
-                _ => WaterTypes.All,
-            };
-
-            return this.GetTreasureChances(
-                location,
-                Game1.timeOfDay,
-                season,
-                weather,
-                waterType,
-                farmer.FishingLevel
-            );
-        }
+        IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(FishingInfo fishingInfo);
 
         IEnumerable<string> ISimplifiedFishingApi.GetCatchableTreasure(Farmer farmer)
         {
-            return this.GetTreasureChances(farmer)
+            return this.GetTreasureChances(new(farmer))
                 .SelectMany(weightedValue => weightedValue.Value.ItemKeys)
                 .Select(key => key.ToString())
                 .Distinct();
@@ -281,23 +131,55 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// Selects a random catch. A player may catch either a fish or trash item.
         /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
-        /// <param name="rod">The <see cref="FishingRod"/> used for fishing.</param>
-        /// <param name="bobberDepth">The bobber's water depth.</param>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
         /// <returns>A possible catch.</returns>
-        PossibleCatch GetPossibleCatch(Farmer farmer, FishingRod rod, int bobberDepth);
+        PossibleCatch GetPossibleCatch(FishingInfo fishingInfo);
 
         string ISimplifiedFishingApi.GetPossibleCatch(
             Farmer farmer,
-            FishingRod rod,
             int bobberDepth,
             out bool isFish
         )
         {
-            var (fishKey, catchType) = this.GetPossibleCatch(farmer, rod, bobberDepth);
-            isFish = catchType is PossibleCatch.Type.Fish;
-            return fishKey.ToString();
+            var possibleCatch = this.GetPossibleCatch(new(farmer) { BobberDepth = bobberDepth });
+            switch (possibleCatch)
+            {
+                case PossibleCatch.Fish(var entry):
+                {
+                    isFish = true;
+                    return entry.FishKey.ToString();
+                }
+                case PossibleCatch.Trash(var entry):
+                {
+                    isFish = false;
+                    return entry.ItemKey.ToString();
+                }
+                default:
+                {
+                    throw new InvalidOperationException(
+                        $"Unknown possible catch type: {possibleCatch}"
+                    );
+                }
+            }
         }
+
+        /// <summary>
+        /// Selects random treasure.
+        /// </summary>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
+        /// <returns>Possible loot from a treasure chest.</returns>
+        IList<Item> GetPossibleTreasure(FishingInfo fishingInfo);
+
+        IList<Item> ISimplifiedFishingApi.GetPossibleTreasure(Farmer farmer)
+        {
+            return this.GetPossibleTreasure(new(farmer));
+        }
+
+        /// <summary>
+        /// Raises a custom event for other mods to handle.
+        /// </summary>
+        /// <param name="customEvent">The event to raise.</param>
+        void RaiseCustomEvent(CustomEvent customEvent);
 
         /// <summary>
         /// Requests fishing data to be reloaded.

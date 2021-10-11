@@ -1,5 +1,6 @@
 ﻿using StardewValley;
-using TehPers.Core.Api.Items;
+using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Gui;
 
 namespace TehPers.FishingOverhaul.Services
@@ -7,8 +8,9 @@ namespace TehPers.FishingOverhaul.Services
     internal interface ICustomBobberBarFactory
     {
         CustomBobberBar? Create(
-            Farmer user,
-            NamespacedKey fishKey,
+            FishingInfo fishingInfo,
+            FishEntry fishEntry,
+            Item fishItem,
             float fishSizePercent,
             bool treasure,
             int bobber,

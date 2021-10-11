@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using Newtonsoft.Json;
 using TehPers.Core.Api.Json;
-using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Config.ContentPacks
 {

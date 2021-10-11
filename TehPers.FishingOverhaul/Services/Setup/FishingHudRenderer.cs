@@ -35,7 +35,8 @@ namespace TehPers.FishingOverhaul.Services.Setup
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
-            this.fishingTracker = fishingTracker ?? throw new ArgumentNullException(nameof(fishingTracker));
+            this.fishingTracker =
+                fishingTracker ?? throw new ArgumentNullException(nameof(fishingTracker));
             this.hudConfig = hudConfig ?? throw new ArgumentNullException(nameof(hudConfig));
             this.namespaceRegistry = namespaceRegistry;
             this.whitePixel = new(Game1.graphics.GraphicsDevice, 1, 1);
@@ -70,7 +71,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
             var lineHeight = (float)font.LineSpacing;
             var boxTopLeft = new Vector2(this.hudConfig.TopLeftX, this.hudConfig.TopLeftY);
             var boxBottomLeft = boxTopLeft;
-            var fishChances = this.fishingApi.GetFishChances(farmer)
+            var fishChances = this.fishingApi.GetFishChances(new(farmer))
+                .ToWeighted(value => value.Weight, value => value.Value.FishKey)
+                .Condense()
                 .Normalize()
                 .OrderByDescending(fishChance => fishChance.Weight)
                 .ToArray();
@@ -99,7 +102,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
             boxBottomLeft += new Vector2(0, lineHeight);
 
             // Draw trash chances
-            var trashChance = fishChances.Length == 0 ? 1.0 : 1.0 - this.fishingApi.GetChanceForFish(farmer);
+            var trashChance = fishChances.Length == 0
+                ? 1.0
+                : 1.0 - this.fishingApi.GetChanceForFish(farmer);
             var trashText = this.helper.Translation.Get(
                 "text.trash",
                 new { chance = $"{trashChance:P2}" }
@@ -126,7 +131,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
                 // Draw fish icon
                 var lineWidth = 0f;
-                var fishName = this.helper.Translation.Get("text.fish.unknownName", new { key = fishKey.ToString() })
+                var fishName = this.helper.Translation.Get(
+                        "text.fish.unknownName",
+                        new { key = fishKey.ToString() }
+                    )
                     .ToString();
                 if (this.namespaceRegistry.TryGetItemFactory(fishKey, out var factory))
                 {
@@ -154,7 +162,11 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 // Draw chance
                 var fishText = this.helper.Translation.Get(
                     "text.fish",
-                    new { name = fishName, chance = $"{chance * 100.0:F2}" }
+                    new
+                    {
+                        name = fishName,
+                        chance = $"{chance * 100.0:F2}"
+                    }
                 );
                 e.SpriteBatch.DrawStringWithShadow(
                     font,
@@ -176,10 +188,17 @@ namespace TehPers.FishingOverhaul.Services.Setup
             if (fishChances.Length > maxDisplayedFish)
             {
                 var moreFishText = this.helper.Translation.Get(
-                    "text.fish.more",
-                    new { quantity = fishChances.Length - maxDisplayedFish }
-                ).ToString();
-                e.SpriteBatch.DrawStringWithShadow(font, moreFishText, boxBottomLeft, textColor, 1F);
+                        "text.fish.more",
+                        new { quantity = fishChances.Length - maxDisplayedFish }
+                    )
+                    .ToString();
+                e.SpriteBatch.DrawStringWithShadow(
+                    font,
+                    moreFishText,
+                    boxBottomLeft,
+                    textColor,
+                    1F
+                );
                 boxWidth = Math.Max(boxWidth, font.MeasureString(moreFishText).X);
                 boxBottomLeft += new Vector2(0, lineHeight);
             }

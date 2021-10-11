@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using StardewValley;
-using StardewValley.Tools;
 
 namespace TehPers.FishingOverhaul.Api
 {
@@ -72,16 +71,15 @@ namespace TehPers.FishingOverhaul.Api
         /// Selects a random catch. A player may catch either a fish or trash item.
         /// </summary>
         /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
-        /// <param name="rod">The <see cref="FishingRod"/> used for fishing.</param>
         /// <param name="bobberDepth">The bobber's water depth.</param>
         /// <param name="isFish">Whether the caught item is a fish.</param>
         /// <returns>A possible catch.</returns>
-        string GetPossibleCatch(Farmer farmer, FishingRod rod, int bobberDepth, out bool isFish);
+        string GetPossibleCatch(Farmer farmer, int bobberDepth, out bool isFish);
 
         /// <summary>
         /// Selects random treasure.
         /// </summary>
-        /// <param name="farmer">The <see cref="Farmer"/> that caught treasure.</param>
+        /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
         /// <returns>Possible loot from a treasure chest.</returns>
         IList<Item> GetPossibleTreasure(Farmer farmer);
     }

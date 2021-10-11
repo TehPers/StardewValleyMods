@@ -1,17 +1,20 @@
-﻿using TehPers.Core.Api.Items;
+﻿using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Api
 {
     /// <summary>
     /// A possible catch from fishing. This may or may not be a fish.
     /// </summary>
-    public record PossibleCatch(NamespacedKey ItemKey, PossibleCatch.Type CatchType)
+    public abstract record PossibleCatch
     {
-        public enum Type
-        {
-            Fish,
-            Trash,
-            Special,
-        }
+        /// <summary>
+        /// A fish catch.
+        /// </summary>
+        public sealed record Fish(FishEntry Entry) : PossibleCatch;
+
+        /// <summary>
+        /// A trash catch.
+        /// </summary>
+        public sealed record Trash(TrashEntry Entry) : PossibleCatch;
     }
 }
