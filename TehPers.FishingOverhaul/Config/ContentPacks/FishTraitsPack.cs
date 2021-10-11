@@ -11,6 +11,6 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     {
         [JsonRequired]
         [Description("The fish traits to add.")]
-        public Dictionary<string, FishTraits> FishTraits { get; init; } = new();
+        public Dictionary<string, FishTraits> Add { get; init; } = new();
     }
 }

@@ -11,10 +11,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "FishEntries"
+        "Add"
       ],
       "properties": {
-        "FishEntries": {
+        "Add": {
           "type": "array",
           "items": {
             "oneOf": [

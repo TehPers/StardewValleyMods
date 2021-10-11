@@ -11,10 +11,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "TrashEntries"
+        "Add"
       ],
       "properties": {
-        "TrashEntries": {
+        "Add": {
           "type": "array",
           "items": {
             "oneOf": [

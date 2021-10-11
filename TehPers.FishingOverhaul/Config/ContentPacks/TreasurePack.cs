@@ -11,6 +11,6 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     {
         [JsonRequired]
         [Description("The treasure entries to add.")]
-        public List<TreasureEntry> TreasureEntries { get; init; } = new();
+        public List<TreasureEntry> Add { get; init; } = new();
     }
 }

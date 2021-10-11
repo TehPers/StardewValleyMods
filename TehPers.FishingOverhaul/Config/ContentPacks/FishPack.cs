@@ -11,6 +11,6 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     {
         [JsonRequired]
         [Description("The fish entries to add.")]
-        public List<FishEntry> FishEntries { get; init; } = new();
+        public List<FishEntry> Add { get; init; } = new();
     }
 }

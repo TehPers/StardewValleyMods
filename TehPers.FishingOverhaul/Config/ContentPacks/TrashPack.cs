@@ -11,6 +11,6 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     {
         [JsonRequired]
         [Description("The trash entries to add.")]
-        public List<TrashEntry> TrashEntries { get; init; } = new();
+        public List<TrashEntry> Add { get; init; } = new();
     }
 }

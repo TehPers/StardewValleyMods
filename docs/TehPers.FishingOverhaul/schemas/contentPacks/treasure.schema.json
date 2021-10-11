@@ -11,10 +11,10 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "TreasureEntries"
+        "Add"
       ],
       "properties": {
-        "TreasureEntries": {
+        "Add": {
           "type": "array",
           "items": {
             "oneOf": [

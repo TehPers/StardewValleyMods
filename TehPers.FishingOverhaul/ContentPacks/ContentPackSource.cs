@@ -39,7 +39,7 @@ namespace TehPers.FishingOverhaul.ContentPacks
                 }
 
                 var actualTraits = new Dictionary<NamespacedKey, FishTraits>();
-                if (fishTraits is { FishTraits: { } traits })
+                if (fishTraits is { Add: { } traits })
                 {
                     foreach (var (rawKey, value) in traits)
                     {
@@ -83,9 +83,9 @@ namespace TehPers.FishingOverhaul.ContentPacks
                 yield return new(
                     pack.Manifest,
                     actualTraits,
-                    fishEntries?.FishEntries,
-                    trashEntries?.TrashEntries,
-                    treasureEntries?.TreasureEntries
+                    fishEntries?.Add,
+                    trashEntries?.Add,
+                    treasureEntries?.Add
                 );
             }
         }
