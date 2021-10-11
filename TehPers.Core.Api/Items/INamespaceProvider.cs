@@ -17,9 +17,9 @@ namespace TehPers.Core.Api.Items
         /// Tries to get an item factory for an item with the given key from this item namespace.
         /// </summary>
         /// <param name="key">The key of the item local to this namespace.</param>
-        /// <param name="item">An instance of an item with the given key.</param>
+        /// <param name="itemFactory">An instance of an item with the given key.</param>
         /// <returns><see langword="true"/> if the key is valid for an item in this namespace, <see langword="false"/> otherwise.</returns>
-        bool TryGetItemFactory(string key, [NotNullWhen(true)] out IItemFactory? item);
+        bool TryGetItemFactory(string key, [NotNullWhen(true)] out IItemFactory? itemFactory);
 
         /// <summary>
         /// Gets all the known, predefined item keys within this namespace. This may not return

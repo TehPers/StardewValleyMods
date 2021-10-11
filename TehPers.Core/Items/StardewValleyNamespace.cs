@@ -32,9 +32,9 @@ namespace TehPers.Core.Items
             this.itemFactories = new Dictionary<string, IItemFactory>();
         }
 
-        public bool TryGetItemFactory(string key, [NotNullWhen(true)] out IItemFactory? item)
+        public bool TryGetItemFactory(string key, [NotNullWhen(true)] out IItemFactory? itemFactory)
         {
-            return this.itemFactories.TryGetValue(key, out item);
+            return this.itemFactories.TryGetValue(key, out itemFactory);
         }
 
         public IEnumerable<string> GetKnownItemKeys()

@@ -18,5 +18,6 @@ namespace TehPers.Core.Api.Items
         public const string Tool = "Tool";
         public const string Wallpaper = "Wallpaper";
         public const string Weapon = "Weapon";
+        public const string Unknown = "Unknown";
     }
 }

@@ -95,7 +95,6 @@ namespace TehPers.Core.Api.Extensions
             _ = modId ?? throw new ArgumentNullException(nameof(modId));
             _ = root ?? throw new ArgumentNullException(nameof(root));
 
-            // TODO: should not create binding if the mod doesn't exist
             return root.Bind<TApi>()
                 .ToMethod(_ => root.ParentMod.Helper.ModRegistry.GetApi<TApi>(modId))
                 .When(_ => root.ParentMod.Helper.ModRegistry.IsLoaded(modId));
