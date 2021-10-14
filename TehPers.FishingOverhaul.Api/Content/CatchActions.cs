@@ -25,7 +25,7 @@ namespace TehPers.FishingOverhaul.Api.Content
         [Description("Sets one or more quests as active.")]
         public ImmutableArray<int> StartQuests { get; init; } = ImmutableArray<int>.Empty;
 
-        [Description("Adds a mail entry for the player's mail tomorrow.")]
+        [Description("Adds mail entries for the player's mail tomorrow.")]
         public ImmutableArray<string> AddMail { get; init; }
 
         public void OnCatch(IFishingApi fishingApi, CatchInfo catchInfo)

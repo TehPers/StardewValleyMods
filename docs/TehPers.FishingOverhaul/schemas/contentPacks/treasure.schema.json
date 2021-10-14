@@ -355,7 +355,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Adds a mail entry for the player's mail tomorrow."
+          "description": "Adds mail entries for the player's mail tomorrow."
         }
       }
     }
