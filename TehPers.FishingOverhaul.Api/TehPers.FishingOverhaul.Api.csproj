@@ -5,6 +5,7 @@
     <EnableModDeploy>False</EnableModDeploy>
     <EnableModZip>False</EnableModZip>
     <Nullable>Enable</Nullable>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\TehPers.FishingOverhaul.Api.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,10 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="$(GameModsPath)/ContentPatcher/ContentPatcher.dll" />
   </ItemGroup>
 
 </Project>

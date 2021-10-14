@@ -5,6 +5,7 @@
     <EnableModDeploy>False</EnableModDeploy>
     <EnableModZip>False</EnableModZip>
     <Nullable>Enable</Nullable>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\TehPers.Core.Api.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

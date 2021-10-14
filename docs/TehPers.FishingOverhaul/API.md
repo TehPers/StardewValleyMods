@@ -19,26 +19,26 @@ Each of the methods on the simplified API should be documented, so make sure to 
 
 Unfortunately, due to the restrictive nature of SMAPI's built in mod API support, it isn't possible to expose the full API through the mod registry. Instead, the full API is accessible through Teh's Core Mod. Accessing it is fairly straightforward, you just need to request the type from something called your mod kernel either directly or through dependency injection. For more details on what "kernels" and "dependency injection" are, visit the [Ninject docs][ninject docs]. However, it isn't necessary to know either of those things to access the fishing API.
 
-To access the full API, add a reference to the following NuGet package:
-
-```text
-> TehPers.FishingOverhaul.Api
-```
-
-Additionally, in order to include the referenced library with your mod, you will need to add the following line to your project's `.csproj` file inside of a `<PropertyGroup>` tag:
+To reference the Fishing API from your mod, add the following to your project's `.csproj` file:
 
 ```xml
 <PropertyGroup>
-    <!-- Add this to the property group -->
+    <!-- ... -->
+
+    <!-- Add this to the property group below everything else -->
     <BundleExtraAssemblies>ThirdParty</BundleExtraAssemblies>
+    <!-- Remove unnecessary output files -->
+    <IgnoreModFilePatterns>^TehPers\.Core\.Api\.(dll|pdb)$, ^TehPers\.FishingOverhaul\.Api\.(dll|pdb)$, ^Ninject\.dll$</IgnoreModFilePatterns>
 </PropertyGroup>
+
+<ItemGroup>
+    <!-- These should point to the different APIs in your Mods folder - change these if needed -->
+    <Reference Include="$(GameModsPath)/TehPers.Core/TehPers.Core.Api.dll" />
+    <Reference Include="$(GameModsPath)/TehPers.FishingOverhaul/TehPers.FishingOverhaul.Api.dll" />
+</ItemGroup>
 ```
 
-If you compile your mod, you should now see a couple new files in your mod's output directory:
-
-- `TehPers.FishingOverhaul.Api.dll` (and `.pdb`): These are required to use the API for Teh's Fishing Overhaul
-- `TehPers.Core.Api.dll` (and `.pdb`): These are required to use the API for Teh's Core Mod, which is needed to access the fishing APIs
-- `Ninject.dll`: A dependency injection framework used by Teh's Core API to expose APIs
+If you compile your mod, you should not see any new files added to your mod's output directory. However, you should be able to access the API now.
 
 **Make sure to add `TehPers.FishingOverhaul` and `TehPers.Core` as dependencies to your mod's manifest!** If your mod does not need them to function, then add them as optional dependencies so that they are loaded first.
 
