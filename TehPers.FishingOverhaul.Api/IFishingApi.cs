@@ -168,11 +168,13 @@ namespace TehPers.FishingOverhaul.Api
         /// </summary>
         /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
         /// <returns>Possible loot from a treasure chest.</returns>
-        IList<Item> GetPossibleTreasure(FishingInfo fishingInfo);
+        IEnumerable<TreasureEntry> GetPossibleTreasure(FishingInfo fishingInfo);
 
-        IList<Item> ISimplifiedFishingApi.GetPossibleTreasure(Farmer farmer)
+        IEnumerable<string> ISimplifiedFishingApi.GetPossibleTreasure(Farmer farmer)
         {
-            return this.GetPossibleTreasure(new(farmer));
+            return this.GetPossibleTreasure(new(farmer))
+                .SelectMany(entry => entry.ItemKeys)
+                .Select(key => key.ToString());
         }
 
         /// <summary>

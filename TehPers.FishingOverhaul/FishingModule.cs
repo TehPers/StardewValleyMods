@@ -6,7 +6,6 @@ using Ninject;
 using StardewModdingAPI;
 using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config;
@@ -29,6 +28,7 @@ namespace TehPers.FishingOverhaul
             this.Bind<ISetup>().To<DefaultContentReloader>().InSingletonScope();
             this.Bind<ISetup>().To<ContentPatcherSetup>().InSingletonScope();
             this.Bind<ISetup>().To<DefaultCustomEvents>().InSingletonScope();
+            this.Bind<ISetup>().To<ConsoleCommandsSetup>().InSingletonScope();
             // TODO: this.Bind<ISetup>().To<FishingMessageHandler>().InSingletonScope();
 
             // Resources/services
@@ -37,7 +37,6 @@ namespace TehPers.FishingOverhaul
                     context => new FishingApi(
                         context.Kernel.Get<IMonitor>(),
                         context.Kernel.Get<IManifest>(),
-                        context.Kernel.Get<INamespaceRegistry>(),
                         context.Kernel.Get<FishConfig>(),
                         context.Kernel.Get<TreasureConfig>(),
                         context.Kernel.Get<Func<IEnumerable<IFishingContentSource>>>(),

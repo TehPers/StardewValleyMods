@@ -10,8 +10,6 @@ namespace TehPers.Core.Api.Extensions
     /// </summary>
     public static class EnumerableExtensions
     {
-        private static readonly Dictionary<Type, object> enumAggregators = new();
-
         /// <summary>Shuffles a list.</summary>
         /// <typeparam name="T">The type of the elements of <paramref name="source"/>.</typeparam>
         /// <param name="source">An <see cref="IList{T}"/> to shuffle.</param>
@@ -219,6 +217,22 @@ namespace TehPers.Core.Api.Extensions
         public static IEnumerable<T> Yield<T>(this T item)
         {
             yield return item;
+        }
+
+        /// <summary>
+        /// Enumerates the items in a sequence along with their index in the sequence.
+        /// </summary>
+        /// <typeparam name="T">Type of the object.</typeparam>
+        /// <param name="source">The source items.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> containing the source items and their index in the sequence.</returns>
+        public static IEnumerable<(int, T)> WithIndex<T>(this IEnumerable<T> source)
+        {
+            var curIndex = 0;
+            foreach (var item in source)
+            {
+                yield return (curIndex, item);
+                curIndex = checked(curIndex + 1);
+            }
         }
     }
 }

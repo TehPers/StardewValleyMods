@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -27,9 +28,10 @@ namespace TehPers.Core.Items
             IAssetProvider gameAssets
         )
         {
-            this.monitor = monitor;
-            this.gameAssets = gameAssets;
-            this.itemFactories = new Dictionary<string, IItemFactory>();
+            this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+            this.gameAssets = gameAssets ?? throw new ArgumentNullException(nameof(gameAssets));
+
+            this.itemFactories = new();
         }
 
         public bool TryGetItemFactory(string key, [NotNullWhen(true)] out IItemFactory? itemFactory)
@@ -204,7 +206,7 @@ namespace TehPers.Core.Items
                     // Secret notes
                     case 79:
                     {
-                        foreach (var secretNoteId in secretNotes.Keys)
+                        foreach (var secretNoteId in secretNotes.Keys.Where(key => key < GameLocation.JOURNAL_INDEX))
                         {
                             var key = NamespacedKey.SdvCustom(ItemTypes.Object, $"SecretNotes/{secretNoteId}").Key;
                             var itemFactory = new SimpleItemFactory(
@@ -213,6 +215,27 @@ namespace TehPers.Core.Items
                                 {
                                     var note = new SObject(id, 1);
                                     note.name += $" #{secretNoteId}";
+                                    return note;
+                                }
+                            );
+                            yield return (key, itemFactory);
+                        }
+
+                        break;
+                    }
+
+                    // Journal scraps
+                    case 842:
+                    {
+                        foreach (var journalId in secretNotes.Keys.Where(key => key >= GameLocation.JOURNAL_INDEX))
+                        {
+                            var key = NamespacedKey.SdvCustom(ItemTypes.Object, $"Journals/{journalId - GameLocation.JOURNAL_INDEX}").Key;
+                            var itemFactory = new SimpleItemFactory(
+                                ItemTypes.Object,
+                                () =>
+                                {
+                                    var note = new SObject(id, 1);
+                                    note.name += $" #{journalId - GameLocation.JOURNAL_INDEX}";
                                     return note;
                                 }
                             );

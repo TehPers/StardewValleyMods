@@ -40,6 +40,13 @@ namespace TehPers.FishingOverhaul.Services.Setup
             // Handle the event based on the key
             switch (key)
             {
+                case "LostBook":
+                {
+                    Game1.showGlobalMessage(
+                        "You found a lost book. The library has been expanded."
+                    );
+                    break;
+                }
                 case "RandomGoldenWalnut" when Game1.IsMultiplayer:
                 {
                     e.Catch.FishingInfo.User.team.RequestLimitedNutDrops(

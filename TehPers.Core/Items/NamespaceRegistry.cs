@@ -25,6 +25,11 @@ namespace TehPers.Core.Items
             }
         }
 
+        public IEnumerable<string> GetRegisteredNamespaces()
+        {
+            return this.namespaceProviders.Keys;
+        }
+
         public bool TryGetItemFactory(NamespacedKey key, [NotNullWhen(true)] out IItemFactory? factory)
         {
             factory = default;

@@ -25,6 +25,9 @@ namespace TehPers.FishingOverhaul.Api.Content
         [Description("Sets one or more quests as active.")]
         public ImmutableArray<int> StartQuests { get; init; } = ImmutableArray<int>.Empty;
 
+        [Description("Adds a mail entry for the player's mail tomorrow.")]
+        public ImmutableArray<string> AddMail { get; init; }
+
         public void OnCatch(IFishingApi fishingApi, CatchInfo catchInfo)
         {
             // Custom events
@@ -43,6 +46,12 @@ namespace TehPers.FishingOverhaul.Api.Content
             foreach (var questId in this.StartQuests)
             {
                 catchInfo.FishingInfo.User.addQuest(questId);
+            }
+
+            // New mail
+            foreach (var mail in this.AddMail)
+            {
+                catchInfo.FishingInfo.User.mailForTomorrow.Add(mail);
             }
         }
     }

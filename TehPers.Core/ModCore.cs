@@ -15,13 +15,7 @@ namespace TehPers.Core
             // Create kernel factory and add core processors
             ModServices.Factory = new ModKernelFactory();
             ModServices.Factory.AddKernelProcessor(
-                kernel =>
-                {
-                    kernel.Load(
-                        new FuncModule(),
-                        new ModServicesModule(kernel)
-                    );
-                }
+                kernel => { kernel.Load(new FuncModule(), new ModServicesModule(kernel)); }
             );
         }
 
@@ -40,6 +34,30 @@ namespace TehPers.Core
             // Reload namespace registry on save loaded
             helper.Events.GameLoop.SaveLoaded +=
                 (_, _) => kernel.Get<INamespaceRegistry>().Reload();
+
+            // Add custom commands
+            helper.ConsoleCommands.Add(
+                "tehcore_listkeys",
+                "Lists the known registered namespaced keys.",
+                ListKeys
+            );
+
+            void ListKeys(string s, string[] strings)
+            {
+                var registry = kernel.Get<INamespaceRegistry>();
+                var monitor = kernel.Get<IMonitor>();
+
+                // List namespaces
+                monitor.Log("Registered namespaces:", LogLevel.Info);
+                foreach (var ns in registry.GetRegisteredNamespaces())
+                {
+                    monitor.Log($" - {ns}", LogLevel.Info);
+                }
+
+                // List keys
+                monitor.Log("Known namespaced keys:", LogLevel.Info);
+                monitor.Log(string.Join(", ", registry.GetKnownItemKeys()), LogLevel.Info);
+            }
         }
     }
 }

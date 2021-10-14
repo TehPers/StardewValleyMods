@@ -349,6 +349,13 @@
             "maximum": 2147483647
           },
           "description": "Sets one or more quests as active."
+        },
+        "AddMail": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Adds a mail entry for the player's mail tomorrow."
         }
       }
     }

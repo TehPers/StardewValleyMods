@@ -11,14 +11,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "ShouldOverrideLegendaries": {
-          "type": "boolean",
-          "description": "Whether this mod affects legendary fish at all. If false, legendary fish will be caught as though this mod were not installed. This also affects legendary fish addedthrough other mods."
-        },
-        "AllowFishOnAllFarms": {
-          "type": "boolean",
-          "description": "Whether all farm types should have fish."
-        },
         "ShowFishInMinigame": {
           "type": "boolean",
           "description": "Whether to show the fish being caught in the fishing minigame."

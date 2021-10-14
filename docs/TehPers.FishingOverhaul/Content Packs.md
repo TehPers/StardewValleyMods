@@ -22,10 +22,10 @@ There are also JSON schemas available for each of these files. If your editor su
 
 The `fishTraits.json` file configures the traits for each fish.
 
-| Property     | Type     | Required | Default | Description          |
-| ------------ | -------- | -------- | ------- | -------------------- |
-| `$schema`    | `string` | No       | N/A     | Optional schema URL. |
-| `FishTraits` | `object` | Yes      | N/A     | Fish traits to add.  |
+| Property  | Type     | Required | Default | Description          |
+| --------- | -------- | -------- | ------- | -------------------- |
+| `$schema` | `string` | No       | N/A     | Optional schema URL. |
+| `Add`     | `object` | Yes      | N/A     | Fish traits to add.  |
 
 Fish traits is a dictionary where the key is the namespaced key of the fish and the value is the actual traits:
 
@@ -43,10 +43,10 @@ Fish traits is a dictionary where the key is the namespaced key of the fish and 
 
 The `fish.json` file configures where and when fish can be caught.
 
-| Property      | Type     | Required | Default | Description          |
-| ------------- | -------- | -------- | ------- | -------------------- |
-| `$schema`     | `string` | No       | N/A     | Optional schema URL. |
-| `FishEntries` | `array`  | Yes      | N/A     | Fish entries to add. |
+| Property  | Type     | Required | Default | Description          |
+| --------- | -------- | -------- | ------- | -------------------- |
+| `$schema` | `string` | No       | N/A     | Optional schema URL. |
+| `Add`     | `array`  | Yes      | N/A     | Fish entries to add. |
 
 Fish entries each configure when a specific fish can be made available. Multiple entries may refer to the same fish, allowing complex customization over when a fish is available and what the chances of catching that fish are.
 
@@ -54,6 +54,7 @@ Fish entries each configure when a specific fish can be made available. Multiple
 | --------------------------- | -------- | -------- | ------- | ----------------------------------------- |
 | [`FishKey`][namespaced key] | `string` | Yes      | N/A     | The namespaced key for the fish.          |
 | `AvailabilityInfo`          | `object` | Yes      | N/A     | The fish availability data for the entry. |
+| [`OnCatch`]                 | `object` | No       | `{}`    | The actions to take on catch.             |
 
 Fish availability determines when a fish is available and includes all the normal availability properties as well.
 
@@ -69,10 +70,10 @@ Fish availability determines when a fish is available and includes all the norma
 
 The `trash.json` file configures where and when trash can be caught.
 
-| Property       | Type     | Required | Default | Description           |
-| -------------- | -------- | -------- | ------- | --------------------- |
-| `$schema`      | `string` | No       | N/A     | Optional schema URL.  |
-| `TrashEntries` | `array`  | Yes      | N/A     | Trash entries to add. |
+| Property  | Type     | Required | Default | Description           |
+| --------- | -------- | -------- | ------- | --------------------- |
+| `$schema` | `string` | No       | N/A     | Optional schema URL.  |
+| `Add`     | `array`  | Yes      | N/A     | Trash entries to add. |
 
 Trash entries each configure when a specific trash can be made available. Multiple entries may refer to the same trash item, allowing complex customization over when a trash is available and what the chances of catching that trash are.
 
@@ -80,6 +81,7 @@ Trash entries each configure when a specific trash can be made available. Multip
 | ---------------------------- | -------- | -------- | ------- | -------------------------------------- |
 | [`TrashKey`][namespaced key] | `string` | Yes      | N/A     | The namespaced key for the trash item. |
 | [`AvailabilityInfo`]         | `object` | Yes      | N/A     | The availability data for the entry.   |
+| [`OnCatch`]                  | `object` | No       | `{}`    | The actions to take on catch.          |
 
 The availability uses the common availability properties.
 
@@ -89,10 +91,11 @@ The availability uses the common availability properties.
 
 The `treasure.json` file configures where and when treasure can be caught.
 
-| Property          | Type     | Required | Default | Description              |
-| ----------------- | -------- | -------- | ------- | ------------------------ |
-| `$schema`         | `string` | No       | N/A     | Optional schema URL.     |
-| `TreasureEntries` | `array`  | Yes      | N/A     | Treasure entries to add. |
+| Property          | Type     | Required | Default | Description                   |
+| ----------------- | -------- | -------- | ------- | ----------------------------- |
+| `$schema`         | `string` | No       | N/A     | Optional schema URL.          |
+| `TreasureEntries` | `array`  | Yes      | N/A     | Treasure entries to add.      |
+| [`OnCatch`]       | `object` | No       | `{}`    | The actions to take on catch. |
 
 Treasure entries each configure when a specific treasure can be made available. Multiple entries may refer to the same treasure item, allowing complex customization over when a treasure is available and what the chances of catching that treasure are.
 
@@ -169,8 +172,20 @@ Coordinate constraints give a bit of flexibility on what coordinates are allowed
 | `LessThan`      | `number?` | No       | `null`  | Coordinate value must be less than this.                |
 | `LessThanEq`    | `number?` | No       | `null`  | Coordinate value must be less than or equal to this.    |
 
+### Catch actions
+
+Some actions can be taken whenever an item is caught. By combining these actions with Content Patcher conditions, some powerful conditions can be created. For example, a fish, trash, or treasure item can be configured to be caught only once.
+
+| Property       | Type        | Required | Default | Description                                                                                                    |
+| -------------- | ----------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| `CustomEvents` | `string[]`  | No       | `[]`    | Raises custom events to be processed by a SMAPI mod.                                                           |
+| `SetFlags`     | `string[]`  | No       | `[]`    | Sets mail flags. For custom flags, it is recommended to prefix them with your mod's ID (`You.YourMod/FlagId`). |
+| `StartQuests`  | `integer[]` | No       | `[]`    | Sets one or more quests as active.                                                                             |
+| `AddMail`      | `string[]`  | No       | `[]`    | Adds mail entries for the player's mail tomorrow.                                                              |
+
 [namespaced key]: #Namespaced%20key
 [`availabilityinfo`]: #Availability
+[`oncatch`]: #Catch%20actions
 [fish-traits schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fishTraits.schema.json
 [fish schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fish.schema.json
 [trash schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/trash.schema.json

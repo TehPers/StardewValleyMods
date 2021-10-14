@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
@@ -22,7 +22,7 @@ namespace TehPers.FishingOverhaul.Api.Content
             Description(
                 "The possible namespaced keys for the loot. The item key is chosen randomly."
             )]
-        List<NamespacedKey> ItemKeys
+        ImmutableArray<NamespacedKey> ItemKeys
     ) : Entry<AvailabilityInfo>(AvailabilityInfo)
     {
         [Description("The minimum quantity of this item. This is only valid for stackable items.")]

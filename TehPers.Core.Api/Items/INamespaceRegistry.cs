@@ -11,6 +11,12 @@ namespace TehPers.Core.Api.Items
     public interface INamespaceRegistry
     {
         /// <summary>
+        /// Gets the registered namespaces.
+        /// </summary>
+        /// <returns>The registered namespaces.</returns>
+        IEnumerable<string> GetRegisteredNamespaces();
+
+        /// <summary>
         /// Tries to get an <see cref="IItemFactory"/> for the given <see cref="NamespacedKey"/>.
         /// </summary>
         /// <param name="key">The key of the item.</param>

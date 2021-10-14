@@ -17,8 +17,7 @@ namespace TehPers.Core.Json
 
         public CommentedJsonProvider(
             IEnumerable<JsonConverter> jsonConverters,
-            [ContentSource(ContentSource.ModFolder)]
-            IAssetProvider defaultSource
+            [ContentSource(ContentSource.ModFolder)] IAssetProvider defaultSource
         )
         {
             this.defaultSource = defaultSource;
@@ -45,10 +44,7 @@ namespace TehPers.Core.Json
             where TModel : class
         {
             // Write to stream directly using the custom JSON writer without closing the stream
-            using var writer = new DescriptiveJsonWriter(outputStream)
-            {
-                Minify = minify
-            };
+            using var writer = new DescriptiveJsonWriter(outputStream) { Minify = minify };
 
             // Setup JSON Settings
             var clonedSettings = CommentedJsonProvider.CloneSettings(this.jsonSettings);
@@ -63,7 +59,10 @@ namespace TehPers.Core.Json
             where TModel : class =>
             this.Deserialize<TModel>(inputStream, null);
 
-        public TModel? Deserialize<TModel>(StreamReader inputStream, Action<JsonSerializerSettings>? settings)
+        public TModel? Deserialize<TModel>(
+            StreamReader inputStream,
+            Action<JsonSerializerSettings>? settings
+        )
             where TModel : class
         {
             // Read from stream directly without closing the stream
@@ -122,6 +121,10 @@ namespace TehPers.Core.Json
             {
                 return null;
             }
+            catch (DirectoryNotFoundException)
+            {
+                return null;
+            }
         }
 
         public TModel ReadOrCreate<TModel>(string path, bool minify = false)
@@ -137,8 +140,18 @@ namespace TehPers.Core.Json
             where TModel : class, new() =>
             this.ReadOrCreate(path, assetProvider, settings, () => new TModel(), minify);
 
-        public TModel ReadOrCreate<TModel>(string path, Func<TModel> dataFactory, bool minify = false)
-            where TModel : class => this.ReadOrCreate(path, this.defaultSource, null, dataFactory, minify);
+        public TModel ReadOrCreate<TModel>(
+            string path,
+            Func<TModel> dataFactory,
+            bool minify = false
+        )
+            where TModel : class => this.ReadOrCreate(
+            path,
+            this.defaultSource,
+            null,
+            dataFactory,
+            minify
+        );
 
         public TModel ReadOrCreate<TModel>(
             string path,

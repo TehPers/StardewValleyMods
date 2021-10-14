@@ -14,6 +14,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Tools;
+using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
@@ -697,7 +698,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private void OpenTreasureMenuEndFunction(
             Farmer user,
             FishingRod rod,
-            IList<Item> treasure,
+            IEnumerable<CaughtItem> treasure,
             int bobberDepth
         )
         {
@@ -708,14 +709,19 @@ namespace TehPers.FishingOverhaul.Services.Setup
             rod.doneFishing(user, true);
 
             // Show menu
-            var menu = new ItemGrabMenu(treasure, rod)
+            var treasureItems = treasure.Select(caughtItem => caughtItem.Item).ToList();
+            if (treasureItems.Any())
             {
-                source = 3,
-            }.setEssential(true);
-            Game1.activeClickableMenu = menu;
-            user.completelyStopAnimatingOrDoingAction();
+                var menu = new ItemGrabMenu(treasureItems, rod)
+                {
+                    source = 3,
+                }.setEssential(true);
+
+                Game1.activeClickableMenu = menu;
+            }
 
             // Track fishing state
+            user.completelyStopAnimatingOrDoingAction();
             this.fishingTracker.ActiveFisherData[user] = new(rod, new FishingState.NotFishing());
         }
 
@@ -1100,10 +1106,24 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         __instance.fishCaught = false;
                         __instance.showingTreasure = true;
                         user.UsingTool = true;
-                        var treasure = patcher.fishingApi.GetPossibleTreasure(fishingInfo);
+                        var treasure = patcher.fishingApi.GetPossibleTreasure(fishingInfo)
+                            .SelectMany(
+                                entry =>
+                                {
+                                    entry.OnCatch?.OnCatch(patcher.fishingApi, catchInfo);
+                                    return entry.TryCreateItem(
+                                        fishingInfo,
+                                        patcher.namespaceRegistry,
+                                        out var caughtItem
+                                    )
+                                        ? caughtItem.Yield()
+                                        : Enumerable.Empty<CaughtItem>();
+                                }
+                            );
                         if (!user.addItemToInventoryBool(item))
                         {
-                            treasure.Add(item);
+                            // Couldn't add fish to inventory so add it to the treasure
+                            treasure = treasure.Append(new(item));
                         }
 
                         __instance.animations.Add(

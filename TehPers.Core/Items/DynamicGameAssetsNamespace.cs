@@ -24,6 +24,12 @@ namespace TehPers.Core.Items
                 dgaApiFactory ?? throw new ArgumentNullException(nameof(dgaApiFactory));
         }
 
+        public IEnumerable<string> GetKnownItemKeys()
+        {
+            // No way to list DGA IDs
+            return Enumerable.Empty<string>();
+        }
+
         public bool TryGetItemFactory(string key, [NotNullWhen(true)] out IItemFactory? itemFactory)
         {
             if (!this.dgaApiFactory.Value.TryGetValue(out var dgaApi))
@@ -59,12 +65,6 @@ namespace TehPers.Core.Items
             // Create factory
             itemFactory = new ItemFactory(dgaApi, key, itemType);
             return true;
-        }
-
-        public IEnumerable<string> GetKnownItemKeys()
-        {
-            // No way to list DGA IDs
-            return Enumerable.Empty<string>();
         }
 
         public void Reload()

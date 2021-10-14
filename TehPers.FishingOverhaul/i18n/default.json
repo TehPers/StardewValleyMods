@@ -23,11 +23,6 @@
   // Fish config
   "text.config.fish.name": "Fish",
   "text.config.fish.desc": "Configure how fishing works",
-  "text.config.fish.shouldOverrideVanillaLegendaries.name": "Override vanilla legendary fish",
-  "text.config.fish.shouldOverrideVanillaLegendaries.desc":
-    "Whether this mod affects vanilla legendary fish at all. If false, vanilla legendary fish will be caught in the same places and with the same chances as the vanilla game.",
-  "text.config.fish.allowFishOnAllFarms.name": "Allow fish on all farms",
-  "text.config.fish.allowFishOnAllFarms.desc": "Whether all farm types should have fish.",
   "text.config.fish.showFishInMinigame.name": "Show fish in minigame",
   "text.config.fish.showFishInMinigame.desc": "Whether to show the fish being caught in the fishing minigame.",
   "text.config.fish.catchSpeed.name": "Catch speed",

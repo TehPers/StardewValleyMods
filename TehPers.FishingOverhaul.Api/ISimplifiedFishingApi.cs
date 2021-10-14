@@ -81,6 +81,6 @@ namespace TehPers.FishingOverhaul.Api
         /// </summary>
         /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
         /// <returns>Possible loot from a treasure chest.</returns>
-        IList<Item> GetPossibleTreasure(Farmer farmer);
+        IEnumerable<string> GetPossibleTreasure(Farmer farmer);
     }
 }
