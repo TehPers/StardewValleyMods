@@ -4,11 +4,11 @@
     <TargetFramework>net5.0</TargetFramework>
     <EnableHarmony>true</EnableHarmony>
     <BundleExtraAssemblies>ThirdParty</BundleExtraAssemblies>
+    <IgnoreModFilePatterns>^ContentPatcher\.(dll|pdb)$, ^TehPers\.Core\.Api\.(dll|pdb)$, ^Ninject\.dll$</IgnoreModFilePatterns>
     <Nullable>Enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0-beta.20210916" />
   </ItemGroup>
 
