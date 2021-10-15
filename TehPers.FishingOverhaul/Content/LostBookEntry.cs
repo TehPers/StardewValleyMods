@@ -6,7 +6,7 @@ using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Content
 {
-    public record LostBookEntry(AvailabilityInfo AvailabilityInfo) : TreasureEntry(
+    internal record LostBookEntry(AvailabilityInfo AvailabilityInfo) : TreasureEntry(
         AvailabilityInfo,
         ImmutableArray.Create(NamespacedKey.SdvObject(102))
     )

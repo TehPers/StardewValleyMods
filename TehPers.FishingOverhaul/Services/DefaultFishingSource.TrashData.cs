@@ -227,8 +227,7 @@ namespace TehPers.FishingOverhaul.Services
                     new(0.2) { IncludeLocations = ImmutableArray.Create("Willys Ship") }
                 ),
                 // Caroline's necklace
-                new(
-                    NamespacedKey.SdvObject(GameLocation.CAROLINES_NECKLACE_ITEM),
+                new CarolineNecklaceEntry(
                     new(0.25)
                     {
                         IncludeLocations = ImmutableArray.Create("Railroad"),

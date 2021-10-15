@@ -8,7 +8,7 @@ using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Content
 {
-    public record JournalScrapEntry(AvailabilityInfo AvailabilityInfo) : TrashEntry(
+    internal record JournalScrapEntry(AvailabilityInfo AvailabilityInfo) : TrashEntry(
         NamespacedKey.SdvObject(842),
         AvailabilityInfo
     )

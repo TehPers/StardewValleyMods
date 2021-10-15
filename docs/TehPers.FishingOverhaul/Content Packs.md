@@ -176,12 +176,13 @@ Coordinate constraints give a bit of flexibility on what coordinates are allowed
 
 Some actions can be taken whenever an item is caught. By combining these actions with Content Patcher conditions, some powerful conditions can be created. For example, a fish, trash, or treasure item can be configured to be caught only once.
 
-| Property       | Type        | Required | Default | Description                                                                                                    |
-| -------------- | ----------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------- |
-| `CustomEvents` | `string[]`  | No       | `[]`    | Raises custom events to be processed by a SMAPI mod.                                                           |
-| `SetFlags`     | `string[]`  | No       | `[]`    | Sets mail flags. For custom flags, it is recommended to prefix them with your mod's ID (`You.YourMod/FlagId`). |
-| `StartQuests`  | `integer[]` | No       | `[]`    | Sets one or more quests as active.                                                                             |
-| `AddMail`      | `string[]`  | No       | `[]`    | Adds mail entries for the player's mail tomorrow.                                                              |
+| Property             | Type        | Required | Default | Description                                                                                                    |
+| -------------------- | ----------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| `CustomEvents`       | `string[]`  | No       | `[]`    | Raises custom events to be processed by a SMAPI mod.                                                           |
+| `SetFlags`           | `string[]`  | No       | `[]`    | Sets mail flags. For custom flags, it is recommended to prefix them with your mod's ID (`You.YourMod/FlagId`). |
+| `StartQuests`        | `integer[]` | No       | `[]`    | Sets one or more quests as active.                                                                             |
+| `AddMail`            | `string[]`  | No       | `[]`    | Adds mail entries for the player's mail tomorrow.                                                              |
+| `StartConversations` | `object`    | No       | `[]`    | Starts conversations. The key is the conversation ID and the value is the number of days.                      |
 
 [namespaced key]: #Namespaced%20key
 [`availabilityinfo`]: #Availability

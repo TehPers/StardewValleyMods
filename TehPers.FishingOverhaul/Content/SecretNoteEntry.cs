@@ -10,7 +10,7 @@ using SObject = StardewValley.Object;
 
 namespace TehPers.FishingOverhaul.Content
 {
-    public record SecretNoteEntry(AvailabilityInfo AvailabilityInfo) : TrashEntry(
+    internal record SecretNoteEntry(AvailabilityInfo AvailabilityInfo) : TrashEntry(
         NamespacedKey.SdvObject(79),
         AvailabilityInfo
     )

@@ -3,11 +3,12 @@ using StardewValley;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
+using SObject = StardewValley.Object;
 
 namespace TehPers.FishingOverhaul.Content
 {
-    internal record GoldenWalnutEntry(AvailabilityInfo AvailabilityInfo) : TrashEntry(
-        NamespacedKey.SdvObject(73),
+    internal record CarolineNecklaceEntry(AvailabilityInfo AvailabilityInfo) : TrashEntry(
+        NamespacedKey.SdvObject(GameLocation.CAROLINES_NECKLACE_ITEM),
         AvailabilityInfo
     )
     {
@@ -17,13 +18,13 @@ namespace TehPers.FishingOverhaul.Content
             [NotNullWhen(true)] out CaughtItem? item
         )
         {
-            if (!Game1.IsMultiplayer)
-            {
-                return base.TryCreateItem(fishingInfo, namespaceRegistry, out item);
-            }
-
-            item = default;
-            return false;
+            item = new(
+                new SObject(GameLocation.CAROLINES_NECKLACE_ITEM, 1)
+                {
+                    questItem = { Value = true }
+                }
+            );
+            return true;
         }
     }
 }
