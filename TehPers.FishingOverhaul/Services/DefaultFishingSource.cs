@@ -15,8 +15,24 @@ namespace TehPers.FishingOverhaul.Services
 {
     internal sealed partial class DefaultFishingSource : IFishingContentSource
     {
+        // Legendary fish
+        private static readonly NamespacedKey crimsonfishKey = NamespacedKey.SdvObject(159);
+        private static readonly NamespacedKey anglerKey = NamespacedKey.SdvObject(160);
+        private static readonly NamespacedKey legendKey = NamespacedKey.SdvObject(163);
+        private static readonly NamespacedKey mutantCarpKey = NamespacedKey.SdvObject(682);
+        private static readonly NamespacedKey glacierfishKey = NamespacedKey.SdvObject(775);
+
+        private static readonly HashSet<NamespacedKey> vanillaLegendaries = new()
+        {
+            DefaultFishingSource.crimsonfishKey,
+            DefaultFishingSource.anglerKey,
+            DefaultFishingSource.legendKey,
+            DefaultFishingSource.mutantCarpKey,
+            DefaultFishingSource.glacierfishKey
+        };
+
+
         private readonly IManifest manifest;
-        private readonly IMonitor monitor;
         private readonly IAssetProvider assetProvider;
 
         private readonly Dictionary<NamespacedKey, FishTraits> fishTraits;
@@ -28,12 +44,10 @@ namespace TehPers.FishingOverhaul.Services
 
         public DefaultFishingSource(
             IManifest manifest,
-            IMonitor monitor,
             [ContentSource(ContentSource.GameContent)] IAssetProvider assetProvider
         )
         {
             this.manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
-            this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
             this.assetProvider =
                 assetProvider ?? throw new ArgumentNullException(nameof(assetProvider));
 
@@ -47,13 +61,13 @@ namespace TehPers.FishingOverhaul.Services
         {
             this.ReloadDefaultFishData();
 
-            yield return new(
-                this.manifest,
-                this.fishTraits,
-                this.fishEntries,
-                this.trashEntries,
-                this.treasureEntries
-            );
+            yield return new(this.manifest)
+            {
+                FishTraits = this.fishTraits.ToImmutableDictionary(),
+                FishEntries = this.fishEntries.ToImmutableArray(),
+                TrashEntries = this.trashEntries.ToImmutableArray(),
+                TreasureEntries = this.treasureEntries.ToImmutableArray(),
+            };
         }
 
         private void ReloadDefaultFishData()
@@ -87,7 +101,10 @@ namespace TehPers.FishingOverhaul.Services
                 }
 
                 var fishKey = NamespacedKey.SdvObject(fishId);
-                this.fishTraits[fishKey] = traits;
+                this.fishTraits[fishKey] = traits with
+                {
+                    IsLegendary = DefaultFishingSource.vanillaLegendaries.Contains(fishKey),
+                };
                 partialAvailabilities[fishId] = availabilities;
             }
 
@@ -197,31 +214,6 @@ namespace TehPers.FishingOverhaul.Services
                 }
             }
 
-            // Legendary fish
-            var crimsonfishKey = NamespacedKey.SdvObject(159);
-            var anglerKey = NamespacedKey.SdvObject(160);
-            var legendKey = NamespacedKey.SdvObject(163);
-            var mutantCarpKey = NamespacedKey.SdvObject(682);
-            var glacierfishKey = NamespacedKey.SdvObject(775);
-            var legendaryKeys = new[]
-            {
-                crimsonfishKey, anglerKey, legendKey, mutantCarpKey, glacierfishKey
-            };
-            foreach (var legendaryKey in legendaryKeys)
-            {
-                if (this.fishTraits.TryGetValue(legendaryKey, out var legendaryTraits))
-                {
-                    legendaryTraits.IsLegendary = true;
-                }
-                else
-                {
-                    this.monitor.Log(
-                        $"No fish traits found for legendary fish {legendaryKey}. This may cause issues.",
-                        LogLevel.Warn
-                    );
-                }
-            }
-
             // Special entries
             var hasCaughtFish = new Dictionary<string, string>()
             {
@@ -232,7 +224,7 @@ namespace TehPers.FishingOverhaul.Services
                 {
                     // Legendary fish
                     new(
-                        crimsonfishKey,
+                        DefaultFishingSource.crimsonfishKey,
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
@@ -246,7 +238,7 @@ namespace TehPers.FishingOverhaul.Services
                         }
                     ),
                     new(
-                        anglerKey,
+                        DefaultFishingSource.anglerKey,
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
@@ -257,7 +249,7 @@ namespace TehPers.FishingOverhaul.Services
                         }
                     ),
                     new(
-                        legendKey,
+                        DefaultFishingSource.legendKey,
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
@@ -272,7 +264,7 @@ namespace TehPers.FishingOverhaul.Services
                         }
                     ),
                     new(
-                        mutantCarpKey,
+                        DefaultFishingSource.mutantCarpKey,
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
@@ -281,7 +273,7 @@ namespace TehPers.FishingOverhaul.Services
                         }
                     ),
                     new(
-                        glacierfishKey,
+                        DefaultFishingSource.glacierfishKey,
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,

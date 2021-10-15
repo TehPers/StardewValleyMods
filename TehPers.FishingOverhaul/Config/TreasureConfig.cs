@@ -5,33 +5,65 @@ using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
 namespace TehPers.FishingOverhaul.Config
 {
+    /// <summary>
+    /// Configuration for treasure.
+    /// </summary>
+    /// <inheritdoc cref="IModConfig"/>
     [JsonDescribe]
-    public sealed class TreasureConfig : JsonConfigRoot, IModConfig
+    public sealed class TreasureConfig : IModConfig
     {
-        [Description("Maximum amount of treasure you can find in a single chest while fishing.")]
-        public int MaxTreasureQuantity { get; set; }
+        /// <summary>
+        /// Maximum amount of treasure you can find in a single chest while fishing.
+        /// </summary>
+        [DefaultValue(3)]
+        public int MaxTreasureQuantity { get; set; } = 3;
 
-        [Description(
-            "Whether the treasure randomizer should be allowed to select the same loot option "
-            + "multiple times. Some loot can't be repeated even if duplicate loot is enabled."
-        )]
-        public bool AllowDuplicateLoot { get; set; }
+        /// <summary>
+        /// Whether the treasure randomizer should be allowed to select the same loot option
+        /// multiple times. Some loot can't be repeated even if duplicate loot is enabled.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool AllowDuplicateLoot { get; set; } = true;
 
-        [Description("Affects how fast you catch treasure.")]
-        public float CatchSpeed { get; set; }
+        /// <summary>
+        /// Affects how fast you catch treasure.
+        /// </summary>
+        [DefaultValue(1f)]
+        public float CatchSpeed { get; set; } = 1f;
 
-        [Description("Affects how fast the treasure bar drains when the bobber isn't on the chest.")]
-        public float DrainSpeed { get; set; }
+        /// <summary>
+        /// Affects how fast the treasure bar drains when the bobber isn't on the chest.
+        /// </summary>
+        [DefaultValue(1f)]
+        public float DrainSpeed { get; set; } = 1f;
 
-        [Description("The chances of finding treasure while fishing.")]
-        public TreasureChances TreasureChances { get; init; } = new();
+        /// <summary>
+        /// The chances of finding treasure while fishing.
+        /// </summary>
+        public TreasureChances TreasureChances { get; init; } = new()
+        {
+            BaseChance = 0.15d,
+            StreakFactor = 0.01d,
+            FishingLevelFactor = 0d,
+            DailyLuckFactor = 0.5d,
+            LuckLevelFactor = 0.005d,
+            MaxChance = 0.5d,
+        };
 
-        [Description(
-            "The chances of getting additional loot when finding treasure. This is rolled until it "
-            + "fails or the max number of items have been added to the loot."
-        )]
-        public FishingChances AdditionalLootChances { get; init; } = new();
-        
+        /// <summary>
+        /// The chances of getting additional loot when finding treasure. This is rolled until it
+        /// fails or the max number of items have been added to the loot.
+        /// </summary>
+        public FishingChances AdditionalLootChances { get; init; } = new()
+        {
+            BaseChance = 0.5d,
+            StreakFactor = 0.1d,
+            FishingLevelFactor = 0d,
+            DailyLuckFactor = 0.5d,
+            LuckLevelFactor = 0.005d,
+            MaxChance = 0.8d,
+        };
+
         public void Reset()
         {
             this.MaxTreasureQuantity = 3;
@@ -46,7 +78,7 @@ namespace TehPers.FishingOverhaul.Config
             this.TreasureChances.DailyLuckFactor = 0.5d;
             this.TreasureChances.LuckLevelFactor = 0.005d;
             this.TreasureChances.MaxChance = 0.5d;
-
+        
             // Additional loot chances
             this.AdditionalLootChances.BaseChance = 0.5d;
             this.AdditionalLootChances.StreakFactor = 0.1d;

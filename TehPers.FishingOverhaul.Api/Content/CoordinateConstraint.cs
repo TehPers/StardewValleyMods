@@ -9,18 +9,35 @@ namespace TehPers.FishingOverhaul.Api.Content
     [JsonDescribe]
     public record CoordinateConstraint
     {
-        [Description("Coordinate value must be greater than this.")]
+        /// <summary>
+        /// Coordinate value must be greater than this.
+        /// </summary>
+        [DefaultValue(null)]
         public float? GreaterThan { get; init; }
 
-        [Description("Coordinate value must be greater than or equal to this.")]
+        /// <summary>
+        /// Coordinate value must be greater than or equal to this.
+        /// </summary>
+        [DefaultValue(null)]
         public float? GreaterThanEq { get; init; }
 
-        [Description("Coordinate value must be less than this.")]
+        /// <summary>
+        /// Coordinate value must be less than this.
+        /// </summary>
+        [DefaultValue(null)]
         public float? LessThan { get; init; }
 
-        [Description("Coordinate value must be less than or equal to this.")]
+        /// <summary>
+        /// Coordinate value must be less than or equal to this.
+        /// </summary>
+        [DefaultValue(null)]
         public float? LessThanEq { get; init; }
 
+        /// <summary>
+        /// Checks whether a coordinate value matches these constraints.
+        /// </summary>
+        /// <param name="value">The value of the coordinate.</param>
+        /// <returns><see langword="true"/> if the value matches, <see langword="false"/> otherwise.</returns>
         public bool Matches(float value)
         {
             return (this.GreaterThan is not { } gt || value > gt)

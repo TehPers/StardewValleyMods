@@ -5,38 +5,65 @@ using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
 namespace TehPers.FishingOverhaul.Config
 {
+    /// <summary>
+    /// Configuration for fish.
+    /// </summary>
+    /// <inheritdoc cref="IModConfig"/>
     [JsonDescribe]
-    public sealed class FishConfig : JsonConfigRoot, IModConfig
+    public sealed class FishConfig : IModConfig
     {
-        [Description("Whether to show the fish being caught in the fishing minigame.")]
+        /// <summary>
+        /// Whether to show the fish being caught in the fishing minigame.
+        /// </summary>
+        [DefaultValue(false)]
         public bool ShowFishInMinigame { get; set; }
 
-        [Description("Affects how fast you catch fish.")]
-        public float CatchSpeed { get; set; }
+        /// <summary>
+        /// Affects how fast you catch fish.
+        /// </summary>
+        [DefaultValue(1f)]
+        public float CatchSpeed { get; set; } = 1f;
 
-        [Description("Affects how fast the catch bar drains when the bobber isn't on the fish.")]
-        public float DrainSpeed { get; set; }
+        /// <summary>
+        /// Affects how fast the catch bar drains when the bobber isn't on the fish.
+        /// </summary>
+        [DefaultValue(1f)]
+        public float DrainSpeed { get; set; } = 1f;
 
-        [Description(
-            "Required streak for an increase in quality. For example, 3 means that every 3 "
-            + "consecutive perfect catches increases your catch quality by 1."
-        )]
-        public int StreakForIncreasedQuality { get; set; }
+        /// <summary>
+        /// Required streak for an increase in quality. For example, 3 means that every 3
+        /// consecutive perfect catches increases your catch quality by 1.
+        /// </summary>
+        [DefaultValue(3)]
+        public int StreakForIncreasedQuality { get; set; } = 3;
 
-        [Description(
-            "Determines the max quality fish a non-perfect catch can get, or null for no "
-            + "restrictions."
-        )]
+        /// <summary>
+        /// The max quality fish that can be caught. 0 = normal, 1 = silver, 2 = gold, 3 = iridium,
+        /// 4+ = beyond iridium.
+        /// </summary>
+        [DefaultValue(3)]
+        public int MaxFishQuality { get; set; } = 3;
+
+        /// <summary>
+        /// Determines the max quality fish a non-perfect catch can get, or null for no
+        /// restrictions.
+        /// </summary>
+        [DefaultValue(null)]
         public int? MaxNormalFishQuality { get; set; }
 
-        [Description("The chance that you'll find a fish instead of trash.")]
-        public FishingChances FishChances { get; init; } = new();
-
-        [Description(
-            "The max quality fish that can be caught. 0 = normal, 1 = silver, 2 = gold, 3 = "
-            + "iridium, 4+ = beyond iridium."
-        )]
-        public int MaxFishQuality { get; set; }
+        /// <summary>
+        /// The chance that you'll find a fish instead of trash.
+        /// </summary>
+        public FishingChances FishChances { get; init; } = new()
+        {
+            BaseChance = 0.5,
+            StreakFactor = 0.005,
+            FishingLevelFactor = 0.025,
+            DailyLuckFactor = 1,
+            LuckLevelFactor = 0.01,
+            MinChance = 0.1,
+            MaxChance = 0.9,
+        };
 
         public void Reset()
         {

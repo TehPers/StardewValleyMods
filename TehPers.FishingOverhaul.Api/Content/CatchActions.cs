@@ -1,35 +1,52 @@
 ﻿using System.Collections.Immutable;
-using System.ComponentModel;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
 
 namespace TehPers.FishingOverhaul.Api.Content
 {
     /// <summary>
-    /// Actions to be executed on catch
+    /// Actions to be executed on catch.
     /// </summary>
     [JsonDescribe]
     public record CatchActions
     {
-        [Description(
-            "Raise custom events with this name to notify SMAPI mods that this was caught. Event "
-            + "key format is '<namespace>:<key>' (for example "
-            + "'TehPers.FishingOverhaul:GoldenWalnut')."
-        )]
+        /// <summary>
+        /// Raise custom events with this name to notify SMAPI mods that this was caught. Event key
+        /// format is "namespace:key" (for example "TehPers.FishingOverhaul:GoldenWalnut").
+        /// </summary>
         public ImmutableArray<NamespacedKey> CustomEvents { get; init; } =
             ImmutableArray<NamespacedKey>.Empty;
 
-        [Description("Sets one or more mail flags.")]
+        /// <summary>
+        /// Sets one or more mail flags.
+        /// </summary>
         public ImmutableArray<string> SetFlags { get; init; } = ImmutableArray<string>.Empty;
 
-        [Description("Sets one or more quests as active.")]
+        /// <summary>
+        /// Sets one or more quests as active.
+        /// </summary>
         public ImmutableArray<int> StartQuests { get; init; } = ImmutableArray<int>.Empty;
 
-        [Description("Adds mail entries for the player's mail tomorrow.")]
-        public ImmutableArray<string> AddMail { get; init; }
+        /// <summary>
+        /// Adds mail entries to the player's mail tomorrow.
+        /// </summary>
+        public ImmutableArray<string> AddMail { get; init; } = ImmutableArray<string>.Empty;
 
+        /// <summary>
+        /// Starts conversations. The key is the conversation ID and the value is the number of days.
+        /// </summary>
+        public ImmutableDictionary<string, int> StartConversations { get; init; } =
+            ImmutableDictionary<string, int>.Empty;
+
+        /// <summary>
+        /// Executes these actions.
+        /// </summary>
+        /// <param name="fishingApi">The fishing API.</param>
+        /// <param name="catchInfo">The catch information.</param>
         public void OnCatch(IFishingApi fishingApi, CatchInfo catchInfo)
         {
+            var user = catchInfo.FishingInfo.User;
+            
             // Custom events
             foreach (var customEvent in this.CustomEvents)
             {
@@ -39,19 +56,25 @@ namespace TehPers.FishingOverhaul.Api.Content
             // Mail flags
             foreach (var flag in this.SetFlags)
             {
-                catchInfo.FishingInfo.User.mailReceived.Add(flag);
+                user.mailReceived.Add(flag);
             }
 
             // Quests
             foreach (var questId in this.StartQuests)
             {
-                catchInfo.FishingInfo.User.addQuest(questId);
+                user.addQuest(questId);
             }
 
             // New mail
             foreach (var mail in this.AddMail)
             {
-                catchInfo.FishingInfo.User.mailForTomorrow.Add(mail);
+                user.mailForTomorrow.Add(mail);
+            }
+
+            // New conversation topics
+            foreach (var (key, duration) in this.StartConversations)
+            {
+                user.addEvent(key, duration);
             }
         }
     }

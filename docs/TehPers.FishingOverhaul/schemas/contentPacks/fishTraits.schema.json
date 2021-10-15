@@ -10,6 +10,7 @@
     "TehPers.FishingOverhaul.Config.ContentPacks.FishTraitsPack": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Content which modifies the behavior of fish.",
       "required": [
         "Add"
       ],
@@ -34,13 +35,14 @@
               "type": "string"
             }
           ],
-          "description": "Optional schema URL."
+          "description": "Optional '$schema' URL. This is ignored and exists entirely for convenience."
         }
       }
     },
     "TehPers.FishingOverhaul.Api.Content.FishTraits": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Definition for a fish's traits.",
       "required": [
         "DartFrequency",
         "DartBehavior",
@@ -60,7 +62,7 @@
               "$ref": "#/definitions/TehPers.FishingOverhaul.Api.DartBehavior"
             }
           ],
-          "description": "How the fish darts during the fishing minigame."
+          "description": "How the fish moves during the fishing minigame."
         },
         "MinSize": {
           "type": "integer",

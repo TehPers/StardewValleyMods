@@ -163,10 +163,10 @@ namespace TehPers.FishingOverhaul.SchemaGen
             }
 
             // Get inner type
-            var innerType = contextualType.Type;
+            var type = contextualType.Type;
 
             // Predefined schemas
-            if (DefinitionMap.predefinedSchemas.TryGetValue(innerType, out var predefinedDef))
+            if (DefinitionMap.predefinedSchemas.TryGetValue(type, out var predefinedDef))
             {
                 // Predefined type
                 yield return (JObject)predefinedDef.DeepClone();
@@ -174,10 +174,10 @@ namespace TehPers.FishingOverhaul.SchemaGen
             }
 
             // Arrays
-            if (innerType.IsArray)
+            if (type.IsArray)
             {
                 // Array
-                if (innerType.GetArrayRank() != 1)
+                if (type.GetArrayRank() != 1)
                 {
                     throw new InvalidOperationException(
                         "Schema generation doesn't work with multidimensional arrays."
@@ -193,10 +193,10 @@ namespace TehPers.FishingOverhaul.SchemaGen
             }
 
             // Special generic types
-            if (innerType.IsGenericType)
+            if (type.IsGenericType)
             {
                 // Get generic type definition (like List<>)
-                var genericDef = innerType.GetGenericTypeDefinition();
+                var genericDef = type.GetGenericTypeDefinition();
 
                 // Array types
                 if (DefinitionMap.arrayTypes.Contains(genericDef))
@@ -212,7 +212,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
                 // Dictionary types
                 if (DefinitionMap.dictionaryTypes.Contains(genericDef))
                 {
-                    // TODO: support keys that can be converted to strings
+                    // Check if key can be converted to string
                     if (!this.IsStringish(contextualType.GenericArguments[0]))
                     {
                         throw new InvalidOperationException(
@@ -220,6 +220,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
                         );
                     }
 
+                    // TODO: pattern properties for some key types
                     yield return new()
                     {
                         ["type"] = "object",
@@ -283,6 +284,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
             var typeDescription = type.GetCustomAttributes<DescriptionAttribute>(false)
                 .Select(attr => attr.Description)
                 .FirstOrDefault();
+            typeDescription ??= type.GetXmlDocsSummary();
 
             return type switch
             {
@@ -295,7 +297,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
             {
                 // Basic information
                 var result = new JObject { ["type"] = "string" };
-                if (typeDescription is not null)
+                if (!string.IsNullOrWhiteSpace(typeDescription))
                 {
                     result["description"] = typeDescription;
                 }
@@ -319,7 +321,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
                     ["type"] = "object",
                     ["additionalProperties"] = false,
                 };
-                if (typeDescription is not null)
+                if (!string.IsNullOrWhiteSpace(typeDescription))
                 {
                     result["description"] = typeDescription;
                 }
@@ -328,42 +330,37 @@ namespace TehPers.FishingOverhaul.SchemaGen
                 var properties = new JObject();
 
                 // Properties
-                var propertyMembers = type
-                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Concat(
-                        type.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance)
+                var members = DefinitionMap.GetHierarchy(contextualType)
+                    .SelectMany(
+                        checkedType => checkedType.Fields.Select(field => new MemberData(field))
+                            .Concat(checkedType.Properties.Select(prop => new MemberData(prop)))
+                            // Ignore static members
+                            .Where(member => !member.IsStatic)
+                            // Ignore non-public members with no [JsonProperty] attribute
                             .Where(
-                                prop => prop.GetCustomAttributes<JsonPropertyAttribute>(true).Any()
+                                member => member.IsFullyPublic
+                                    || member.Accessor.MemberInfo
+                                        .GetCustomAttributes<JsonPropertyAttribute>()
+                                        .Any()
                             )
-                    );
-                var fieldMembers = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
-                    .Concat(
-                        type.GetFields(BindingFlags.NonPublic | BindingFlags.Instance)
+                            // Ignore members with [JsonIgnore]
                             .Where(
-                                prop => prop.GetCustomAttributes<JsonPropertyAttribute>(true).Any()
+                                member => !member.Accessor.MemberInfo
+                                    .GetCustomAttributes<JsonIgnoreAttribute>()
+                                    .Any()
                             )
-                    );
-                var members = propertyMembers
-                    .Select(prop => new MemberData(prop, prop.ToContextualProperty().PropertyType))
-                    .Concat(
-                        fieldMembers.Select(
-                            field => new MemberData(field, field.ToContextualField().FieldType)
-                        )
-                    )
-                    .Where(
-                        memberData => !memberData.Info.GetCustomAttributes<JsonIgnoreAttribute>()
-                            .Any()
                     );
                 foreach (var memberData in members)
                 {
                     // Get property name
-                    var name = memberData.Info.GetCustomAttributes<JsonPropertyAttribute>()
+                    var name =
+                        memberData.Accessor.MemberInfo.GetCustomAttributes<JsonPropertyAttribute>()
                             .Select(attr => attr.PropertyName)
                             .FirstOrDefault()
-                        ?? memberData.Info.Name;
+                        ?? memberData.Accessor.MemberInfo.Name;
 
                     // Mark property as required if needed
-                    var isRequired = memberData.Info
+                    var isRequired = memberData.Accessor.MemberInfo
                         .GetCustomAttributes<JsonRequiredAttribute>(true)
                         .Any();
                     if (isRequired)
@@ -390,24 +387,35 @@ namespace TehPers.FishingOverhaul.SchemaGen
             }
         }
 
-        private JObject CreatePropertySchema(MemberData memberData)
+        private static IEnumerable<ContextualType> GetHierarchy(ContextualType contextualType)
         {
-            var (info, contextualType) = memberData;
+            yield return contextualType;
+            while (contextualType is { BaseType: { } baseType })
+            {
+                yield return baseType;
+                contextualType = baseType;
+            }
+        }
 
+        private JObject CreatePropertySchema(MemberData member)
+        {
             // Create raw schema
-            var schema = this.Register(contextualType);
+            var schema = this.Register(member.Accessor.AccessorType);
 
             // Add description
-            var description = info.GetCustomAttributes<DescriptionAttribute>(true)
+            var description = member.Accessor.MemberInfo
+                .GetCustomAttributes<DescriptionAttribute>(true)
                 .Select(attr => attr.Description)
                 .FirstOrDefault();
-            if (description is not null)
+            description ??= member.Accessor.GetXmlDocsSummary();
+            if (!string.IsNullOrWhiteSpace(description))
             {
                 schema["description"] = description;
             }
 
             // Add default value
-            var defaultValue = info.GetCustomAttributes<DefaultValueAttribute>(true)
+            var defaultValue = member.Accessor.MemberInfo
+                .GetCustomAttributes<DefaultValueAttribute>(true)
                 .FirstOrDefault();
             if (defaultValue is { Value: var val })
             {

@@ -10,6 +10,7 @@
     "TehPers.FishingOverhaul.Config.ContentPacks.TreasurePack": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Content which controls what treasure are available to catch.",
       "required": [
         "Add"
       ],
@@ -34,7 +35,7 @@
               "type": "string"
             }
           ],
-          "description": "Optional schema URL."
+          "description": "Optional '$schema' URL. This is ignored and exists entirely for convenience."
         }
       }
     },
@@ -43,6 +44,7 @@
       "additionalProperties": false,
       "required": [
         "ItemKeys",
+        "AvailabilityInfo",
         "AvailabilityInfo"
       ],
       "properties": {
@@ -104,13 +106,14 @@
     "TehPers.FishingOverhaul.Api.Content.AvailabilityInfo": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Information about the availability of a catchable item.",
       "required": [
         "BaseChance"
       ],
       "properties": {
         "BaseChance": {
           "type": "number",
-          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries."
+          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight\nrelative to all available entries."
         },
         "StartTime": {
           "type": "integer",
@@ -135,7 +138,7 @@
               }
             ]
           },
-          "description": "Seasons this can be caught in. Default is all."
+          "description": "Seasons this can be caught in."
         },
         "Weathers": {
           "type": "array",
@@ -146,7 +149,7 @@
               }
             ]
           },
-          "description": "Weathers this can be caught in. Default is all."
+          "description": "Weathers this can be caught in."
         },
         "WaterTypes": {
           "type": "array",
@@ -157,7 +160,7 @@
               }
             ]
           },
-          "description": "The type of water this can be caught in. Each location handles this differently. Default is all."
+          "description": "The type of water this can be caught in. Each location handles this differently."
         },
         "MinFishingLevel": {
           "type": "integer",
@@ -185,14 +188,14 @@
           "items": {
             "type": "string"
           },
-          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names 'UndergroundMine' and 'UndergroundMine/N', where N is the floor number (both location names are valid for the floor)."
+          "description": "List of locations this should be available in. Leaving this empty will make this\navailable everywhere. Some locations have special handling. For example, the mines use\nthe location names \"UndergroundMine\" and \"UndergroundMine/N\", where N is the floor\nnumber (both location names are valid for the floor)."
         },
         "ExcludeLocations": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "List of locations this should not be available in. This takes priority over IncludeLocations."
+          "description": "List of locations this should not be available in. This takes priority over\nIncludeLocations."
         },
         "Position": {
           "oneOf": [
@@ -233,6 +236,7 @@
     },
     "TehPers.FishingOverhaul.Api.WaterTypes": {
       "type": "string",
+      "description": "Type of water that fish can be caught in. Each location handles these values differently.",
       "enum": [
         "None",
         "River",
@@ -244,6 +248,7 @@
     "TehPers.FishingOverhaul.Api.Content.PositionConstraint": {
       "type": "object",
       "additionalProperties": false,
+      "description": "A set of constraints for positions.",
       "properties": {
         "X": {
           "oneOf": [
@@ -254,7 +259,8 @@
               "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.CoordinateConstraint"
             }
           ],
-          "description": "Constraints for the x-coordinate."
+          "description": "Constraints for the x-coordinate.",
+          "default": null
         },
         "Y": {
           "oneOf": [
@@ -265,13 +271,15 @@
               "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.CoordinateConstraint"
             }
           ],
-          "description": "Constraints for the Y-coordinate."
+          "description": "Constraints for the Y-coordinate.",
+          "default": null
         }
       }
     },
     "TehPers.FishingOverhaul.Api.Content.CoordinateConstraint": {
       "type": "object",
       "additionalProperties": false,
+      "description": "A set of constraints for coordinates.",
       "properties": {
         "GreaterThan": {
           "oneOf": [
@@ -282,7 +290,8 @@
               "type": "number"
             }
           ],
-          "description": "Coordinate value must be greater than this."
+          "description": "Coordinate value must be greater than this.",
+          "default": null
         },
         "GreaterThanEq": {
           "oneOf": [
@@ -293,7 +302,8 @@
               "type": "number"
             }
           ],
-          "description": "Coordinate value must be greater than or equal to this."
+          "description": "Coordinate value must be greater than or equal to this.",
+          "default": null
         },
         "LessThan": {
           "oneOf": [
@@ -304,7 +314,8 @@
               "type": "number"
             }
           ],
-          "description": "Coordinate value must be less than this."
+          "description": "Coordinate value must be less than this.",
+          "default": null
         },
         "LessThanEq": {
           "oneOf": [
@@ -315,13 +326,15 @@
               "type": "number"
             }
           ],
-          "description": "Coordinate value must be less than or equal to this."
+          "description": "Coordinate value must be less than or equal to this.",
+          "default": null
         }
       }
     },
     "TehPers.FishingOverhaul.Api.Content.CatchActions": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Actions to be executed on catch.",
       "properties": {
         "CustomEvents": {
           "type": "array",
@@ -332,7 +345,7 @@
               }
             ]
           },
-          "description": "Raise custom events with this name to notify SMAPI mods that this was caught. Event key format is '<namespace>:<key>' (for example 'TehPers.FishingOverhaul:GoldenWalnut')."
+          "description": "Raise custom events with this name to notify SMAPI mods that this was caught. Event key\nformat is \"namespace:key\" (for example \"TehPers.FishingOverhaul:GoldenWalnut\")."
         },
         "SetFlags": {
           "type": "array",
@@ -355,7 +368,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Adds mail entries for the player's mail tomorrow."
+          "description": "Adds mail entries to the player's mail tomorrow."
         }
       }
     }

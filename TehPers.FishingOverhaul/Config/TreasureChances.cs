@@ -8,20 +8,31 @@ using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
 namespace TehPers.FishingOverhaul.Config
 {
+    /// <summary>
+    /// Configuration for the chances of catching treasure while fishing.
+    /// </summary>
+    /// <inheritdoc cref="FishingChances"/>
     [JsonDescribe]
     public class TreasureChances : FishingChances
     {
-        [Description("The effect that the magnet bait has.")]
+        /// <summary>
+        /// The effect that the magnet bait has.
+        /// </summary>
+        [DefaultValue(0.15)]
         public double MagnetFactor { get; set; } = 0.15;
 
-        [Description("The effect that the treasure hunter tackle has.")]
+        /// <summary>
+        /// The effect that the treasure hunter tackle has.
+        /// </summary>
+        [DefaultValue(0.05)]
         public double TreasureHunterFactor { get; set; } = 0.05;
 
-        [Description(
-            "The effect that the pirate profession has. This is multiplied by your base chance "
-            + "before being added."
-        )]
-        public double PirateFactor { get; set; } = 1.0;
+        /// <summary>
+        /// The effect that the pirate profession has. This is multiplied by your base chance
+        /// before being added.
+        /// </summary>
+        [DefaultValue(1d)]
+        public double PirateFactor { get; set; } = 1d;
 
         public override void Reset()
         {
@@ -29,6 +40,7 @@ namespace TehPers.FishingOverhaul.Config
 
             this.MagnetFactor = 0.15d;
             this.TreasureHunterFactor = 0.05d;
+            this.PirateFactor = 1d;
         }
 
         public override void RegisterOptions(

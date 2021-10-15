@@ -5,23 +5,37 @@ using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
 namespace TehPers.FishingOverhaul.Config
 {
+    /// <summary>
+    /// Configuration for the fishing HUD.
+    /// </summary>
+    /// <inheritdoc cref="IModConfig"/>
     [JsonDescribe]
-    public sealed class HudConfig : JsonConfigRoot, IModConfig
+    public sealed class HudConfig : IModConfig
     {
-        [Description(
-            "Whether or not to show current streak, chance for treasure, chance for each fish, "
-            + "etc. while fishing."
-        )]
-        public bool ShowFishingHud { get; set; }
+        /// <summary>
+        /// Whether or not to show current streak, chance for treasure, chance for each fish, etc.
+        /// while fishing.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool ShowFishingHud { get; set; } = true;
 
-        [Description("The X coordinate of the top left corner of the fishing HUD.")]
+        /// <summary>
+        /// The X coordinate of the top left corner of the fishing HUD.
+        /// </summary>
+        [DefaultValue(0)]
         public int TopLeftX { get; set; }
 
-        [Description("The Y coordinate of the top left corner of the fishing HUD.")]
+        /// <summary>
+        /// The Y coordinate of the top left corner of the fishing HUD.
+        /// </summary>
+        [DefaultValue(0)]
         public int TopLeftY { get; set; }
 
-        [Description("The number of fish to show on the fishing HUD.")]
-        public int MaxFishTypes { get; set; }
+        /// <summary>
+        /// The number of fish to show on the fishing HUD.
+        /// </summary>
+        [DefaultValue(5)]
+        public int MaxFishTypes { get; set; } = 5;
 
         public void Reset()
         {

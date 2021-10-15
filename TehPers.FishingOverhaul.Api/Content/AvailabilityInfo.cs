@@ -11,22 +11,22 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// <summary>
     /// Information about the availability of a catchable item.
     /// </summary>
+    /// <param name="BaseChance">
+    /// The base chance this will be caught. This is not a percentage chance, but rather a weight
+    /// relative to all available entries.
+    /// </param>
     [JsonDescribe]
-    public record AvailabilityInfo(
-        [property: JsonRequired]
-        [property:
-            Description(
-                "The base chance this will be caught. This is not a percentage chance, but rather a "
-                + "weight relative to all available entries."
-            )]
-        double BaseChance
-    )
+    public record AvailabilityInfo([property: JsonRequired] double BaseChance)
     {
-        [Description("Time this becomes available (inclusive).")]
+        /// <summary>
+        /// Time this becomes available (inclusive).
+        /// </summary>
         [DefaultValue(600)]
         public int StartTime { get; init; } = 600;
 
-        [Description("Time this is no longer available (exclusive).")]
+        /// <summary>
+        /// Time this is no longer available (exclusive).
+        /// </summary>
         [DefaultValue(2600)]
         public int EndTime { get; init; } = 2600;
 
@@ -34,7 +34,7 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// Used for JSON serialization. Prefer <see cref="Seasons"/>.
         /// </summary>
         [JsonProperty(nameof(AvailabilityInfo.Seasons))]
-        [Description("Seasons this can be caught in. Default is all.")]
+        [Description("Seasons this can be caught in.")]
         public IEnumerable<Seasons> SeasonsSplit
         {
             get => this.Seasons switch
@@ -47,6 +47,9 @@ namespace TehPers.FishingOverhaul.Api.Content
             init => this.Seasons = value.Aggregate(Seasons.None, (acc, cur) => acc | cur);
         }
 
+        /// <summary>
+        /// Seasons this can be caught in.
+        /// </summary>
         [JsonIgnore]
         public Seasons Seasons { get; init; } = Seasons.All;
 
@@ -54,7 +57,7 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// Used for JSON serialization. Prefer <see cref="Weathers"/>.
         /// </summary>
         [JsonProperty(nameof(AvailabilityInfo.Weathers))]
-        [Description("Weathers this can be caught in. Default is all.")]
+        [Description("Weathers this can be caught in.")]
         public IEnumerable<Weathers> WeathersSplit
         {
             get => this.Weathers switch
@@ -65,6 +68,9 @@ namespace TehPers.FishingOverhaul.Api.Content
             init => this.Weathers = value.Aggregate(Weathers.None, (acc, cur) => acc | cur);
         }
 
+        /// <summary>
+        /// Weathers this can be caught in.
+        /// </summary>
         [JsonIgnore]
         public Weathers Weathers { get; init; } = Weathers.All;
 
@@ -73,8 +79,7 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// </summary>
         [JsonProperty(nameof(AvailabilityInfo.WaterTypes))]
         [Description(
-            "The type of water this can be caught in. Each location handles this differently. "
-            + "Default is all."
+            "The type of water this can be caught in. Each location handles this differently."
         )]
         public IEnumerable<WaterTypes> WaterTypesSplit
         {
@@ -87,38 +92,48 @@ namespace TehPers.FishingOverhaul.Api.Content
             init => this.WaterTypes = value.Aggregate(WaterTypes.None, (acc, cur) => acc | cur);
         }
 
+        /// <summary>
+        /// The type of water this can be caught in. Each location handles this differently.
+        /// </summary>
         [JsonIgnore]
         public WaterTypes WaterTypes { get; init; } = WaterTypes.All;
 
-        [Description("Required fishing level to see this.")]
+        /// <summary>
+        /// Required fishing level to see this.
+        /// </summary>
         [DefaultValue(0)]
         public int MinFishingLevel { get; init; } = 0;
 
-        [Description("Maximum fishing level required to see this, or null for no max.")]
+        /// <summary>
+        /// Maximum fishing level required to see this, or null for no max.
+        /// </summary>
         [DefaultValue(null)]
         public int? MaxFishingLevel { get; init; } = null;
 
-        [Description(
-            "List of locations this should be available in. Leaving this empty will make this "
-            + "available everywhere. Some locations have special handling. For example, the mines "
-            + "use the location names 'UndergroundMine' and 'UndergroundMine/N', where N is the "
-            + "floor number (both location names are valid for the floor)."
-        )]
+        /// <summary>
+        /// List of locations this should be available in. Leaving this empty will make this
+        /// available everywhere. Some locations have special handling. For example, the mines use
+        /// the location names "UndergroundMine" and "UndergroundMine/N", where N is the floor
+        /// number (both location names are valid for the floor).
+        /// </summary>
         public ImmutableArray<string> IncludeLocations { get; init; } =
             ImmutableArray<string>.Empty;
 
-        [Description(
-            "List of locations this should not be available in. This takes priority over "
-            + nameof(AvailabilityInfo.IncludeLocations)
-            + "."
-        )]
+        /// <summary>
+        /// List of locations this should not be available in. This takes priority over
+        /// <see cref="IncludeLocations"/>.
+        /// </summary>
         public ImmutableArray<string> ExcludeLocations { get; init; } =
             ImmutableArray<string>.Empty;
 
-        [Description("Constraints on the position of the bobber in the map when fishing.")]
+        /// <summary>
+        /// Constraints on the position of the bobber in the map when fishing.
+        /// </summary>
         public PositionConstraint Position { get; init; } = new();
 
-        [Description("Content Patcher conditions for when this is available.")]
+        /// <summary>
+        /// Content Patcher conditions for when this is available.
+        /// </summary>
         public ImmutableDictionary<string, string> When { get; init; } =
             ImmutableDictionary<string, string>.Empty;
 

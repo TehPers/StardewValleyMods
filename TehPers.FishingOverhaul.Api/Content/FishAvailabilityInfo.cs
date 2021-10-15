@@ -9,17 +9,21 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// Information about the availability of a catchable fish.
     /// </summary>
     /// <inheritdoc cref="AvailabilityInfo"/>
+    /// <param name="BaseChance">The base chance of this being caught.</param>
+    /// <inheritdoc cref="AvailabilityInfo"/>
     [JsonDescribe]
     public record FishAvailabilityInfo(double BaseChance) : AvailabilityInfo(BaseChance)
     {
-        [Description(
-            "Effect that sending the bobber by less than the max distance has on the chance. This "
-            + "value should be no more than 1."
-        )]
+        /// <summary>
+        /// Effect that sending the bobber by less than the max distance has on the chance. This
+        /// value should be no more than 1.
+        /// </summary>
         [DefaultValue(0.1d)]
         public double DepthMultiplier { get; init; } = 0.1d;
 
-        [Description("The required fishing depth to maximize the chances of catching the fish.")]
+        /// <summary>
+        /// The required fishing depth to maximize the chances of catching the fish.
+        /// </summary>
         [DefaultValue(4)]
         public int MaxDepth { get; init; } = 4;
 

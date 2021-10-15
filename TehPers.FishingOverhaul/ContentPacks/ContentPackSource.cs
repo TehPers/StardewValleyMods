@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using StardewModdingAPI;
 using TehPers.Core.Api.Content;
 using TehPers.Core.Api.Items;
@@ -29,33 +30,9 @@ namespace TehPers.FishingOverhaul.ContentPacks
             foreach (var pack in this.helper.ContentPacks.GetOwned())
             {
                 // Traits
-                if (!this.TryRead<FishTraitsPack>(
-                    pack,
-                    "fishTraits.json",
-                    out var fishTraits
-                ))
+                if (!this.TryRead<FishTraitsPack>(pack, "fishTraits.json", out var fishTraits))
                 {
                     continue;
-                }
-
-                var actualTraits = new Dictionary<NamespacedKey, FishTraits>();
-                if (fishTraits is { Add: { } traits })
-                {
-                    foreach (var (rawKey, value) in traits)
-                    {
-                        if (!NamespacedKey.TryParse(rawKey, out var key))
-                        {
-                            this.monitor.Log(
-                                $"Invalid key when reading 'fishTraits.json': '{rawKey}'"
-                            );
-                            continue;
-                        }
-
-                        if (!actualTraits.TryAdd(key, value))
-                        {
-                            this.monitor.Log($"Duplicate keys in 'fishTraits.json': '{key}'");
-                        }
-                    }
                 }
 
                 // Fish entries
@@ -71,22 +48,20 @@ namespace TehPers.FishingOverhaul.ContentPacks
                 }
 
                 // Treasure entries
-                if (!this.TryRead<TreasurePack>(
-                    pack,
-                    "treasure.json",
-                    out var treasureEntries
-                ))
+                if (!this.TryRead<TreasurePack>(pack, "treasure.json", out var treasureEntries))
                 {
                     continue;
                 }
 
-                yield return new(
-                    pack.Manifest,
-                    actualTraits,
-                    fishEntries?.Add,
-                    trashEntries?.Add,
-                    treasureEntries?.Add
-                );
+                yield return new(pack.Manifest)
+                {
+                    FishTraits =
+                        fishTraits?.Add ?? ImmutableDictionary<NamespacedKey, FishTraits>.Empty,
+                    FishEntries = fishEntries?.Add ?? ImmutableArray<FishEntry>.Empty,
+                    TrashEntries = trashEntries?.Add ?? ImmutableArray<TrashEntry>.Empty,
+                    TreasureEntries =
+                        treasureEntries?.Add ?? ImmutableArray<TreasureEntry>.Empty,
+                };
             }
         }
 

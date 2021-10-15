@@ -1,14 +1,19 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
 
 namespace TehPers.FishingOverhaul.Api.Content
 {
+    /// <summary>
+    /// A fish availability entry.
+    /// </summary>
+    /// <param name="FishKey">The item key.</param>
+    /// <param name="AvailabilityInfo">The availability information.</param>
+    /// <inheritdoc cref="Entry{T}"/>
     [JsonDescribe]
     public record FishEntry(
-        [property: JsonRequired] [property: Description("The item key.")] NamespacedKey FishKey,
+        [property: JsonRequired] NamespacedKey FishKey,
         FishAvailabilityInfo AvailabilityInfo
     ) : Entry<FishAvailabilityInfo>(AvailabilityInfo)
     {

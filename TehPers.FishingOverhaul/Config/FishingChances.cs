@@ -8,39 +8,56 @@ using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
 namespace TehPers.FishingOverhaul.Config
 {
+    /// <summary>
+    /// Configuration for the chances of catching something while fishing.
+    /// </summary>
+    /// <inheritdoc cref="IModConfig"/>
     [JsonDescribe]
     public class FishingChances : IModConfig
     {
-        [Description(
-            "The base chance. Total chance is calculated as "
-            + "locationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in "
-            + "the range [minChance, maxChance], then bounded once again in the range [0, 1]."
-        )]
+        /// <summary>
+        /// The base chance. Total chance is calculated as
+        /// locationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in the
+        /// range [minChance, maxChance], then bounded once again in the range [0, 1].
+        /// </summary>
+        [DefaultValue(0d)]
         public double BaseChance { get; set; }
 
-        [Description("The effect that streak has on this chance.")]
+        /// <summary>
+        /// The effect that streak has on this chance.
+        /// </summary>
+        [DefaultValue(0d)]
         public double StreakFactor { get; set; }
 
-        [Description("The effect that fishing level has on this chance.")]
+        /// <summary>
+        /// The effect that fishing level has on this chance.
+        /// </summary>
+        [DefaultValue(0d)]
         public double FishingLevelFactor { get; set; }
 
-        [Description("The effect that daily luck has on this chance.")]
+        /// <summary>
+        /// The effect that daily luck has on this chance.
+        /// </summary>
+        [DefaultValue(0d)]
         public double DailyLuckFactor { get; set; }
 
-        [Description("The effect that luck level has on this chance.")]
+        /// <summary>
+        /// The effect that luck level has on this chance.
+        /// </summary>
+        [DefaultValue(0d)]
         public double LuckLevelFactor { get; set; }
 
-        [Description("The minimum possible chance.")]
+        /// <summary>
+        /// The minimum possible chance.
+        /// </summary>
+        [DefaultValue(0d)]
         public double MinChance { get; set; }
 
-        [Description("The maximum possible chance.")]
-        public double MaxChance { get; set; }
-
-        [Description(
-            "The effects that specific locations have on this chance. Keys are location names and "
-            + "values are their factors."
-        )]
-        public Dictionary<string, double> LocationFactors { get; init; } = new();
+        /// <summary>
+        /// The maximum possible chance.
+        /// </summary>
+        [DefaultValue(1d)]
+        public double MaxChance { get; set; } = 1d;
 
         public virtual void Reset()
         {
@@ -53,6 +70,12 @@ namespace TehPers.FishingOverhaul.Config
             this.MaxChance = 1d;
             this.LocationFactors.Clear();
         }
+
+        /// <summary>
+        /// The effects that specific locations have on this chance. Keys are location names and
+        /// values are their factors.
+        /// </summary>
+        public Dictionary<string, double> LocationFactors { get; set; } = new();
 
         public virtual void RegisterOptions(
             IGenericModConfigMenuApi configApi,
@@ -145,13 +168,7 @@ namespace TehPers.FishingOverhaul.Config
             chance += streak * this.StreakFactor;
 
             // Location
-            if (farmer.currentLocation is
-                {
-                    Name:
-                    {
-                        }
-                        locationName
-                }
+            if (farmer.currentLocation is { Name: { } locationName }
                 && this.LocationFactors.TryGetValue(locationName, out var factor))
             {
                 chance += factor;

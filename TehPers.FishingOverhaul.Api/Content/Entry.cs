@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
@@ -10,14 +9,14 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// An entry for a fishing item.
     /// </summary>
     /// <typeparam name="T">The type of availability for this entry.</typeparam>
+    /// <param name="AvailabilityInfo">The availability information.</param>
     [JsonDescribe]
-    public abstract record Entry<T>(
-        [property: JsonRequired] [property: Description("The availability information.")]
-        T AvailabilityInfo
-    )
+    public abstract record Entry<T>([property: JsonRequired] T AvailabilityInfo)
         where T : AvailabilityInfo
     {
-        [Description("Actions to perform when this is caught.")]
+        /// <summary>
+        /// Actions to perform when this is caught.
+        /// </summary>
         public CatchActions? OnCatch { get; init; } = null;
 
         /// <summary>

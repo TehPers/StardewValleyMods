@@ -13,36 +13,29 @@
       "properties": {
         "ShowFishingHud": {
           "type": "boolean",
-          "description": "Whether or not to show current streak, chance for treasure, chance for each fish, etc. while fishing."
+          "description": "Whether or not to show current streak, chance for treasure, chance for each fish, etc.\nwhile fishing.",
+          "default": true
         },
         "TopLeftX": {
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "The X coordinate of the top left corner of the fishing HUD."
+          "description": "The X coordinate of the top left corner of the fishing HUD.",
+          "default": 0
         },
         "TopLeftY": {
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "The Y coordinate of the top left corner of the fishing HUD."
+          "description": "The Y coordinate of the top left corner of the fishing HUD.",
+          "default": 0
         },
         "MaxFishTypes": {
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "The number of fish to show on the fishing HUD."
-        },
-        "$schema": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "Optional schema URL."
+          "description": "The number of fish to show on the fishing HUD.",
+          "default": 5
         }
       }
     }

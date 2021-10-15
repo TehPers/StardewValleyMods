@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Immutable;
 using Newtonsoft.Json;
+using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Config.ContentPacks
 {
+    /// <summary>
+    /// Content which modifies the behavior of fish.
+    /// </summary>
+    /// <param name="Add">The fish traits to add.</param>
     [JsonDescribe]
-    public class FishTraitsPack : JsonConfigRoot
-    {
-        [JsonRequired]
-        [Description("The fish traits to add.")]
-        public Dictionary<string, FishTraits> Add { get; init; } = new();
-    }
+    public record FishTraitsPack(
+        [property: JsonRequired] ImmutableDictionary<NamespacedKey, FishTraits> Add
+    ) : JsonConfigRoot;
 }
