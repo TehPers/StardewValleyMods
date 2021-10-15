@@ -346,6 +346,15 @@
             "type": "string"
           },
           "description": "Adds mail entries to the player's mail tomorrow."
+        },
+        "StartConversations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "description": "Starts conversations. The key is the conversation ID and the value is the number of days."
         }
       }
     }
