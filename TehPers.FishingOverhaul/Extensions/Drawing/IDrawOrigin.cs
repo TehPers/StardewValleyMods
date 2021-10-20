@@ -2,7 +2,7 @@
 
 namespace TehPers.FishingOverhaul.Extensions.Drawing
 {
-    public interface IDrawOrigin
+    internal interface IDrawOrigin
     {
         Vector2 GetTranslation(Vector2 size);
     }

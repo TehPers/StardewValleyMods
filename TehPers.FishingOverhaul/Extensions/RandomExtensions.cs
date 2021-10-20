@@ -2,7 +2,7 @@
 
 namespace TehPers.FishingOverhaul.Extensions
 {
-    public static class RandomExtensions
+    internal static class RandomExtensions
     {
         public static double NextDouble(this Random rand, double min, double max)
         {

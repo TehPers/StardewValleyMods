@@ -9,7 +9,7 @@ using SObject = StardewValley.Object;
 
 namespace TehPers.FishingOverhaul.Extensions
 {
-    public static class DrawingExtensions
+    internal static class DrawingExtensions
     {
         /// <summary>Draws a string with a shadow behind it.</summary>
         /// <param name="batch">The batch to draw with.</param>

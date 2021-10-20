@@ -12,11 +12,26 @@ namespace TehPers.FishingOverhaul.Services
 {
     internal class CustomBobberBarFactory : ICustomBobberBarFactory
     {
-        private readonly IResolutionRoot root;
+        private readonly IModHelper helper;
+        private readonly IMonitor monitor;
+        private readonly IFishingApi fishingApi;
+        private readonly FishConfig fishConfig;
+        private readonly TreasureConfig treasureConfig;
 
-        public CustomBobberBarFactory(IResolutionRoot root)
+        public CustomBobberBarFactory(
+            IModHelper helper,
+            IMonitor monitor,
+            IFishingApi fishingApi,
+            FishConfig fishConfig,
+            TreasureConfig treasureConfig
+        )
         {
-            this.root = root ?? throw new ArgumentNullException(nameof(root));
+            this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
+            this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+            this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
+            this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
+            this.treasureConfig =
+                treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
         }
 
         public CustomBobberBar? Create(
@@ -29,16 +44,16 @@ namespace TehPers.FishingOverhaul.Services
             bool fromFishPond
         )
         {
-            var fishingHelper = this.root.Get<IFishingApi>();
-            if (!fishingHelper.TryGetFishTraits(fishEntry.FishKey, out var fishTraits))
+            if (!this.fishingApi.TryGetFishTraits(fishEntry.FishKey, out var fishTraits))
             {
+                this.monitor.Log($"Missing fish traits for {fishEntry.FishKey}.", LogLevel.Error);
                 return null;
             }
 
             return new(
-                this.root.Get<IModHelper>(),
-                this.root.Get<FishConfig>(),
-                this.root.Get<TreasureConfig>(),
+                this.helper,
+                this.fishConfig,
+                this.treasureConfig,
                 fishingInfo,
                 fishEntry,
                 fishTraits,

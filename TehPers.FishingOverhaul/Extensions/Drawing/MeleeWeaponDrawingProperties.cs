@@ -4,7 +4,7 @@ using StardewValley.Tools;
 
 namespace TehPers.FishingOverhaul.Extensions.Drawing
 {
-    public record MeleeWeaponDrawingProperties(int Type, bool IsScythe) : IDrawingProperties
+    internal record MeleeWeaponDrawingProperties(int Type, bool IsScythe) : IDrawingProperties
     {
         private static readonly FieldInfo addedSwordScale =
             typeof(MeleeWeapon).GetField(

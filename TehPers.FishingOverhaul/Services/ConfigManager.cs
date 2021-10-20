@@ -13,7 +13,8 @@ namespace TehPers.FishingOverhaul.Services
 
         public ConfigManager(IJsonProvider jsonProvider, [Named("path")] string path)
         {
-            this.jsonProvider = jsonProvider ?? throw new ArgumentNullException(nameof(jsonProvider));
+            this.jsonProvider =
+                jsonProvider ?? throw new ArgumentNullException(nameof(jsonProvider));
             this.path = path ?? throw new ArgumentNullException(nameof(path));
         }
 
@@ -28,6 +29,7 @@ namespace TehPers.FishingOverhaul.Services
             // Create new config
             config = new();
             config.Reset();
+            this.jsonProvider.WriteJson(config, this.path);
             return config;
         }
 

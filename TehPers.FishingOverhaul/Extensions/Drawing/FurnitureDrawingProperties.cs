@@ -2,7 +2,7 @@
 
 namespace TehPers.FishingOverhaul.Extensions.Drawing
 {
-    public record FurnitureDrawingProperties
+    internal record FurnitureDrawingProperties
         (Vector2 SourceSize, float ScaleSize) : IDrawingProperties
     {
         public Vector2 Offset(float scaleSize) => new(32f, 32f);

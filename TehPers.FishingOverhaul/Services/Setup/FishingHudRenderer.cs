@@ -114,15 +114,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
             boxWidth = Math.Max(boxWidth, font.MeasureString(trashText).X);
             boxBottomLeft += new Vector2(0, lineHeight);
 
-            // (Debug) Draw fishing state
-            if (this.fishingTracker.ActiveFisherData.TryGetValue(farmer, out var activeFisher))
-            {
-                var stateText = $"Fishing state: {activeFisher.State}";
-                e.SpriteBatch.DrawStringWithShadow(font, stateText, boxBottomLeft, textColor, 1F);
-                boxWidth = Math.Max(boxWidth, font.MeasureString(stateText).X);
-                boxBottomLeft += new Vector2(0, lineHeight);
-            }
-
             // Draw fish chances
             var maxDisplayedFish = this.hudConfig.MaxFishTypes;
             foreach (var fishChance in fishChances.Take(maxDisplayedFish))

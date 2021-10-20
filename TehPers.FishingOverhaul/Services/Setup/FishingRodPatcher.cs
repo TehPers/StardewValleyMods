@@ -237,111 +237,123 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 rod.attachments[1]?.ParentSheetIndex ?? -1,
                 fromFishPond
             );
-            if (customBobber is not null)
+            if (customBobber is null)
             {
-                var initialStreak = this.fishingApi.GetStreak(fishingInfo.User);
+                this.monitor.Log("Error creating fishing minigame GUI.", LogLevel.Error);
+                Game1.showGlobalMessage(
+                    $"There was an error starting the fishing minigame for {fishEntry.FishKey}. "
+                    + "Check the console for more details."
+                );
+                fishingInfo.User.Halt();
+                fishingInfo.User.completelyStopAnimatingOrDoingAction();
+                fishingInfo.User.armOffset = Vector2.Zero;
+                rod.castedButBobberStillInAir = false;
+                rod.fishCaught = false;
+                rod.isReeling = false;
+                rod.isFishing = false;
+                rod.pullingOutOfWater = false;
+                fishingInfo.User.canReleaseTool = false;
+                return;
+            }
 
-                customBobber.LostFish += (_, _) =>
+            var initialStreak = this.fishingApi.GetStreak(fishingInfo.User);
+
+            customBobber.LostFish += (_, _) =>
+            {
+                // Notify user
+                if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
                 {
-                    // Notify user
-                    if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
+                    Game1.showGlobalMessage(
+                        this.helper.Translation.Get(
+                            "text.streak.lost",
+                            new { streak = initialStreak }
+                        )
+                    );
+                }
+
+                // Update streak
+                this.fishingApi.SetStreak(fishingInfo.User, 0);
+            };
+            customBobber.StateChanged += (_, state) =>
+            {
+                switch (state)
+                {
+                    // Lost perfect but haven't caught treasure yet
+                    case (false, TreasureState.NotCaught)
+                        when initialStreak >= this.fishConfig.StreakForIncreasedQuality:
                     {
+                        // Notify user - streak is updated when fish is either caught or not caught
                         Game1.showGlobalMessage(
                             this.helper.Translation.Get(
-                                "text.streak.lost",
+                                "text.streak.warning",
                                 new { streak = initialStreak }
                             )
                         );
-                    }
 
-                    // Update streak
-                    this.fishingApi.SetStreak(fishingInfo.User, 0);
-                };
-                customBobber.StateChanged += (_, state) =>
+                        break;
+                    }
+                }
+            };
+            customBobber.CatchFish += (_, info) =>
+            {
+                // Update fishing streak
+                switch (info.State)
                 {
-                    switch (state)
+                    // Perfect catch
+                    case (true, _):
                     {
-                        // Lost perfect but haven't caught treasure yet
-                        case (false, TreasureState.NotCaught)
-                            when initialStreak >= this.fishConfig.StreakForIncreasedQuality:
+                        this.fishingApi.SetStreak(fishingInfo.User, initialStreak + 1);
+                        info = info with { FishQuality = info.FishQuality + 1 };
+                        break;
+                    }
+                    // Restored catch
+                    case (false, TreasureState.Caught):
+                    {
+                        if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
                         {
-                            // Notify user - streak is updated when fish is either caught or not caught
                             Game1.showGlobalMessage(
                                 this.helper.Translation.Get(
-                                    "text.streak.warning",
+                                    "text.streak.restored",
                                     new { streak = initialStreak }
                                 )
                             );
-
-                            break;
                         }
+
+                        break;
                     }
-                };
-                customBobber.CatchFish += (_, info) =>
-                {
-                    // Update fishing streak
-                    switch (info.State)
+                    // Not perfect
+                    default:
                     {
-                        // Perfect catch
-                        case (true, _):
+                        this.fishingApi.SetStreak(fishingInfo.User, 0);
+                        if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
                         {
-                            this.fishingApi.SetStreak(fishingInfo.User, initialStreak + 1);
-                            info = info with { FishQuality = info.FishQuality + 1 };
-                            break;
+                            Game1.showGlobalMessage(
+                                this.helper.Translation.Get(
+                                    "text.streak.lost",
+                                    new { streak = initialStreak }
+                                )
+                            );
                         }
-                        // Restored catch
-                        case (false, TreasureState.Caught):
-                        {
-                            if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
-                            {
-                                Game1.showGlobalMessage(
-                                    this.helper.Translation.Get(
-                                        "text.streak.restored",
-                                        new { streak = initialStreak }
-                                    )
-                                );
-                            }
 
-                            break;
-                        }
-                        // Not perfect
-                        default:
-                        {
-                            this.fishingApi.SetStreak(fishingInfo.User, 0);
-                            if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
-                            {
-                                Game1.showGlobalMessage(
-                                    this.helper.Translation.Get(
-                                        "text.streak.lost",
-                                        new { streak = initialStreak }
-                                    )
-                                );
-                            }
+                        break;
+                    }
+                }
 
-                            break;
+                // Catch item
+                this.CatchItem(
+                    rod,
+                    info with
+                    {
+                        FishQuality = info.FishQuality switch
+                        {
+                            > 2 => info.FishQuality + 1,
+                            _ => info.FishQuality,
                         }
                     }
+                );
+            };
 
-                    // Catch item
-                    this.CatchItem(
-                        rod,
-                        info with
-                        {
-                            FishQuality = info.FishQuality switch
-                            {
-                                > 2 => info.FishQuality + 1,
-                                _ => info.FishQuality,
-                            }
-                        }
-                    );
-                };
-
-                Game1.activeClickableMenu = customBobber;
-            }
-            else
-            {
-                this.monitor.Log("Error creating fishing minigame GUI", LogLevel.Error);
-            }
+            Game1.activeClickableMenu = customBobber;
         }
 
         private void CatchItem(FishingRod rod, CatchInfo info)

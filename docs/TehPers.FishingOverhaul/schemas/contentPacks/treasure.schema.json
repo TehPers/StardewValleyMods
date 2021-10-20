@@ -56,8 +56,7 @@
                 "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
               }
             ]
-          },
-          "description": "The possible namespaced keys for the loot. The item key is chosen randomly."
+          }
         },
         "MinQuantity": {
           "type": "integer",

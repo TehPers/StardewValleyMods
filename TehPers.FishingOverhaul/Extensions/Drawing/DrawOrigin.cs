@@ -2,7 +2,7 @@
 
 namespace TehPers.FishingOverhaul.Extensions.Drawing
 {
-    public record DrawOrigin(Vector2 SourceSize, Vector2 OriginInSource) : IDrawOrigin
+    internal record DrawOrigin(Vector2 SourceSize, Vector2 OriginInSource) : IDrawOrigin
     {
         public Vector2 GetTranslation(Vector2 size)
         {

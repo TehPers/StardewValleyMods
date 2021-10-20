@@ -2,7 +2,7 @@
 
 namespace TehPers.FishingOverhaul.Extensions.Drawing
 {
-    public record HatDrawingProperties : IDrawingProperties
+    internal record HatDrawingProperties : IDrawingProperties
     {
         public Vector2 SourceSize => new(20f, 20f);
         public Vector2 Offset(float scaleSize) => new(32f, 32f);

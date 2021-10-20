@@ -7,7 +7,7 @@
   "UniqueID": "TehPers.FishingOverhaul",
   "EntryDll": "TehPers.FishingOverhaul.dll",
   "MinimumApiVersion": "3.13.0-beta.20210920",
-  "UpdateKeys": [],
+  "UpdateKeys": ["Nexus:866"],
   "Dependencies": [
     {
       "UniqueID": "TehPers.Core",

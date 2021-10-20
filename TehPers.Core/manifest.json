@@ -7,11 +7,6 @@
   "UniqueID": "TehPers.Core",
   "EntryDll": "TehPers.Core.dll",
   "MinimumApiVersion": "3.13.0-beta.20210918",
-  "UpdateKeys": [],
-  "Dependencies": [
-    {
-      "UniqueID": "Pathoschild.ContentPatcher",
-      "IsRequired": false
-    }
-  ]
+  "UpdateKeys": ["Nexus:3256"],
+  "Dependencies": [{ "UniqueID": "Pathoschild.ContentPatcher", "IsRequired": false }]
 }

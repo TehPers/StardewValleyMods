@@ -2,7 +2,7 @@
 
 namespace TehPers.FishingOverhaul.Extensions.Drawing
 {
-    public interface IDrawingProperties
+    internal interface IDrawingProperties
     {
         Vector2 SourceSize { get; }
 

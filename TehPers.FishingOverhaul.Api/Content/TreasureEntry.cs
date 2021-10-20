@@ -13,6 +13,7 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// <summary>
     /// An entry for treasure loot.
     /// </summary>
+    /// <param name="AvailabilityInfo">The availability information.</param>
     /// <param name="ItemKeys">The possible namespaced keys for the loot. The item key is chosen randomly.</param>
     /// <inheritdoc cref="Entry{T}"/>
     [JsonDescribe]

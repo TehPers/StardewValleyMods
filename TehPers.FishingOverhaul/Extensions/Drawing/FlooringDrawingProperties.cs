@@ -2,7 +2,7 @@
 
 namespace TehPers.FishingOverhaul.Extensions.Drawing
 {
-    public record FlooringDrawingProperties : IDrawingProperties
+    internal record FlooringDrawingProperties : IDrawingProperties
     {
         public Vector2 SourceSize => new(28f, 26f);
         public Vector2 Offset(float scaleSize) => new(32f, 30f);
