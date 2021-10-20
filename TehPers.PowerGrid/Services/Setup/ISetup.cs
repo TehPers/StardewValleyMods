@@ -1,4 +1,4 @@
-﻿namespace TehPers.FishingOverhaul.Services.Setup
+﻿namespace TehPers.PowerGrid.Services.Setup
 {
     internal interface ISetup
     {

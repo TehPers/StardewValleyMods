@@ -5,6 +5,7 @@ using StardewModdingAPI;
 
 namespace TehPers.Core.Api.DI
 {
+    /// <inheritdoc cref="BaseModule"/>
     /// <inheritdoc cref="IModModule"/>
     public abstract class ModModule : BaseModule, IModModule
     {

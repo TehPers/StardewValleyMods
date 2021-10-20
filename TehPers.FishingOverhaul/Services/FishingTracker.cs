@@ -3,7 +3,7 @@ using StardewValley;
 using StardewValley.Tools;
 using TehPers.FishingOverhaul.Api;
 
-namespace TehPers.FishingOverhaul.Services.Setup
+namespace TehPers.FishingOverhaul.Services
 {
     internal class FishingTracker
     {

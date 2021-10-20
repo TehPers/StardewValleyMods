@@ -22,6 +22,13 @@ namespace TehPers.FishingOverhaul.Services
         private static readonly NamespacedKey mutantCarpKey = NamespacedKey.SdvObject(682);
         private static readonly NamespacedKey glacierfishKey = NamespacedKey.SdvObject(775);
 
+        // Legendary II fish
+        private static readonly NamespacedKey sonOfCrimsonfishKey = NamespacedKey.SdvObject(898);
+        private static readonly NamespacedKey msAnglerKey = NamespacedKey.SdvObject(899);
+        private static readonly NamespacedKey legend2Key = NamespacedKey.SdvObject(900);
+        private static readonly NamespacedKey radioactiveCarpKey = NamespacedKey.SdvObject(901);
+        private static readonly NamespacedKey glacierfishJrKey = NamespacedKey.SdvObject(992);
+
         private static readonly HashSet<NamespacedKey> vanillaLegendaries = new()
         {
             DefaultFishingSource.crimsonfishKey,
@@ -30,7 +37,6 @@ namespace TehPers.FishingOverhaul.Services
             DefaultFishingSource.mutantCarpKey,
             DefaultFishingSource.glacierfishKey
         };
-
 
         private readonly IManifest manifest;
         private readonly IAssetProvider assetProvider;
@@ -228,13 +234,27 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            StartTime = 600,
                             EndTime = 2000,
                             Seasons = Seasons.Summer,
-                            WaterTypes = WaterTypes.River,
                             MinFishingLevel = 5,
                             IncludeLocations = ImmutableArray.Create("Beach", "BeachNightMarket"),
                             When = hasCaughtFish,
+                        }
+                    ),
+                    new(
+                        DefaultFishingSource.sonOfCrimsonfishKey,
+                        new(0.02)
+                        {
+                            DepthMultiplier = 0.02 / 4,
+                            EndTime = 2000,
+                            Seasons = Seasons.Summer,
+                            MinFishingLevel = 5,
+                            IncludeLocations = ImmutableArray.Create("Beach", "BeachNightMarket"),
+                            When = hasCaughtFish.Add(
+                                    "TehPers.FishingOverhaul/SpecialOrderRuleActive",
+                                    "LEGENDARY_FAMILY"
+                                )
+                                .Add("HasMod", "TehPers.FishingOverhaul"),
                         }
                     ),
                     new(
@@ -249,11 +269,25 @@ namespace TehPers.FishingOverhaul.Services
                         }
                     ),
                     new(
+                        DefaultFishingSource.msAnglerKey,
+                        new(0.02)
+                        {
+                            DepthMultiplier = 0.02 / 4,
+                            Seasons = Seasons.Fall,
+                            MinFishingLevel = 3,
+                            IncludeLocations = ImmutableArray.Create("Town"),
+                            When = hasCaughtFish.Add(
+                                    "TehPers.FishingOverhaul/SpecialOrderRuleActive",
+                                    "LEGENDARY_FAMILY"
+                                )
+                                .Add("HasMod", "TehPers.FishingOverhaul"),
+                        }
+                    ),
+                    new(
                         DefaultFishingSource.legendKey,
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            StartTime = 600,
                             EndTime = 2300,
                             Seasons = Seasons.Spring,
                             Weathers = Weathers.Rainy,
@@ -261,6 +295,24 @@ namespace TehPers.FishingOverhaul.Services
                             MinFishingLevel = 10,
                             IncludeLocations = ImmutableArray.Create("Mountain"),
                             When = hasCaughtFish,
+                        }
+                    ),
+                    new(
+                        DefaultFishingSource.legend2Key,
+                        new(0.02)
+                        {
+                            DepthMultiplier = 0.02 / 4,
+                            EndTime = 2300,
+                            Seasons = Seasons.Spring,
+                            Weathers = Weathers.Rainy,
+                            WaterTypes = WaterTypes.PondOrOcean,
+                            MinFishingLevel = 10,
+                            IncludeLocations = ImmutableArray.Create("Mountain"),
+                            When = hasCaughtFish.Add(
+                                    "TehPers.FishingOverhaul/SpecialOrderRuleActive",
+                                    "LEGENDARY_FAMILY"
+                                )
+                                .Add("HasMod", "TehPers.FishingOverhaul"),
                         }
                     ),
                     new(
@@ -273,17 +325,46 @@ namespace TehPers.FishingOverhaul.Services
                         }
                     ),
                     new(
+                        DefaultFishingSource.radioactiveCarpKey,
+                        new(0.02)
+                        {
+                            DepthMultiplier = 0.02 / 4,
+                            IncludeLocations = ImmutableArray.Create("Sewer"),
+                            When = hasCaughtFish.Add(
+                                    "TehPers.FishingOverhaul/SpecialOrderRuleActive",
+                                    "LEGENDARY_FAMILY"
+                                )
+                                .Add("HasMod", "TehPers.FishingOverhaul"),
+                        }
+                    ),
+                    new(
                         DefaultFishingSource.glacierfishKey,
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            StartTime = 600,
                             EndTime = 2000,
                             Seasons = Seasons.Winter,
                             WaterTypes = WaterTypes.River,
                             MinFishingLevel = 6,
                             IncludeLocations = ImmutableArray.Create("Forest"),
                             When = hasCaughtFish,
+                        }
+                    ),
+                    new(
+                        DefaultFishingSource.glacierfishJrKey,
+                        new(0.02)
+                        {
+                            DepthMultiplier = 0.02 / 4,
+                            EndTime = 2000,
+                            Seasons = Seasons.Winter,
+                            WaterTypes = WaterTypes.River,
+                            MinFishingLevel = 6,
+                            IncludeLocations = ImmutableArray.Create("Forest"),
+                            When = hasCaughtFish.Add(
+                                    "TehPers.FishingOverhaul/SpecialOrderRuleActive",
+                                    "LEGENDARY_FAMILY"
+                                )
+                                .Add("HasMod", "TehPers.FishingOverhaul"),
                         }
                     ),
 

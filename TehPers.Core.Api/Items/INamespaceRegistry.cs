@@ -36,7 +36,7 @@ namespace TehPers.Core.Api.Items
         /// <summary>
         /// Reloads each namespace provider.
         /// </summary>
-        void Reload();
+        void RequestReload();
 
         /// <summary>
         /// Invoked whenever the namespace provider is reloaded.

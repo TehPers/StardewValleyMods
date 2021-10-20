@@ -7,6 +7,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Tools;
 using TehPers.Core.Api.Items;
+using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Extensions;
 using TehPers.FishingOverhaul.Config;

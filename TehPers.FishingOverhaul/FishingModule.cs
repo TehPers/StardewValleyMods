@@ -6,13 +6,14 @@ using Ninject;
 using StardewModdingAPI;
 using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config;
-using TehPers.FishingOverhaul.ContentPacks;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 using TehPers.FishingOverhaul.Services;
 using TehPers.FishingOverhaul.Services.Setup;
+using TehPers.FishingOverhaul.Services.Tokens;
 
 namespace TehPers.FishingOverhaul
 {
@@ -21,7 +22,6 @@ namespace TehPers.FishingOverhaul
         public override void Load()
         {
             // Initialization
-            this.Bind<Startup>().ToSelf().InSingletonScope();
             this.Bind<ISetup>().To<FishingHudRenderer>().InSingletonScope();
             this.Bind<ISetup>().To<GenericModConfigMenuSetup>().InSingletonScope();
             this.Bind<ISetup>().ToMethod(FishingRodPatcher.Create).InSingletonScope();
@@ -29,7 +29,8 @@ namespace TehPers.FishingOverhaul
             this.Bind<ISetup>().To<ContentPatcherSetup>().InSingletonScope();
             this.Bind<ISetup>().To<DefaultCustomEvents>().InSingletonScope();
             this.Bind<ISetup>().To<ConsoleCommandsSetup>().InSingletonScope();
-            // TODO: this.Bind<ISetup>().To<FishingMessageHandler>().InSingletonScope();
+            this.Bind<ISetup>().To<MissingSecretNotesToken>().InSingletonScope();
+            this.Bind<ISetup>().To<MissingJournalScrapsToken>().InSingletonScope();
 
             // Resources/services
             this.Bind<IFishingApi, ISimplifiedFishingApi, FishingApi>()

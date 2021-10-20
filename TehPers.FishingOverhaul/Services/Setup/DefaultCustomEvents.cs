@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
+using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Services.Setup

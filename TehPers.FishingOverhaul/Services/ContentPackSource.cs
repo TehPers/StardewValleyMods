@@ -8,7 +8,7 @@ using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config.ContentPacks;
 
-namespace TehPers.FishingOverhaul.ContentPacks
+namespace TehPers.FishingOverhaul.Services
 {
     internal sealed class ContentPackSource : IFishingContentSource
     {

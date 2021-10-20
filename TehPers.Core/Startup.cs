@@ -1,8 +1,8 @@
 ﻿using System;
 using StardewModdingAPI;
-using TehPers.FishingOverhaul.Services.Setup;
+using TehPers.Core.Api.Setup;
 
-namespace TehPers.FishingOverhaul
+namespace TehPers.Core
 {
     internal sealed class Startup
     {
@@ -17,7 +17,7 @@ namespace TehPers.FishingOverhaul
 
         public void Initialize()
         {
-            this.monitor.Log("Setting up fishing services.", LogLevel.Info);
+            this.monitor.Log("Setting up services.");
             foreach (var service in this.setupServices)
             {
                 service.Setup();

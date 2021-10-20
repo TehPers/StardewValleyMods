@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj" />
+    <Reference Include="$(GameModsPath)/TehPers.Core/TehPers.Core.Api.dll" />
   </ItemGroup>
 
 </Project>

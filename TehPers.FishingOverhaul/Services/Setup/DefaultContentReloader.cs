@@ -1,5 +1,6 @@
 ﻿using System;
 using TehPers.Core.Api.Items;
+using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
 
 namespace TehPers.FishingOverhaul.Services.Setup

@@ -1,5 +1,4 @@
 ﻿using Ninject;
-using Ninject.Modules;
 using StardewModdingAPI;
 using TehPers.Core.Api.Content;
 using TehPers.Core.Api.DI;
@@ -8,7 +7,7 @@ using TehPers.Core.DI;
 
 namespace TehPers.Core.Modules
 {
-    internal class ModServicesModule : NinjectModule
+    internal class ModServicesModule : ModModule
     {
         private readonly IModKernel modKernel;
 
@@ -34,9 +33,7 @@ namespace TehPers.Core.Modules
                 .InSingletonScope();
 
             // The mod's kernel
-            this.Bind<IModKernel>()
-                .ToConstant(this.modKernel)
-                .InSingletonScope();
+            this.Bind<IModKernel>().ToConstant(this.modKernel).InSingletonScope();
 
             // Content
             this.Bind<IAssetProvider>()
@@ -49,12 +46,11 @@ namespace TehPers.Core.Modules
                 .WithMetadata(nameof(ContentSource), ContentSource.GameContent);
 
             // DI-related types
-            this.Bind(typeof(IOptional<>))
-                .To(typeof(InjectedOptional<>))
-                .InTransientScope();
-            this.Bind(typeof(ISimpleFactory<>))
-                .To(typeof(SimpleFactory<>))
-                .InSingletonScope();
+            this.Bind(typeof(IOptional<>)).To(typeof(InjectedOptional<>)).InTransientScope();
+            this.Bind(typeof(ISimpleFactory<>)).To(typeof(SimpleFactory<>)).InSingletonScope();
+
+            // Startup types
+            this.GlobalProxyRoot.Bind<Startup>().ToSelf().InSingletonScope();
         }
     }
 }

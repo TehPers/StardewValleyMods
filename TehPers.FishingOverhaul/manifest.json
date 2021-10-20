@@ -6,12 +6,12 @@
   "Description": "Highly customizable overhaul for fishing",
   "UniqueID": "TehPers.FishingOverhaul",
   "EntryDll": "TehPers.FishingOverhaul.dll",
-  "MinimumApiVersion": "3.13.0-beta.20210918",
+  "MinimumApiVersion": "3.13.0-beta.20210920",
   "UpdateKeys": [],
   "Dependencies": [
     {
       "UniqueID": "TehPers.Core",
-      "MinimumVersion": "1.0.0-beta.20211013"
+      "MinimumVersion": "1.0.0-beta.20211020"
     },
     {
       "UniqueID": "Pathoschild.ContentPatcher",

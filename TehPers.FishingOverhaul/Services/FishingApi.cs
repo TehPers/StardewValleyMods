@@ -177,8 +177,6 @@ namespace TehPers.FishingOverhaul.Services
 
         public PossibleCatch GetPossibleCatch(FishingInfo fishingInfo)
         {
-            // TODO: handle special items (void mayonnaise, etc)
-
             // Choose a random fish if one hasn't been chosen yet
             var fishChance = this.GetChanceForFish(fishingInfo.User);
             IEnumerable<IWeightedValue<FishEntry?>> possibleFish = this.GetFishChances(fishingInfo)

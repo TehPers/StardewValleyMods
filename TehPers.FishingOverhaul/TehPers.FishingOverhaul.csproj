@@ -14,12 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TehPers.Core.Api\TehPers.Core.Api.csproj" />
     <ProjectReference Include="..\TehPers.FishingOverhaul.Api\TehPers.FishingOverhaul.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="$(GameModsPath)/ContentPatcher/ContentPatcher.dll" />
+    <Reference Include="$(GameModsPath)/TehPers.Core/TehPers.Core.Api.dll" />
+    <Reference Include="$(GameModsPath)/TehPers.Core/Ninject.dll" />
   </ItemGroup>
 
 </Project>

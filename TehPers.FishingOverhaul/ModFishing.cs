@@ -29,9 +29,6 @@ namespace TehPers.FishingOverhaul
 
             this.kernel = kernelFactory.GetKernel(this);
             this.kernel.Load<FishingModule>();
-
-            var startup = this.kernel.Get<Startup>();
-            startup.Initialize();
         }
 
         public override object? GetApi()

@@ -15,25 +15,33 @@ namespace TehPers.Core
             // Create kernel factory and add core processors
             ModServices.Factory = new ModKernelFactory();
             ModServices.Factory.AddKernelProcessor(
-                kernel => { kernel.Load(new FuncModule(), new ModServicesModule(kernel)); }
+                kernel => kernel.Load(new FuncModule(), new ModServicesModule(kernel))
             );
         }
 
         public override void Entry(IModHelper helper)
         {
             // Add processors
-            ModServices.Factory!.AddKernelProcessor(
-                kernel => kernel.Load(new ModJsonModule(this.Helper, this.Monitor))
-            );
+            ModServices.Factory!.AddKernelProcessor(kernel => kernel.Load<ModJsonModule>());
 
             // Add 
             var kernel = ModServices.Factory.GetKernel(this);
             kernel.Load(new GlobalJsonModule(helper, this.Monitor));
             kernel.Load<CoreServicesModule>();
 
+            // Setup services on game launched
+            helper.Events.GameLoop.GameLaunched += (_, _) =>
+            {
+                var startups = kernel.GetAll<Startup>();
+                foreach (var startup in startups)
+                {
+                    startup.Initialize();
+                }
+            };
+
             // Reload namespace registry on save loaded
             helper.Events.GameLoop.SaveLoaded +=
-                (_, _) => kernel.Get<INamespaceRegistry>().Reload();
+                (_, _) => kernel.Get<INamespaceRegistry>().RequestReload();
 
             // Add custom commands
             helper.ConsoleCommands.Add(

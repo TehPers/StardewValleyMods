@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using StardewModdingAPI;
+using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Services.Setup

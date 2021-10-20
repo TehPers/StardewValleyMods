@@ -1,6 +1,7 @@
 ﻿using System;
 using StardewModdingAPI;
 using TehPers.Core.Api.DI;
+using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
@@ -10,7 +11,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
     {
         private readonly IModHelper helper;
         private readonly IManifest manifest;
-        private readonly Func<IOptional<IGenericModConfigMenuApi>> configApiFactory;
+        private readonly IOptional<IGenericModConfigMenuApi> configApi;
         private readonly HudConfig hudConfig;
         private readonly ConfigManager<HudConfig> hudConfigManager;
         private readonly FishConfig fishConfig;
@@ -21,7 +22,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
         public GenericModConfigMenuSetup(
             IModHelper helper,
             IManifest manifest,
-            Func<IOptional<IGenericModConfigMenuApi>> configApiFactory,
+            IOptional<IGenericModConfigMenuApi> configApiFactory,
             HudConfig hudConfig,
             ConfigManager<HudConfig> hudConfigManager,
             FishConfig fishConfig,
@@ -32,61 +33,67 @@ namespace TehPers.FishingOverhaul.Services.Setup
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
-            this.configApiFactory = configApiFactory ?? throw new ArgumentNullException(nameof(configApiFactory));
+            this.configApi = configApiFactory
+                ?? throw new ArgumentNullException(nameof(configApiFactory));
             this.hudConfig = hudConfig ?? throw new ArgumentNullException(nameof(hudConfig));
-            this.hudConfigManager = hudConfigManager ?? throw new ArgumentNullException(nameof(hudConfigManager));
+            this.hudConfigManager = hudConfigManager
+                ?? throw new ArgumentNullException(nameof(hudConfigManager));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
-            this.fishConfigManager = fishConfigManager ?? throw new ArgumentNullException(nameof(fishConfigManager));
-            this.treasureConfig = treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
-            this.treasureConfigManager =
-                treasureConfigManager ?? throw new ArgumentNullException(nameof(treasureConfigManager));
+            this.fishConfigManager = fishConfigManager
+                ?? throw new ArgumentNullException(nameof(fishConfigManager));
+            this.treasureConfig =
+                treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
+            this.treasureConfigManager = treasureConfigManager
+                ?? throw new ArgumentNullException(nameof(treasureConfigManager));
         }
 
         public void Setup()
         {
-            this.helper.Events.GameLoop.GameLaunched += (_, _) =>
+            if (!this.configApi.TryGetValue(out var configApi))
             {
-                if (!this.configApiFactory().TryGetValue(out var configApi))
+                return;
+            }
+
+            Translation Name(string key) => this.helper.Translation.Get($"text.config.{key}.name");
+            Translation Desc(string key) => this.helper.Translation.Get($"text.config.{key}.desc");
+
+            configApi.RegisterModConfig(
+                this.manifest,
+                () =>
                 {
-                    return;
+                    this.hudConfig.Reset();
+                    this.fishConfig.Reset();
+                    this.treasureConfig.Reset();
+                },
+                () =>
+                {
+                    this.hudConfigManager.Save(this.hudConfig);
+                    this.fishConfigManager.Save(this.fishConfig);
+                    this.treasureConfigManager.Save(this.treasureConfig);
                 }
+            );
 
-                Translation Name(string key) => this.helper.Translation.Get($"text.config.{key}.name");
-                Translation Desc(string key) => this.helper.Translation.Get($"text.config.{key}.desc");
+            configApi.SetDefaultIngameOptinValue(this.manifest, true);
+            configApi.RegisterPageLabel(this.manifest, Name("hud"), Desc("hud"), Name("hud"));
+            configApi.RegisterPageLabel(this.manifest, Name("fish"), Desc("fish"), Name("fish"));
+            configApi.RegisterPageLabel(
+                this.manifest,
+                Name("treasure"),
+                Desc("treasure"),
+                Name("treasure")
+            );
 
-                configApi.RegisterModConfig(
-                    this.manifest,
-                    () =>
-                    {
-                        this.hudConfig.Reset();
-                        this.fishConfig.Reset();
-                        this.treasureConfig.Reset();
-                    },
-                    () =>
-                    {
-                        this.hudConfigManager.Save(this.hudConfig);
-                        this.fishConfigManager.Save(this.fishConfig);
-                        this.treasureConfigManager.Save(this.treasureConfig);
-                    }
-                );
+            // HUD config settings
+            configApi.StartNewPage(this.manifest, Name("hud"));
+            this.hudConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
 
-                configApi.SetDefaultIngameOptinValue(this.manifest, true);
-                configApi.RegisterPageLabel(this.manifest, Name("hud"), Desc("hud"), Name("hud"));
-                configApi.RegisterPageLabel(this.manifest, Name("fish"), Desc("fish"), Name("fish"));
-                configApi.RegisterPageLabel(this.manifest, Name("treasure"), Desc("treasure"), Name("treasure"));
+            // Fishing config settings
+            configApi.StartNewPage(this.manifest, Name("fish"));
+            this.fishConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
 
-                // HUD config settings
-                configApi.StartNewPage(this.manifest, Name("hud"));
-                this.hudConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
-
-                // Fishing config settings
-                configApi.StartNewPage(this.manifest, Name("fish"));
-                this.fishConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
-
-                // Treasure config settings
-                configApi.StartNewPage(this.manifest, Name("treasure"));
-                this.treasureConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
-            };
+            // Treasure config settings
+            configApi.StartNewPage(this.manifest, Name("treasure"));
+            this.treasureConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
         }
     }
 }

@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TehPers.Core\TehPers.Core.csproj" />
     <ProjectReference Include="..\TehPers.FishingOverhaul\TehPers.FishingOverhaul.csproj" />
   </ItemGroup>
 

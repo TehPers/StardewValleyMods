@@ -13,27 +13,30 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// <summary>
     /// An entry for treasure loot.
     /// </summary>
+    /// <param name="ItemKeys">The possible namespaced keys for the loot. The item key is chosen randomly.</param>
     /// <inheritdoc cref="Entry{T}"/>
     [JsonDescribe]
     public record TreasureEntry(
         AvailabilityInfo AvailabilityInfo,
         [property: JsonRequired]
-        [property:
-            Description(
-                "The possible namespaced keys for the loot. The item key is chosen randomly."
-            )]
         ImmutableArray<NamespacedKey> ItemKeys
     ) : Entry<AvailabilityInfo>(AvailabilityInfo)
     {
-        [Description("The minimum quantity of this item. This is only valid for stackable items.")]
+        /// <summary>
+        /// The minimum quantity of this item. This is only valid for stackable items.
+        /// </summary>
         [DefaultValue(1)]
         public int MinQuantity { get; init; } = 1;
 
-        [Description("The maximum quantity of this item. This is only valid for stackable items.")]
+        /// <summary>
+        /// The maximum quantity of this item. This is only valid for stackable items.
+        /// </summary>
         [DefaultValue(1)]
         public int MaxQuantity { get; init; } = 1;
 
-        [Description("Whether this can be found multiple times in one chest.")]
+        /// <summary>
+        /// Whether this can be found multiple times in one chest.
+        /// </summary>
         [DefaultValue(true)]
         public bool AllowDuplicates { get; init; } = true;
 

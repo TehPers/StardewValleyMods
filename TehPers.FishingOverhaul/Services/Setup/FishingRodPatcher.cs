@@ -16,6 +16,7 @@ using StardewValley.Menus;
 using StardewValley.Tools;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
+using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Api.Extensions;
@@ -119,7 +120,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 prefix: new(
                     AccessTools.Method(
                         typeof(FishingRodPatcher),
-                        nameof(FishingRodPatcher.update_Prefix)
+                        nameof(FishingRodPatcher.tickUpdate_Prefix)
                     )
                 )
             );
@@ -410,7 +411,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
             };
             onCatch?.OnCatch(this.fishingApi, info);
 
-            // TODO: draw the correct item when pulling fish from water
             // Get particle sprite
             var (textureName, sourceRect) = item switch
             {
@@ -632,14 +632,26 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private void FinishFishing(Farmer user, FishingRod rod, CatchInfo info)
         {
+            // This normally happens at this point:
             user.Halt();
             user.armOffset = Vector2.Zero;
             rod.castedButBobberStillInAir = false;
-            rod.fishCaught = true;
+            // rod.fishCaught = true;
             rod.isReeling = false;
             rod.isFishing = false;
             rod.pullingOutOfWater = false;
             user.canReleaseTool = false;
+
+            // Transition state
+            if (this.fishingTracker.ActiveFisherData.TryGetValue(user, out var fisherData)
+                && fisherData.State is FishingState.Caught(var fishingInfo, var catchInfo))
+            {
+                this.fishingTracker.ActiveFisherData[user] = new(
+                    rod,
+                    new FishingState.Holding(fishingInfo, catchInfo)
+                );
+            }
+
             if (!user.IsLocalPlayer)
             {
                 return;
@@ -960,8 +972,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
         }
 
-        public static bool update_Prefix(
+        public static bool tickUpdate_Prefix(
             FishingRod __instance,
+            Farmer who,
             ref int ___recastTimerMs,
             int ___clearWaterDistance
         )
@@ -1019,7 +1032,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         __instance,
                         new FishingState.Holding(fishingInfo, catchInfo)
                     );
-                    return false;
+
+                    // Execute prefix again - avoids 1 tick gap where player can get weeds
+                    return FishingRodPatcher.tickUpdate_Prefix(
+                        __instance,
+                        who,
+                        ref ___recastTimerMs,
+                        ___clearWaterDistance
+                    );
                 }
 
                 case FishingState.Holding(var fishingInfo, var catchInfo):
