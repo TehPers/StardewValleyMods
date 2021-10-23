@@ -780,7 +780,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
 
             // Create fishing info
-            var fishingInfo = new FishingInfo(who) { BobberDepth = ___clearWaterDistance };
+            var fishingInfo = patcher.fishingApi.CreateDefaultFishingInfo(who) with
+            {
+                BobberDepth = ___clearWaterDistance,
+            };
 
             // Transition
             switch (activeFisher.State)

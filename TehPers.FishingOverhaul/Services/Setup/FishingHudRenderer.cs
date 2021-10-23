@@ -20,7 +20,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
     {
         private readonly IModHelper helper;
         private readonly IFishingApi fishingApi;
-        private readonly FishingTracker fishingTracker;
         private readonly HudConfig hudConfig;
         private readonly INamespaceRegistry namespaceRegistry;
 
@@ -29,15 +28,12 @@ namespace TehPers.FishingOverhaul.Services.Setup
         public FishingHudRenderer(
             IModHelper helper,
             IFishingApi fishingApi,
-            FishingTracker fishingTracker,
             HudConfig hudConfig,
             INamespaceRegistry namespaceRegistry
         )
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
-            this.fishingTracker =
-                fishingTracker ?? throw new ArgumentNullException(nameof(fishingTracker));
             this.hudConfig = hudConfig ?? throw new ArgumentNullException(nameof(hudConfig));
             this.namespaceRegistry = namespaceRegistry;
             this.whitePixel = new(Game1.graphics.GraphicsDevice, 1, 1);
@@ -72,7 +68,8 @@ namespace TehPers.FishingOverhaul.Services.Setup
             var lineHeight = (float)font.LineSpacing;
             var boxTopLeft = new Vector2(this.hudConfig.TopLeftX, this.hudConfig.TopLeftY);
             var boxBottomLeft = boxTopLeft;
-            var fishChances = this.fishingApi.GetFishChances(new(farmer))
+            var fishChances = this.fishingApi
+                .GetFishChances(this.fishingApi.CreateDefaultFishingInfo(farmer))
                 .ToWeighted(value => value.Weight, value => value.Value.FishKey)
                 .Condense()
                 .Normalize()

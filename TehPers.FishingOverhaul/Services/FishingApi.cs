@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Tools;
+using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
@@ -12,6 +14,7 @@ using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Api.Extensions;
 using TehPers.FishingOverhaul.Api.Weighted;
 using TehPers.FishingOverhaul.Config;
+using TehPers.FishingOverhaul.Integrations.Emp;
 
 namespace TehPers.FishingOverhaul.Services
 {
@@ -30,6 +33,8 @@ namespace TehPers.FishingOverhaul.Services
 
         private readonly EntryManagerFactory<TreasureEntry, AvailabilityInfo>
             treasureEntryManagerFactory;
+
+        private readonly Lazy<IOptional<IEmpApi>> empApi;
 
         internal readonly Dictionary<NamespacedKey, FishTraits> fishTraits;
         internal readonly List<EntryManager<FishEntry, FishAvailabilityInfo>> fishEntries;
@@ -51,7 +56,8 @@ namespace TehPers.FishingOverhaul.Services
             Func<IEnumerable<IFishingContentSource>> contentSourcesFactory,
             EntryManagerFactory<FishEntry, FishAvailabilityInfo> fishEntryManagerFactory,
             EntryManagerFactory<TrashEntry, AvailabilityInfo> trashEntryManagerFactory,
-            EntryManagerFactory<TreasureEntry, AvailabilityInfo> treasureEntryManagerFactory
+            EntryManagerFactory<TreasureEntry, AvailabilityInfo> treasureEntryManagerFactory,
+            Lazy<IOptional<IEmpApi>> empApi
         )
         {
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
@@ -66,6 +72,7 @@ namespace TehPers.FishingOverhaul.Services
                 ?? throw new ArgumentNullException(nameof(trashEntryManagerFactory));
             this.treasureEntryManagerFactory = treasureEntryManagerFactory
                 ?? throw new ArgumentNullException(nameof(treasureEntryManagerFactory));
+            this.empApi = empApi ?? throw new ArgumentNullException(nameof(empApi));
 
             this.fishTraits = new();
             this.fishEntries = new();
@@ -74,6 +81,47 @@ namespace TehPers.FishingOverhaul.Services
             this.stateKey = $"{manifest.UniqueID}/fishing-state";
 
             this.reloadRequested = true;
+        }
+
+        public FishingInfo CreateDefaultFishingInfo(Farmer farmer)
+        {
+            var fishingInfo = new FishingInfo(farmer);
+
+            // Apply EMP changes
+            if (this.empApi.Value.TryGetValue(out var empApi))
+            {
+                // Get EMP info
+                empApi.GetFishLocationsData(
+                    farmer.currentLocation,
+                    fishingInfo.BobberPosition,
+                    out var empLocationName,
+                    out var empZone,
+                    out _
+                );
+
+                // Override data
+                fishingInfo = fishingInfo with
+                {
+                    Locations = empLocationName switch
+                    {
+                        null => fishingInfo.Locations,
+                        _ when Game1.getLocationFromName(empLocationName) is { } empLocation =>
+                            FishingInfo.GetDefaultLocationNames(empLocation).ToImmutableArray(),
+                        _ => ImmutableArray.Create(empLocationName),
+                    },
+                    WaterTypes = empZone switch
+                    {
+                        null => fishingInfo.WaterTypes,
+                        -1 => WaterTypes.All,
+                        0 => WaterTypes.River,
+                        1 => WaterTypes.PondOrOcean,
+                        2 => WaterTypes.Freshwater,
+                        _ => WaterTypes.All,
+                    },
+                };
+            }
+
+            return fishingInfo;
         }
 
         public IEnumerable<IWeightedValue<FishEntry>> GetFishChances(FishingInfo fishingInfo)

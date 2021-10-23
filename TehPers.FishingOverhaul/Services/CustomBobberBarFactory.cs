@@ -1,6 +1,4 @@
 ﻿using System;
-using Ninject;
-using Ninject.Syntax;
 using StardewModdingAPI;
 using StardewValley;
 using TehPers.FishingOverhaul.Api;
@@ -44,12 +42,14 @@ namespace TehPers.FishingOverhaul.Services
             bool fromFishPond
         )
         {
+            // Try to get the fish traits
             if (!this.fishingApi.TryGetFishTraits(fishEntry.FishKey, out var fishTraits))
             {
                 this.monitor.Log($"Missing fish traits for {fishEntry.FishKey}.", LogLevel.Error);
                 return null;
             }
 
+            // Create the custom bobber bar
             return new(
                 this.helper,
                 this.fishConfig,

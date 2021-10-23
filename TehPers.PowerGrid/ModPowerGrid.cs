@@ -26,9 +26,6 @@ namespace TehPers.PowerGrid
 
             this.kernel = kernelFactory.GetKernel(this);
             this.kernel.Load<PowerGridModule>();
-
-            var startup = this.kernel.Get<Startup>();
-            startup.Initialize();
         }
     }
 }

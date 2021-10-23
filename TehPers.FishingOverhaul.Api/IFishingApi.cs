@@ -34,6 +34,13 @@ namespace TehPers.FishingOverhaul.Api
         public event EventHandler<CustomEvent>? CustomEvent;
 
         /// <summary>
+        /// Creates a default <see cref="FishingInfo"/> for a farmer.
+        /// </summary>
+        /// <param name="farmer">The <see cref="Farmer"/> that is fishing.</param>
+        /// <returns>A default <see cref="FishingInfo"/> for that farmer.</returns>
+        FishingInfo CreateDefaultFishingInfo(Farmer farmer);
+
+        /// <summary>
         /// Gets the weighted chances of catching any fish. This does not take into account fish
         /// ponds.
         /// </summary>
@@ -43,7 +50,8 @@ namespace TehPers.FishingOverhaul.Api
 
         IEnumerable<string> ISimplifiedFishingApi.GetCatchableFish(Farmer farmer, int depth)
         {
-            return this.GetFishChances(new(farmer) { BobberDepth = depth })
+            return this
+                .GetFishChances(this.CreateDefaultFishingInfo(farmer) with { BobberDepth = depth })
                 .Select(weightedValue => weightedValue.Value.FishKey.ToString());
         }
 
@@ -89,7 +97,7 @@ namespace TehPers.FishingOverhaul.Api
 
         IEnumerable<string> ISimplifiedFishingApi.GetCatchableTrash(Farmer farmer)
         {
-            return this.GetTrashChances(new(farmer))
+            return this.GetTrashChances(this.CreateDefaultFishingInfo(farmer))
                 .Select(weightedValue => weightedValue.Value.ItemKey.ToString());
         }
 
@@ -102,7 +110,7 @@ namespace TehPers.FishingOverhaul.Api
 
         IEnumerable<string> ISimplifiedFishingApi.GetCatchableTreasure(Farmer farmer)
         {
-            return this.GetTreasureChances(new(farmer))
+            return this.GetTreasureChances(this.CreateDefaultFishingInfo(farmer))
                 .SelectMany(weightedValue => weightedValue.Value.ItemKeys)
                 .Select(key => key.ToString())
                 .Distinct();
@@ -141,7 +149,7 @@ namespace TehPers.FishingOverhaul.Api
             out bool isFish
         )
         {
-            var possibleCatch = this.GetPossibleCatch(new(farmer) { BobberDepth = bobberDepth });
+            var possibleCatch = this.GetPossibleCatch(this.CreateDefaultFishingInfo(farmer) with { BobberDepth = bobberDepth });
             switch (possibleCatch)
             {
                 case PossibleCatch.Fish(var entry):
@@ -172,7 +180,7 @@ namespace TehPers.FishingOverhaul.Api
 
         IEnumerable<string> ISimplifiedFishingApi.GetPossibleTreasure(Farmer farmer)
         {
-            return this.GetPossibleTreasure(new(farmer))
+            return this.GetPossibleTreasure(this.CreateDefaultFishingInfo(farmer))
                 .SelectMany(entry => entry.ItemKeys)
                 .Select(key => key.ToString());
         }

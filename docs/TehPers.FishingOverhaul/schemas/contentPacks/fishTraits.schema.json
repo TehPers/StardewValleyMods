@@ -11,9 +11,6 @@
       "type": "object",
       "additionalProperties": false,
       "description": "Content which modifies the behavior of fish.",
-      "required": [
-        "Add"
-      ],
       "properties": {
         "Add": {
           "type": "object",

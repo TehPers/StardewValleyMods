@@ -11,9 +11,6 @@
       "type": "object",
       "additionalProperties": false,
       "description": "Content which controls what trash are available to catch.",
-      "required": [
-        "Add"
-      ],
       "properties": {
         "Add": {
           "type": "array",
@@ -44,7 +41,6 @@
       "additionalProperties": false,
       "required": [
         "ItemKey",
-        "AvailabilityInfo",
         "AvailabilityInfo"
       ],
       "properties": {

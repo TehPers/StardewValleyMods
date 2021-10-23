@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using StardewModdingAPI;
 using TehPers.Core.Api.Content;
-using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config.ContentPacks;
@@ -29,53 +28,63 @@ namespace TehPers.FishingOverhaul.Services
             // Load content packs
             foreach (var pack in this.helper.ContentPacks.GetOwned())
             {
-                // Traits
+                // Content
+                if (!this.TryRead<FishingContentPack>(pack, "content.json", out var contentPack))
+                {
+                    continue;
+                }
+
+                // Fish traits
+                // TODO: Remove this when compatibility with the old content pack system is no longer needed
                 if (!this.TryRead<FishTraitsPack>(pack, "fishTraits.json", out var fishTraits))
                 {
                     continue;
                 }
 
-                // Fish entries
-                if (!this.TryRead<FishPack>(pack, "fish.json", out var fishEntries))
+                // Fish
+                // TODO: Remove this when compatibility with the old content pack system is no longer needed
+                if (!this.TryRead<FishPack>(pack, "fish.json", out var fish))
                 {
                     continue;
                 }
 
-                // Trash entries
-                if (!this.TryRead<TrashPack>(pack, "trash.json", out var trashEntries))
+                // Trash
+                // TODO: Remove this when compatibility with the old content pack system is no longer needed
+                if (!this.TryRead<TrashPack>(pack, "trash.json", out var trash))
                 {
                     continue;
                 }
 
-                // Treasure entries
-                if (!this.TryRead<TreasurePack>(pack, "treasure.json", out var treasureEntries))
+                // Treasure
+                // TODO: Remove this when compatibility with the old content pack system is no longer needed
+                if (!this.TryRead<TreasurePack>(pack, "treasure.json", out var treasure))
                 {
                     continue;
                 }
 
-                yield return new(pack.Manifest)
-                {
-                    FishTraits =
-                        fishTraits?.Add ?? ImmutableDictionary<NamespacedKey, FishTraits>.Empty,
-                    FishEntries = fishEntries?.Add ?? ImmutableArray<FishEntry>.Empty,
-                    TrashEntries = trashEntries?.Add ?? ImmutableArray<TrashEntry>.Empty,
-                    TreasureEntries =
-                        treasureEntries?.Add ?? ImmutableArray<TreasureEntry>.Empty,
-                };
+                // Load content
+                var content = new FishingContent(pack.Manifest);
+                content = contentPack?.AddTo(content, string.Empty, pack, this.jsonProvider, this.monitor) ?? content;
+                content = fishTraits?.AddTo(content) ?? content;
+                content = fish?.AddTo(content) ?? content;
+                content = trash?.AddTo(content) ?? content;
+                content = treasure?.AddTo(content) ?? content;
+                yield return content;
             }
         }
 
-        private bool TryRead<T>(IContentPack pack, string path, out T? result)
+        private bool TryRead<T>(IContentPack pack, string path, [NotNullWhen(true)] out T? result)
             where T : class
         {
             try
             {
+                // Try to read the file
                 result = this.jsonProvider.ReadJson<T>(
                     path,
                     new ContentPackAssetProvider(pack),
                     null
                 );
-                return true;
+                return result is not null;
             }
             catch (Exception ex)
             {

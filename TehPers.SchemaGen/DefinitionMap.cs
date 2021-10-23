@@ -326,7 +326,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
                     result["description"] = typeDescription;
                 }
 
-                var required = new JArray();
+                var required = new HashSet<string>();
                 var properties = new JObject();
 
                 // Properties
@@ -375,7 +375,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
 
                 if (required.Count > 0)
                 {
-                    result["required"] = required;
+                    result["required"] = new JArray(required.ToArray());
                 }
 
                 if (properties.Count > 0)

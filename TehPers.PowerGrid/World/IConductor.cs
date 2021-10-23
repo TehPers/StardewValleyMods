@@ -14,7 +14,10 @@ namespace TehPers.PowerGrid.World
     /// </summary>
     public interface IEnergyConductor
     {
-        IEnumerable<Vector2> Connections { get; }
+        /// <summary>
+        /// Positions that this conductor can send power to.
+        /// </summary>
+        IEnumerable<Vector2> OutgoingConnections { get; }
 
         /// <summary>
         /// Updates this conductor's state.
@@ -25,11 +28,17 @@ namespace TehPers.PowerGrid.World
 
     public interface IEnergyProducer : IEnergyConductor
     {
+        /// <summary>
+        /// The amount of power this producer creates.
+        /// </summary>
         Power Production { get; }
     }
 
     public interface IEnergyConsumer : IEnergyConductor
     {
+        /// <summary>
+        /// The amount of power this consumer uses.
+        /// </summary>
         Power Consumption { get; }
     }
 }

@@ -44,7 +44,11 @@ namespace TehPers.FishingOverhaul.SchemaGen
                 }
             );
 
-            // Content packs
+            // Content pack
+            Program.WriteSchema<FishingContentPack>(
+                knownDefinitions,
+                Path.Join(outDir, "contentPacks/content.schema.json")
+            );
             Program.WriteSchema<FishTraitsPack>(
                 knownDefinitions,
                 Path.Join(outDir, "contentPacks/fishTraits.schema.json")

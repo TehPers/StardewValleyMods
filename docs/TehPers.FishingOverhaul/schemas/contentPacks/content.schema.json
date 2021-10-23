@@ -1,18 +1,29 @@
 ﻿{
   "oneOf": [
     {
-      "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.FishPack"
+      "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.FishingContentPack"
     }
   ],
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "FishPack",
+  "title": "FishingContentPack",
   "definitions": {
-    "TehPers.FishingOverhaul.Config.ContentPacks.FishPack": {
+    "TehPers.FishingOverhaul.Config.ContentPacks.FishingContentPack": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Content which controls what fish are available to catch.",
+      "description": "Fishing content pack.",
       "properties": {
-        "Add": {
+        "AddFishTraits": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishTraits"
+              }
+            ]
+          },
+          "description": "Fish traits to add."
+        },
+        "AddFish": {
           "type": "array",
           "items": {
             "oneOf": [
@@ -21,7 +32,36 @@
               }
             ]
           },
-          "description": "The fish entries to add."
+          "description": "Fish entries to add."
+        },
+        "AddTrash": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.TrashEntry"
+              }
+            ]
+          },
+          "description": "Trash entries to add."
+        },
+        "AddTreasure": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.TreasureEntry"
+              }
+            ]
+          },
+          "description": "Treasure entries to add."
+        },
+        "Include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The additional content files to include."
         },
         "$schema": {
           "oneOf": [
@@ -35,6 +75,60 @@
           "description": "Optional '$schema' URL. This is ignored and exists entirely for convenience."
         }
       }
+    },
+    "TehPers.FishingOverhaul.Api.Content.FishTraits": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Definition for a fish's traits.",
+      "required": [
+        "DartFrequency",
+        "DartBehavior",
+        "MinSize",
+        "MaxSize"
+      ],
+      "properties": {
+        "DartFrequency": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "How often the fish darts in the fishing minigame."
+        },
+        "DartBehavior": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.DartBehavior"
+            }
+          ],
+          "description": "How the fish moves during the fishing minigame."
+        },
+        "MinSize": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "The minimum size the fish can be."
+        },
+        "MaxSize": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "The maximum size the fish can be."
+        },
+        "IsLegendary": {
+          "type": "boolean",
+          "description": "Whether the fish is legendary.",
+          "default": false
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.DartBehavior": {
+      "type": "string",
+      "enum": [
+        "Mixed",
+        "Dart",
+        "Smooth",
+        "Sink",
+        "Floater"
+      ]
     },
     "TehPers.FishingOverhaul.Api.Content.FishEntry": {
       "type": "object",
@@ -362,6 +456,211 @@
             "maximum": 2147483647
           },
           "description": "Starts conversations. The key is the conversation ID and the value is the number of days."
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.Content.TrashEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ItemKey",
+        "AvailabilityInfo"
+      ],
+      "properties": {
+        "ItemKey": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+            }
+          ]
+        },
+        "AvailabilityInfo": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.AvailabilityInfo"
+            }
+          ],
+          "description": "The availability information."
+        },
+        "OnCatch": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.CatchActions"
+            }
+          ],
+          "description": "Actions to perform when this is caught."
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.Content.AvailabilityInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Information about the availability of a catchable item.",
+      "required": [
+        "BaseChance"
+      ],
+      "properties": {
+        "BaseChance": {
+          "type": "number",
+          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight\nrelative to all available entries."
+        },
+        "StartTime": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Time this becomes available (inclusive).",
+          "default": 600
+        },
+        "EndTime": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Time this is no longer available (exclusive).",
+          "default": 2600
+        },
+        "Seasons": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Gameplay.Seasons"
+              }
+            ]
+          },
+          "description": "Seasons this can be caught in."
+        },
+        "Weathers": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Gameplay.Weathers"
+              }
+            ]
+          },
+          "description": "Weathers this can be caught in."
+        },
+        "WaterTypes": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.WaterTypes"
+              }
+            ]
+          },
+          "description": "The type of water this can be caught in. Each location handles this differently."
+        },
+        "MinFishingLevel": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Required fishing level to see this.",
+          "default": 0
+        },
+        "MaxFishingLevel": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            }
+          ],
+          "description": "Maximum fishing level required to see this, or null for no max.",
+          "default": null
+        },
+        "IncludeLocations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of locations this should be available in. Leaving this empty will make this\navailable everywhere. Some locations have special handling. For example, the mines use\nthe location names \"UndergroundMine\" and \"UndergroundMine/N\", where N is the floor\nnumber (both location names are valid for the floor)."
+        },
+        "ExcludeLocations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of locations this should not be available in. This takes priority over\nIncludeLocations."
+        },
+        "Position": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
+            }
+          ],
+          "description": "Constraints on the position of the bobber in the map when fishing."
+        },
+        "When": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Content Patcher conditions for when this is available."
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.Content.TreasureEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ItemKeys",
+        "AvailabilityInfo"
+      ],
+      "properties": {
+        "ItemKeys": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+              }
+            ]
+          }
+        },
+        "MinQuantity": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "The minimum quantity of this item. This is only valid for stackable items.",
+          "default": 1
+        },
+        "MaxQuantity": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "The maximum quantity of this item. This is only valid for stackable items.",
+          "default": 1
+        },
+        "AllowDuplicates": {
+          "type": "boolean",
+          "description": "Whether this can be found multiple times in one chest.",
+          "default": true
+        },
+        "AvailabilityInfo": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.AvailabilityInfo"
+            }
+          ],
+          "description": "The availability information."
+        },
+        "OnCatch": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.CatchActions"
+            }
+          ],
+          "description": "Actions to perform when this is caught."
         }
       }
     }

@@ -1,6 +1,6 @@
 # Teh's Stardew Valley mods
 
-- Teh's Core Mod
+- TehCore
 - Teh's Fishing Overhaul
 
 Mod-specific docs can be found under the [docs](./docs) folder.

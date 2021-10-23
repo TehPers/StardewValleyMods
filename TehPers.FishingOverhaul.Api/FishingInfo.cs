@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Locations;
@@ -41,13 +42,14 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// The water types being fished in.
         /// </summary>
-        public WaterTypes WaterTypes { get; init; } = User.currentLocation.getFishingLocation(User.getTileLocation()) switch
-        {
-            0 => WaterTypes.River,
-            1 => WaterTypes.PondOrOcean,
-            2 => WaterTypes.Freshwater,
-            _ => WaterTypes.All,
-        };
+        public WaterTypes WaterTypes { get; init; } =
+            User.currentLocation.getFishingLocation(User.getTileLocation()) switch
+            {
+                0 => WaterTypes.River,
+                1 => WaterTypes.PondOrOcean,
+                2 => WaterTypes.Freshwater,
+                _ => WaterTypes.All,
+            };
 
         /// <summary>
         /// The fishing level of the <see cref="Farmer"/> that is fishing.
@@ -62,16 +64,17 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// The names of the locations being fished in.
         /// </summary>
-        public IEnumerable<string> Locations { get; init; } =
-            FishingInfo.GetDefaultLocationNames(User.currentLocation);
+        public ImmutableArray<string> Locations { get; init; } = FishingInfo
+            .GetDefaultLocationNames(User.currentLocation)
+            .ToImmutableArray();
 
         /// <summary>
         /// The fishing rod's bobber position.
         /// </summary>
         public Vector2 BobberPosition { get; init; } =
-            User.CurrentTool is FishingRod { bobber: { Value: var bobberPos } }
+            User.CurrentTool is FishingRod { isFishing: true, bobber: { Value: var bobberPos } }
                 ? bobberPos / 64
-                : User.getStandingPosition();
+                : User.getStandingPosition() / 64;
 
         /// <summary>
         /// Gets the location names associated with a <see cref="GameLocation"/>. Some locations

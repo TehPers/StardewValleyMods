@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using Newtonsoft.Json;
 using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Api.Content;
 
@@ -8,7 +7,21 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     /// <summary>
     /// Content which controls what fish are available to catch.
     /// </summary>
-    /// <param name="Add">The fish entries to add.</param>
     [JsonDescribe]
-    public record FishPack([property: JsonRequired] ImmutableArray<FishEntry> Add) : JsonConfigRoot;
+    public record FishPack : JsonConfigRoot
+    {
+        /// <summary>
+        /// The fish entries to add.
+        /// </summary>
+        public ImmutableArray<FishEntry> Add { get; init; } = ImmutableArray<FishEntry>.Empty;
+
+        /// <summary>
+        /// Merges all the fish entries into a single content object.
+        /// </summary>
+        /// <param name="content">The content to merge into.</param>
+        public FishingContent AddTo(FishingContent content)
+        {
+            return content with { FishEntries = content.FishEntries.AddRange(this.Add) };
+        }
+    }
 }

@@ -2,32 +2,39 @@
 
 Each content pack can have several different files. They are all optional.
 
-| File                              | Purpose                                                                                       |
-| --------------------------------- | --------------------------------------------------------------------------------------------- |
-| [`fishTraits.json`](#fish-traits) | Add new fish traits. This configures how the fish behave, but not where/when they are caught. |
-| [`fish.json`](#fish)              | Add new fish availabilities. This configures where/when fish can be caught.                   |
-| [`trash.json`](#trash)            | Add new trash availabilities.                                                                 |
-| [`treasure.json`](#treasure)      | Add new treasure avaailabilities.                                                             |
+| File                              | Purpose                                                                                                    |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| [`content.json`](#content)        | Adds new fishing content.                                                                                  |
+| [`fishTraits.json`](#fish-traits) | (Deprecated) Add new fish traits. This configures how the fish behave, but not where/when they are caught. |
+| [`fish.json`](#fish)              | (Deprecated) Add new fish availabilities. This configures where/when fish can be caught.                   |
+| [`trash.json`](#trash)            | (Deprecated) Add new trash availabilities.                                                                 |
+| [`treasure.json`](#treasure)      | (Deprecated) Add new treasure avaailabilities.                                                             |
 
 There are also JSON schemas available for each of these files. If your editor supports JSON schemas, then it is recommended you reference the appropriate schema:
 
 | Editor             | How to reference the schema                                                                         |
 | ------------------ | --------------------------------------------------------------------------------------------------- |
-| Visual Studio      | At the top of the file editor right under the tabs, paste the schema URL into the "Schema" textbox. |
 | Visual Studio Code | Add a `$schema` property to the root object in the file.                                            |
+| Visual Studio      | At the top of the file editor right under the tabs, paste the schema URL into the "Schema" textbox. |
 
-## Fish traits
+## Content
 
-[**JSON Schema**][fish-traits schema]
+[**JSON Schema**][content schema]
 
-The `fishTraits.json` file configures the traits for each fish.
+The `content.json` file is the root content file for your content pack. It controls what fishing content should be added.
 
-| Property  | Type     | Required | Default | Description          |
-| --------- | -------- | -------- | ------- | -------------------- |
-| `$schema` | `string` | No       | N/A     | Optional schema URL. |
-| `Add`     | `object` | Yes      | N/A     | Fish traits to add.  |
+| Property        | Type       | Required | Default | Description                           |
+| --------------- | ---------- | -------- | ------- | ------------------------------------- |
+| `$schema`       | `string`   | No       | N/A     | Optional schema URL.                  |
+| `Include`       | `string[]` | No       | N/A     | Additional content files to include.  |
+| `AddFishTraits` | `object`   | No       | N/A     | [Fish traits](#fish-traits) to add.   |
+| `AddFish`       | `object`   | No       | N/A     | [Fish entries](#fish) to add.         |
+| `AddTrash`      | `object`   | No       | N/A     | [Trash entries](#trash) to add.       |
+| `AddTreasure`   | `object`   | No       | N/A     | [Treasure entries](#treasure) to add. |
 
-Fish traits is a dictionary where the key is the namespaced key of the fish and the value is the actual traits:
+### Fish traits
+
+`AddFishTraits` maps [fish item keys][namespaced key] to the traits for those fish. The possible traits for a fish are:
 
 | Property        | Type      | Required | Default | Description                                       |
 | --------------- | --------- | -------- | ------- | ------------------------------------------------- |
@@ -37,75 +44,48 @@ Fish traits is a dictionary where the key is the namespaced key of the fish and 
 | `MaxSize`       | `integer` | Yes      | N/A     | The maximum size the fish can be.                 |
 | `IsLegendary`   | `boolean` | No       | `false` | Whether the fish is legendary.                    |
 
-## Fish
-
-[**JSON Schema**][fish schema]
-
-The `fish.json` file configures where and when fish can be caught.
-
-| Property  | Type     | Required | Default | Description          |
-| --------- | -------- | -------- | ------- | -------------------- |
-| `$schema` | `string` | No       | N/A     | Optional schema URL. |
-| `Add`     | `array`  | Yes      | N/A     | Fish entries to add. |
+### Fish
 
 Fish entries each configure when a specific fish can be made available. Multiple entries may refer to the same fish, allowing complex customization over when a fish is available and what the chances of catching that fish are.
 
-| Property                    | Type     | Required | Default | Description                               |
-| --------------------------- | -------- | -------- | ------- | ----------------------------------------- |
-| [`FishKey`][namespaced key] | `string` | Yes      | N/A     | The namespaced key for the fish.          |
-| `AvailabilityInfo`          | `object` | Yes      | N/A     | The fish availability data for the entry. |
-| [`OnCatch`]                 | `object` | No       | `{}`    | The actions to take on catch.             |
+| Property           | Type     | Required | Default | Description                               |
+| ------------------ | -------- | -------- | ------- | ----------------------------------------- |
+| `FishKey`          | `string` | Yes      | N/A     | The [namespaced key] for the fish.        |
+| `AvailabilityInfo` | `object` | Yes      | N/A     | The fish availability data for the entry. |
+| `OnCatch`          | `object` | No       | `{}`    | The [actions] to take on catch.           |
 
 Fish availability determines when a fish is available and includes all the normal availability properties as well.
 
-| Property                               | Type      | Required | Default | Description                                                                                                                          |
-| -------------------------------------- | --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `DepthMultiplier`                      | `number`  | No       | 0.1     | Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1. Default is 0.1. |
-| `MaxDepth`                             | `integer` | No       | 4       | The required fishing depth to maximize the chances of catching the fish. Default is 4.                                               |
-| [Common fields...][`availabilityinfo`] | ...       | ...      | ...     | Other common availability properties.                                                                                                |
+| Property          | Type      | Required | Default | Description                                                                                                                          |
+| ----------------- | --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `DepthMultiplier` | `number`  | No       | 0.1     | Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1. Default is 0.1. |
+| `MaxDepth`        | `integer` | No       | 4       | The required fishing depth to maximize the chances of catching the fish. Default is 4.                                               |
+| Common fields...  | ...       | ...      | ...     | Other common [availability info] properties.                                                                                         |
 
-## Trash
-
-[**JSON Schema**][trash schema]
-
-The `trash.json` file configures where and when trash can be caught.
-
-| Property  | Type     | Required | Default | Description           |
-| --------- | -------- | -------- | ------- | --------------------- |
-| `$schema` | `string` | No       | N/A     | Optional schema URL.  |
-| `Add`     | `array`  | Yes      | N/A     | Trash entries to add. |
+### Trash
 
 Trash entries each configure when a specific trash can be made available. Multiple entries may refer to the same trash item, allowing complex customization over when a trash is available and what the chances of catching that trash are.
 
-| Property                     | Type     | Required | Default | Description                            |
-| ---------------------------- | -------- | -------- | ------- | -------------------------------------- |
-| [`TrashKey`][namespaced key] | `string` | Yes      | N/A     | The namespaced key for the trash item. |
-| [`AvailabilityInfo`]         | `object` | Yes      | N/A     | The availability data for the entry.   |
-| [`OnCatch`]                  | `object` | No       | `{}`    | The actions to take on catch.          |
+| Property           | Type     | Required | Default | Description                              |
+| ------------------ | -------- | -------- | ------- | ---------------------------------------- |
+| `TrashKey`         | `string` | Yes      | N/A     | The [namespaced key] for the trash item. |
+| `AvailabilityInfo` | `object` | Yes      | N/A     | The [availability info] for the entry.   |
+| `OnCatch`          | `object` | No       | `{}`    | The [actions] to take on catch.          |
 
 The availability uses the common availability properties.
 
-## Treasure
-
-[**JSON Schema**][treasure schema]
-
-The `treasure.json` file configures where and when treasure can be caught.
-
-| Property          | Type     | Required | Default | Description                   |
-| ----------------- | -------- | -------- | ------- | ----------------------------- |
-| `$schema`         | `string` | No       | N/A     | Optional schema URL.          |
-| `TreasureEntries` | `array`  | Yes      | N/A     | Treasure entries to add.      |
-| [`OnCatch`]       | `object` | No       | `{}`    | The actions to take on catch. |
+### Treasure
 
 Treasure entries each configure when a specific treasure can be made available. Multiple entries may refer to the same treasure item, allowing complex customization over when a treasure is available and what the chances of catching that treasure are.
 
-| Property                     | Type      | Required | Default | Description                                                                 |
-| ---------------------------- | --------- | -------- | ------- | --------------------------------------------------------------------------- |
-| [`AvailabilityInfo`]         | `object`  | Yes      | N/A     | The availability data for the entry.                                        |
-| [`ItemKeys`][namespaced key] | `array`   | Yes      | N/A     | The possible namespaced keys for the loot. The item key is chosen randomly. |
-| `MinQuantity`                | `integer` | No       | 1       | The minimum quantity of the item. This is only valid for stackable items.   |
-| `MaxQuantity`                | `integer` | No       | 1       | The maximum quantity of the item. This is only valid for stackable items.   |
-| `AllowDuplicates`            | `boolean` | No       | `true`  | Whether this can be found multiple times in one chest.                      |
+| Property           | Type      | Required | Default | Description                                                                                   |
+| ------------------ | --------- | -------- | ------- | --------------------------------------------------------------------------------------------- |
+| `AvailabilityInfo` | `object`  | Yes      | N/A     | The [availability info] for the entry.                                                        |
+| `ItemKeys`         | `array`   | Yes      | N/A     | The possible [namespaced keys][namespaced key] for the loot. The item key is chosen randomly. |
+| `MinQuantity`      | `integer` | No       | 1       | The minimum quantity of the item. This is only valid for stackable items.                     |
+| `MaxQuantity`      | `integer` | No       | 1       | The maximum quantity of the item. This is only valid for stackable items.                     |
+| `AllowDuplicates`  | `boolean` | No       | `true`  | Whether this can be found multiple times in one chest.                                        |
+| `OnCatch`          | `object`  | No       | `{}`    | The [actions] to take on catch.                                                               |
 
 The availability uses the common availability properties.
 
@@ -185,10 +165,7 @@ Some actions can be taken whenever an item is caught. By combining these actions
 | `StartConversations` | `object`    | No       | `[]`    | Starts conversations. The key is the conversation ID and the value is the number of days.                      |
 
 [namespaced key]: #Namespaced%20key
-[`availabilityinfo`]: #Availability
-[`oncatch`]: #Catch%20actions
-[fish-traits schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fishTraits.schema.json
-[fish schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/fish.schema.json
-[trash schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/trash.schema.json
-[treasure schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/full-rewrite/docs/TehPers.FishingOverhaul/schemas/contentPacks/treasure.schema.json
+[availability info]: #Availability
+[actions]: #Catch%20actions
+[content schema]: /docs/TehPers.FishingOverhaul/schemas/contentPacks/content.schema.json
 [conditions]: https://github.com/Pathoschild/StardewMods/blob/stable/ContentPatcher/docs/author-tokens-guide.md#conditions

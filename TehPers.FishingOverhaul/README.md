@@ -1,6 +1,6 @@
 # Teh's Fishing Overhaul
 
-For **SDV** 3.5.5+ and **SMAPI** 3.13.0+
+For **SDV** 1.5.5+ and **SMAPI** 3.13.0+
 
 Completely reworks fishing:
 
@@ -34,7 +34,7 @@ This mod supports content packs. For more information on how to make a content p
 Two APIs are available for this mod:
 
 - The simplified API can be retrieved through SMAPI's mod registry.
-- The full API can be accessed by using Teh's Core Mod. The core mod can be an optional dependency, but it is needed to access all the types used by the full API because SMAPI's mod registry doesn't support complex APIs.
+- The full API can be accessed by using TehCore.
 
 To use the API, check out the [API docs][api docs].
 
@@ -44,6 +44,6 @@ This mod is licensed under MIT License. The source code and full license text ca
 
 [gmcm]: https://www.nexusmods.com/stardewvalley/mods/5098
 [create a content pack]: https://stardewvalleywiki.com/Modding:Content_packs#Create_a_content_pack
-[content pack docs]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/docs/TehPers.FishingOverhaul/Content%20Packs.md
-[api docs]: https://github.com/TehPers/StardewValleyMods/blob/full-rewrite/docs/TehPers.FishingOverhaul/API.md
-[github repo]: https://github.com/TehPers/StardewValleyMods
+[content pack docs]: https://github.com/TehPers/StardewValleyMods/tree/full-rewrite/docs/TehPers.FishingOverhaul/Content%20Packs.md
+[api docs]: https://github.com/TehPers/StardewValleyMods/tree/full-rewrite/docs/TehPers.FishingOverhaul/API.md
+[github repo]: https://github.com/TehPers/StardewValleyMods/tree/full-rewrite

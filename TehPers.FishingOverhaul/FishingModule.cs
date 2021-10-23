@@ -10,6 +10,7 @@ using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config;
+using TehPers.FishingOverhaul.Integrations.Emp;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 using TehPers.FishingOverhaul.Services;
 using TehPers.FishingOverhaul.Services.Setup;
@@ -43,7 +44,8 @@ namespace TehPers.FishingOverhaul
                         context.Kernel.Get<Func<IEnumerable<IFishingContentSource>>>(),
                         context.Kernel.Get<EntryManagerFactory<FishEntry, FishAvailabilityInfo>>(),
                         context.Kernel.Get<EntryManagerFactory<TrashEntry, AvailabilityInfo>>(),
-                        context.Kernel.Get<EntryManagerFactory<TreasureEntry, AvailabilityInfo>>()
+                        context.Kernel.Get<EntryManagerFactory<TreasureEntry, AvailabilityInfo>>(),
+                        context.Kernel.Get<Lazy<IOptional<IEmpApi>>>()
                     )
                 )
                 .InSingletonScope();
@@ -79,6 +81,7 @@ namespace TehPers.FishingOverhaul
                 .InSingletonScope();
             this.BindForeignModApi<IContentPatcherAPI>("Pathoschild.ContentPatcher")
                 .InSingletonScope();
+            this.BindForeignModApi<IEmpApi>("Esca.EMP").InSingletonScope();
         }
 
         private void BindConfiguration<T>(string path)
