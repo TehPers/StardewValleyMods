@@ -69,10 +69,10 @@ namespace TehPers.FishingOverhaul.Services
 
             yield return new(this.manifest)
             {
-                FishTraits = this.fishTraits.ToImmutableDictionary(),
-                FishEntries = this.fishEntries.ToImmutableArray(),
-                TrashEntries = this.trashEntries.ToImmutableArray(),
-                TreasureEntries = this.treasureEntries.ToImmutableArray(),
+                SetFishTraits = this.fishTraits.ToImmutableDictionary(),
+                AddFish = this.fishEntries.ToImmutableArray(),
+                AddTrash = this.trashEntries.ToImmutableArray(),
+                AddTreasure = this.treasureEntries.ToImmutableArray(),
             };
         }
 
@@ -221,7 +221,7 @@ namespace TehPers.FishingOverhaul.Services
             }
 
             // Special entries
-            var hasCaughtFish = new Dictionary<string, string>()
+            var hasCaughtFish = new Dictionary<string, string>
             {
                 ["HasValue:{{HasCaughtFish}}"] = "true",
             }.ToImmutableDictionary();
@@ -234,7 +234,6 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            EndTime = 2000,
                             Seasons = Seasons.Summer,
                             MinFishingLevel = 5,
                             IncludeLocations = ImmutableArray.Create("Beach", "BeachNightMarket"),
@@ -246,7 +245,6 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            EndTime = 2000,
                             Seasons = Seasons.Summer,
                             MinFishingLevel = 5,
                             IncludeLocations = ImmutableArray.Create("Beach", "BeachNightMarket"),
@@ -288,7 +286,6 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            EndTime = 2300,
                             Seasons = Seasons.Spring,
                             Weathers = Weathers.Rainy,
                             WaterTypes = WaterTypes.PondOrOcean,
@@ -302,7 +299,6 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            EndTime = 2300,
                             Seasons = Seasons.Spring,
                             Weathers = Weathers.Rainy,
                             WaterTypes = WaterTypes.PondOrOcean,
@@ -342,7 +338,6 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            EndTime = 2000,
                             Seasons = Seasons.Winter,
                             WaterTypes = WaterTypes.River,
                             MinFishingLevel = 6,
@@ -355,7 +350,6 @@ namespace TehPers.FishingOverhaul.Services
                         new(0.02)
                         {
                             DepthMultiplier = 0.02 / 4,
-                            EndTime = 2000,
                             Seasons = Seasons.Winter,
                             WaterTypes = WaterTypes.River,
                             MinFishingLevel = 6,

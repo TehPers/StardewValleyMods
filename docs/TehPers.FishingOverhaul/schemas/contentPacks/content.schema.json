@@ -12,7 +12,7 @@
       "additionalProperties": false,
       "description": "Fishing content pack.",
       "properties": {
-        "AddFishTraits": {
+        "SetFishTraits": {
           "type": "object",
           "additionalProperties": {
             "oneOf": [
@@ -21,7 +21,18 @@
               }
             ]
           },
-          "description": "Fish traits to add."
+          "description": "Fish traits to set."
+        },
+        "RemoveFishTraits": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+              }
+            ]
+          },
+          "description": "Fish traits to remove."
         },
         "AddFish": {
           "type": "array",
@@ -34,6 +45,17 @@
           },
           "description": "Fish entries to add."
         },
+        "RemoveFish": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishEntryFilter"
+              }
+            ]
+          },
+          "description": "Fish entries to remove."
+        },
         "AddTrash": {
           "type": "array",
           "items": {
@@ -43,7 +65,18 @@
               }
             ]
           },
-          "description": "Trash entries to add."
+          "description": "Trash entries to remove."
+        },
+        "RemoveTrash": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.TrashEntryFilter"
+              }
+            ]
+          },
+          "description": "Trash entries to remove."
         },
         "AddTreasure": {
           "type": "array",
@@ -55,6 +88,17 @@
             ]
           },
           "description": "Treasure entries to add."
+        },
+        "RemoveTreasure": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.TreasureEntryFilter"
+              }
+            ]
+          },
+          "description": "Treasure entries to remove."
         },
         "Include": {
           "type": "array",
@@ -130,6 +174,10 @@
         "Floater"
       ]
     },
+    "TehPers.Core.Api.Items.NamespacedKey": {
+      "type": "string",
+      "pattern": "(?<namespace>[^:].+):(?<key>.*)"
+    },
     "TehPers.FishingOverhaul.Api.Content.FishEntry": {
       "type": "object",
       "additionalProperties": false,
@@ -165,10 +213,6 @@
           "description": "Actions to perform when this is caught."
         }
       }
-    },
-    "TehPers.Core.Api.Items.NamespacedKey": {
-      "type": "string",
-      "pattern": "(?<namespace>[^:].+):(?<key>.*)"
     },
     "TehPers.FishingOverhaul.Api.Content.FishAvailabilityInfo": {
       "type": "object",
@@ -281,7 +325,22 @@
               "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
             }
           ],
-          "description": "Constraints on the position of the bobber in the map when fishing."
+          "description": "Constraints on the bobber's position on the map when fishing."
+        },
+        "FarmerPosition": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
+            }
+          ],
+          "description": "Constraints on the farmer's position on the map when fishing."
+        },
+        "MinDepth": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Minimum bobber depth required to catch this.",
+          "default": 0
         },
         "When": {
           "type": "object",
@@ -459,6 +518,24 @@
         }
       }
     },
+    "TehPers.FishingOverhaul.Api.Content.FishEntryFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Fish entry filter.",
+      "properties": {
+        "FishKey": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+            }
+          ],
+          "description": "The namespaced key of the fish."
+        }
+      }
+    },
     "TehPers.FishingOverhaul.Api.Content.TrashEntry": {
       "type": "object",
       "additionalProperties": false,
@@ -595,7 +672,22 @@
               "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
             }
           ],
-          "description": "Constraints on the position of the bobber in the map when fishing."
+          "description": "Constraints on the bobber's position on the map when fishing."
+        },
+        "FarmerPosition": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
+            }
+          ],
+          "description": "Constraints on the farmer's position on the map when fishing."
+        },
+        "MinDepth": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Minimum bobber depth required to catch this.",
+          "default": 0
         },
         "When": {
           "type": "object",
@@ -603,6 +695,24 @@
             "type": "string"
           },
           "description": "Content Patcher conditions for when this is available."
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.Content.TrashEntryFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Trash entry filter.",
+      "properties": {
+        "ItemKey": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+            }
+          ],
+          "description": "The namespaced key of the trash."
         }
       }
     },
@@ -661,6 +771,31 @@
             }
           ],
           "description": "Actions to perform when this is caught."
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Api.Content.TreasureEntryFilter": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Treasure entry filter.",
+      "properties": {
+        "ItemKeys": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+                  }
+                ]
+              }
+            }
+          ],
+          "description": "The namespaced keys of the treasure."
         }
       }
     }

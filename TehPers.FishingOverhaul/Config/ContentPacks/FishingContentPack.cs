@@ -2,7 +2,6 @@ using System;
 using System.Collections.Immutable;
 using System.IO;
 using StardewModdingAPI;
-using StardewValley;
 using TehPers.Core.Api.Content;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
@@ -16,9 +15,14 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     public record FishingContentPack : JsonConfigRoot
     {
         /// <summary>
-        /// Fish traits to add.
+        /// Fish traits to set.
         /// </summary>
-        public ImmutableDictionary<NamespacedKey, FishTraits> AddFishTraits { get; init; } = ImmutableDictionary<NamespacedKey, FishTraits>.Empty;
+        public ImmutableDictionary<NamespacedKey, FishTraits> SetFishTraits { get; init; } = ImmutableDictionary<NamespacedKey, FishTraits>.Empty;
+
+        /// <summary>
+        /// Fish traits to remove.
+        /// </summary>
+        public ImmutableArray<NamespacedKey> RemoveFishTraits { get; init; } = ImmutableArray<NamespacedKey>.Empty;
 
         /// <summary>
         /// Fish entries to add.
@@ -26,14 +30,29 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
         public ImmutableArray<FishEntry> AddFish { get; init; } = ImmutableArray<FishEntry>.Empty;
 
         /// <summary>
-        /// Trash entries to add.
+        /// Fish entries to remove.
+        /// </summary>
+        public ImmutableArray<FishEntryFilter> RemoveFish { get; init; } = ImmutableArray<FishEntryFilter>.Empty;
+
+        /// <summary>
+        /// Trash entries to remove.
         /// </summary>
         public ImmutableArray<TrashEntry> AddTrash { get; init; } = ImmutableArray<TrashEntry>.Empty;
+
+        /// <summary>
+        /// Trash entries to remove.
+        /// </summary>
+        public ImmutableArray<TrashEntryFilter> RemoveTrash { get; init; } = ImmutableArray<TrashEntryFilter>.Empty;
 
         /// <summary>
         /// Treasure entries to add.
         /// </summary>
         public ImmutableArray<TreasureEntry> AddTreasure { get; init; } = ImmutableArray<TreasureEntry>.Empty;
+
+        /// <summary>
+        /// Treasure entries to remove.
+        /// </summary>
+        public ImmutableArray<TreasureEntryFilter> RemoveTreasure { get; init; } = ImmutableArray<TreasureEntryFilter>.Empty;
 
         /// <summary>
         /// The additional content files to include.
@@ -53,10 +72,14 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
             // Add base content
             content = content with
             {
-                FishTraits = content.FishTraits.AddRange(this.AddFishTraits),
-                FishEntries = content.FishEntries.AddRange(this.AddFish),
-                TrashEntries = content.TrashEntries.AddRange(this.AddTrash),
-                TreasureEntries = content.TreasureEntries.AddRange(this.AddTreasure),
+                SetFishTraits = content.SetFishTraits.AddRange(this.SetFishTraits),
+                RemoveFishTraits = content.RemoveFishTraits.AddRange(this.RemoveFishTraits),
+                AddFish = content.AddFish.AddRange(this.AddFish),
+                RemoveFish = content.RemoveFish.AddRange(this.RemoveFish),
+                AddTrash = content.AddTrash.AddRange(this.AddTrash),
+                RemoveTrash = content.RemoveTrash.AddRange(this.RemoveTrash),
+                AddTreasure = content.AddTreasure.AddRange(this.AddTreasure),
+                RemoveTreasure = content.RemoveTreasure.AddRange(this.RemoveTreasure),
             };
 
             // Add included content

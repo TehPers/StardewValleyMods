@@ -176,7 +176,22 @@
               "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
             }
           ],
-          "description": "Constraints on the position of the bobber in the map when fishing."
+          "description": "Constraints on the bobber's position on the map when fishing."
+        },
+        "FarmerPosition": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
+            }
+          ],
+          "description": "Constraints on the farmer's position on the map when fishing."
+        },
+        "MinDepth": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Minimum bobber depth required to catch this.",
+          "default": 0
         },
         "When": {
           "type": "object",

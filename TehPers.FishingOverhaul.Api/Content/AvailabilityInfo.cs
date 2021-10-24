@@ -127,9 +127,20 @@ namespace TehPers.FishingOverhaul.Api.Content
             ImmutableArray<string>.Empty;
 
         /// <summary>
-        /// Constraints on the position of the bobber in the map when fishing.
+        /// Constraints on the bobber's position on the map when fishing.
         /// </summary>
         public PositionConstraint Position { get; init; } = new();
+
+        /// <summary>
+        /// Constraints on the farmer's position on the map when fishing.
+        /// </summary>
+        public PositionConstraint FarmerPosition { get; init; } = new();
+
+        /// <summary>
+        /// Minimum bobber depth required to catch this.
+        /// </summary>
+        [DefaultValue(0)]
+        public int MinDepth { get; init; } = 0;
 
         /// <summary>
         /// Content Patcher conditions for when this is available.
@@ -191,6 +202,18 @@ namespace TehPers.FishingOverhaul.Api.Content
 
             // Verify position is valid
             if (!this.Position.Matches(fishingInfo.BobberPosition))
+            {
+                return null;
+            }
+
+            // Verify farmer's position is valid
+            if (!this.FarmerPosition.Matches(fishingInfo.User.getStandingPosition() / 64f))
+            {
+                return null;
+            }
+
+            // Verify depth is valid
+            if (fishingInfo.BobberDepth < this.MinDepth)
             {
                 return null;
             }

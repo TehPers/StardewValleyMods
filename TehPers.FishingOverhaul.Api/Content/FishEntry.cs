@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;

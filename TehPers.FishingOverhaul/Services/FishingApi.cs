@@ -19,7 +19,7 @@ using TehPers.FishingOverhaul.Integrations.Emp;
 namespace TehPers.FishingOverhaul.Services
 {
     /// <inheritdoc cref="IFishingApi" />
-    public sealed class FishingApi : IFishingApi
+    public sealed partial class FishingApi : IFishingApi
     {
         private readonly IMonitor monitor;
         private readonly FishConfig fishConfig;
@@ -36,10 +36,10 @@ namespace TehPers.FishingOverhaul.Services
 
         private readonly Lazy<IOptional<IEmpApi>> empApi;
 
-        internal readonly Dictionary<NamespacedKey, FishTraits> fishTraits;
-        internal readonly List<EntryManager<FishEntry, FishAvailabilityInfo>> fishEntries;
-        internal readonly List<EntryManager<TrashEntry, AvailabilityInfo>> trashEntries;
-        internal readonly List<EntryManager<TreasureEntry, AvailabilityInfo>> treasureEntries;
+        internal Dictionary<NamespacedKey, FishTraits> fishTraits;
+        internal List<EntryManager<FishEntry, FishAvailabilityInfo>> fishEntries;
+        internal List<EntryManager<TrashEntry, AvailabilityInfo>> trashEntries;
+        internal List<EntryManager<TreasureEntry, AvailabilityInfo>> treasureEntries;
         private readonly string stateKey;
 
         private bool reloadRequested;
@@ -287,62 +287,6 @@ namespace TehPers.FishingOverhaul.Services
         public void RaiseCustomEvent(CustomEvent customEvent)
         {
             this.CustomEvent?.Invoke(this, customEvent);
-        }
-
-        public void RequestReload()
-        {
-            this.reloadRequested = true;
-        }
-
-        private void ReloadIfRequested()
-        {
-            if (!this.reloadRequested)
-            {
-                return;
-            }
-
-            this.reloadRequested = false;
-
-            // Reset fishing data
-            this.fishTraits.Clear();
-            this.fishEntries.Clear();
-            this.trashEntries.Clear();
-            this.treasureEntries.Clear();
-
-            // Reload fishing data
-            var data = this.contentSourcesFactory().SelectMany(source => source.Reload());
-            foreach (var content in data)
-            {
-                // Fish traits
-                foreach (var (fishKey, traits) in content.FishTraits)
-                {
-                    if (!this.fishTraits.TryAdd(fishKey, traits))
-                    {
-                        this.monitor.Log($"Conflicting fish traits for {fishKey}.", LogLevel.Error);
-                    }
-                }
-
-                // Fish entries
-                this.fishEntries.AddRange(
-                    content.FishEntries.Select(
-                        entry => this.fishEntryManagerFactory.Create(content.Mod, entry)
-                    )
-                );
-
-                // Trash entries
-                this.trashEntries.AddRange(
-                    content.TrashEntries.Select(
-                        entry => this.trashEntryManagerFactory.Create(content.Mod, entry)
-                    )
-                );
-
-                // Treasure entries
-                this.treasureEntries.AddRange(
-                    content.TreasureEntries.Select(
-                        entry => this.treasureEntryManagerFactory.Create(content.Mod, entry)
-                    )
-                );
-            }
         }
 
         public void OnCaughtItem(CatchInfo e)

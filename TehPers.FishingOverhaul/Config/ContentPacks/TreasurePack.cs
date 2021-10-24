@@ -21,7 +21,7 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
         /// <param name="content">The content to merge into.</param>
         public FishingContent AddTo(FishingContent content)
         {
-            return content with { TreasureEntries = content.TreasureEntries.AddRange(this.Add) };
+            return content with { AddTreasure = content.AddTreasure.AddRange(this.Add) };
         }
     }
 }
