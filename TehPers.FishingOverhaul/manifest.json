@@ -1,15 +1,30 @@
 ﻿{
+  "$schema": "https://smapi.io/schemas/manifest.json",
   "Name": "Teh's Fishing Overhaul",
   "Author": "TehPers",
-  "Version": "2.1.1",
-  "Description": "A complete overhaul of vanilla fishing, with a huge amount of customization.",
+  "Version": "3.0.1",
+  "Description": "Highly customizable overhaul for fishing",
   "UniqueID": "TehPers.FishingOverhaul",
   "EntryDll": "TehPers.FishingOverhaul.dll",
-  "MinimumApiVersion": "2.8.2",
-  "UpdateKeys": [ "Nexus:866" ],
+  "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": ["Nexus:866"],
   "Dependencies": [
     {
-      "UniqueID": "TehPers.CoreMod",
+      "UniqueID": "TehPers.Core",
+      "MinimumVersion": "1.0.0"
+    },
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "MinimumVersion": "1.24.0"
+    },
+    {
+      "UniqueID": "spacechase0.GenericModConfigMenu",
+      "MinimumVersion": "1.6.0",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "Esca.EMP",
+      "MinimumVersion": "1.1.1",
       "IsRequired": false
     }
   ]

@@ -1,0 +1,166 @@
+﻿{
+  "oneOf": [
+    {
+      "$ref": "#/definitions/TehPers.FishingOverhaul.Config.TreasureConfig"
+    }
+  ],
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "TreasureConfig",
+  "definitions": {
+    "TehPers.FishingOverhaul.Config.TreasureConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "MaxTreasureQuantity": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Maximum amount of treasure you can find in a single chest while fishing.",
+          "default": 3
+        },
+        "AllowDuplicateLoot": {
+          "type": "boolean",
+          "description": "Whether the treasure randomizer should be allowed to select the same loot option\nmultiple times. Some loot can't be repeated even if duplicate loot is enabled.",
+          "default": true
+        },
+        "CatchSpeed": {
+          "type": "number",
+          "description": "Affects how fast you catch treasure.",
+          "default": 1.0
+        },
+        "DrainSpeed": {
+          "type": "number",
+          "description": "Affects how fast the treasure bar drains when the bobber isn't on the chest.",
+          "default": 1.0
+        },
+        "TreasureChances": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Config.TreasureChances"
+            }
+          ],
+          "description": "The chances of finding treasure while fishing."
+        },
+        "AdditionalLootChances": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Config.FishingChances"
+            }
+          ],
+          "description": "The chances of getting additional loot when finding treasure. This is rolled until it\nfails or the max number of items have been added to the loot."
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Config.TreasureChances": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "MagnetFactor": {
+          "type": "number",
+          "description": "The effect that the magnet bait has.",
+          "default": 0.15
+        },
+        "TreasureHunterFactor": {
+          "type": "number",
+          "description": "The effect that the treasure hunter tackle has.",
+          "default": 0.05
+        },
+        "PirateFactor": {
+          "type": "number",
+          "description": "The effect that the pirate profession has. This is multiplied by your base chance\nbefore being added.",
+          "default": 1.0
+        },
+        "BaseChance": {
+          "type": "number",
+          "description": "The base chance. Total chance is calculated as\nlocationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in the\nrange [minChance, maxChance], then bounded once again in the range [0, 1].",
+          "default": 0.0
+        },
+        "StreakFactor": {
+          "type": "number",
+          "description": "The effect that streak has on this chance.",
+          "default": 0.0
+        },
+        "FishingLevelFactor": {
+          "type": "number",
+          "description": "The effect that fishing level has on this chance.",
+          "default": 0.0
+        },
+        "DailyLuckFactor": {
+          "type": "number",
+          "description": "The effect that daily luck has on this chance.",
+          "default": 0.0
+        },
+        "LuckLevelFactor": {
+          "type": "number",
+          "description": "The effect that luck level has on this chance.",
+          "default": 0.0
+        },
+        "MinChance": {
+          "type": "number",
+          "description": "The minimum possible chance.",
+          "default": 0.0
+        },
+        "MaxChance": {
+          "type": "number",
+          "description": "The maximum possible chance.",
+          "default": 1.0
+        },
+        "LocationFactors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          },
+          "description": "The effects that specific locations have on this chance. Keys are location names and\nvalues are their factors."
+        }
+      }
+    },
+    "TehPers.FishingOverhaul.Config.FishingChances": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "BaseChance": {
+          "type": "number",
+          "description": "The base chance. Total chance is calculated as\nlocationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in the\nrange [minChance, maxChance], then bounded once again in the range [0, 1].",
+          "default": 0.0
+        },
+        "StreakFactor": {
+          "type": "number",
+          "description": "The effect that streak has on this chance.",
+          "default": 0.0
+        },
+        "FishingLevelFactor": {
+          "type": "number",
+          "description": "The effect that fishing level has on this chance.",
+          "default": 0.0
+        },
+        "DailyLuckFactor": {
+          "type": "number",
+          "description": "The effect that daily luck has on this chance.",
+          "default": 0.0
+        },
+        "LuckLevelFactor": {
+          "type": "number",
+          "description": "The effect that luck level has on this chance.",
+          "default": 0.0
+        },
+        "MinChance": {
+          "type": "number",
+          "description": "The minimum possible chance.",
+          "default": 0.0
+        },
+        "MaxChance": {
+          "type": "number",
+          "description": "The maximum possible chance.",
+          "default": 1.0
+        },
+        "LocationFactors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          },
+          "description": "The effects that specific locations have on this chance. Keys are location names and\nvalues are their factors."
+        }
+      }
+    }
+  }
+}
