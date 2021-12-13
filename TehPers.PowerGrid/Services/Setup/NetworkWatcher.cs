@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using TehPers.PowerGrid.Services.Setup;
+using TehPers.Core.Api.Setup;
 using TehPers.PowerGrid.World;
 
-namespace TehPers.PowerGrid.Services
+namespace TehPers.PowerGrid.Services.Setup
 {
     internal class NetworkWatcher : ISetup, IDisposable
     {

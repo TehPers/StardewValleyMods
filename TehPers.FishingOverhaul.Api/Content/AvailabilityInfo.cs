@@ -99,13 +99,13 @@ namespace TehPers.FishingOverhaul.Api.Content
         public WaterTypes WaterTypes { get; init; } = WaterTypes.All;
 
         /// <summary>
-        /// Required fishing level to see this.
+        /// Required fishing level to catch this.
         /// </summary>
         [DefaultValue(0)]
         public int MinFishingLevel { get; init; } = 0;
 
         /// <summary>
-        /// Maximum fishing level required to see this, or null for no max.
+        /// Maximum fishing level required to catch this, or null for no max.
         /// </summary>
         [DefaultValue(null)]
         public int? MaxFishingLevel { get; init; } = null;
@@ -143,6 +143,12 @@ namespace TehPers.FishingOverhaul.Api.Content
         public int MinDepth { get; init; } = 0;
 
         /// <summary>
+        /// Maximum bobber depth required to catch this.
+        /// </summary>
+        [DefaultValue(null)]
+        public int? MaxDepth { get; init; } = null;
+
+        /// <summary>
         /// Content Patcher conditions for when this is available.
         /// </summary>
         public ImmutableDictionary<string, string> When { get; init; } =
@@ -156,8 +162,8 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// <returns>The weighted chance of this being caught, or <see langword="null"/> if not available.</returns>
         public virtual double? GetWeightedChance(FishingInfo fishingInfo)
         {
-            // Verify time is valid
-            if (fishingInfo.Time < this.StartTime || fishingInfo.Time >= this.EndTime)
+            // Verify at least one time is valid
+            if (fishingInfo.Times.All(t => t < this.StartTime || t >= this.EndTime))
             {
                 return null;
             }
@@ -188,14 +194,20 @@ namespace TehPers.FishingOverhaul.Api.Content
             }
 
             // Verify location is valid
-            var ignoreIncluded = !this.IncludeLocations.Any();
             var validLocation = fishingInfo.Locations.Aggregate(
-                (bool?)null,
-                (valid, cur) => valid is not false
-                    && !this.ExcludeLocations.Contains(cur)
-                    && (ignoreIncluded || this.IncludeLocations.Contains(cur))
+                this.IncludeLocations.Any()
+                    ? LocationSearchState.VacuouslyExcluded
+                    : LocationSearchState.Included,
+                (state, cur) => state switch
+                {
+                    LocationSearchState.Excluded => LocationSearchState.Excluded,
+                    _ when this.ExcludeLocations.Contains(cur) => LocationSearchState.Excluded,
+                    LocationSearchState.Included => LocationSearchState.Included,
+                    _ when this.IncludeLocations.Contains(cur) => LocationSearchState.Included,
+                    _ => state
+                }
             );
-            if (validLocation is not true)
+            if (validLocation is not LocationSearchState.Included)
             {
                 return null;
             }
@@ -220,6 +232,13 @@ namespace TehPers.FishingOverhaul.Api.Content
 
             // Calculate spawn weight
             return this.BaseChance;
+        }
+
+        private enum LocationSearchState
+        {
+            VacuouslyExcluded,
+            Included,
+            Excluded,
         }
     }
 }

@@ -83,7 +83,7 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
             };
 
             // Add included content
-            foreach (string relativePath in this.Include)
+            foreach (var relativePath in this.Include)
             {
                 // Get the full path to the included file
                 var path = Path.Combine(baseDir, relativePath);

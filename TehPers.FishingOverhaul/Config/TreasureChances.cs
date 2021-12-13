@@ -34,7 +34,7 @@ namespace TehPers.FishingOverhaul.Config
         [DefaultValue(1d)]
         public double PirateFactor { get; set; } = 1d;
 
-        public override void Reset()
+        internal override void Reset()
         {
             base.Reset();
 
@@ -43,7 +43,7 @@ namespace TehPers.FishingOverhaul.Config
             this.PirateFactor = 1d;
         }
 
-        public override void RegisterOptions(
+        internal override void RegisterOptions(
             IGenericModConfigMenuApi configApi,
             IManifest manifest,
             ITranslationHelper translations
@@ -54,27 +54,27 @@ namespace TehPers.FishingOverhaul.Config
 
             base.RegisterOptions(configApi, manifest, translations);
 
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("magnetFactor"),
-                Desc("magnetFactor"),
                 () => (float)this.MagnetFactor,
                 val => this.MagnetFactor = val,
+                () => Name("magnetFactor"),
+                () => Desc("magnetFactor"),
                 0f,
                 1f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("treasureHunterFactor"),
-                Desc("treasureHunterFactor"),
                 () => (float)this.TreasureHunterFactor,
                 val => this.TreasureHunterFactor = val,
+                () => Name("treasureHunterFactor"),
+                () => Desc("treasureHunterFactor"),
                 0f,
                 1f
             );
         }
 
-        protected override double GetUnclampedChance(Farmer farmer, int streak)
+        internal override double GetUnclampedChance(Farmer farmer, int streak)
         {
             var chance = base.GetUnclampedChance(farmer, streak);
 

@@ -28,49 +28,64 @@ namespace TehPers.FishingOverhaul.Services
             // Load content packs
             foreach (var pack in this.helper.ContentPacks.GetOwned())
             {
+                // Create content source
+                var content = new FishingContent(pack.Manifest);
+                var isNewPack = false;
+                var warnedObsolete = false;
+
                 // Content
-                if (!this.TryRead<FishingContentPack>(pack, "content.json", out var contentPack))
+                if (this.TryRead<FishingContentPack>(pack, "content.json", out var contentPack))
                 {
-                    continue;
+                    content = contentPack.AddTo(content, string.Empty, pack, this.jsonProvider, this.monitor);
+                    isNewPack = true;
                 }
 
                 // Fish traits
                 // TODO: Remove this when compatibility with the old content pack system is no longer needed
-                if (!this.TryRead<FishTraitsPack>(pack, "fishTraits.json", out var fishTraits))
+                if (!isNewPack && this.TryRead<FishTraitsPack>(pack, "fishTraits.json", out var fishTraits))
                 {
-                    continue;
+                    content = fishTraits.AddTo(content);
+                    this.WarnObsolete(ref warnedObsolete, pack.Manifest.UniqueID);
                 }
 
                 // Fish
                 // TODO: Remove this when compatibility with the old content pack system is no longer needed
-                if (!this.TryRead<FishPack>(pack, "fish.json", out var fish))
+                if (!isNewPack && this.TryRead<FishPack>(pack, "fish.json", out var fish))
                 {
-                    continue;
+                    content = fish.AddTo(content);
+                    this.WarnObsolete(ref warnedObsolete, pack.Manifest.UniqueID);
                 }
 
                 // Trash
                 // TODO: Remove this when compatibility with the old content pack system is no longer needed
-                if (!this.TryRead<TrashPack>(pack, "trash.json", out var trash))
+                if (!isNewPack && this.TryRead<TrashPack>(pack, "trash.json", out var trash))
                 {
-                    continue;
+                    content = trash.AddTo(content);
+                    this.WarnObsolete(ref warnedObsolete, pack.Manifest.UniqueID);
                 }
 
                 // Treasure
                 // TODO: Remove this when compatibility with the old content pack system is no longer needed
-                if (!this.TryRead<TreasurePack>(pack, "treasure.json", out var treasure))
+                if (!isNewPack && this.TryRead<TreasurePack>(pack, "treasure.json", out var treasure))
                 {
-                    continue;
+                    content = treasure.AddTo(content);
+                    this.WarnObsolete(ref warnedObsolete, pack.Manifest.UniqueID);
                 }
 
-                // Load content
-                var content = new FishingContent(pack.Manifest);
-                content = contentPack?.AddTo(content, string.Empty, pack, this.jsonProvider, this.monitor) ?? content;
-                content = fishTraits?.AddTo(content) ?? content;
-                content = fish?.AddTo(content) ?? content;
-                content = trash?.AddTo(content) ?? content;
-                content = treasure?.AddTo(content) ?? content;
+                // Yield the content
                 yield return content;
             }
+        }
+
+        private void WarnObsolete(ref bool warned, string uniqueId)
+        {
+            if (warned)
+            {
+                return;
+            }
+
+            warned = true;
+            this.monitor.Log($"Content pack {uniqueId} uses an obsolete format that will eventually be removed.", LogLevel.Warn);
         }
 
         private bool TryRead<T>(IContentPack pack, string path, [NotNullWhen(true)] out T? result)

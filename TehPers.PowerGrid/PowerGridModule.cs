@@ -1,4 +1,8 @@
 ﻿using TehPers.Core.Api.DI;
+using TehPers.Core.Api.Setup;
+using TehPers.PowerGrid.World;
+using TehPers.PowerGrid.Services;
+using TehPers.PowerGrid.Services.Setup;
 
 namespace TehPers.PowerGrid
 {
@@ -6,7 +10,11 @@ namespace TehPers.PowerGrid
     {
         public override void Load()
         {
-            
+            // Setup
+            this.Bind<ISetup>().To<NetworkWatcher>().InSingletonScope();
+
+            // Services
+            this.Bind<NetworkFinder>().ToSelf().InSingletonScope();
         }
     }
 }

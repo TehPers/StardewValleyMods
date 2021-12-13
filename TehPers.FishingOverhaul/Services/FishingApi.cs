@@ -18,10 +18,14 @@ using TehPers.FishingOverhaul.Integrations.Emp;
 
 namespace TehPers.FishingOverhaul.Services
 {
+    /// <summary>
+    /// Default API for working with fishing.
+    /// </summary>
     /// <inheritdoc cref="IFishingApi" />
     public sealed partial class FishingApi : IFishingApi
     {
         private readonly IMonitor monitor;
+        private readonly IManifest manifest;
         private readonly FishConfig fishConfig;
         private readonly TreasureConfig treasureConfig;
         private readonly Func<IEnumerable<IFishingContentSource>> contentSourcesFactory;
@@ -61,6 +65,7 @@ namespace TehPers.FishingOverhaul.Services
         )
         {
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
+            this.manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
             this.treasureConfig =
                 treasureConfig ?? throw new ArgumentNullException(nameof(treasureConfig));
@@ -129,6 +134,25 @@ namespace TehPers.FishingOverhaul.Services
             // Reload data if necessary
             this.ReloadIfRequested();
 
+            // Get the attachments on the user's rod
+            var (bait, bobber) = fishingInfo.User.CurrentTool is FishingRod rod
+                ? (rod.getBaitAttachmentIndex(), rod.getBobberAttachmentIndex())
+                : (-1, -1);
+
+            // TODO: Add support for custom bait and bobber attachments added by other mods
+
+            // Magic bait
+            if (bait is 908) 
+            {
+                // Update fishing info to allow catches from all seasons, weathers, and times
+                fishingInfo = fishingInfo with
+                {
+                    Seasons = Core.Api.Gameplay.Seasons.All,
+                    Weathers = Core.Api.Gameplay.Weathers.All,
+                    Times = Enumerable.Range(600, 2000).ToImmutableArray(),
+                };
+            }
+
             // Get fish chances
             var chances = this.fishEntries.SelectMany(
                 manager => manager.ChanceCalculator.GetWeightedChance(fishingInfo)
@@ -137,8 +161,7 @@ namespace TehPers.FishingOverhaul.Services
             );
 
             // Curiosity lure
-            if (fishingInfo.User.CurrentTool is FishingRod rod
-                && rod.getBobberAttachmentIndex() is 856)
+            if (bobber is 856)
             {
                 chances = chances.ToWeighted(
                     weightedValue =>
@@ -254,8 +277,16 @@ namespace TehPers.FishingOverhaul.Services
 
         public IEnumerable<TreasureEntry> GetPossibleTreasure(FishingInfo fishingInfo)
         {
-            // Select rewards
+            // Get possible loot
             var possibleLoot = this.GetTreasureChances(fishingInfo).ToList();
+
+            // Perfect catch + treasure should invert the chances
+            possibleLoot = possibleLoot
+                .Normalize(1.0)
+                .ToWeighted(item => 1.0 - item.Weight, item => item.Value)
+                .ToList();
+
+            // Select rewards
             var streak = this.GetStreak(fishingInfo.User);
             var chance = 1d;
             var rewards = 0;

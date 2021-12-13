@@ -45,7 +45,7 @@ namespace TehPers.PowerGrid.Units
         public long Hours => this.TotalMinutes % 24;
         public long Days => this.TotalDays;
 
-        private Duration(long value)
+        public Duration(long value)
         {
             this.Units = value;
         }

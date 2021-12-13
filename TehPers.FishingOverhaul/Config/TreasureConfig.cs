@@ -64,7 +64,7 @@ namespace TehPers.FishingOverhaul.Config
             MaxChance = 0.8d,
         };
 
-        public void Reset()
+        void IModConfig.Reset()
         {
             this.MaxTreasureQuantity = 3;
             this.AllowDuplicateLoot = true;
@@ -78,7 +78,7 @@ namespace TehPers.FishingOverhaul.Config
             this.TreasureChances.DailyLuckFactor = 0.5d;
             this.TreasureChances.LuckLevelFactor = 0.005d;
             this.TreasureChances.MaxChance = 0.5d;
-        
+
             // Additional loot chances
             this.AdditionalLootChances.BaseChance = 0.5d;
             this.AdditionalLootChances.StreakFactor = 0.1d;
@@ -88,7 +88,7 @@ namespace TehPers.FishingOverhaul.Config
             this.AdditionalLootChances.MaxChance = 0.8d;
         }
 
-        public void RegisterOptions(
+        void IModConfig.RegisterOptions(
             IGenericModConfigMenuApi configApi,
             IManifest manifest,
             ITranslationHelper translations
@@ -97,47 +97,55 @@ namespace TehPers.FishingOverhaul.Config
             Translation Name(string key) => translations.Get($"text.config.treasure.{key}.name");
             Translation Desc(string key) => translations.Get($"text.config.treasure.{key}.desc");
 
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("maxTreasureQuantity"),
-                Desc("maxTreasureQuantity"),
                 () => this.MaxTreasureQuantity,
                 val => this.MaxTreasureQuantity = val,
+                () => Name("maxTreasureQuantity"),
+                () => Desc("maxTreasureQuantity"),
                 0,
                 36
             );
-            configApi.RegisterSimpleOption(
+            configApi.AddBoolOption(
                 manifest,
-                Name("allowDuplicateLoot"),
-                Desc("allowDuplicateLoot"),
                 () => this.AllowDuplicateLoot,
-                val => this.AllowDuplicateLoot = val
+                val => this.AllowDuplicateLoot = val,
+                () => Name("allowDuplicateLoot"),
+                () => Desc("allowDuplicateLoot")
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("catchSpeed"),
-                Desc("catchSpeed"),
                 () => this.CatchSpeed,
                 val => this.CatchSpeed = val,
+                () => Name("catchSpeed"),
+                () => Desc("catchSpeed"),
                 0f,
                 3f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("drainSpeed"),
-                Desc("drainSpeed"),
                 () => this.DrainSpeed,
                 val => this.DrainSpeed = val,
+                () => Name("drainSpeed"),
+                () => Desc("drainSpeed"),
                 0f,
                 3f
             );
 
             // Treasure chances
-            configApi.RegisterLabel(manifest, Name("treasureChances"), Desc("treasureChances"));
+            configApi.AddSectionTitle(
+                manifest,
+                () => Name("treasureChances"),
+                () => Desc("treasureChances")
+            );
             this.TreasureChances.RegisterOptions(configApi, manifest, translations);
 
             // Additional loot chances
-            configApi.RegisterLabel(manifest, Name("additionalLootChances"), Desc("additionalLootChances"));
+            configApi.AddSectionTitle(
+                manifest,
+                () => Name("additionalLootChances"),
+                () => Desc("additionalLootChances")
+            );
             this.AdditionalLootChances.RegisterOptions(configApi, manifest, translations);
         }
     }

@@ -24,15 +24,26 @@ namespace TehPers.FishingOverhaul.Services.Setup
         public void Setup()
         {
             this.helper.ConsoleCommands.Add(
+                "tfo_reload",
+                "Reloads the fishing information. Usage: 'tfo_reload'.",
+                this.Reload
+            );
+            this.helper.ConsoleCommands.Add(
                 "tfo_entries",
                 "Lists the registered fishing information. Usage: 'tfo_list <fish|trash|treasure>'.",
                 this.Entries
             );
         }
 
-        private void Entries(string arg1, string[] arg2)
+        private void Reload(string command, string[] args)
         {
-            if (arg2.FirstOrDefault() is not { } entryType)
+            this.fishingApi.RequestReload();
+            this.monitor.Log("Reloaded fishing information.", LogLevel.Info);
+        }
+
+        private void Entries(string command, string[] args)
+        {
+            if (args.FirstOrDefault() is not { } entryType)
             {
                 this.monitor.Log("Missing entry type (fish, trash, treasure).", LogLevel.Error);
                 return;

@@ -47,11 +47,17 @@ namespace TehPers.FishingOverhaul.Services
                 );
             while (remainingContent.TryDequeue(out var content))
             {
-                // Check if dependencies are loaded
+                // Get dependencies (including TFO if it's not TFO)
                 var dependencies = content.ModManifest.Dependencies.Select(dependency => dependency.UniqueID).ToHashSet();
+                if (content.ModManifest.UniqueID != this.manifest.UniqueID)
+                {
+                    dependencies.Add(this.manifest.UniqueID);
+                }
+
+                // Check if dependencies are loaded
                 var areDependenciesLoaded = dependencies.All(
-                    dependency => unloadedByModId.TryGetValue(dependency, out var unloaded)
-                        && unloaded <= 0
+                    dependency => !unloadedByModId.TryGetValue(dependency, out var unloaded)
+                        || unloaded <= 0
                 );
                 if (!areDependenciesLoaded)
                 {
@@ -59,6 +65,9 @@ namespace TehPers.FishingOverhaul.Services
                     remainingContent.Enqueue(content);
                     continue;
                 }
+
+                // Update unloaded count
+                unloadedByModId[content.ModManifest.UniqueID]--;
 
                 // Remove fish traits
                 foreach (var key in content.RemoveFishTraits)
@@ -99,6 +108,10 @@ namespace TehPers.FishingOverhaul.Services
                             this.monitor.Log($"Ignoring fish traits for {key} from {content.ModManifest.UniqueID} because they are already loaded from {oldEntry.sourceMod.UniqueID}.", LogLevel.Warn);
                             this.monitor.Log($"To override the old traits, add a dependency on {oldEntry.sourceMod.UniqueID} to {content.ModManifest.UniqueID}.", LogLevel.Warn);
                         }
+                    } else
+                    {
+                        // Add the new traits
+                        newFishTraits.Add(key, (content.ModManifest, newTraits));
                     }
                 }
 

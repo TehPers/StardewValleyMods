@@ -37,7 +37,7 @@ namespace TehPers.FishingOverhaul.Config
         [DefaultValue(5)]
         public int MaxFishTypes { get; set; } = 5;
 
-        public void Reset()
+        void IModConfig.Reset()
         {
             this.ShowFishingHud = true;
             this.TopLeftX = 0;
@@ -45,7 +45,7 @@ namespace TehPers.FishingOverhaul.Config
             this.MaxFishTypes = 5;
         }
 
-        public void RegisterOptions(
+        void IModConfig.RegisterOptions(
             IGenericModConfigMenuApi configApi,
             IManifest manifest,
             ITranslationHelper translations
@@ -54,33 +54,33 @@ namespace TehPers.FishingOverhaul.Config
             Translation Name(string key) => translations.Get($"text.config.hud.{key}.name");
             Translation Desc(string key) => translations.Get($"text.config.hud.{key}.desc");
 
-            configApi.RegisterSimpleOption(
+            configApi.AddBoolOption(
                 manifest,
-                Name("showFishingHud"),
-                Desc("showFishingHud"),
                 () => this.ShowFishingHud,
-                val => this.ShowFishingHud = val
+                val => this.ShowFishingHud = val,
+                () => Name("showFishingHud"),
+                () => Desc("showFishingHud")
             );
-            configApi.RegisterSimpleOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("topLeftX"),
-                Desc("topLeftX"),
                 () => this.TopLeftX,
-                val => this.TopLeftX = val
+                val => this.TopLeftX = val,
+                () => Name("topLeftX"),
+                () => Desc("topLeftX")
             );
-            configApi.RegisterSimpleOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("topLeftY"),
-                Desc("topLeftY"),
                 () => this.TopLeftY,
-                val => this.TopLeftY = val
+                val => this.TopLeftY = val,
+                () => Name("topLeftY"),
+                () => Desc("topLeftY")
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("maxFishTypes"),
-                Desc("maxFishTypes"),
                 () => this.MaxFishTypes,
                 val => this.MaxFishTypes = val,
+                () => Name("maxFishTypes"),
+                () => Desc("maxFishTypes"),
                 0,
                 20
             );

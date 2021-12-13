@@ -25,7 +25,7 @@
         /// </summary>
         public long Watts => this / Power.OneWatt;
 
-        private Power(long units)
+        public Power(long units)
         {
             this.Units = units;
         }

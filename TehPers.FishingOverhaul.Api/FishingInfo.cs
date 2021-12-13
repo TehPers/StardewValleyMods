@@ -11,12 +11,13 @@ namespace TehPers.FishingOverhaul.Api
     /// <summary>
     /// Information about a <see cref="Farmer"/> that is fishing.
     /// </summary>
+    /// <param name="User">The <see cref="Farmer"/> that is fishing.</param>
     public record FishingInfo(Farmer User)
     {
         /// <summary>
-        /// The time of day being fished at.
+        /// The times of day being fished at.
         /// </summary>
-        public int Time { get; init; } = Game1.timeOfDay;
+        public ImmutableArray<int> Times { get; init; } = ImmutableArray.Create(Game1.timeOfDay);
 
         /// <summary>
         /// The seasons being fished in.
@@ -106,7 +107,7 @@ namespace TehPers.FishingOverhaul.Api
             {
                 MineShaft { Name: { } name, mineLevel: var mineLevel } => new[]
                 {
-                    name, $"{name}/{mineLevel}"
+                    name, "UndergroundMine", $"UndergroundMine/{mineLevel}"
                 },
                 Farm { Name: { } name } => Game1.whichFarm switch
                 {

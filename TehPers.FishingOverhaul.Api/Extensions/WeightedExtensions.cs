@@ -50,16 +50,15 @@ namespace TehPers.FishingOverhaul.Api.Extensions
                 );
             }
 
-            var n = rand.NextDouble();
+            var n = rand.NextDouble() * totalWeight;
             foreach (var entry in sourceArray)
             {
-                var chance = entry.Weight / totalWeight;
-                if (n < chance)
+                if (n < entry.Weight)
                 {
                     return entry;
                 }
 
-                n -= chance;
+                n -= entry.Weight;
             }
 
             throw new ArgumentException(

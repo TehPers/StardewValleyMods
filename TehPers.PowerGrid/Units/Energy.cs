@@ -33,7 +33,7 @@ namespace TehPers.PowerGrid.Units
         public long TotalGigawatts => this.Units / Energy.UnitsPerGigawatt;
         public long TotalTerawatts => this.Units / Energy.UnitsPerTerawatt;
 
-        private Energy(long units)
+        public Energy(long units)
         {
             this.Units = units;
         }

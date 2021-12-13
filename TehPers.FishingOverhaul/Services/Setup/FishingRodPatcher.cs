@@ -56,6 +56,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private readonly FishConfig fishConfig;
         private readonly INamespaceRegistry namespaceRegistry;
 
+        private readonly Queue<Action> postUpdateActions;
         private bool initialized;
         private MethodInfo? updatePatch;
         private MethodInfo? doFunctionPatch;
@@ -84,6 +85,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.namespaceRegistry = namespaceRegistry
                 ?? throw new ArgumentNullException(nameof(namespaceRegistry));
 
+            this.postUpdateActions = new();
             this.initialized = false;
             this.updatePatch = null;
             this.doFunctionPatch = null;
@@ -121,6 +123,12 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     AccessTools.Method(
                         typeof(FishingRodPatcher),
                         nameof(FishingRodPatcher.tickUpdate_Prefix)
+                    )
+                ),
+                postfix: new(
+                    AccessTools.Method(
+                        typeof(FishingRodPatcher),
+                        nameof(FishingRodPatcher.tickUpdate_Postfix)
                     )
                 )
             );
@@ -648,11 +656,19 @@ namespace TehPers.FishingOverhaul.Services.Setup
             user.Halt();
             user.armOffset = Vector2.Zero;
             rod.castedButBobberStillInAir = false;
-            // rod.fishCaught = true;
             rod.isReeling = false;
             rod.isFishing = false;
             rod.pullingOutOfWater = false;
             user.canReleaseTool = false;
+
+            // Normally fishCaught is set to true here, but to avoid a case where vanilla logic can
+            // cause the user to catch weeds (the item vanilla code *thinks* was caught), it's set
+            // to false here and true at the end of the tick instead. This is because the
+            // animations are updated at the start of tickUpdate, then the check if the user
+            // clicked happens later in that same method so there's no chance to override it
+            var fishCaught = this.helper.Reflection.GetField<bool>(rod, "fishCaught");
+            fishCaught.SetValue(false);
+            this.postUpdateActions.Enqueue(() => fishCaught.SetValue(true));
 
             // Transition state
             if (this.fishingTracker.ActiveFisherData.TryGetValue(user, out var fisherData)
@@ -670,11 +686,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
 
             if (info is CatchInfo.FishCatch
-            {
-                FishItem: SObject { ParentSheetIndex: var parentSheetIndex, Stack: var stack },
-                FishSize: var fishSize,
-                FromFishPond: var fromFishPond
-            })
+                {
+                    Item: SObject
+                    {
+                        ParentSheetIndex: var parentSheetIndex, Stack: var stack
+                    },
+                    FishSize: var fishSize,
+                    FromFishPond: var fromFishPond
+                })
             {
                 if (!Game1.isFestival())
                 {
@@ -699,9 +718,12 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 Game1.showGlobalMessage(
                     Game1.content.LoadString(@"Strings\StringsFromCSFiles:FishingRod.cs.14068")
                 );
-                string str = info.FishItem.DisplayName;
                 var multiplayer = (Multiplayer)FishingRodPatcher.multiplayerField.GetValue(null)!;
-                multiplayer.globalChatInfoMessage("CaughtLegendaryFish", Game1.player.Name, str);
+                multiplayer.globalChatInfoMessage(
+                    "CaughtLegendaryFish",
+                    Game1.player.Name,
+                    info.Item.DisplayName
+                );
             }
             else if (rod.recordSize)
             {
@@ -831,8 +853,8 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         (int)bobberTile.Y
                     );
                     if (((IFishingApi)patcher.fishingApi).GetFishPondFish(who, bobberTile, true) is
-                    {
-                    } fishKey)
+                        {
+                        } fishKey)
                     {
                         if (patcher.namespaceRegistry.TryGetItemFactory(fishKey, out var factory))
                         {
@@ -878,10 +900,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
                                 // Try to create the fish
                                 if (!fishEntry.TryCreateItem(
-                                    fishingInfo,
-                                    patcher.namespaceRegistry,
-                                    out var caughtFish
-                                ))
+                                        fishingInfo,
+                                        patcher.namespaceRegistry,
+                                        out var caughtFish
+                                    ))
                                 {
                                     // Select a trash item and catch that instead
                                     var trashEntry =
@@ -938,10 +960,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             {
                                 ___lastCatchWasJunk = true;
                                 if (trashEntry.TryCreateItem(
-                                    fishingInfo,
-                                    patcher.namespaceRegistry,
-                                    out var caughtTrash
-                                ))
+                                        fishingInfo,
+                                        patcher.namespaceRegistry,
+                                        out var caughtTrash
+                                    ))
                                 {
                                     patcher.CatchItem(
                                         __instance,
@@ -989,6 +1011,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         public static bool tickUpdate_Prefix(
             FishingRod __instance,
+            GameTime time,
             Farmer who,
             ref int ___recastTimerMs,
             int ___clearWaterDistance
@@ -1025,6 +1048,23 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     new(__instance, FishingState.Start());
             }
 
+            // Prevent normal execution if an overridden animation is about to finish
+            // foreach (var animation in __instance.animations)
+            // {
+            //     if (animation is not PullFishAnimation pullAnim)
+            //     {
+            //         continue;
+            //     }
+            // 
+            //     if (pullAnim.WillComplete(time))
+            //     {
+            //         // Call the end function early to avoid a tick where the animation ends and
+            //         // vanilla logic can execute (which makes it possible to catch weeds)
+            //         pullAnim.endFunction(default);
+            //         pullAnim.endFunction = _ => { };
+            //     }
+            // }
+
             // Transition state
             switch (fisherData.State)
             {
@@ -1051,6 +1091,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     // Execute prefix again - avoids 1 tick gap where player can get weeds
                     return FishingRodPatcher.tickUpdate_Prefix(
                         __instance,
+                        time,
                         who,
                         ref ___recastTimerMs,
                         ___clearWaterDistance
@@ -1073,7 +1114,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
                     var item = catchInfo switch
                     {
-                        CatchInfo.FishCatch fishCatch => fishCatch.FishItem,
+                        CatchInfo.FishCatch fishCatch => fishCatch.Item,
                         CatchInfo.TrashCatch(_, var trashItem, _) => trashItem,
                         _ => throw new InvalidOperationException(
                             $"Unknown catch info type: {catchInfo}"
@@ -1104,13 +1145,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         }
                     }
 
+                    // Update special orders
                     user.currentLocation.localSound("coin");
                     var fromFishPond = __instance.fromFishPond;
                     if (!Game1.isFestival()
                         && !fromFishPond
                         && Game1.player.team.specialOrders is { } specialOrders)
                     {
-                        foreach (SpecialOrder specialOrder in specialOrders)
+                        foreach (var specialOrder in specialOrders)
                         {
                             specialOrder.onFishCaught?.Invoke(Game1.player, item);
                         }
@@ -1118,6 +1160,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
                     if (!__instance.treasureCaught)
                     {
+                        // Add item to user's inventory, or show the menu if not enough space
                         ___recastTimerMs = 200;
                         user.completelyStopAnimatingOrDoingAction();
                         __instance.doneFishing(user, !fromFishPond);
@@ -1138,6 +1181,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     }
                     else
                     {
+                        // Show the treasure the user caught
                         __instance.fishCaught = false;
                         __instance.showingTreasure = true;
                         user.UsingTool = true;
@@ -1232,6 +1276,20 @@ namespace TehPers.FishingOverhaul.Services.Setup
             return true;
         }
 
+        public static void tickUpdate_Postfix()
+        {
+            if (FishingRodPatcher.Instance is not { } patcher)
+            {
+                return;
+            }
+            
+            // Execute all post-update actions
+            while (patcher.postUpdateActions.TryDequeue(out var action))
+            {
+                action();
+            }
+        }
+        
         public static bool draw_Prefix(SpriteBatch b, FishingRod __instance)
         {
             if (FishingRodPatcher.Instance is not { } patcher)
@@ -1286,7 +1344,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     );
 
                     // Draw item in bubble
-                    info.FishItem.DrawInMenuCorrected(
+                    info.Item.DrawInMenuCorrected(
                         b,
                         Game1.GlobalToLocal(
                             Game1.viewport,
@@ -1302,7 +1360,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     );
 
                     // Draw item in hand
-                    var count = info.FishItem is SObject { Stack: var stack } ? stack : 1;
+                    var count = info.Item is SObject { Stack: var stack } ? stack : 1;
                     count = Math.Min(1, count);
                     foreach (var fishIndex in Enumerable.Range(0, count))
                     {
@@ -1311,7 +1369,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         //  - X offset in range [-8, 8]
                         //  - Y offset in range [-8, 8]
                         var offset = new Vector2(0f, 0f);
-                        info.FishItem.DrawInMenuCorrected(
+                        info.Item.DrawInMenuCorrected(
                             b,
                             Game1.GlobalToLocal(
                                 Game1.viewport,
@@ -1331,13 +1389,13 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     var isLegendary = info is CatchInfo.FishCatch { IsLegendary: true };
                     b.DrawString(
                         Game1.smallFont,
-                        info.FishItem.DisplayName,
+                        info.Item.DisplayName,
                         Game1.GlobalToLocal(
                             Game1.viewport,
                             user.Position
                             + new Vector2(
                                 (float)(26.0
-                                    - Game1.smallFont.MeasureString(info.FishItem.DisplayName).X
+                                    - Game1.smallFont.MeasureString(info.Item.DisplayName).X
                                     / 2.0),
                                 y - 278f
                             )

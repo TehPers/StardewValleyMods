@@ -65,7 +65,7 @@ namespace TehPers.FishingOverhaul.Config
             MaxChance = 0.9,
         };
 
-        public void Reset()
+        void IModConfig.Reset()
         {
             this.ShowFishInMinigame = false;
             this.CatchSpeed = 1f;
@@ -84,7 +84,7 @@ namespace TehPers.FishingOverhaul.Config
             this.FishChances.MaxChance = 0.9;
         }
 
-        public void RegisterOptions(
+        void IModConfig.RegisterOptions(
             IGenericModConfigMenuApi configApi,
             IManifest manifest,
             ITranslationHelper translations
@@ -93,51 +93,49 @@ namespace TehPers.FishingOverhaul.Config
             Translation Name(string key) => translations.Get($"text.config.fish.{key}.name");
             Translation Desc(string key) => translations.Get($"text.config.fish.{key}.desc");
 
-            configApi.RegisterSimpleOption(
+            configApi.AddBoolOption(
                 manifest,
-                Name("showFishInMinigame"),
-                Desc("showFishInMinigame"),
                 () => this.ShowFishInMinigame,
-                val => this.ShowFishInMinigame = val
+                val => this.ShowFishInMinigame = val,
+                () => Name("showFishInMinigame"),
+                () => Desc("showFishInMinigame")
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("catchSpeed"),
-                Desc("catchSpeed"),
                 () => this.CatchSpeed,
                 val => this.CatchSpeed = val,
+                () => Name("catchSpeed"),
+                () => Desc("catchSpeed"),
                 0f,
                 3f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("drainSpeed"),
-                Desc("drainSpeed"),
                 () => this.DrainSpeed,
                 val => this.DrainSpeed = val,
+                () => Name("drainSpeed"),
+                () => Desc("drainSpeed"),
                 0f,
                 3f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("streakForIncreasedQuality"),
-                Desc("streakForIncreasedQuality"),
                 () => this.StreakForIncreasedQuality,
                 val => this.StreakForIncreasedQuality = val,
+                () => Name("streakForIncreasedQuality"),
+                () => Desc("streakForIncreasedQuality"),
                 0,
                 100
             );
-            configApi.RegisterSimpleOption(
+            configApi.AddBoolOption(
                 manifest,
-                Name("maxNormalFishQuality.enabled"),
-                Desc("maxNormalFishQuality.enabled"),
                 () => this.MaxNormalFishQuality is not null,
-                val => this.MaxNormalFishQuality = val ? 0 : null
+                val => this.MaxNormalFishQuality = val ? 0 : null,
+                () => Name("maxNormalFishQuality.enabled"),
+                () => Desc("maxNormalFishQuality.enabled")
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("maxNormalFishQuality"),
-                Desc("maxNormalFishQuality"),
                 () => this.MaxNormalFishQuality ?? 0,
                 val =>
                 {
@@ -146,21 +144,27 @@ namespace TehPers.FishingOverhaul.Config
                         this.MaxNormalFishQuality = val;
                     }
                 },
+                () => Name("maxNormalFishQuality"),
+                () => Desc("maxNormalFishQuality"),
                 0,
                 4
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("maxFishQuality"),
-                Desc("maxFishQuality"),
                 () => this.MaxFishQuality,
                 val => this.MaxFishQuality = val,
+                () => Name("maxFishQuality"),
+                () => Desc("maxFishQuality"),
                 0,
                 3
             );
 
             // Fish chances
-            configApi.RegisterLabel(manifest, Name("fishChances"), Desc("fishChances"));
+            configApi.AddSectionTitle(
+                manifest,
+                () => Name("fishChances"),
+                () => Desc("fishChances")
+            );
             this.FishChances.RegisterOptions(configApi, manifest, translations);
         }
     }

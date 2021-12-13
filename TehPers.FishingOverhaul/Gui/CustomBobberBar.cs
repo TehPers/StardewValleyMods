@@ -199,7 +199,7 @@ namespace TehPers.FishingOverhaul.Gui
                     DartBehavior.Smooth => BobberBar.smooth,
                     DartBehavior.Sink => BobberBar.sink,
                     DartBehavior.Floater => BobberBar.floater,
-                    _ => throw new ArgumentOutOfRangeException()
+                    _ => throw new ArgumentOutOfRangeException(nameof(fishTraits), "Invalid dart behavior.")
                 }
             );
         }
@@ -209,7 +209,12 @@ namespace TehPers.FishingOverhaul.Gui
             // Speed warp on catching fish
             var distanceFromCatching = this.distanceFromCatchingField.GetValue();
             var delta = distanceFromCatching - this.lastDistanceFromCatching;
-            var mult = delta > 0 ? this.fishConfig.CatchSpeed : this.fishConfig.DrainSpeed;
+            var mult = delta switch
+            {
+                > 0f => this.fishConfig.CatchSpeed,
+                < 0f => this.fishConfig.DrainSpeed,
+                _ => 0f,
+            };
             distanceFromCatching = this.lastDistanceFromCatching + delta * mult;
             this.lastDistanceFromCatching = distanceFromCatching;
             this.distanceFromCatchingField.SetValue(distanceFromCatching);
@@ -217,7 +222,12 @@ namespace TehPers.FishingOverhaul.Gui
             // Speed warp on catching treasure
             var treasureCatchLevel = this.treasureCatchLevelField.GetValue();
             delta = treasureCatchLevel - this.lastTreasureCatchLevel;
-            mult = delta > 0 ? this.treasureConfig.CatchSpeed : this.treasureConfig.DrainSpeed;
+            mult = delta switch
+            {
+                > 0f => this.treasureConfig.CatchSpeed,
+                < 0f => this.treasureConfig.DrainSpeed,
+                _ => 0f,
+            };
             treasureCatchLevel = this.lastTreasureCatchLevel + delta * mult;
             this.lastTreasureCatchLevel = treasureCatchLevel;
             this.treasureCatchLevelField.SetValue(treasureCatchLevel);
@@ -277,6 +287,7 @@ namespace TehPers.FishingOverhaul.Gui
                         {
                             rod.doneFishing(Game1.player, true);
                         }
+                        this.OnLostFish();
                     }
 
                     Game1.exitActiveMenu();
@@ -291,8 +302,12 @@ namespace TehPers.FishingOverhaul.Gui
 
         public override void emergencyShutDown()
         {
-            // Failed to catch fish
-            this.OnLostFish();
+            if (this.distanceFromCatchingField.GetValue() <= 0.9)
+            {
+                // Failed to catch fish
+                this.OnLostFish();
+            }
+
             base.emergencyShutDown();
         }
 

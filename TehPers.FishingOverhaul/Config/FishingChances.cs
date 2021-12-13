@@ -59,7 +59,7 @@ namespace TehPers.FishingOverhaul.Config
         [DefaultValue(1d)]
         public double MaxChance { get; set; } = 1d;
 
-        public virtual void Reset()
+        internal virtual void Reset()
         {
             this.BaseChance = default;
             this.StreakFactor = default;
@@ -71,13 +71,18 @@ namespace TehPers.FishingOverhaul.Config
             this.LocationFactors.Clear();
         }
 
+        void IModConfig.Reset()
+        {
+            this.Reset();
+        }
+
         /// <summary>
         /// The effects that specific locations have on this chance. Keys are location names and
         /// values are their factors.
         /// </summary>
         public Dictionary<string, double> LocationFactors { get; set; } = new();
 
-        public virtual void RegisterOptions(
+        internal virtual void RegisterOptions(
             IGenericModConfigMenuApi configApi,
             IManifest manifest,
             ITranslationHelper translations
@@ -86,73 +91,82 @@ namespace TehPers.FishingOverhaul.Config
             Translation Name(string key) => translations.Get($"text.config.chances.{key}.name");
             Translation Desc(string key) => translations.Get($"text.config.chances.{key}.desc");
 
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("baseChance"),
-                Desc("baseChance"),
                 () => (float)this.BaseChance,
                 val => this.BaseChance = val,
+                () => Name("baseChance"),
+                () => Desc("baseChance"),
                 0f,
                 1f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("streakFactor"),
-                Desc("streakFactor"),
                 () => (float)this.StreakFactor,
                 val => this.StreakFactor = val,
+                () => Name("streakFactor"),
+                () => Desc("streakFactor"),
                 0f,
                 1f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("fishingLevelFactor"),
-                Desc("fishingLevelFactor"),
                 () => (float)this.FishingLevelFactor,
                 val => this.FishingLevelFactor = val,
+                () => Name("fishingLevelFactor"),
+                () => Desc("fishingLevelFactor"),
                 0f,
                 1f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("dailyLuckFactor"),
-                Desc("dailyLuckFactor"),
                 () => (float)this.DailyLuckFactor,
                 val => this.DailyLuckFactor = val,
+                () => Name("dailyLuckFactor"),
+                () => Desc("dailyLuckFactor"),
                 0f,
                 1f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("luckLevelFactor"),
-                Desc("luckLevelFactor"),
                 () => (float)this.LuckLevelFactor,
                 val => this.LuckLevelFactor = val,
+                () => Name("luckLevelFactor"),
+                () => Desc("luckLevelFactor"),
                 0f,
                 1f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("minChance"),
-                Desc("minChance"),
                 () => (float)this.MinChance,
                 val => this.MinChance = val,
+                () => Name("minChance"),
+                () => Desc("minChance"),
                 0f,
                 1f
             );
-            configApi.RegisterClampedOption(
+            configApi.AddNumberOption(
                 manifest,
-                Name("maxChance"),
-                Desc("maxChance"),
                 () => (float)this.MaxChance,
                 val => this.MaxChance = val,
+                () => Name("maxChance"),
+                () => Desc("maxChance"),
                 0f,
                 1f
             );
-            configApi.RegisterParagraph(manifest, Desc("locationFactors"));
+            configApi.AddParagraph(manifest, () => Desc("locationFactors"));
         }
 
-        protected virtual double GetUnclampedChance(Farmer farmer, int streak)
+        void IModConfig.RegisterOptions(
+            IGenericModConfigMenuApi configApi,
+            IManifest manifest,
+            ITranslationHelper translations
+        )
+        {
+            this.RegisterOptions(configApi, manifest, translations);
+        }
+
+        internal virtual double GetUnclampedChance(Farmer farmer, int streak)
         {
             // Base chance
             var chance = this.BaseChance;

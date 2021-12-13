@@ -54,16 +54,18 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 return;
             }
 
+            string Id(string key) => $"{this.manifest.UniqueID}/{key}";
             Translation Name(string key) => this.helper.Translation.Get($"text.config.{key}.name");
             Translation Desc(string key) => this.helper.Translation.Get($"text.config.{key}.desc");
 
-            configApi.RegisterModConfig(
+            // Register the mod with GMCM
+            configApi.Register(
                 this.manifest,
                 () =>
                 {
-                    this.hudConfig.Reset();
-                    this.fishConfig.Reset();
-                    this.treasureConfig.Reset();
+                    ((IModConfig)this.hudConfig).Reset();
+                    ((IModConfig)this.fishConfig).Reset();
+                    ((IModConfig)this.treasureConfig).Reset();
                 },
                 () =>
                 {
@@ -73,27 +75,44 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 }
             );
 
-            configApi.SetDefaultIngameOptinValue(this.manifest, true);
-            configApi.RegisterPageLabel(this.manifest, Name("hud"), Desc("hud"), Name("hud"));
-            configApi.RegisterPageLabel(this.manifest, Name("fish"), Desc("fish"), Name("fish"));
-            configApi.RegisterPageLabel(
+            // Create page links for the different groups of settings
+            configApi.AddPageLink(this.manifest, Id("hud"), () => Name("hud"), () => Desc("hud"));
+            configApi.AddPageLink(
                 this.manifest,
-                Name("treasure"),
-                Desc("treasure"),
-                Name("treasure")
+                Id("fish"),
+                () => Name("fish"),
+                () => Desc("fish")
+            );
+            configApi.AddPageLink(
+                this.manifest,
+                Id("treasure"),
+                () => Name("treasure"),
+                () => Desc("treasure")
             );
 
             // HUD config settings
-            configApi.StartNewPage(this.manifest, Name("hud"));
-            this.hudConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
+            configApi.AddPage(this.manifest, Id("hud"), () => Name("hud"));
+            ((IModConfig)this.hudConfig).RegisterOptions(
+                configApi,
+                this.manifest,
+                this.helper.Translation
+            );
 
             // Fishing config settings
-            configApi.StartNewPage(this.manifest, Name("fish"));
-            this.fishConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
+            configApi.AddPage(this.manifest, Id("fish"), () => Name("fish"));
+            ((IModConfig)this.fishConfig).RegisterOptions(
+                configApi,
+                this.manifest,
+                this.helper.Translation
+            );
 
             // Treasure config settings
-            configApi.StartNewPage(this.manifest, Name("treasure"));
-            this.treasureConfig.RegisterOptions(configApi, this.manifest, this.helper.Translation);
+            configApi.AddPage(this.manifest, Id("treasure"), () => Name("treasure"));
+            ((IModConfig)this.treasureConfig).RegisterOptions(
+                configApi,
+                this.manifest,
+                this.helper.Translation
+            );
         }
     }
 }

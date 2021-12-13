@@ -28,18 +28,20 @@ namespace TehPers.FishingOverhaul.Services
             this.availabilityInfo = availabilityInfo
                 ?? throw new ArgumentNullException(nameof(availabilityInfo));
 
-            var version =
-                fishingManifest.Dependencies.FirstOrDefault(
-                        dependency => dependency.UniqueID == "Pathoschild.ContentPatcher"
-                    )
-                    ?.MinimumVersion
-                ?? throw new ArgumentException(
-                    "Fishing overhaul does not depend on Content Patcher",
-                    nameof(fishingManifest)
-                );
-
             if (availabilityInfo.When.Any())
             {
+                // Get Content Patcher version
+                var version =
+                    fishingManifest.Dependencies.FirstOrDefault(
+                            dependency => dependency.UniqueID == "Pathoschild.ContentPatcher"
+                        )
+                        ?.MinimumVersion
+                    ?? throw new ArgumentException(
+                        "Fishing overhaul does not depend on Content Patcher",
+                        nameof(fishingManifest)
+                    );
+
+                // Parse conditions
                 this.managedConditions = contentPatcherApi.ParseConditions(
                     owner,
                     availabilityInfo.When,
@@ -47,16 +49,23 @@ namespace TehPers.FishingOverhaul.Services
                     new[] { fishingManifest.UniqueID }
                 );
 
+                // Check if conditions are valid
                 if (!this.managedConditions.IsValid)
                 {
+                    // Log error
                     monitor.Log(
-                        $"Validation error in CP conditions: {this.managedConditions.ValidationError}",
+                        $"Failed to parse conditions for one of {owner.UniqueID}'s entries: {this.managedConditions.ValidationError}",
                         LogLevel.Error
                     );
                 }
             }
         }
 
+        /// <summary>
+        /// Calculates the chance of catching this entry.
+        /// </summary>
+        /// <param name="fishingInfo">The fishing info to calculate the chance for.</param>
+        /// <returns>The chance of catching this entry, or <see langword="null"/> if the entry is not available.</returns>
         public double? GetWeightedChance(FishingInfo fishingInfo)
         {
             return this.availabilityInfo.GetWeightedChance(fishingInfo)
