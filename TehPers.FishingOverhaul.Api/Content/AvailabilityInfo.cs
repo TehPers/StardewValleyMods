@@ -230,6 +230,11 @@ namespace TehPers.FishingOverhaul.Api.Content
                 return null;
             }
 
+            if (this.MaxDepth is { } maxDepth && fishingInfo.BobberDepth > maxDepth)
+            {
+                return null;
+            }
+
             // Calculate spawn weight
             return this.BaseChance;
         }

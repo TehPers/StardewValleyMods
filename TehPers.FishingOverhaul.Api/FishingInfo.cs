@@ -117,6 +117,7 @@ namespace TehPers.FishingOverhaul.Api
                     3 => new[] { name, $"{name}/Hills" },
                     4 => new[] { name, $"{name}/Wilderness" },
                     5 => new[] { name, $"{name}/FourCorners" },
+                    6 => new[] { name, $"{name}/Beach" },
                     _ => new[] { name },
                 },
                 IslandLocation { Name: { } name } => new[] { name, "Island" },

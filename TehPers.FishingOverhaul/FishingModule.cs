@@ -37,6 +37,7 @@ namespace TehPers.FishingOverhaul
             this.Bind<IFishingApi, ISimplifiedFishingApi, FishingApi>()
                 .ToMethod(
                     context => new FishingApi(
+                        context.Kernel.Get<IModHelper>(),
                         context.Kernel.Get<IMonitor>(),
                         context.Kernel.Get<IManifest>(),
                         context.Kernel.Get<FishConfig>(),

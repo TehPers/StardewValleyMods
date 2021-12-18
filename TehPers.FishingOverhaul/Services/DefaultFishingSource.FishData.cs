@@ -411,10 +411,11 @@ namespace TehPers.FishingOverhaul.Services
                                         WaterTypes = waterTypes,
                                         IncludeLocations = locationName switch
                                         {
-                                            // Include both beach locations
+                                            // Include both beach locations and beach farm
                                             "Beach" => ImmutableArray.Create(
                                                 locationName,
-                                                "BeachNightMarket"
+                                                "BeachNightMarket",
+                                                "Farm/Beach"
                                             ),
                                             // Many farms use forest fish
                                             "Forest" => ImmutableArray.Create(
@@ -464,7 +465,7 @@ namespace TehPers.FishingOverhaul.Services
                     DefaultFishingSource.radioactiveCarpEntry,
                     DefaultFishingSource.glacierfishJrEntry,
 
-                    // Forest farm
+                    // Forest farm (woodskip)
                     new(
                         NamespacedKey.SdvObject(734),
                         new(0.05)

@@ -24,6 +24,7 @@ namespace TehPers.FishingOverhaul.Services
     /// <inheritdoc cref="IFishingApi" />
     public sealed partial class FishingApi : IFishingApi
     {
+        private readonly IModHelper helper;
         private readonly IMonitor monitor;
         private readonly IManifest manifest;
         private readonly FishConfig fishConfig;
@@ -53,6 +54,7 @@ namespace TehPers.FishingOverhaul.Services
         public event EventHandler<CustomEvent>? CustomEvent;
 
         internal FishingApi(
+            IModHelper helper,
             IMonitor monitor,
             IManifest manifest,
             FishConfig fishConfig,
@@ -64,6 +66,7 @@ namespace TehPers.FishingOverhaul.Services
             Lazy<IOptional<IEmpApi>> empApi
         )
         {
+            this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
             this.manifest = manifest ?? throw new ArgumentNullException(nameof(manifest));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
@@ -91,6 +94,20 @@ namespace TehPers.FishingOverhaul.Services
         public FishingInfo CreateDefaultFishingInfo(Farmer farmer)
         {
             var fishingInfo = new FishingInfo(farmer);
+
+            // Apply farm map overrides
+            if (farmer.currentLocation is Farm farm
+                && this.GetFarmLocationOverride(farm) is var (overrideLocation, overrideChance)
+                && Game1.random.NextDouble() < overrideChance)
+            {
+                fishingInfo = fishingInfo with
+                {
+                    Locations = FishingInfo.GetDefaultLocationNames(
+                            Game1.getLocationFromName(overrideLocation)
+                        )
+                        .ToImmutableArray(),
+                };
+            }
 
             // Apply EMP changes
             if (this.empApi.Value.TryGetValue(out var empApi))
@@ -129,6 +146,58 @@ namespace TehPers.FishingOverhaul.Services
             return fishingInfo;
         }
 
+        private (string, float)? GetFarmLocationOverride(Farm farm)
+        {
+            var overrideLocationField =
+                this.helper.Reflection.GetField<string?>(farm, "_fishLocationOverride");
+            var overrideChanceField =
+                this.helper.Reflection.GetField<float>(farm, "_fishChanceOverride");
+
+            // Set override
+            float overrideChance;
+            if (overrideLocationField.GetValue() is not { } overrideLocation)
+            {
+                // Read from the map properties
+                var mapProperty = farm.getMapProperty("FarmFishLocationOverride");
+                if (mapProperty == string.Empty)
+                {
+                    overrideLocation = string.Empty;
+                    overrideChance = 0.0f;
+                }
+                else
+                {
+                    var splitProperty = mapProperty.Split(' ');
+                    if (splitProperty.Length >= 2
+                        && float.TryParse(splitProperty[1], out overrideChance))
+                    {
+                        overrideLocation = splitProperty[0];
+                    }
+                    else
+                    {
+                        overrideLocation = string.Empty;
+                        overrideChance = 0.0f;
+                    }
+                }
+
+                // Set the fields
+                overrideLocationField.SetValue(overrideLocation);
+                overrideChanceField.SetValue(overrideChance);
+            }
+            else
+            {
+                overrideChance = overrideChanceField.GetValue();
+            }
+
+            if (overrideChance > 0.0)
+            {
+                // Overridden
+                return (overrideLocation, overrideChance);
+            }
+
+            // No override
+            return null;
+        }
+
         public IEnumerable<IWeightedValue<FishEntry>> GetFishChances(FishingInfo fishingInfo)
         {
             // Reload data if necessary
@@ -142,7 +211,7 @@ namespace TehPers.FishingOverhaul.Services
             // TODO: Add support for custom bait and bobber attachments added by other mods
 
             // Magic bait
-            if (bait is 908) 
+            if (bait is 908)
             {
                 // Update fishing info to allow catches from all seasons, weathers, and times
                 fishingInfo = fishingInfo with
@@ -281,8 +350,7 @@ namespace TehPers.FishingOverhaul.Services
             var possibleLoot = this.GetTreasureChances(fishingInfo).ToList();
 
             // Perfect catch + treasure should invert the chances
-            possibleLoot = possibleLoot
-                .Normalize(1.0)
+            possibleLoot = possibleLoot.Normalize(1.0)
                 .ToWeighted(item => 1.0 - item.Weight, item => item.Value)
                 .ToList();
 
@@ -291,8 +359,8 @@ namespace TehPers.FishingOverhaul.Services
             var chance = 1d;
             var rewards = 0;
             while (possibleLoot.Any()
-                && rewards < this.treasureConfig.MaxTreasureQuantity
-                && Game1.random.NextDouble() <= chance)
+                   && rewards < this.treasureConfig.MaxTreasureQuantity
+                   && Game1.random.NextDouble() <= chance)
             {
                 // Choose a reward
                 var treasure = possibleLoot.Choose(Game1.random);

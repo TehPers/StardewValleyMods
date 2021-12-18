@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using StardewValley;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api.Content;
@@ -11,50 +12,52 @@ namespace TehPers.FishingOverhaul.Services
     {
         private List<TrashEntry> GetDefaultTrashData()
         {
-            return new()
+            return GenerateTrashData().ToList();
+
+            IEnumerable<TrashEntry> GenerateTrashData()
             {
                 // Joja cola
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(167),
                     new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
-                ),
+                );
                 // Trash
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(168),
                     new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
-                ),
+                );
                 // Driftwood
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(169),
                     new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
-                ),
+                );
                 // Broken Glasses
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(170),
                     new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
-                ),
+                );
                 // Broken CD
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(171),
                     new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
-                ),
+                );
                 // Soggy newspaper
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(172),
                     new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
-                ),
+                );
                 // Seaweed
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(152),
                     new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
-                ),
+                );
                 // Green algae
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(153),
                     new(1.0D) { ExcludeLocations = ImmutableArray.Create("Farm", "Submarine") }
-                ),
+                );
                 // White algae
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(157),
                     new(1.0D)
                     {
@@ -65,19 +68,19 @@ namespace TehPers.FishingOverhaul.Services
                             "UndergroundMines"
                         )
                     }
-                ),
+                );
                 // Pearl
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(797),
                     new(0.01D) { IncludeLocations = ImmutableArray.Create("Submarine") }
-                ),
+                );
                 // Seaweed
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(152),
                     new(0.99D) { IncludeLocations = ImmutableArray.Create("Submarine") }
-                ),
+                );
                 // Void mayonnaise
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(308),
                     new(0.25)
                     {
@@ -90,9 +93,9 @@ namespace TehPers.FishingOverhaul.Services
                             ["HasMod"] = "TehPers.FishingOverhaul",
                         }.ToImmutableDictionary(),
                     }
-                ),
+                );
                 // Secret notes
-                new SecretNoteEntry(
+                yield return new SecretNoteEntry(
                     new(0.08 * 100000)
                     {
                         When = new Dictionary<string, string>
@@ -105,9 +108,9 @@ namespace TehPers.FishingOverhaul.Services
                             ["HasMod"] = "TehPers.FishingOverhaul",
                         }.ToImmutableDictionary(),
                     }
-                ),
+                );
                 // Journal scraps
-                new JournalScrapEntry(
+                yield return new JournalScrapEntry(
                     new(0.08 * 100000)
                     {
                         When = new Dictionary<string, string>
@@ -119,9 +122,9 @@ namespace TehPers.FishingOverhaul.Services
                             ["HasMod"] = "TehPers.FishingOverhaul",
                         }.ToImmutableDictionary()
                     }
-                ),
+                );
                 // Random golden walnuts
-                new GoldenWalnutEntry(
+                yield return new GoldenWalnutEntry(
                     new(0.5)
                     {
                         When = new Dictionary<string, string>
@@ -140,9 +143,9 @@ namespace TehPers.FishingOverhaul.Services
                             new NamespacedKey(this.manifest, "RandomGoldenWalnut")
                         )
                     }
-                },
+                };
                 // Tidepool golden walnut
-                new GoldenWalnutEntry(
+                yield return new GoldenWalnutEntry(
                     new(1)
                     {
                         IncludeLocations = ImmutableArray.Create("IslandSouthEast"),
@@ -174,9 +177,9 @@ namespace TehPers.FishingOverhaul.Services
                             new NamespacedKey(this.manifest, "TidePoolGoldenWalnut")
                         ),
                     },
-                },
+                };
                 // Iridium Krobus
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2396),
                     new(1)
                     {
@@ -199,9 +202,9 @@ namespace TehPers.FishingOverhaul.Services
                     {
                         SetFlags = ImmutableArray.Create("caughtIridiumKrobus"),
                     },
-                },
+                };
                 // 'Physics 101'
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2732),
                     new(0.05)
                     {
@@ -211,23 +214,23 @@ namespace TehPers.FishingOverhaul.Services
                             ["HasFlag |contains=CalderaPainting"] = "false",
                         }.ToImmutableDictionary(),
                     }
-                ) { OnCatch = new() { SetFlags = ImmutableArray.Create("CalderaPainting") } },
+                ) { OnCatch = new() { SetFlags = ImmutableArray.Create("CalderaPainting") } };
                 // Pyramid decal
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2334),
                     new(0.1)
                     {
                         IncludeLocations = ImmutableArray.Create("Desert"),
                         Position = new() { Y = new() { GreaterThan = 55 } },
                     }
-                ),
+                );
                 // 'Lifesaver'
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2418),
                     new(0.2) { IncludeLocations = ImmutableArray.Create("Willys Ship") }
-                ),
+                );
                 // Caroline's necklace
-                new CarolineNecklaceEntry(
+                yield return new CarolineNecklaceEntry(
                     new(0.25)
                     {
                         IncludeLocations = ImmutableArray.Create("Railroad"),
@@ -249,9 +252,9 @@ namespace TehPers.FishingOverhaul.Services
                             $"{GameLocation.CAROLINES_NECKLACE_MAIL}%&NL&%"
                         ),
                     },
-                },
+                };
                 // 'Vista'
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2423),
                     new(0.25)
                     {
@@ -261,8 +264,8 @@ namespace TehPers.FishingOverhaul.Services
                             ["HasFlag |contains=gotSpaFishing"] = "false",
                         }.ToImmutableDictionary(),
                     }
-                ) { OnCatch = new() { SetFlags = ImmutableArray.Create("gotSpaFishing") } },
-                new(
+                ) { OnCatch = new() { SetFlags = ImmutableArray.Create("gotSpaFishing") } };
+                yield return new(
                     NamespacedKey.SdvFurniture(2423),
                     new(0.08)
                     {
@@ -272,9 +275,9 @@ namespace TehPers.FishingOverhaul.Services
                             ["HasFlag"] = "gotSpaFishing",
                         }.ToImmutableDictionary(),
                     }
-                ),
+                );
                 // Decorative trash can
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2427),
                     new(0.1)
                     {
@@ -285,9 +288,9 @@ namespace TehPers.FishingOverhaul.Services
                             Y = new() { LessThan = 30 },
                         }
                     }
-                ),
+                );
                 // Other fountain trash
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(388),
                     new(1)
                     {
@@ -298,8 +301,8 @@ namespace TehPers.FishingOverhaul.Services
                             Y = new() { LessThan = 30 },
                         }
                     }
-                ),
-                new(
+                );
+                yield return new(
                     NamespacedKey.SdvObject(390),
                     new(1)
                     {
@@ -310,19 +313,19 @@ namespace TehPers.FishingOverhaul.Services
                             Y = new() { LessThan = 30 },
                         }
                     }
-                ),
+                );
                 // Wall basket
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2425),
                     new(0.08) { IncludeLocations = ImmutableArray.Create("Woods") }
-                ),
+                );
                 // Frog hat
-                new(
+                yield return new(
                     NamespacedKey.SdvHat(78),
                     new(0.1) { IncludeLocations = ImmutableArray.Create("IslandFarmCave") }
-                ),
+                );
                 // Foliage print
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2419),
                     new(0.25)
                     {
@@ -336,8 +339,8 @@ namespace TehPers.FishingOverhaul.Services
                 )
                 {
                     OnCatch = new() { SetFlags = ImmutableArray.Create("gotSecretIslandNPainting") }
-                },
-                new(
+                };
+                yield return new(
                     NamespacedKey.SdvFurniture(2419),
                     new(0.1)
                     {
@@ -348,9 +351,9 @@ namespace TehPers.FishingOverhaul.Services
                             ["HasFlag"] = "gotSecretIslandNPainting",
                         }.ToImmutableDictionary(),
                     }
-                ),
+                );
                 // Squirrel figurine
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2814),
                     new(0.25)
                     {
@@ -368,8 +371,8 @@ namespace TehPers.FishingOverhaul.Services
                 )
                 {
                     OnCatch = new() { SetFlags = ImmutableArray.Create("gotSecretIslandNSquirrel") }
-                },
-                new(
+                };
+                yield return new(
                     NamespacedKey.SdvFurniture(2814),
                     new(0.1)
                     {
@@ -384,14 +387,14 @@ namespace TehPers.FishingOverhaul.Services
                             ["HasFlag"] = "gotSecretIslandNSquirrel",
                         }.ToImmutableDictionary(),
                     }
-                ),
+                );
                 // Gourmand's statue
-                new(
+                yield return new(
                     NamespacedKey.SdvFurniture(2332),
                     new(0.05) { IncludeLocations = ImmutableArray.Create("IslandSouthEastCave") }
-                ),
+                );
                 // Snake skull
-                new(
+                yield return new(
                     NamespacedKey.SdvObject(857),
                     new(0.1)
                     {
@@ -401,8 +404,123 @@ namespace TehPers.FishingOverhaul.Services
                             ["HasFlag"] = "islandNorthCaveOpened",
                         }.ToImmutableDictionary(),
                     }
-                )
-            };
+                );
+                // Beach farm
+                var beachPositions = new PositionConstraint[]
+                {
+                    new() { X = new() { LessThan = 26 } },
+                    new() { X = new() { GreaterThan = 26 + 31 } },
+                    new()
+                    {
+                        X = new()
+                        {
+                            GreaterThanEq = 26,
+                            LessThan = 26 + 31,
+                        },
+                        Y = new() { LessThan = 45 },
+                    },
+                    new()
+                    {
+                        X = new()
+                        {
+                            GreaterThanEq = 26,
+                            LessThan = 26 + 31,
+                        },
+                        Y = new() { GreaterThanEq = 45 + 39 },
+                    },
+                };
+                foreach (var position in beachPositions)
+                {
+                    // Seaweed
+                    yield return new(
+                        NamespacedKey.SdvObject(152),
+                        new(0.15)
+                        {
+                            IncludeLocations = ImmutableArray.Create("Farm/Beach"),
+                            Position = position,
+                        }
+                    );
+                    // Oyster
+                    yield return new(
+                        NamespacedKey.SdvObject(723),
+                        new(0.015)
+                        {
+                            IncludeLocations = ImmutableArray.Create("Farm/Beach"),
+                            Position = position,
+                        }
+                    );
+                    // Coral
+                    yield return new(
+                        NamespacedKey.SdvObject(393),
+                        new(0.015)
+                        {
+                            IncludeLocations = ImmutableArray.Create("Farm/Beach"),
+                            Position = position,
+                        }
+                    );
+                    // Mussel
+                    yield return new(
+                        NamespacedKey.SdvObject(719),
+                        new(0.015)
+                        {
+                            IncludeLocations = ImmutableArray.Create("Farm/Beach"),
+                            Position = position,
+                        }
+                    );
+                    // Cockle
+                    yield return new(
+                        NamespacedKey.SdvObject(718),
+                        new(0.015)
+                        {
+                            IncludeLocations = ImmutableArray.Create("Farm/Beach"),
+                            Position = position,
+                        }
+                    );
+                }
+                // 'Boat'
+                yield return new(
+                    NamespacedKey.SdvFurniture(2421),
+                    new(10)
+                    {
+                        IncludeLocations = ImmutableArray.Create("Farm/Beach"),
+                        FarmerPosition = new()
+                        {
+                            X = new()
+                            {
+                                GreaterThanEq = 23,
+                                LessThan = 24,
+                            },
+                            Y = new()
+                            {
+                                GreaterThanEq = 98,
+                                LessThan = 99,
+                            },
+                        },
+                        When = new Dictionary<string, string>
+                        {
+                            ["HasFlag |contains=gotBoatPainting"] = "false"
+                        }.ToImmutableDictionary(),
+                    }
+                ) { OnCatch = new() { SetFlags = ImmutableArray.Create("gotBoatPainting") } };
+                // Dove children (https://stardewvalleywiki.com/Secrets#Dove_Children)
+                yield return new(
+                    NamespacedKey.SdvObject(103),
+                    new(0.5)
+                    {
+                        IncludeLocations = ImmutableArray.Create("Farm/FourCorners"),
+                        FarmerPosition = new()
+                        {
+                            X = new() { LessThan = 40 },
+                            Y = new() { GreaterThan = 54 },
+                        },
+                        When = new Dictionary<string, string>
+                        {
+                            ["HasFlag"] = "cursed_doll",
+                            ["HasFlag |contains=eric's_prank_1"] = "false",
+                        }.ToImmutableDictionary(),
+                    }
+                ) { OnCatch = new() { SetFlags = ImmutableArray.Create("eric's_prank_1") } };
+            }
         }
     }
 }
