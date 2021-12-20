@@ -8,7 +8,7 @@ Each content pack can have several different files. They are all optional.
 | ~~`fishTraits.json`~~      | **(Deprecated)** Add new fish traits. This configures how the fish behave, but not where/when they are caught. |
 | ~~`fish.json`~~            | **(Deprecated)** Add new fish availabilities. This configures where/when fish can be caught.                   |
 | ~~`trash.json`~~           | **(Deprecated)** Add new trash availabilities.                                                                 |
-| ~~`treasure.json`~~        | **(Deprecated)** Add new treasure availabilities.                                                             |
+| ~~`treasure.json`~~        | **(Deprecated)** Add new treasure availabilities.                                                              |
 
 There are also JSON schemas available for each of these files. If your editor supports JSON
 schemas, then it is recommended you reference the appropriate schema:
@@ -18,7 +18,7 @@ schemas, then it is recommended you reference the appropriate schema:
 | Visual Studio Code | Add a `$schema` property to the root object in the file.                                            |
 | Visual Studio      | At the top of the file editor right under the tabs, paste the schema URL into the "Schema" textbox. |
 
-JSON schemas will always be relevant to the latest mod version *only*. If you are using an older
+JSON schemas will always be relevant to the latest mod version _only_. If you are using an older
 version of the mod, some properties may not exist yet.
 
 ## Content
@@ -137,25 +137,25 @@ key consists of both a namespace and a key. The format of a namespaced key in a 
 `namespace:key`. For vanilla items and items added through vanilla content files, namespaced keys
 all have the namespace "StardewValley". Here is a table of commonly used item key formats:
 
-| Item type                   | Key format                                                                  |
-| --------------------------- | --------------------------------------------------------------------------- |
-| Craftable                   | `StardewValley:BigCraftable/<id>`                                           |
-| Boots                       | `StardewValley:Boots/<id>`                                                  |
-| Clothing                    | `StardewValley:Clothing/<id>`                                               |
-| Flooring                    | `StardewValley:Flooring/<id>`                                               |
-| Furniture                   | `StardewValley:Furniture/<id>`                                              |
-| Hat                         | `StardewValley:Hat/<id>`                                                    |
-| Object                      | `StardewValley:Object/<id>`                                                 |
-| Ring                        | `StardewValley:Ring/<id>`                                                   |
-| Tool                        | `StardewValley:Tool/<type>` or `StardewValley:Tool/<type>/<quality number>` |
-| Wallpaper                   | `StardewValley:Wallpaper/<id>`                                              |
-| Weapon                      | `StardewValley:Weapon/<id>`                                                 |
-| **(Json Assets)** Craftable | `JA:BigCraftable/<id>`                                                      |
-| **(Json Assets)** Clothing  | `JA:Clothing/<id>`                                                          |
-| **(Json Assets)** Hat       | `JA:Hat/<id>`                                                               |
-| **(Json Assets)** Object    | `JA:Object/<id>`                                                            |
-| **(Json Assets)** Weapon    | `JA:Weapon/<id>`                                                            |
-| **(Dynamic Game Assets)**   | `DGA:<id>`                                                                  |
+| Item type                   | Key format                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------------- |
+| Craftable                   | `StardewValley:BigCraftable/<id>`                                                     |
+| Boots                       | `StardewValley:Boots/<id>`                                                            |
+| Clothing                    | `StardewValley:Clothing/<id>`                                                         |
+| Flooring                    | `StardewValley:Flooring/<id>`                                                         |
+| Furniture                   | `StardewValley:Furniture/<id>`                                                        |
+| Hat                         | `StardewValley:Hat/<id>`                                                              |
+| Object                      | `StardewValley:Object/<id>`                                                           |
+| Ring                        | `StardewValley:Ring/<id>`                                                             |
+| Tool                        | `StardewValley:Tool/<type>` or `StardewValley:Tool/<type>/<quality number>`           |
+| Wallpaper                   | `StardewValley:Wallpaper/<id>`                                                        |
+| Weapon                      | `StardewValley:Weapon/<id>`                                                           |
+| **(Json Assets)** Craftable | `JA:BigCraftable/<id>`                                                                |
+| **(Json Assets)** Clothing  | `JA:Clothing/<id>`                                                                    |
+| **(Json Assets)** Hat       | `JA:Hat/<id>`                                                                         |
+| **(Json Assets)** Object    | `JA:Object/<id>`                                                                      |
+| **(Json Assets)** Weapon    | `JA:Weapon/<id>`                                                                      |
+| **(Dynamic Game Assets)**   | `DGA:<full id>` (for example `DGA:spacechase0.DynamicGameAssets.Example/GreenSquare`) |
 
 Not all key formats are listed. Also, other mods may add their own namespaces and key formats.
 

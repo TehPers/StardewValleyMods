@@ -350,8 +350,7 @@ namespace TehPers.FishingOverhaul.Services
             var possibleLoot = this.GetTreasureChances(catchInfo.FishingInfo).ToList();
 
             // Perfect catch + treasure inverts the chances
-            if (this.treasureConfig.InvertChancesOnPerfectCatch
-                && catchInfo.State.Treasure is TreasureState.Caught)
+            if (this.treasureConfig.InvertChancesOnPerfectCatch && catchInfo.State.IsPerfect)
             {
                 possibleLoot = possibleLoot.Normalize()
                     .ToWeighted(item => 1.0 - item.Weight, item => item.Value)
