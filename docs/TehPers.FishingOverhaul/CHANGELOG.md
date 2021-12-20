@@ -2,6 +2,22 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.1.0 - Unreleased
+
+### Added
+
+- Add config option to enable or disable treasure chances being inverted on perfect catch.
+
+### Changed
+
+- Fishing depth (how far the bobber is from you) is now represented by the chances in the HUD.
+- Improved content pack documentation and fixed some parts that were wrong.
+
+### Fixed
+
+- Fix treasure chances being always inverted. This should now only happen on perfect catches
+  when the setting is enabled.
+
 ## 3.0.2 - 2021-12-17
 
 ### Fixed

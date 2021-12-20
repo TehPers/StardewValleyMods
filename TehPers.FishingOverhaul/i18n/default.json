@@ -51,6 +51,9 @@
   "text.config.treasure.allowDuplicateLoot.name": "Allow duplicate loot",
   "text.config.treasure.allowDuplicateLoot.desc":
     "Whether the treasure randomizer should be allowed to select the same loot option multiple times. Some loot can't be repeated even if duplicate loot is enabled.",
+  "text.config.treasure.invertChancesOnPerfectCatch.name": "Invert chances on perfect catch",
+  "text.config.treasure.invertChancesOnPerfectCatch.desc":
+    "Whether to invert the chances of each treasure entry when you get a perfect catch and treasure chest at the same time. For example, when this is enabled, getting a perfect catch and treasure chest together would make an item that normally has a 1% chance of showing in a chest instead have a 99% chance of appearing.",
   "text.config.treasure.catchSpeed.name": "Catch speed",
   "text.config.treasure.catchSpeed.desc": "Affects how fast you catch treasure.",
   "text.config.treasure.drainSpeed.name": "Drain speed",

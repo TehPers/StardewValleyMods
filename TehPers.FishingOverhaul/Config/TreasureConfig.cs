@@ -26,6 +26,14 @@ namespace TehPers.FishingOverhaul.Config
         public bool AllowDuplicateLoot { get; set; } = true;
 
         /// <summary>
+        /// Whether to invert the chances of each treasure entry when you get a perfect catch and
+        /// treasure chest at the same time. For example, when this is enabled, getting a perfect
+        /// catch and treasure chest together would make an item that normally has a 1% chance of
+        /// showing in a chest instead have a 99% chance of appearing.
+        /// </summary>
+        public bool InvertChancesOnPerfectCatch { get; set; } = true;
+
+        /// <summary>
         /// Affects how fast you catch treasure.
         /// </summary>
         [DefaultValue(1f)]
@@ -68,6 +76,7 @@ namespace TehPers.FishingOverhaul.Config
         {
             this.MaxTreasureQuantity = 3;
             this.AllowDuplicateLoot = true;
+            this.InvertChancesOnPerfectCatch = true;
             this.CatchSpeed = 1f;
             this.DrainSpeed = 1f;
 
@@ -112,6 +121,13 @@ namespace TehPers.FishingOverhaul.Config
                 val => this.AllowDuplicateLoot = val,
                 () => Name("allowDuplicateLoot"),
                 () => Desc("allowDuplicateLoot")
+            );
+            configApi.AddBoolOption(
+                manifest,
+                () => this.InvertChancesOnPerfectCatch,
+                val => this.InvertChancesOnPerfectCatch = val,
+                () => Name("invertChancesOnPerfectCatch"),
+                () => Desc("invertChancesOnPerfectCatch")
             );
             configApi.AddNumberOption(
                 manifest,

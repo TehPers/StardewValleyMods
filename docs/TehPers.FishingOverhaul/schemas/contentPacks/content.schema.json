@@ -32,7 +32,7 @@
               }
             ]
           },
-          "description": "Fish traits to remove."
+          "description": "Fish traits to remove. Only entries from your mod's dependencies (including Teh's\nFishing Overhaul) will be removed."
         },
         "AddFish": {
           "type": "array",
@@ -54,7 +54,7 @@
               }
             ]
           },
-          "description": "Fish entries to remove."
+          "description": "Fish entries to remove. Only entries from your mod's dependencies (including Teh's\nFishing Overhaul) will be removed."
         },
         "AddTrash": {
           "type": "array",
@@ -65,7 +65,7 @@
               }
             ]
           },
-          "description": "Trash entries to remove."
+          "description": "Trash entries to add."
         },
         "RemoveTrash": {
           "type": "array",
@@ -76,7 +76,7 @@
               }
             ]
           },
-          "description": "Trash entries to remove."
+          "description": "Trash entries to remove. Only entries from your mod's dependencies (including Teh's\nFishing Overhaul) will be removed."
         },
         "AddTreasure": {
           "type": "array",
@@ -98,14 +98,14 @@
               }
             ]
           },
-          "description": "Treasure entries to remove."
+          "description": "Treasure entries to remove. Only entries from your mod's dependencies (including Teh's\nFishing Overhaul) will be removed."
         },
         "Include": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "The additional content files to include."
+          "description": "The additional content files to include. These are treated the same as your mod's\ncontent.json. The paths are relative to this file's content.json (this is different\nthan Content Patcher!)."
         },
         "$schema": {
           "oneOf": [
@@ -166,6 +166,7 @@
     },
     "TehPers.FishingOverhaul.Api.DartBehavior": {
       "type": "string",
+      "description": "The movement behavior of the fish in the minigame.",
       "enum": [
         "Mixed",
         "Dart",
@@ -227,11 +228,18 @@
           "default": 0.1
         },
         "MaxDepth": {
-          "type": "integer",
-          "minimum": -2147483648,
-          "maximum": 2147483647,
-          "description": "The required fishing depth to maximize the chances of catching the fish.",
-          "default": 4
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            }
+          ],
+          "description": "Maximum bobber depth required to catch this.",
+          "default": null
         },
         "BaseChance": {
           "type": "number",
@@ -288,7 +296,7 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Required fishing level to see this.",
+          "description": "Required fishing level to catch this.",
           "default": 0
         },
         "MaxFishingLevel": {
@@ -302,7 +310,7 @@
               "maximum": 2147483647
             }
           ],
-          "description": "Maximum fishing level required to see this, or null for no max.",
+          "description": "Maximum fishing level required to catch this, or null for no max.",
           "default": null
         },
         "IncludeLocations": {
@@ -635,7 +643,7 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Required fishing level to see this.",
+          "description": "Required fishing level to catch this.",
           "default": 0
         },
         "MaxFishingLevel": {
@@ -649,7 +657,7 @@
               "maximum": 2147483647
             }
           ],
-          "description": "Maximum fishing level required to see this, or null for no max.",
+          "description": "Maximum fishing level required to catch this, or null for no max.",
           "default": null
         },
         "IncludeLocations": {
@@ -688,6 +696,20 @@
           "maximum": 2147483647,
           "description": "Minimum bobber depth required to catch this.",
           "default": 0
+        },
+        "MaxDepth": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            }
+          ],
+          "description": "Maximum bobber depth required to catch this.",
+          "default": null
         },
         "When": {
           "type": "object",
@@ -795,7 +817,18 @@
               }
             }
           ],
-          "description": "The namespaced keys of the treasure."
+          "description": "The namespaced keys of the treasure. This must match every listed item key in the entry\nyou want to remove. For example, if an entry lists bait, stone, and wood as its\npossible item keys, you must list *all* of those to remove it."
+        },
+        "AnyWithItem": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
+            }
+          ],
+          "description": "A namespaced key in the treasure entry. Any entry that can produce this item will be\nremoved. This takes precedence over ItemKeys (if both are listed and this\ncondition is matched, then ItemKeys is ignored)."
         }
       }
     }

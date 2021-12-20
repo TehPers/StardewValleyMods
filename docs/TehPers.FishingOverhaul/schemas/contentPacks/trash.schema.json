@@ -139,7 +139,7 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Required fishing level to see this.",
+          "description": "Required fishing level to catch this.",
           "default": 0
         },
         "MaxFishingLevel": {
@@ -153,7 +153,7 @@
               "maximum": 2147483647
             }
           ],
-          "description": "Maximum fishing level required to see this, or null for no max.",
+          "description": "Maximum fishing level required to catch this, or null for no max.",
           "default": null
         },
         "IncludeLocations": {
@@ -192,6 +192,20 @@
           "maximum": 2147483647,
           "description": "Minimum bobber depth required to catch this.",
           "default": 0
+        },
+        "MaxDepth": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            }
+          ],
+          "description": "Maximum bobber depth required to catch this.",
+          "default": null
         },
         "When": {
           "type": "object",
