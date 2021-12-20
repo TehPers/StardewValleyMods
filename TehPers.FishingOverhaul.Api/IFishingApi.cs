@@ -149,7 +149,9 @@ namespace TehPers.FishingOverhaul.Api
             out bool isFish
         )
         {
-            var possibleCatch = this.GetPossibleCatch(this.CreateDefaultFishingInfo(farmer) with { BobberDepth = bobberDepth });
+            var possibleCatch = this.GetPossibleCatch(
+                this.CreateDefaultFishingInfo(farmer) with { BobberDepth = bobberDepth }
+            );
             switch (possibleCatch)
             {
                 case PossibleCatch.Fish(var entry):
@@ -174,9 +176,35 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// Selects random treasure.
         /// </summary>
+        /// <param name="catchInfo">Information about the caught fish.</param>
+        /// <returns>Possible loot from a treasure chest.</returns>
+        IEnumerable<TreasureEntry> GetPossibleTreasure(CatchInfo.FishCatch catchInfo);
+
+        /// <summary>
+        /// Selects random treasure.
+        /// </summary>
         /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
         /// <returns>Possible loot from a treasure chest.</returns>
-        IEnumerable<TreasureEntry> GetPossibleTreasure(FishingInfo fishingInfo);
+        [Obsolete(
+            "This overload will be removed soon. Pass a "
+            + nameof(CatchInfo.FishCatch)
+            + " instead."
+        )]
+        IEnumerable<TreasureEntry> GetPossibleTreasure(FishingInfo fishingInfo)
+        {
+            var catchInfo = new CatchInfo.FishCatch(
+                fishingInfo,
+                new(NamespacedKey.SdvObject(0), new(0.0)),
+                new StardewValley.Object(0, 1),
+                0,
+                false,
+                0,
+                0,
+                new(false, TreasureState.None),
+                false
+            );
+            return this.GetPossibleTreasure(catchInfo);
+        }
 
         IEnumerable<string> ISimplifiedFishingApi.GetPossibleTreasure(Farmer farmer)
         {

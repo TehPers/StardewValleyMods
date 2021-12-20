@@ -20,7 +20,8 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
         public ImmutableDictionary<NamespacedKey, FishTraits> SetFishTraits { get; init; } = ImmutableDictionary<NamespacedKey, FishTraits>.Empty;
 
         /// <summary>
-        /// Fish traits to remove.
+        /// Fish traits to remove. Only entries from your mod's dependencies (including Teh's
+        /// Fishing Overhaul) will be removed.
         /// </summary>
         public ImmutableArray<NamespacedKey> RemoveFishTraits { get; init; } = ImmutableArray<NamespacedKey>.Empty;
 
@@ -30,17 +31,19 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
         public ImmutableArray<FishEntry> AddFish { get; init; } = ImmutableArray<FishEntry>.Empty;
 
         /// <summary>
-        /// Fish entries to remove.
+        /// Fish entries to remove. Only entries from your mod's dependencies (including Teh's
+        /// Fishing Overhaul) will be removed.
         /// </summary>
         public ImmutableArray<FishEntryFilter> RemoveFish { get; init; } = ImmutableArray<FishEntryFilter>.Empty;
 
         /// <summary>
-        /// Trash entries to remove.
+        /// Trash entries to add.
         /// </summary>
         public ImmutableArray<TrashEntry> AddTrash { get; init; } = ImmutableArray<TrashEntry>.Empty;
 
         /// <summary>
-        /// Trash entries to remove.
+        /// Trash entries to remove. Only entries from your mod's dependencies (including Teh's
+        /// Fishing Overhaul) will be removed.
         /// </summary>
         public ImmutableArray<TrashEntryFilter> RemoveTrash { get; init; } = ImmutableArray<TrashEntryFilter>.Empty;
 
@@ -50,12 +53,15 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
         public ImmutableArray<TreasureEntry> AddTreasure { get; init; } = ImmutableArray<TreasureEntry>.Empty;
 
         /// <summary>
-        /// Treasure entries to remove.
+        /// Treasure entries to remove. Only entries from your mod's dependencies (including Teh's
+        /// Fishing Overhaul) will be removed.
         /// </summary>
         public ImmutableArray<TreasureEntryFilter> RemoveTreasure { get; init; } = ImmutableArray<TreasureEntryFilter>.Empty;
 
         /// <summary>
-        /// The additional content files to include.
+        /// The additional content files to include. These are treated the same as your mod's
+        /// content.json. The paths are relative to this file's content.json (this is different
+        /// than Content Patcher!).
         /// </summary>
         public ImmutableArray<string> Include { get; init; } = ImmutableArray<string>.Empty;
 

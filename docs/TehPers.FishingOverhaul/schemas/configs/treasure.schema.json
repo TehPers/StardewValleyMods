@@ -23,6 +23,10 @@
           "description": "Whether the treasure randomizer should be allowed to select the same loot option\nmultiple times. Some loot can't be repeated even if duplicate loot is enabled.",
           "default": true
         },
+        "InvertChancesOnPerfectCatch": {
+          "type": "boolean",
+          "description": "Whether to invert the chances of each treasure entry when you get a perfect catch and\ntreasure chest at the same time. For example, when this is enabled, getting a perfect\ncatch and treasure chest together would make an item that normally has a 1% chance of\nshowing in a chest instead have a 99% chance of appearing."
+        },
         "CatchSpeed": {
           "type": "number",
           "description": "Affects how fast you catch treasure.",

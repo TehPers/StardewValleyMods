@@ -687,10 +687,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
             if (info is CatchInfo.FishCatch
                 {
-                    Item: SObject
-                    {
-                        ParentSheetIndex: var parentSheetIndex, Stack: var stack
-                    },
+                    Item: SObject { ParentSheetIndex: var parentSheetIndex, Stack: var stack },
                     FishSize: var fishSize,
                     FromFishPond: var fromFishPond
                 })
@@ -802,10 +799,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
 
             // Create fishing info
-            var fishingInfo = patcher.fishingApi.CreateDefaultFishingInfo(who) with
-            {
-                BobberDepth = ___clearWaterDistance,
-            };
+            var fishingInfo = patcher.fishingApi.CreateDefaultFishingInfo(who);
 
             // Transition
             switch (activeFisher.State)
@@ -1158,7 +1152,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         }
                     }
 
-                    if (!__instance.treasureCaught)
+                    if (catchInfo is not CatchInfo.FishCatch
+                        {
+                            State: { Treasure: TreasureState.Caught }
+                        } caughtFish)
                     {
                         // Add item to user's inventory, or show the menu if not enough space
                         ___recastTimerMs = 200;
@@ -1185,7 +1182,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         __instance.fishCaught = false;
                         __instance.showingTreasure = true;
                         user.UsingTool = true;
-                        var treasure = patcher.fishingApi.GetPossibleTreasure(fishingInfo)
+                        var treasure = patcher.fishingApi.GetPossibleTreasure(caughtFish)
                             .SelectMany(
                                 entry =>
                                 {
@@ -1282,14 +1279,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
             {
                 return;
             }
-            
+
             // Execute all post-update actions
             while (patcher.postUpdateActions.TryDequeue(out var action))
             {
                 action();
             }
         }
-        
+
         public static bool draw_Prefix(SpriteBatch b, FishingRod __instance)
         {
             if (FishingRodPatcher.Instance is not { } patcher)
@@ -1395,8 +1392,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             user.Position
                             + new Vector2(
                                 (float)(26.0
-                                    - Game1.smallFont.MeasureString(info.Item.DisplayName).X
-                                    / 2.0),
+                                    - Game1.smallFont.MeasureString(info.Item.DisplayName).X / 2.0),
                                 y - 278f
                             )
                         ),

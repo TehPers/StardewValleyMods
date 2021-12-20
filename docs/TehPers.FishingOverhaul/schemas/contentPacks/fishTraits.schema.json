@@ -82,6 +82,7 @@
     },
     "TehPers.FishingOverhaul.Api.DartBehavior": {
       "type": "string",
+      "description": "The movement behavior of the fish in the minigame.",
       "enum": [
         "Mixed",
         "Dart",

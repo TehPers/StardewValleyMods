@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq.Expressions;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Locations;
@@ -14,6 +16,17 @@ namespace TehPers.FishingOverhaul.Api
     /// <param name="User">The <see cref="Farmer"/> that is fishing.</param>
     public record FishingInfo(Farmer User)
     {
+        private static readonly Func<FishingRod, int> getBobberDepth;
+
+        static FishingInfo()
+        {
+            var rod = Expression.Parameter(typeof(FishingRod), "rod");
+            var bobberDepthField = Expression.Field(rod, "clearWaterDistance");
+            var getBobberDepthExpr =
+                Expression.Lambda<Func<FishingRod, int>>(bobberDepthField, rod);
+            FishingInfo.getBobberDepth = getBobberDepthExpr.Compile();
+        }
+
         /// <summary>
         /// The times of day being fished at.
         /// </summary>
@@ -60,7 +73,10 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// The bobber depth.
         /// </summary>
-        public int BobberDepth { get; init; } = 4;
+        public int BobberDepth { get; init; } =
+            User.CurrentTool is FishingRod { isFishing: true } rod
+                ? FishingInfo.getBobberDepth(rod)
+                : 4;
 
         /// <summary>
         /// The names of the locations being fished in.

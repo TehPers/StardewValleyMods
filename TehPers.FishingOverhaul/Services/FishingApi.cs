@@ -344,18 +344,21 @@ namespace TehPers.FishingOverhaul.Services
             return new PossibleCatch.Trash(new(defaultTrashKey, new(0.0)));
         }
 
-        public IEnumerable<TreasureEntry> GetPossibleTreasure(FishingInfo fishingInfo)
+        public IEnumerable<TreasureEntry> GetPossibleTreasure(CatchInfo.FishCatch catchInfo)
         {
             // Get possible loot
-            var possibleLoot = this.GetTreasureChances(fishingInfo).ToList();
+            var possibleLoot = this.GetTreasureChances(catchInfo.FishingInfo).ToList();
 
-            // Perfect catch + treasure should invert the chances
-            possibleLoot = possibleLoot.Normalize(1.0)
-                .ToWeighted(item => 1.0 - item.Weight, item => item.Value)
-                .ToList();
+            // Perfect catch + treasure inverts the chances
+            if (this.treasureConfig.InvertChancesOnPerfectCatch && catchInfo.State.IsPerfect)
+            {
+                possibleLoot = possibleLoot.Normalize()
+                    .ToWeighted(item => 1.0 - item.Weight, item => item.Value)
+                    .ToList();
+            }
 
             // Select rewards
-            var streak = this.GetStreak(fishingInfo.User);
+            var streak = this.GetStreak(catchInfo.FishingInfo.User);
             var chance = 1d;
             var rewards = 0;
             while (possibleLoot.Any()
@@ -377,7 +380,7 @@ namespace TehPers.FishingOverhaul.Services
 
                 // Update chance
                 chance *= this.treasureConfig.AdditionalLootChances.GetChance(
-                    fishingInfo.User,
+                    catchInfo.FishingInfo.User,
                     streak
                 );
             }
