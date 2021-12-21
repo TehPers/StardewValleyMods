@@ -16,6 +16,11 @@
           "description": "Whether to show the fish being caught in the fishing minigame.",
           "default": false
         },
+        "GlobalDartFrequencyFactor": {
+          "type": "number",
+          "description": "Modifier for the dart frequency (difficulty) of all fish.",
+          "default": 1.0
+        },
         "CatchSpeed": {
           "type": "number",
           "description": "Affects how fast you catch fish.",

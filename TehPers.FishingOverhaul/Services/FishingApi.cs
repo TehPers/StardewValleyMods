@@ -250,7 +250,15 @@ namespace TehPers.FishingOverhaul.Services
             // Reload data if necessary
             this.ReloadIfRequested();
 
-            return this.fishTraits.TryGetValue(fishKey, out traits);
+            if (!this.fishTraits.TryGetValue(fishKey, out traits))
+            {
+                return false;
+            }
+
+            var dartFrequency =
+                (int)(this.fishConfig.GlobalDartFrequencyFactor * traits.DartFrequency);
+            traits = traits with { DartFrequency = dartFrequency };
+            return true;
         }
 
         public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(FishingInfo fishingInfo)

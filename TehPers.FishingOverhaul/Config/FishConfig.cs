@@ -19,6 +19,12 @@ namespace TehPers.FishingOverhaul.Config
         public bool ShowFishInMinigame { get; set; }
 
         /// <summary>
+        /// Modifier for the dart frequency (difficulty) of all fish.
+        /// </summary>
+        [DefaultValue(1.0)]
+        public float GlobalDartFrequencyFactor { get; set; } = 1f;
+
+        /// <summary>
         /// Affects how fast you catch fish.
         /// </summary>
         [DefaultValue(1f)]
@@ -68,6 +74,7 @@ namespace TehPers.FishingOverhaul.Config
         void IModConfig.Reset()
         {
             this.ShowFishInMinigame = false;
+            this.GlobalDartFrequencyFactor = 1f;
             this.CatchSpeed = 1f;
             this.DrainSpeed = 1f;
             this.StreakForIncreasedQuality = 3;
@@ -99,6 +106,15 @@ namespace TehPers.FishingOverhaul.Config
                 val => this.ShowFishInMinigame = val,
                 () => Name("showFishInMinigame"),
                 () => Desc("showFishInMinigame")
+            );
+            configApi.AddNumberOption(
+                manifest,
+                () => this.GlobalDartFrequencyFactor,
+                val => this.GlobalDartFrequencyFactor = val,
+                () => Name("globalDartFrequencyFactor"),
+                () => Desc("globalDartFrequencyFactor"),
+                0f,
+                2f
             );
             configApi.AddNumberOption(
                 manifest,

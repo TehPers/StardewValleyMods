@@ -96,7 +96,7 @@ namespace TehPers.FishingOverhaul.Services
                 );
                 // Secret notes
                 yield return new SecretNoteEntry(
-                    new(0.08 * 100000)
+                    new(0.08)
                     {
                         When = new Dictionary<string, string>
                         {
@@ -111,7 +111,7 @@ namespace TehPers.FishingOverhaul.Services
                 );
                 // Journal scraps
                 yield return new JournalScrapEntry(
-                    new(0.08 * 100000)
+                    new(0.08)
                     {
                         When = new Dictionary<string, string>
                         {
@@ -395,8 +395,8 @@ namespace TehPers.FishingOverhaul.Services
                 );
                 // Snake skull
                 yield return new(
-                    NamespacedKey.SdvObject(857),
-                    new(0.1)
+                    NamespacedKey.SdvObject(825),
+                    new(1.0)
                     {
                         IncludeLocations = ImmutableArray.Create("IslandWest"),
                         When = new Dictionary<string, string>

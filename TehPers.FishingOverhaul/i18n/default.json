@@ -25,6 +25,8 @@
   "text.config.fish.desc": "Configure how fishing works",
   "text.config.fish.showFishInMinigame.name": "Show fish in minigame",
   "text.config.fish.showFishInMinigame.desc": "Whether to show the fish being caught in the fishing minigame.",
+  "text.config.fish.globalDartFrequencyFactor.name": "Global dart frequency",
+  "text.config.fish.globalDartFrequencyFactor.desc": "Modifier for the dart frequency (difficulty) of all fish.",
   "text.config.fish.catchSpeed.name": "Catch speed",
   "text.config.fish.catchSpeed.desc": "Affects how fast you catch fish.",
   "text.config.fish.drainSpeed.name": "Drain speed",

@@ -685,14 +685,32 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 return;
             }
 
-            if (info is CatchInfo.FishCatch
+            (int parentSheetIndex, int fishSize, bool fromFishPond, int stack)? caughtParts =
+                info switch
                 {
-                    Item: SObject { ParentSheetIndex: var parentSheetIndex, Stack: var stack },
-                    FishSize: var fishSize,
-                    FromFishPond: var fromFishPond
-                })
+                    CatchInfo.FishCatch
+                    {
+                        Item: SObject
+                        {
+                            ParentSheetIndex: var parentSheetIndex, Stack: var stack
+                        },
+                        FishSize: var fishSize,
+                        FromFishPond: var fromFishPond
+                    } => (parentSheetIndex, fishSize, fromFishPond, stack),
+                    CatchInfo.TrashCatch
+                    {
+                        Item: SObject
+                        {
+                            ParentSheetIndex: var parentSheetIndex, Stack: var stack
+                        },
+                        FromFishPond: var fromFishPond,
+                    } => (parentSheetIndex, 0, fromFishPond, stack),
+                    _ => null,
+                };
+
+            if (!Game1.isFestival())
             {
-                if (!Game1.isFestival())
+                if (caughtParts is var (parentSheetIndex, fishSize, fromFishPond, stack))
                 {
                     rod.recordSize = user.caughtFish(
                         parentSheetIndex,
@@ -700,14 +718,19 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         fromFishPond,
                         stack
                     );
-                    user.faceDirection(2);
                 }
-                else
+
+                user.faceDirection(2);
+            }
+            else if (user.currentLocation.currentEvent is { } currentEvent)
+            {
+                if (caughtParts is var (parentSheetIndex, fishSize, fromFishPond, stack))
                 {
-                    Game1.currentLocation.currentEvent.caughtFish(parentSheetIndex, fishSize, user);
-                    rod.fishCaught = false;
-                    rod.doneFishing(user);
+                    currentEvent.caughtFish(parentSheetIndex, fishSize, user);
                 }
+
+                rod.fishCaught = false;
+                rod.doneFishing(user);
             }
 
             if (info is CatchInfo.FishCatch { IsLegendary: true })

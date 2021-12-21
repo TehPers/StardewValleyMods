@@ -31,6 +31,7 @@ namespace TehPers.FishingOverhaul.Config
         /// catch and treasure chest together would make an item that normally has a 1% chance of
         /// showing in a chest instead have a 99% chance of appearing.
         /// </summary>
+        [DefaultValue(true)]
         public bool InvertChancesOnPerfectCatch { get; set; } = true;
 
         /// <summary>

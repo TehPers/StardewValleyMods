@@ -2,7 +2,20 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
-## 3.1.0 - Unreleased
+## 3.1.1 - 2021-12-21
+
+### Added
+
+- Add global dart frequency config option for adjusting fish dart frequency across all fish.
+
+### Fixed
+
+- Fix West Ginger Island having tiger slime eggs instead of snake skulls.
+- Fix caught trash not showing up in collections.
+- Fix game thinking you keep catching record sized items after catching a single record-sized fish.
+- Fix Secret Notes and Journal Scraps being far more common than they should be.
+
+## 3.1.0 - 2021-12-20
 
 ### Added
 
