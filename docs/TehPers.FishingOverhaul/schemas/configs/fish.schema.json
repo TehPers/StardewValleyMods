@@ -35,14 +35,14 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Required streak for an increase in quality. For example, 3 means that every 3\nconsecutive perfect catches increases your catch quality by 1.",
+          "description": "Required streak for an increase in quality. For example, 3 means that every 3 consecutive perfect catches increases your catch quality by 1.",
           "default": 3
         },
         "MaxFishQuality": {
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "The max quality fish that can be caught. 0 = normal, 1 = silver, 2 = gold, 3 = iridium,\n4+ = beyond iridium.",
+          "description": "The max quality fish that can be caught. 0 = normal, 1 = silver, 2 = gold, 3 = iridium, 4+ = beyond iridium.",
           "default": 3
         },
         "MaxNormalFishQuality": {
@@ -56,7 +56,7 @@
               "maximum": 2147483647
             }
           ],
-          "description": "Determines the max quality fish a non-perfect catch can get, or null for no\nrestrictions.",
+          "description": "Determines the max quality fish a non-perfect catch can get, or null for no restrictions.",
           "default": null
         },
         "FishChances": {
@@ -75,7 +75,7 @@
       "properties": {
         "BaseChance": {
           "type": "number",
-          "description": "The base chance. Total chance is calculated as\nlocationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in the\nrange [minChance, maxChance], then bounded once again in the range [0, 1].",
+          "description": "The base chance. Total chance is calculated as locationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in the range [minChance, maxChance], then bounded once again in the range [0, 1].",
           "default": 0.0
         },
         "StreakFactor": {
@@ -113,7 +113,7 @@
           "additionalProperties": {
             "type": "number"
           },
-          "description": "The effects that specific locations have on this chance. Keys are location names and\nvalues are their factors."
+          "description": "The effects that specific locations have on this chance. Keys are location names and values are their factors."
         }
       }
     }

@@ -20,12 +20,12 @@
         },
         "AllowDuplicateLoot": {
           "type": "boolean",
-          "description": "Whether the treasure randomizer should be allowed to select the same loot option\nmultiple times. Some loot can't be repeated even if duplicate loot is enabled.",
+          "description": "Whether the treasure randomizer should be allowed to select the same loot option multiple times. Some loot can't be repeated even if duplicate loot is enabled.",
           "default": true
         },
         "InvertChancesOnPerfectCatch": {
           "type": "boolean",
-          "description": "Whether to invert the chances of each treasure entry when you get a perfect catch and\ntreasure chest at the same time. For example, when this is enabled, getting a perfect\ncatch and treasure chest together would make an item that normally has a 1% chance of\nshowing in a chest instead have a 99% chance of appearing.",
+          "description": "Whether to invert the chances of each treasure entry when you get a perfect catch and treasure chest at the same time. For example, when this is enabled, getting a perfect catch and treasure chest together would make an item that normally has a 1% chance of showing in a chest instead have a 99% chance of appearing.",
           "default": true
         },
         "CatchSpeed": {
@@ -52,7 +52,7 @@
               "$ref": "#/definitions/TehPers.FishingOverhaul.Config.FishingChances"
             }
           ],
-          "description": "The chances of getting additional loot when finding treasure. This is rolled until it\nfails or the max number of items have been added to the loot."
+          "description": "The chances of getting additional loot when finding treasure. This is rolled until it fails or the max number of items have been added to the loot."
         }
       }
     },
@@ -72,12 +72,12 @@
         },
         "PirateFactor": {
           "type": "number",
-          "description": "The effect that the pirate profession has. This is multiplied by your base chance\nbefore being added.",
+          "description": "The effect that the pirate profession has. This is multiplied by your base chance before being added.",
           "default": 1.0
         },
         "BaseChance": {
           "type": "number",
-          "description": "The base chance. Total chance is calculated as\nlocationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in the\nrange [minChance, maxChance], then bounded once again in the range [0, 1].",
+          "description": "The base chance. Total chance is calculated as locationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in the range [minChance, maxChance], then bounded once again in the range [0, 1].",
           "default": 0.0
         },
         "StreakFactor": {
@@ -115,7 +115,7 @@
           "additionalProperties": {
             "type": "number"
           },
-          "description": "The effects that specific locations have on this chance. Keys are location names and\nvalues are their factors."
+          "description": "The effects that specific locations have on this chance. Keys are location names and values are their factors."
         }
       }
     },
@@ -125,7 +125,7 @@
       "properties": {
         "BaseChance": {
           "type": "number",
-          "description": "The base chance. Total chance is calculated as\nlocationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in the\nrange [minChance, maxChance], then bounded once again in the range [0, 1].",
+          "description": "The base chance. Total chance is calculated as locationFactor * (baseChance + sum(factor * thing it's a factor of)), bounded in the range [minChance, maxChance], then bounded once again in the range [0, 1].",
           "default": 0.0
         },
         "StreakFactor": {
@@ -163,7 +163,7 @@
           "additionalProperties": {
             "type": "number"
           },
-          "description": "The effects that specific locations have on this chance. Keys are location names and\nvalues are their factors."
+          "description": "The effects that specific locations have on this chance. Keys are location names and values are their factors."
         }
       }
     }

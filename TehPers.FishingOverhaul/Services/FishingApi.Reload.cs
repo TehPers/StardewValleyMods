@@ -31,24 +31,24 @@ namespace TehPers.FishingOverhaul.Services
             this.treasureEntries.Clear();
 
             // Create new fishing data
-            var newFishTraits = new Dictionary<NamespacedKey, (IManifest sourceMod, FishTraits traits)>();
+            var newFishTraits =
+                new Dictionary<NamespacedKey, (IManifest sourceMod, FishTraits traits)>();
             var newFishEntries = new List<(IManifest sourceMod, FishEntry fish)>();
             var newTrashEntries = new List<(IManifest sourceMod, TrashEntry trash)>();
             var newTreasureEntries = new List<(IManifest sourceMod, TreasureEntry treasure)>();
 
             // Reload fishing data topologically
             var contentSources = this.contentSourcesFactory();
-            var remainingContent = new Queue<FishingContent>(contentSources.SelectMany(source => source.Reload()));
-            var unloadedByModId = remainingContent
-                .GroupBy(content => content.ModManifest.UniqueID)
-                .ToDictionary(
-                    group => group.Key,
-                    group => group.Count()
-                );
+            var remainingContent =
+                new Queue<FishingContent>(contentSources.SelectMany(source => source.Reload()));
+            var unloadedByModId = remainingContent.GroupBy(content => content.ModManifest.UniqueID)
+                .ToDictionary(group => group.Key, group => group.Count());
             while (remainingContent.TryDequeue(out var content))
             {
                 // Get dependencies (including TFO if it's not TFO)
-                var dependencies = content.ModManifest.Dependencies.Select(dependency => dependency.UniqueID).ToHashSet();
+                var dependencies = content.ModManifest.Dependencies
+                    .Select(dependency => dependency.UniqueID)
+                    .ToHashSet();
                 if (content.ModManifest.UniqueID != this.manifest.UniqueID)
                 {
                     dependencies.Add(this.manifest.UniqueID);
@@ -84,9 +84,23 @@ namespace TehPers.FishingOverhaul.Services
                         else
                         {
                             // Ignore the removed traits
-                            this.monitor.Log($"Ignoring removed fish traits for {key} from {content.ModManifest.UniqueID} because they are loaded from {oldEntry.sourceMod.UniqueID} which is not a dependency.", LogLevel.Warn);
-                            this.monitor.Log($"To override the old traits, add a dependency on {oldEntry.sourceMod.UniqueID} to {content.ModManifest.UniqueID}.", LogLevel.Warn);
+                            this.monitor.Log(
+                                $"Ignoring removed fish traits for {key} from {content.ModManifest.UniqueID} because they are loaded from {oldEntry.sourceMod.UniqueID} which is not a dependency.",
+                                LogLevel.Warn
+                            );
+                            this.monitor.Log(
+                                $"To override the old traits, add a dependency on {oldEntry.sourceMod.UniqueID} to {content.ModManifest.UniqueID} (even if it's an optional dependency).",
+                                LogLevel.Warn
+                            );
                         }
+                    }
+                    else
+                    {
+                        // Warn if no fish traits were matched
+                        this.monitor.Log(
+                            $"No fish traits were removed by a 'RemoveFishTraits' entry in {content.ModManifest.UniqueID} because no trait entries were registered for {key} and were added by a dependency of the mod.",
+                            LogLevel.Warn
+                        );
                     }
                 }
 
@@ -105,10 +119,17 @@ namespace TehPers.FishingOverhaul.Services
                         else
                         {
                             // Ignore the new traits
-                            this.monitor.Log($"Ignoring fish traits for {key} from {content.ModManifest.UniqueID} because they are already loaded from {oldEntry.sourceMod.UniqueID}.", LogLevel.Warn);
-                            this.monitor.Log($"To override the old traits, add a dependency on {oldEntry.sourceMod.UniqueID} to {content.ModManifest.UniqueID}.", LogLevel.Warn);
+                            this.monitor.Log(
+                                $"Ignoring fish traits for {key} from {content.ModManifest.UniqueID} because they are already loaded from {oldEntry.sourceMod.UniqueID}.",
+                                LogLevel.Warn
+                            );
+                            this.monitor.Log(
+                                $"To override the old traits, add a dependency on {oldEntry.sourceMod.UniqueID} to {content.ModManifest.UniqueID} (even if it's an optional dependency).",
+                                LogLevel.Warn
+                            );
                         }
-                    } else
+                    }
+                    else
                     {
                         // Add the new traits
                         newFishTraits.Add(key, (content.ModManifest, newTraits));
@@ -120,19 +141,27 @@ namespace TehPers.FishingOverhaul.Services
                 {
                     // Select the fish that match the filter and are added by a dependency
                     var matchingFish = newFishEntries
-                        .Where(entry => filter.Matches(entry.fish) && dependencies.Contains(entry.sourceMod.UniqueID))
+                        .Where(
+                            entry => filter.Matches(entry.fish)
+                                && dependencies.Contains(entry.sourceMod.UniqueID)
+                        )
                         .Select(entry => entry.fish)
                         .ToHashSet();
 
                     if (!matchingFish.Any())
                     {
                         // Warn if no fish were matched
-                        this.monitor.Log($"No fish were removed by a 'RemoveFish' entry in {content.ModManifest.UniqueID} because no fish matched the filter and were added by dependencies.", LogLevel.Warn);
+                        this.monitor.Log(
+                            $"No fish were removed by a 'RemoveFish' entry in {content.ModManifest.UniqueID} because no fish entries matched the filter and were added by a dependency of the mod.",
+                            LogLevel.Warn
+                        );
                     }
                     else
                     {
                         // Log the fish that were removed
-                        this.monitor.Log($"{content.ModManifest.UniqueID} removed {matchingFish.Count} fish.");
+                        this.monitor.Log(
+                            $"{content.ModManifest.UniqueID} removed {matchingFish.Count} fish."
+                        );
                     }
 
                     // Remove the fish
@@ -140,26 +169,36 @@ namespace TehPers.FishingOverhaul.Services
                 }
 
                 // Add fish
-                newFishEntries.AddRange(content.AddFish.Select(entry => (content.ModManifest, entry)));
+                newFishEntries.AddRange(
+                    content.AddFish.Select(entry => (content.ModManifest, entry))
+                );
 
                 // Remove trash
                 foreach (var filter in content.RemoveTrash)
                 {
                     // Select the trash that match the filter and are added by a dependency
                     var matchingTrash = newTrashEntries
-                        .Where(entry => filter.Matches(entry.trash) && dependencies.Contains(entry.sourceMod.UniqueID))
+                        .Where(
+                            entry => filter.Matches(entry.trash)
+                                && dependencies.Contains(entry.sourceMod.UniqueID)
+                        )
                         .Select(entry => entry.trash)
                         .ToHashSet();
 
                     if (!matchingTrash.Any())
                     {
                         // Warn if no trash were matched
-                        this.monitor.Log($"No trash were removed by a 'RemoveTrash' entry in {content.ModManifest.UniqueID} because no trash matched the filter and were added by dependencies.", LogLevel.Warn);
+                        this.monitor.Log(
+                            $"No trash were removed by a 'RemoveTrash' entry in {content.ModManifest.UniqueID} because no trash entries matched the filter and were added by a dependency of the mod.",
+                            LogLevel.Warn
+                        );
                     }
                     else
                     {
                         // Log the trash that were removed
-                        this.monitor.Log($"{content.ModManifest.UniqueID} removed {matchingTrash.Count} trash.");
+                        this.monitor.Log(
+                            $"{content.ModManifest.UniqueID} removed {matchingTrash.Count} trash."
+                        );
                     }
 
                     // Remove the trash
@@ -167,41 +206,67 @@ namespace TehPers.FishingOverhaul.Services
                 }
 
                 // Add trash
-                newTrashEntries.AddRange(content.AddTrash.Select(entry => (content.ModManifest, entry)));
+                newTrashEntries.AddRange(
+                    content.AddTrash.Select(entry => (content.ModManifest, entry))
+                );
 
                 // Remove treasure
                 foreach (var filter in content.RemoveTreasure)
                 {
                     // Select the treasure that match the filter and are added by a dependency
                     var matchingTreasure = newTreasureEntries
-                        .Where(entry => filter.Matches(entry.treasure) && dependencies.Contains(entry.sourceMod.UniqueID))
+                        .Where(
+                            entry => filter.Matches(entry.treasure)
+                                && dependencies.Contains(entry.sourceMod.UniqueID)
+                        )
                         .Select(entry => entry.treasure)
                         .ToHashSet();
 
                     if (!matchingTreasure.Any())
                     {
                         // Warn if no treasure were matched
-                        this.monitor.Log($"No treasure were removed by a 'RemoveTreasure' entry in {content.ModManifest.UniqueID} because no treasure matched the filter and were added by dependencies.", LogLevel.Warn);
+                        this.monitor.Log(
+                            $"No treasure were removed by a 'RemoveTreasure' entry in {content.ModManifest.UniqueID} because no treasure entries matched the filter and were added by a dependency of the mod.",
+                            LogLevel.Warn
+                        );
                     }
                     else
                     {
                         // Log the treasure that were removed
-                        this.monitor.Log($"{content.ModManifest.UniqueID} removed {matchingTreasure.Count} treasure.");
+                        this.monitor.Log(
+                            $"{content.ModManifest.UniqueID} removed {matchingTreasure.Count} treasure."
+                        );
                     }
 
                     // Remove the treasure
-                    newTreasureEntries.RemoveAll(entry => matchingTreasure.Contains(entry.treasure));
+                    newTreasureEntries.RemoveAll(
+                        entry => matchingTreasure.Contains(entry.treasure)
+                    );
                 }
 
                 // Add treasure
-                newTreasureEntries.AddRange(content.AddTreasure.Select(entry => (content.ModManifest, entry)));
+                newTreasureEntries.AddRange(
+                    content.AddTreasure.Select(entry => (content.ModManifest, entry))
+                );
             }
 
             // Update fishing data
-            this.fishTraits = newFishTraits.ToDictionary(item => item.Key, entry => entry.Value.traits);
-            this.fishEntries = newFishEntries.Select(item => this.fishEntryManagerFactory.Create(item.sourceMod, item.fish)).ToList();
-            this.trashEntries = newTrashEntries.Select(item => this.trashEntryManagerFactory.Create(item.sourceMod, item.trash)).ToList();
-            this.treasureEntries = newTreasureEntries.Select(item => this.treasureEntryManagerFactory.Create(item.sourceMod, item.treasure)).ToList();
+            this.fishTraits = newFishTraits.ToDictionary(
+                item => item.Key,
+                entry => entry.Value.traits
+            );
+            this.fishEntries = newFishEntries.Select(
+                    item => this.fishEntryManagerFactory.Create(item.sourceMod, item.fish)
+                )
+                .ToList();
+            this.trashEntries = newTrashEntries.Select(
+                    item => this.trashEntryManagerFactory.Create(item.sourceMod, item.trash)
+                )
+                .ToList();
+            this.treasureEntries = newTreasureEntries.Select(
+                    item => this.treasureEntryManagerFactory.Create(item.sourceMod, item.treasure)
+                )
+                .ToList();
 
             // Log the loaded content
             this.monitor.Log($"Loaded {this.fishTraits.Count} fish traits.", LogLevel.Info);

@@ -12,10 +12,6 @@ namespace TehPers.FishingOverhaul.Services
     {
         private List<TreasureEntry> GetDefaultTreasureData()
         {
-            // TODO: these needed?
-            //new TreasureData(Objects.STRANGE_DOLL1, 0.0025),
-            //new TreasureData(Objects.STRANGE_DOLL2, 0.0025),
-
             const double archaeologyChance = 0.015625;
 
             return new()
@@ -204,12 +200,6 @@ namespace TehPers.FishingOverhaul.Services
                         }.ToImmutableDictionary(),
                     },
                     ImmutableArray.Create(NamespacedKey.SdvObject(928))
-                ),
-
-                // Strange doll
-                new(
-                    new(0.01),
-                    Enumerable.Range(126, 2).Select(NamespacedKey.SdvObject).ToImmutableArray()
                 ),
 
                 // Rice shoot

@@ -32,7 +32,7 @@
               }
             ]
           },
-          "description": "Fish traits to remove. Only entries from your mod's dependencies (including Teh's\nFishing Overhaul) will be removed."
+          "description": "Fish traits to remove. Only entries from your mod's dependencies (including Teh's Fishing Overhaul) will be removed."
         },
         "AddFish": {
           "type": "array",
@@ -54,7 +54,7 @@
               }
             ]
           },
-          "description": "Fish entries to remove. Only entries from your mod's dependencies (including Teh's\nFishing Overhaul) will be removed."
+          "description": "Fish entries to remove. Only entries from your mod's dependencies (including Teh's Fishing Overhaul) will be removed."
         },
         "AddTrash": {
           "type": "array",
@@ -76,7 +76,7 @@
               }
             ]
           },
-          "description": "Trash entries to remove. Only entries from your mod's dependencies (including Teh's\nFishing Overhaul) will be removed."
+          "description": "Trash entries to remove. Only entries from your mod's dependencies (including Teh's Fishing Overhaul) will be removed."
         },
         "AddTreasure": {
           "type": "array",
@@ -98,14 +98,14 @@
               }
             ]
           },
-          "description": "Treasure entries to remove. Only entries from your mod's dependencies (including Teh's\nFishing Overhaul) will be removed."
+          "description": "Treasure entries to remove. Only entries from your mod's dependencies (including Teh's Fishing Overhaul) will be removed."
         },
         "Include": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "The additional content files to include. These are treated the same as your mod's\ncontent.json. The paths are relative to this file's content.json (this is different\nthan Content Patcher!)."
+          "description": "The additional content files to include. These are treated the same as your mod's content.json. The paths are relative to this file's content.json (this is different than Content Patcher!)."
         },
         "$schema": {
           "oneOf": [
@@ -224,7 +224,7 @@
       "properties": {
         "DepthMultiplier": {
           "type": "number",
-          "description": "Effect that sending the bobber by less than the max distance has on the chance. This\nvalue should be no more than 1.",
+          "description": "Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1.",
           "default": 0.1
         },
         "MaxDepth": {
@@ -243,7 +243,7 @@
         },
         "BaseChance": {
           "type": "number",
-          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight\nrelative to all available entries."
+          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries."
         },
         "StartTime": {
           "type": "integer",
@@ -318,14 +318,14 @@
           "items": {
             "type": "string"
           },
-          "description": "List of locations this should be available in. Leaving this empty will make this\navailable everywhere. Some locations have special handling. For example, the mines use\nthe location names \"UndergroundMine\" and \"UndergroundMine/N\", where N is the floor\nnumber (both location names are valid for the floor)."
+          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names \"UndergroundMine\" and \"UndergroundMine/N\", where N is the floor number (both location names are valid for the floor)."
         },
         "ExcludeLocations": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "List of locations this should not be available in. This takes priority over\nIncludeLocations."
+          "description": "List of locations this should not be available in. This takes priority over IncludeLocations."
         },
         "Position": {
           "oneOf": [
@@ -490,7 +490,7 @@
               }
             ]
           },
-          "description": "Raise custom events with this name to notify SMAPI mods that this was caught. Event key\nformat is \"namespace:key\" (for example \"TehPers.FishingOverhaul:GoldenWalnut\")."
+          "description": "Raise custom events with this name to notify SMAPI mods that this was caught. Event key format is \"namespace:key\" (for example \"TehPers.FishingOverhaul:GoldenWalnut\")."
         },
         "SetFlags": {
           "type": "array",
@@ -590,7 +590,7 @@
       "properties": {
         "BaseChance": {
           "type": "number",
-          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight\nrelative to all available entries."
+          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries."
         },
         "StartTime": {
           "type": "integer",
@@ -665,14 +665,14 @@
           "items": {
             "type": "string"
           },
-          "description": "List of locations this should be available in. Leaving this empty will make this\navailable everywhere. Some locations have special handling. For example, the mines use\nthe location names \"UndergroundMine\" and \"UndergroundMine/N\", where N is the floor\nnumber (both location names are valid for the floor)."
+          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names \"UndergroundMine\" and \"UndergroundMine/N\", where N is the floor number (both location names are valid for the floor)."
         },
         "ExcludeLocations": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "List of locations this should not be available in. This takes priority over\nIncludeLocations."
+          "description": "List of locations this should not be available in. This takes priority over IncludeLocations."
         },
         "Position": {
           "oneOf": [
@@ -817,7 +817,7 @@
               }
             }
           ],
-          "description": "The namespaced keys of the treasure. This must match every listed item key in the entry\nyou want to remove. For example, if an entry lists bait, stone, and wood as its\npossible item keys, you must list *all* of those to remove it."
+          "description": "The namespaced keys of the treasure. This must match every listed item key in the entry you want to remove. For example, if an entry lists bait, stone, and wood as its possible item keys, you must list *all* of those to remove it."
         },
         "AnyWithItem": {
           "oneOf": [
@@ -828,7 +828,7 @@
               "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
             }
           ],
-          "description": "A namespaced key in the treasure entry. Any entry that can produce this item will be\nremoved. This takes precedence over ItemKeys (if both are listed and this\ncondition is matched, then ItemKeys is ignored)."
+          "description": "A namespaced key in the treasure entry. Any entry that can produce this item will be removed. This takes precedence over ItemKeys (if both are listed and this condition is matched, then ItemKeys is ignored)."
         }
       }
     }

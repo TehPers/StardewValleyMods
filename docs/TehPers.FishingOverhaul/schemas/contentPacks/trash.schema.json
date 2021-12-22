@@ -86,7 +86,7 @@
       "properties": {
         "BaseChance": {
           "type": "number",
-          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight\nrelative to all available entries."
+          "description": "The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries."
         },
         "StartTime": {
           "type": "integer",
@@ -161,14 +161,14 @@
           "items": {
             "type": "string"
           },
-          "description": "List of locations this should be available in. Leaving this empty will make this\navailable everywhere. Some locations have special handling. For example, the mines use\nthe location names \"UndergroundMine\" and \"UndergroundMine/N\", where N is the floor\nnumber (both location names are valid for the floor)."
+          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names \"UndergroundMine\" and \"UndergroundMine/N\", where N is the floor number (both location names are valid for the floor)."
         },
         "ExcludeLocations": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "List of locations this should not be available in. This takes priority over\nIncludeLocations."
+          "description": "List of locations this should not be available in. This takes priority over IncludeLocations."
         },
         "Position": {
           "oneOf": [
@@ -347,7 +347,7 @@
               }
             ]
           },
-          "description": "Raise custom events with this name to notify SMAPI mods that this was caught. Event key\nformat is \"namespace:key\" (for example \"TehPers.FishingOverhaul:GoldenWalnut\")."
+          "description": "Raise custom events with this name to notify SMAPI mods that this was caught. Event key format is \"namespace:key\" (for example \"TehPers.FishingOverhaul:GoldenWalnut\")."
         },
         "SetFlags": {
           "type": "array",

@@ -32,14 +32,21 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// <returns>Whether the entry matches this filter.</returns>
         public bool Matches(TreasureEntry entry)
         {
-            // Check if the item keys match
-            if (this.AnyWithItem is { } anyWithItem && entry.ItemKeys.Contains(anyWithItem)
-                || this.ItemKeys is { } itemKeys && !itemKeys.All(entry.ItemKeys.Contains))
+            // Check if any of the item keys match
+            if (this.AnyWithItem is { } anyWithItem && entry.ItemKeys.Contains(anyWithItem))
             {
-                return false;
+                return true;
             }
 
-            return true;
+            // Check if all the item keys match
+            if (this.ItemKeys is { } itemKeys
+                && itemKeys.Length == entry.ItemKeys.Length
+                && itemKeys.All(entry.ItemKeys.Contains))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -13,7 +13,7 @@
       "properties": {
         "ShowFishingHud": {
           "type": "boolean",
-          "description": "Whether or not to show current streak, chance for treasure, chance for each fish, etc.\nwhile fishing.",
+          "description": "Whether or not to show current streak, chance for treasure, chance for each fish, etc. while fishing.",
           "default": true
         },
         "TopLeftX": {

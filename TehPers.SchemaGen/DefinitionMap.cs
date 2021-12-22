@@ -284,7 +284,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
             var typeDescription = type.GetCustomAttributes<DescriptionAttribute>(false)
                 .Select(attr => attr.Description)
                 .FirstOrDefault();
-            typeDescription ??= type.GetXmlDocsSummary();
+            typeDescription ??= type.GetXmlDocsSummary().Replace("\n", " ");
 
             return type switch
             {
@@ -375,7 +375,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
 
                 if (required.Count > 0)
                 {
-                    result["required"] = new JArray(required.ToArray());
+                    result["required"] = new JArray(required.Cast<object>().ToArray());
                 }
 
                 if (properties.Count > 0)
@@ -407,7 +407,7 @@ namespace TehPers.FishingOverhaul.SchemaGen
                 .GetCustomAttributes<DescriptionAttribute>(true)
                 .Select(attr => attr.Description)
                 .FirstOrDefault();
-            description ??= member.Accessor.GetXmlDocsSummary();
+            description ??= member.Accessor.GetXmlDocsSummary().Replace("\n", " ");
             if (!string.IsNullOrWhiteSpace(description))
             {
                 schema["description"] = description;

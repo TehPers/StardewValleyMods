@@ -22,12 +22,12 @@ namespace TehPers.FishingOverhaul.Api.Content
         public bool Matches(FishEntry entry)
         {
             // Check if the fish key matches
-            if (this.FishKey != null && this.FishKey != entry.FishKey)
+            if (this.FishKey is { } fishKey && fishKey == entry.FishKey)
             {
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         }
     }
 }
