@@ -25,6 +25,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private readonly Texture2D whitePixel;
 
+        private readonly Texture2D mask;
+        private readonly RenderTarget2D lightBuffer;
+
         public FishingHudRenderer(
             IModHelper helper,
             IFishingApi fishingApi,
@@ -38,16 +41,69 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.namespaceRegistry = namespaceRegistry;
             this.whitePixel = new(Game1.graphics.GraphicsDevice, 1, 1);
             this.whitePixel.SetData(new[] { Color.White });
+
+            this.mask = this.helper.Content.Load<Texture2D>("assets/mask.png");
+            this.lightBuffer = new(
+                Game1.graphics.GraphicsDevice,
+                Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth,
+                Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferHeight,
+                false,
+                Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferFormat,
+                DepthFormat.Depth24
+            );
         }
 
         public void Setup()
         {
             this.helper.Events.Display.RenderedHud += this.RenderFishingHud;
+            this.helper.Events.Display.RenderedWorld += this.RenderMask;
         }
 
         public void Dispose()
         {
             this.helper.Events.Display.RenderedHud -= this.RenderFishingHud;
+            this.helper.Events.Display.RenderedWorld -= this.RenderMask;
+        }
+
+        private void RenderMask(object? sender, RenderedWorldEventArgs e)
+        {
+            // Draw the lighting
+            e.SpriteBatch.End();
+            var previousTargets = Game1.graphics.GraphicsDevice.GetRenderTargets();
+            Game1.graphics.GraphicsDevice.SetRenderTarget(this.lightBuffer);
+            Game1.graphics.GraphicsDevice.Clear(new(new Vector4(0.1f, 0.1f, 0.1f, 1.0f)));
+            e.SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive);
+            var centerX = this.lightBuffer.Width / 2;
+            var centerY = this.lightBuffer.Height / 2;
+            e.SpriteBatch.Draw(this.mask, new Rectangle(centerX - 300, centerY - 300, 600, 600), Color.White);
+            e.SpriteBatch.Draw(this.mask, new Rectangle(100, 300, 200, 200), Color.Blue);
+            e.SpriteBatch.Draw(this.mask, new Rectangle(400, 0, 300, 300), Color.Red);
+            e.SpriteBatch.Draw(this.mask, new Rectangle(750, 300, 500, 500), Color.Green);
+
+            // Draw the alpha mask
+            e.SpriteBatch.End();
+            Game1.graphics.GraphicsDevice.SetRenderTargets(previousTargets);
+            var blendState = new BlendState
+            {
+                AlphaBlendFunction = BlendFunction.Add,
+                AlphaSourceBlend = Blend.Zero,
+                AlphaDestinationBlend = Blend.One,
+                ColorBlendFunction = BlendFunction.Add,
+                ColorSourceBlend = Blend.DestinationColor,
+                ColorDestinationBlend = Blend.Zero,
+            };
+            e.SpriteBatch.Begin(SpriteSortMode.Immediate, blendState);
+            e.SpriteBatch.Draw(this.lightBuffer, Vector2.Zero, Color.White);
+
+            // Reset sprite batch
+            e.SpriteBatch.End();
+            e.SpriteBatch.Begin(
+                SpriteSortMode.Deferred,
+                BlendState.AlphaBlend,
+                SamplerState.PointClamp,
+                DepthStencilState.None,
+                RasterizerState.CullCounterClockwise
+            );
         }
 
         private void RenderFishingHud(object? sender, RenderedHudEventArgs e)
@@ -203,16 +259,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 Vector2.Zero,
                 SpriteEffects.None,
                 0.85F
-            );
-
-            // Reset sprite batch
-            e.SpriteBatch.End();
-            e.SpriteBatch.Begin(
-                SpriteSortMode.Deferred,
-                BlendState.AlphaBlend,
-                SamplerState.PointClamp,
-                DepthStencilState.None,
-                RasterizerState.CullCounterClockwise
             );
         }
     }
