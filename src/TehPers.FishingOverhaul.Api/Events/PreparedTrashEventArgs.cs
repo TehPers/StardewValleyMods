@@ -1,0 +1,37 @@
+﻿using StardewValley;
+using System;
+using System.Collections.Generic;
+using TehPers.FishingOverhaul.Api.Content;
+using TehPers.FishingOverhaul.Api.Weighted;
+
+namespace TehPers.FishingOverhaul.Api.Events
+{
+    /// <summary>
+    /// Event data for after trash chances are calculated.
+    /// </summary>
+    public class PreparedTrashEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Information about the <see cref="Farmer"/> that is fishing.
+        /// </summary>
+        public FishingInfo FishingInfo { get; }
+
+        /// <summary>
+        /// The chances of finding trash. The weights are not yet normalized.
+        /// </summary>
+        public List<IWeightedValue<TrashEntry>> TrashChances { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PreparedTrashEventArgs"/> class.
+        /// </summary>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
+        /// <param name="trashChances">The chances of finding trash.</param>
+        /// <exception cref="ArgumentNullException">An argument was null.</exception>
+        public PreparedTrashEventArgs(FishingInfo fishingInfo, List<IWeightedValue<TrashEntry>> trashChances)
+        {
+            this.FishingInfo = fishingInfo ?? throw new ArgumentNullException(nameof(fishingInfo));
+            this.TrashChances =
+                trashChances ?? throw new ArgumentNullException(nameof(trashChances));
+        }
+    }
+}

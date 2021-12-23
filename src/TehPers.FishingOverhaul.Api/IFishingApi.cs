@@ -9,6 +9,7 @@ using StardewValley.Locations;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api.Content;
+using TehPers.FishingOverhaul.Api.Events;
 using TehPers.FishingOverhaul.Api.Weighted;
 
 namespace TehPers.FishingOverhaul.Api
@@ -32,6 +33,26 @@ namespace TehPers.FishingOverhaul.Api
         /// Invoked whenever an item is caught and raises a custom event.
         /// </summary>
         public event EventHandler<CustomEvent>? CustomEvent;
+
+        /// <summary>
+        /// Invoked after the default fishing info is created.
+        /// </summary>
+        public event EventHandler<CreatedDefaultFishingInfoEventArgs>? CreatedDefaultFishingInfo;
+
+        /// <summary>
+        /// Invoked after fish chances are calculated.
+        /// </summary>
+        public event EventHandler<PreparedFishEventArgs>? PreparedFishChances;
+
+        /// <summary>
+        /// Invoked after trash chances are calculated.
+        /// </summary>
+        public event EventHandler<PreparedTrashEventArgs>? PreparedTrashChances;
+
+        /// <summary>
+        /// Invoked after treasure chances are calculated.
+        /// </summary>
+        public event EventHandler<PreparedTreasureEventArgs>? PreparedTreasureChances;
 
         /// <summary>
         /// Creates a default <see cref="FishingInfo"/> for a farmer.
@@ -155,21 +176,21 @@ namespace TehPers.FishingOverhaul.Api
             switch (possibleCatch)
             {
                 case PossibleCatch.Fish(var entry):
-                {
-                    isFish = true;
-                    return entry.FishKey.ToString();
-                }
+                    {
+                        isFish = true;
+                        return entry.FishKey.ToString();
+                    }
                 case PossibleCatch.Trash(var entry):
-                {
-                    isFish = false;
-                    return entry.ItemKey.ToString();
-                }
+                    {
+                        isFish = false;
+                        return entry.ItemKey.ToString();
+                    }
                 default:
-                {
-                    throw new InvalidOperationException(
-                        $"Unknown possible catch type: {possibleCatch}"
-                    );
-                }
+                    {
+                        throw new InvalidOperationException(
+                            $"Unknown possible catch type: {possibleCatch}"
+                        );
+                    }
             }
         }
 

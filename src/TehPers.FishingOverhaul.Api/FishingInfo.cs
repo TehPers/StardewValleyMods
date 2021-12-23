@@ -7,11 +7,15 @@ using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core.Api.Gameplay;
+using TehPers.Core.Api.Items;
 
 namespace TehPers.FishingOverhaul.Api
 {
     /// <summary>
     /// Information about a <see cref="Farmer"/> that is fishing.
+    ///
+    /// It is recommended to instead call <see cref="IFishingApi.CreateDefaultFishingInfo"/> to
+    /// create a new instance of this rather than call the constructor directly.
     /// </summary>
     /// <param name="User">The <see cref="Farmer"/> that is fishing.</param>
     public record FishingInfo(Farmer User)
@@ -92,6 +96,29 @@ namespace TehPers.FishingOverhaul.Api
             User.CurrentTool is FishingRod { isFishing: true, bobber: { Value: var bobberPos } }
                 ? bobberPos / 64
                 : User.getStandingPosition() / 64;
+
+        /// <summary>
+        /// The bait used for fishing.
+        /// </summary>
+        public NamespacedKey? Bait { get; } = User.CurrentTool is FishingRod rod
+            ? FishingInfo.ConvertAttachmentIndex(rod.getBaitAttachmentIndex())
+            : null;
+
+        /// <summary>
+        /// The bobber/tackle used for fishing.
+        /// </summary>
+        public NamespacedKey? Bobber { get; } = User.CurrentTool is FishingRod rod
+            ? FishingInfo.ConvertAttachmentIndex(rod.getBobberAttachmentIndex())
+            : null;
+
+        private static NamespacedKey? ConvertAttachmentIndex(int index)
+        {
+            return index switch
+            {
+                < 0 => null,
+                _ => NamespacedKey.SdvObject(index),
+            };
+        }
 
         /// <summary>
         /// Gets the location names associated with a <see cref="GameLocation"/>. Some locations

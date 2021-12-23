@@ -2,6 +2,16 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.1.3 - Unreleased
+
+### Added
+
+- Add fishing bait and bobber to `FishingInfo` in the API.
+- Add event for after the default fishing info has been created to modify it.
+  - Map overrides, EMP overrides, and magic bait have been changed to event handlers for this.
+- Add event for after fish/trash/treasure chances have been created to modify them.
+  - Curiosity lure's effect has been changed to an event handler for this.
+
 ## 3.1.2 - 2021-12-22
 
 ### Fixed

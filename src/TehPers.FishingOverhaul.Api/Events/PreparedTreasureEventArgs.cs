@@ -1,0 +1,40 @@
+﻿using StardewValley;
+using System;
+using System.Collections.Generic;
+using TehPers.FishingOverhaul.Api.Content;
+using TehPers.FishingOverhaul.Api.Weighted;
+
+namespace TehPers.FishingOverhaul.Api.Events
+{
+    /// <summary>
+    /// Event data for after treasure chances are calculated.
+    /// </summary>
+    public class PreparedTreasureEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Information about the <see cref="Farmer"/> that is fishing.
+        /// </summary>
+        public FishingInfo FishingInfo { get; }
+
+        /// <summary>
+        /// The chances of finding treasure. The weights are not yet normalized.
+        /// </summary>
+        public List<IWeightedValue<TreasureEntry>> TreasureChances { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PreparedTreasureEventArgs"/> class.
+        /// </summary>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
+        /// <param name="treasureChances">The chances of finding treasure.</param>
+        /// <exception cref="ArgumentNullException">An argument was null.</exception>
+        public PreparedTreasureEventArgs(
+            FishingInfo fishingInfo,
+            List<IWeightedValue<TreasureEntry>> treasureChances
+        )
+        {
+            this.FishingInfo = fishingInfo ?? throw new ArgumentNullException(nameof(fishingInfo));
+            this.TreasureChances = treasureChances
+                ?? throw new ArgumentNullException(nameof(treasureChances));
+        }
+    }
+}
