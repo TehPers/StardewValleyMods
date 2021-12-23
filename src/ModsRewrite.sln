@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31424.327
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TehPers.Core", "TehPers.Core\TehPers.Core.csproj", "{C7DEC246-F6E4-45DE-ABF8-42179C9B8E5F}"
 EndProject
@@ -16,6 +16,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.PowerGrid.Generators", "TehPers.PowerGrid.Generators\TehPers.PowerGrid.Generators.csproj", "{2A4076E1-6CDA-47A5-83CF-7315071B92A1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TehPers.SchemaGen", "TehPers.SchemaGen\TehPers.SchemaGen.csproj", "{789EFF2F-4DFF-496E-8051-40BCD9BBF77E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TehPers.FishSword", "TehPers.FishSword\TehPers.FishSword.csproj", "{81C0B98A-67AF-4EA9-AD3B-BEECCED4E8E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Util", "Util", "{C3305962-FB70-4767-A68D-F15B929F6E3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,9 +55,16 @@ Global
 		{789EFF2F-4DFF-496E-8051-40BCD9BBF77E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{789EFF2F-4DFF-496E-8051-40BCD9BBF77E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{789EFF2F-4DFF-496E-8051-40BCD9BBF77E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81C0B98A-67AF-4EA9-AD3B-BEECCED4E8E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81C0B98A-67AF-4EA9-AD3B-BEECCED4E8E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81C0B98A-67AF-4EA9-AD3B-BEECCED4E8E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81C0B98A-67AF-4EA9-AD3B-BEECCED4E8E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{789EFF2F-4DFF-496E-8051-40BCD9BBF77E} = {C3305962-FB70-4767-A68D-F15B929F6E3E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5883068B-7A2C-4A31-A689-517670E07A4A}

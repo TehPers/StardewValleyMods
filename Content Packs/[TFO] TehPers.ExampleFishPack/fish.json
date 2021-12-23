@@ -1,0 +1,47 @@
+{
+  "$schema": "https://raw.githubusercontent.com/TehPers/StardewValleyMods/master/docs/TehPers.FishingOverhaul/schemas/contentPacks/content.schema.json",
+  "AddFish": [
+    {
+      "FishKey": "StardewValley:Object/832",
+      "AvailabilityInfo": {
+        "BaseChance": 0.1,
+        "DepthMultiplier": 0.025,
+        "IncludeLocations": ["Beach"],
+        "StartTime": 800,
+        "EndTime": 1400,
+        "Seasons": ["Spring"],
+        "Weathers": ["Sunny"]
+      }
+    },
+    {
+      "FishKey": "StardewValley:Weapon/31",
+      "AvailabilityInfo": {
+        "BaseChance": 0.01,
+        "DepthMultiplier": 0.0025,
+        "ExcludeLocations": ["Submarine"],
+        "When": {
+          "HasProfession": "Brute",
+          "HasFlag |contains=TehPers.ExampleFishPack/Femur": "false"
+        }
+      },
+      "OnCatch": {
+        "SetFlags": ["TehPers.ExampleFishPack/Femur"]
+      }
+    },
+    {
+      "FishKey": "StardewValley:Object/60",
+      "AvailabilityInfo": {
+        "BaseChance": 0.1,
+        "IncludeLocations": ["Beach"],
+        "When": {
+          "HasConversationTopic |contains=TehPers.ExampleFishPack/test": "false"
+        }
+      },
+      "OnCatch": {
+        "StartConversations": {
+          "TehPers.ExampleFishPack/test": 2
+        }
+      }
+    }
+  ]
+}

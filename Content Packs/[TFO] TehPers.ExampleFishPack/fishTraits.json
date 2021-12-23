@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/TehPers/StardewValleyMods/master/docs/TehPers.FishingOverhaul/schemas/contentPacks/content.schema.json",
+  "SetFishTraits": {
+    "StardewValley:Object/832": {
+      "DartFrequency": 80,
+      "DartBehavior": "Floater",
+      "MinSize": 1,
+      "MaxSize": 36
+    },
+    "StardewValley:Weapon/31": {
+      "DartFrequency": 20,
+      "DartBehavior": "Floater",
+      "MinSize": 8,
+      "MaxSize": 40,
+      "IsLegendary": true
+    },
+    "StardewValley:Object/60": {
+      "DartFrequency": 20,
+      "DartBehavior": "Floater",
+      "MinSize": 1,
+      "MaxSize": 4
+    }
+  }
+}
