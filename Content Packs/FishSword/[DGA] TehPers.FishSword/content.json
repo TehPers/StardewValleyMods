@@ -1,0 +1,30 @@
+[
+  {
+    // Fish sword
+    "$ItemType": "MeleeWeapon",
+    "ID": "FishSword",
+    "Type": "Sword",
+    "Texture": "assets/fish sword.png:0",
+
+    "MinimumDamage": 17,
+    "MaximumDamage": 24,
+    "Knockback": 1,
+    "CritChance": 0.1,
+    "CritMultiplier": 3
+  },
+  {
+    // Sea weed
+    "$ItemType": "Object",
+    "ID": "SeaWeed",
+    "Texture": "assets/sea weed.png:0",
+    "Category": "Cooking",
+    "Edibility": 5,
+    "EdibleIsDrink": false,
+    "EdibleBuffs": {
+      "Speed": -3,
+      "Duration": 30
+    },
+    "SellPrice": 20,
+    "UniversalGiftTaste": -40
+  }
+]
