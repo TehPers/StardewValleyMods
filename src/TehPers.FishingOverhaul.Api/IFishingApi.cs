@@ -208,7 +208,19 @@ namespace TehPers.FishingOverhaul.Api
 
         IEnumerable<string> ISimplifiedFishingApi.GetPossibleTreasure(Farmer farmer)
         {
-            return this.GetPossibleTreasure(this.CreateDefaultFishingInfo(farmer))
+            var fishingInfo = this.CreateDefaultFishingInfo(farmer);
+            var catchInfo = new CatchInfo.FishCatch(
+                fishingInfo,
+                new(NamespacedKey.SdvObject(0), new(0.0)),
+                new StardewValley.Object(0, 1),
+                0,
+                false,
+                0,
+                0,
+                new(false, TreasureState.None),
+                false
+            );
+            return this.GetPossibleTreasure(catchInfo)
                 .SelectMany(entry => entry.ItemKeys)
                 .Select(key => key.ToString());
         }

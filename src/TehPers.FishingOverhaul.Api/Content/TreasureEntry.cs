@@ -15,7 +15,6 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// </summary>
     /// <param name="AvailabilityInfo">The availability information.</param>
     /// <param name="ItemKeys">The possible namespaced keys for the loot. The item key is chosen randomly.</param>
-    /// <inheritdoc cref="Entry{T}"/>
     [JsonDescribe]
     public record TreasureEntry(
         AvailabilityInfo AvailabilityInfo,
@@ -41,6 +40,7 @@ namespace TehPers.FishingOverhaul.Api.Content
         [DefaultValue(true)]
         public bool AllowDuplicates { get; init; } = true;
 
+        /// <inheritdoc/>
         public override bool TryCreateItem(
             FishingInfo fishingInfo,
             INamespaceRegistry namespaceRegistry,

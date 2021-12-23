@@ -31,7 +31,7 @@ namespace TehPers.Core.Api.Content
         /// <param name="path">The path to the file.</param>
         /// <param name="mode">The mode to open the file in.</param>
         /// <returns>The file's stream.</returns>
-        /// <exception cref="ArgumentException">The <see cref="mode"/> was not supported.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="mode"/> was not supported.</exception>
         Stream Open(string path, FileMode mode);
     }
 }

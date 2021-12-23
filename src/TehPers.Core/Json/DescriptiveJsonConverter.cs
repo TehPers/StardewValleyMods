@@ -15,10 +15,11 @@ namespace TehPers.Core.Json
 
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            if (writer is not DescriptiveJsonWriter commentableWriter)
+            if (value is null || writer is not DescriptiveJsonWriter commentableWriter)
             {
                 this.enabled = false;
                 serializer.Serialize(writer, value);
+                this.enabled = true;
                 return;
             }
 
@@ -39,7 +40,7 @@ namespace TehPers.Core.Json
         )
         {
             var descriptions = new Dictionary<string, string>();
-            var childrenValues = new Dictionary<string, object>();
+            var childrenValues = new Dictionary<string, object?>();
 
             // Get all the property descriptions
             foreach (var property in value.GetType().GetProperties())
@@ -93,8 +94,8 @@ namespace TehPers.Core.Json
 
         private static void GetMemberData<T>(
             T memberInfo,
-            object value,
-            IDictionary<string, object> values,
+            object? value,
+            IDictionary<string, object?> values,
             IDictionary<string, string> descriptions
         )
             where T : MemberInfo

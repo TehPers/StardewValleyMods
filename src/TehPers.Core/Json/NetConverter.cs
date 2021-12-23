@@ -7,13 +7,21 @@ namespace TehPers.Core.Json
 {
     internal class NetConverter : JsonConverter
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
+            if (value is not AbstractNetSerializable serializable)
+            {
+                throw new ArgumentException(
+                    "Value must be a serializable net object.",
+                    nameof(serializable)
+                );
+            }
+
             // Write the object to a stream and store it in an exposer object
             using var stream = new MemoryStream();
             using var binaryWriter = new BinaryWriter(stream);
-            ((AbstractNetSerializable)value).WriteFull(binaryWriter);
-            var exposer = new NetExposer(value.GetType(), stream.ToArray());
+            serializable.WriteFull(binaryWriter);
+            var exposer = new NetExposer(serializable.GetType(), stream.ToArray());
 
             serializer.Serialize(writer, exposer);
         }
@@ -21,7 +29,7 @@ namespace TehPers.Core.Json
         public override object ReadJson(
             JsonReader reader,
             Type objectType,
-            object existingValue,
+            object? existingValue,
             JsonSerializer serializer
         )
         {

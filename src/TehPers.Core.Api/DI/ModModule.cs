@@ -9,12 +9,24 @@ namespace TehPers.Core.Api.DI
     /// <inheritdoc cref="IModModule"/>
     public abstract class ModModule : BaseModule, IModModule
     {
+        /// <inheritdoc/>
         public IBindingRoot GlobalProxyRoot => this.Kernel.GlobalProxyRoot;
+
+        /// <inheritdoc/>
         public new IModKernel Kernel { get; private set; }
+
+        /// <inheritdoc/>
         protected override IKernel KernelInstance => this.Kernel;
+
+        /// <inheritdoc/>
         public IModKernelFactory ParentFactory => this.Kernel.ParentFactory;
+
+        /// <inheritdoc/>
         public IMod ParentMod => this.Kernel.ParentMod;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ModModule"/> class.
+        /// </summary>
         protected ModModule()
         {
             // Kernel should not be used until after `OnLoad` is called
@@ -22,11 +34,13 @@ namespace TehPers.Core.Api.DI
             this.Kernel = null!;
         }
 
+        /// <inheritdoc/>
         public override void Unbind(Type service)
         {
             this.Kernel.Unbind(service);
         }
 
+        /// <inheritdoc/>
         public override void OnLoad(IKernel kernel)
         {
             _ = kernel ?? throw new ArgumentNullException(nameof(kernel));
@@ -42,6 +56,7 @@ namespace TehPers.Core.Api.DI
             base.OnLoad(kernel);
         }
 
+        /// <inheritdoc/>
         public override void OnUnload(IKernel kernel)
         {
             base.OnUnload(kernel);

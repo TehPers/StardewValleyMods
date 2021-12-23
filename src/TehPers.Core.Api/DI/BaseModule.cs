@@ -19,7 +19,7 @@ namespace TehPers.Core.Api.DI
         public ICollection<IBinding> Bindings { get; }
 
         /// <inheritdoc/>
-        public IKernel Kernel { get; private set; }
+        public IKernel? Kernel { get; private set; }
 
         /// <inheritdoc/>
         public string Name => this.GetType().FullName ?? this.GetType().Name;

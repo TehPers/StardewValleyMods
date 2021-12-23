@@ -39,6 +39,7 @@
     "TehPers.FishingOverhaul.Api.Content.TrashEntry": {
       "type": "object",
       "additionalProperties": false,
+      "description": "A trash availability entry.",
       "required": [
         "ItemKey",
         "AvailabilityInfo"
@@ -49,7 +50,8 @@
             {
               "$ref": "#/definitions/TehPers.Core.Api.Items.NamespacedKey"
             }
-          ]
+          ],
+          "description": "The item key."
         },
         "AvailabilityInfo": {
           "oneOf": [
@@ -218,6 +220,7 @@
     },
     "TehPers.Core.Api.Gameplay.Seasons": {
       "type": "string",
+      "description": "Seasons within the game. Because this is a flags-style enum, multiple seasons can be combined.",
       "enum": [
         "None",
         "Spring",
@@ -229,6 +232,7 @@
     },
     "TehPers.Core.Api.Gameplay.Weathers": {
       "type": "string",
+      "description": "Weathers within the game. Because this is a flags-style enum, multiple weathers can be combined.",
       "enum": [
         "None",
         "Sunny",

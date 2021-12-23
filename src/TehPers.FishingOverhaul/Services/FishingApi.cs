@@ -21,7 +21,6 @@ namespace TehPers.FishingOverhaul.Services
     /// <summary>
     /// Default API for working with fishing.
     /// </summary>
-    /// <inheritdoc cref="IFishingApi" />
     public sealed partial class FishingApi : IFishingApi
     {
         private readonly IModHelper helper;
@@ -49,8 +48,13 @@ namespace TehPers.FishingOverhaul.Services
 
         private bool reloadRequested;
 
+        /// <inheritdoc/>
         public event EventHandler<CatchInfo>? CaughtItem;
+
+        /// <inheritdoc/>
         public event EventHandler<List<Item>>? OpenedChest;
+
+        /// <inheritdoc/>
         public event EventHandler<CustomEvent>? CustomEvent;
 
         internal FishingApi(
@@ -91,6 +95,7 @@ namespace TehPers.FishingOverhaul.Services
             this.reloadRequested = true;
         }
 
+        /// <inheritdoc/>
         public FishingInfo CreateDefaultFishingInfo(Farmer farmer)
         {
             var fishingInfo = new FishingInfo(farmer);
@@ -198,6 +203,7 @@ namespace TehPers.FishingOverhaul.Services
             return null;
         }
 
+        /// <inheritdoc/>
         public IEnumerable<IWeightedValue<FishEntry>> GetFishChances(FishingInfo fishingInfo)
         {
             // Reload data if necessary
@@ -242,6 +248,7 @@ namespace TehPers.FishingOverhaul.Services
             return chances;
         }
 
+        /// <inheritdoc/>
         public bool TryGetFishTraits(
             NamespacedKey fishKey,
             [NotNullWhen(true)] out FishTraits? traits
@@ -261,6 +268,7 @@ namespace TehPers.FishingOverhaul.Services
             return true;
         }
 
+        /// <inheritdoc/>
         public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(FishingInfo fishingInfo)
         {
             // Reload data if necessary
@@ -275,6 +283,7 @@ namespace TehPers.FishingOverhaul.Services
                 .Condense();
         }
 
+        /// <inheritdoc/>
         public IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(
             FishingInfo fishingInfo
         )
@@ -291,23 +300,27 @@ namespace TehPers.FishingOverhaul.Services
                 .Condense();
         }
 
+        /// <inheritdoc/>
         public double GetChanceForFish(Farmer farmer)
         {
             var streak = this.GetStreak(farmer);
             return this.fishConfig.FishChances.GetChance(farmer, streak);
         }
 
+        /// <inheritdoc/>
         public double GetChanceForTreasure(Farmer farmer)
         {
             var streak = this.GetStreak(farmer);
             return this.treasureConfig.TreasureChances.GetChance(farmer, streak);
         }
 
+        /// <inheritdoc/>
         public bool IsLegendary(NamespacedKey fishKey)
         {
             return this.TryGetFishTraits(fishKey, out var traits) && traits.IsLegendary;
         }
 
+        /// <inheritdoc/>
         public int GetStreak(Farmer farmer)
         {
             var key = $"{this.stateKey}/streak";
@@ -317,18 +330,21 @@ namespace TehPers.FishingOverhaul.Services
                     : 0;
         }
 
+        /// <inheritdoc/>
         public void SetStreak(Farmer farmer, int streak)
         {
             var key = $"{this.stateKey}/streak";
             farmer.modData[key] = streak.ToString();
         }
 
+        /// <inheritdoc/>
         public PossibleCatch GetPossibleCatch(FishingInfo fishingInfo)
         {
             // Choose a random fish if one hasn't been chosen yet
             var fishChance = this.GetChanceForFish(fishingInfo.User);
-            IEnumerable<IWeightedValue<FishEntry?>> possibleFish = this.GetFishChances(fishingInfo)
-                .Normalize(fishChance);
+            var possibleFish =
+                (IEnumerable<IWeightedValue<FishEntry?>>)this.GetFishChances(fishingInfo)
+                    .Normalize(fishChance);
             var fishEntry = possibleFish.Append(new WeightedValue<FishEntry?>(null, 1 - fishChance))
                 .ChooseOrDefault(Game1.random)
                 ?.Value;
@@ -352,6 +368,7 @@ namespace TehPers.FishingOverhaul.Services
             return new PossibleCatch.Trash(new(defaultTrashKey, new(0.0)));
         }
 
+        /// <inheritdoc/>
         public IEnumerable<TreasureEntry> GetPossibleTreasure(CatchInfo.FishCatch catchInfo)
         {
             // Get possible loot
@@ -394,17 +411,18 @@ namespace TehPers.FishingOverhaul.Services
             }
         }
 
+        /// <inheritdoc/>
         public void RaiseCustomEvent(CustomEvent customEvent)
         {
             this.CustomEvent?.Invoke(this, customEvent);
         }
 
-        public void OnCaughtItem(CatchInfo e)
+        internal void OnCaughtItem(CatchInfo e)
         {
             this.CaughtItem?.Invoke(this, e);
         }
 
-        public void OnOpenedChest(List<Item> e)
+        internal void OnOpenedChest(List<Item> e)
         {
             this.OpenedChest?.Invoke(this, e);
         }

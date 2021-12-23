@@ -14,27 +14,28 @@ namespace TehPers.Core.DI
 {
     public abstract class CoreKernel : StandardKernel
     {
-        private static readonly MethodInfo resolveGeneric =
-            typeof(CoreKernel).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
-                .Single(method => method.Name == nameof(CoreKernel.Resolve) && method.IsGenericMethod);
+        private static readonly MethodInfo resolveGeneric = typeof(CoreKernel)
+            .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+            .Single(method => method.Name == nameof(CoreKernel.Resolve) && method.IsGenericMethod);
 
         private static readonly MethodInfo castEnumerableInfo =
             typeof(CoreKernel).GetMethod(
                 nameof(CoreKernel.CastEnumerable),
                 BindingFlags.NonPublic | BindingFlags.Static
-            );
+            )
+            ?? throw new($"Couldn't find method for {nameof(CoreKernel.castEnumerableInfo)}.");
 
-        private static readonly MethodInfo castArrayInfo =
-            typeof(CoreKernel).GetMethod(
+        private static readonly MethodInfo castArrayInfo = typeof(CoreKernel).GetMethod(
                 nameof(CoreKernel.CastArray),
                 BindingFlags.NonPublic | BindingFlags.Static
-            );
+            )
+            ?? throw new($"Couldn't find method for {nameof(CoreKernel.castArrayInfo)}.");
 
-        private static readonly MethodInfo castListInfo =
-            typeof(CoreKernel).GetMethod(
+        private static readonly MethodInfo castListInfo = typeof(CoreKernel).GetMethod(
                 nameof(CoreKernel.CastList),
                 BindingFlags.NonPublic | BindingFlags.Static
-            );
+            )
+            ?? throw new($"Couldn't find method for {nameof(CoreKernel.castListInfo)}.");
 
         protected IBindingPrecedenceComparer BindingPrecedenceComparer { get; }
 
@@ -53,7 +54,8 @@ namespace TehPers.Core.DI
         public override bool CanResolve(IRequest request, bool ignoreImplicitBindings)
         {
             _ = request ?? throw new ArgumentNullException(nameof(request));
-            return this.GetSatisfiedBindings(request).Any(binding => !(ignoreImplicitBindings && binding.IsImplicit));
+            return this.GetSatisfiedBindings(request)
+                .Any(binding => !(ignoreImplicitBindings && binding.IsImplicit));
         }
 
         protected static object Cast(
@@ -64,12 +66,14 @@ namespace TehPers.Core.DI
         {
             return collectionType switch
             {
-                ServiceCollectionType.Enumerable => CoreKernel.castEnumerableInfo.MakeGenericMethod(serviceType)
-                    .Invoke(null, new object[] {services}),
-                ServiceCollectionType.Array => CoreKernel.castArrayInfo.MakeGenericMethod(serviceType)
-                    .Invoke(null, new object[] {services}),
+                ServiceCollectionType.Enumerable => CoreKernel.castEnumerableInfo
+                    .MakeGenericMethod(serviceType)
+                    .Invoke(null, new object[] { services })!,
+                ServiceCollectionType.Array => CoreKernel.castArrayInfo
+                    .MakeGenericMethod(serviceType)
+                    .Invoke(null, new object[] { services })!,
                 ServiceCollectionType.List => CoreKernel.castListInfo.MakeGenericMethod(serviceType)
-                    .Invoke(null, new object[] {services}),
+                    .Invoke(null, new object[] { services })!,
                 _ => throw new ArgumentOutOfRangeException(
                     nameof(collectionType),
                     collectionType,
@@ -97,7 +101,12 @@ namespace TehPers.Core.DI
         {
             IRequest CreateEnumeratedRequest(Type service)
             {
-                if (request is {ParentRequest: { } parentRequest, ParentContext: { } parentContext, Target: { } target})
+                if (request is
+                    {
+                        ParentRequest: { } parentRequest,
+                        ParentContext: { } parentContext,
+                        Target: { } target
+                    })
                 {
                     var newRequest = parentRequest.CreateChild(service, parentContext, target);
                     newRequest.IsOptional = true;
@@ -116,10 +125,13 @@ namespace TehPers.Core.DI
             // Request is for T[]
             if (request.Service.IsArray)
             {
-                var elementType = request.Service.GetElementType();
+                var elementType = request.Service.GetElementType()!;
                 var enumeratedRequest = CreateEnumeratedRequest(elementType);
                 var services = this.Resolve(enumeratedRequest, false);
-                return new[] {CoreKernel.Cast(services, elementType, ServiceCollectionType.Array)};
+                return new[]
+                {
+                    CoreKernel.Cast(services, elementType, ServiceCollectionType.Array)
+                };
             }
 
             // Request is for type without generics
@@ -136,7 +148,10 @@ namespace TehPers.Core.DI
                 var elementType = request.Service.GenericTypeArguments[0];
                 var enumeratedRequest = CreateEnumeratedRequest(elementType);
                 var services = this.Resolve(enumeratedRequest, false);
-                return new[] {CoreKernel.Cast(services, elementType, ServiceCollectionType.Enumerable)};
+                return new[]
+                {
+                    CoreKernel.Cast(services, elementType, ServiceCollectionType.Enumerable)
+                };
             }
 
             // Request is for ICollection<T>, IReadOnlyList<T>, or IList<T>
@@ -147,7 +162,7 @@ namespace TehPers.Core.DI
                 var elementType = request.Service.GenericTypeArguments[0];
                 var enumeratedRequest = CreateEnumeratedRequest(elementType);
                 var services = this.Resolve(enumeratedRequest, false);
-                return new[] {CoreKernel.Cast(services, elementType, ServiceCollectionType.List)};
+                return new[] { CoreKernel.Cast(services, elementType, ServiceCollectionType.List) };
             }
 
             // Resolve service normally
@@ -156,16 +171,16 @@ namespace TehPers.Core.DI
 
         private IEnumerable<object> Resolve(IRequest request, bool handleMissingBindings)
         {
-            if (CoreKernel.resolveGeneric.MakeGenericMethod(request.Service)
-                .Invoke(this, new object[] {request, handleMissingBindings}) is IEnumerable result)
-            {
-                return (IEnumerable<object>) result;
-            }
-
-            return Enumerable.Empty<object>();
+            return CoreKernel.resolveGeneric.MakeGenericMethod(request.Service)
+                .Invoke(this, new object[] { request, handleMissingBindings }) is IEnumerable result
+                ? (IEnumerable<object>)result
+                : Enumerable.Empty<object>();
         }
 
-        protected virtual IEnumerable<TService> Resolve<TService>(IRequest request, bool handleMissingBindings)
+        protected virtual IEnumerable<TService> Resolve<TService>(
+            IRequest request,
+            bool handleMissingBindings
+        )
         {
             var satisfiedBindings = this.GetSatisfiedBindings(request).ToArray();
 
@@ -187,30 +202,34 @@ namespace TehPers.Core.DI
             if (request.IsUnique)
             {
                 var firstTwo = satisfiedBindings.Take(2).ToArray();
-                if (firstTwo.Length > 1 && this.BindingPrecedenceComparer.Compare(firstTwo[0], firstTwo[1]) == 0)
+                if (firstTwo.Length > 1
+                    && this.BindingPrecedenceComparer.Compare(firstTwo[0], firstTwo[1]) == 0)
                 {
                     if (request.IsOptional && !request.ForceUnique)
                     {
                         return Enumerable.Empty<TService>();
                     }
 
-                    var formattedBindings = satisfiedBindings
-                        .Select(binding => binding.Format(this.CreateContext(request, binding)))
+                    var formattedBindings = satisfiedBindings.Select(
+                            binding => binding.Format(this.CreateContext(request, binding))
+                        )
                         .ToArray();
 
                     throw new ActivationException(
-                        ExceptionFormatter.CouldNotUniquelyResolveBinding(request, formattedBindings)
+                        ExceptionFormatter.CouldNotUniquelyResolveBinding(
+                            request,
+                            formattedBindings
+                        )
                     );
                 }
 
                 // TODO: make sure this works when missing a binding for the service - implicit bindings might be weird
-                return ((TService) this.CreateContext(request, firstTwo[0]).Resolve()).Yield();
+                return ((TService)this.CreateContext(request, firstTwo[0]).Resolve()).Yield();
             }
 
             if (satisfiedBindings.Any(binding => !binding.IsImplicit))
             {
-                return satisfiedBindings
-                    .Where(binding => !binding.IsImplicit)
+                return satisfiedBindings.Where(binding => !binding.IsImplicit)
                     .Select(binding => this.CreateContext(request, binding).Resolve())
                     .Cast<TService>();
             }
@@ -223,8 +242,7 @@ namespace TehPers.Core.DI
         public virtual IEnumerable<IBinding> GetSatisfiedBindings(IRequest request)
         {
             var satifiesRequest = this.SatifiesRequest(request);
-            return this.GetBindings(request.Service)
-                .Where(satifiesRequest);
+            return this.GetBindings(request.Service).Where(satifiesRequest);
         }
 
         protected enum ServiceCollectionType

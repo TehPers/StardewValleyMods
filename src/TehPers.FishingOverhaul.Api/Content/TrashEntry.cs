@@ -10,13 +10,13 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// </summary>
     /// <param name="ItemKey">The item key.</param>
     /// <param name="AvailabilityInfo">The availability information.</param>
-    /// <inheritdoc cref="Entry{T}"/>
     [JsonDescribe]
     public record TrashEntry(
         [property: JsonRequired] NamespacedKey ItemKey,
         AvailabilityInfo AvailabilityInfo
     ) : Entry<AvailabilityInfo>(AvailabilityInfo)
     {
+        /// <inheritdoc/>
         public override bool TryCreateItem(
             FishingInfo fishingInfo,
             INamespaceRegistry namespaceRegistry,

@@ -1,5 +1,8 @@
 ﻿namespace TehPers.Core.Api.DI
 {
+    /// <summary>
+    /// The global mod services. This contains the mod kernel factory, for example.
+    /// </summary>
     public static class ModServices
     {
         /// <summary>

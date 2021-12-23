@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Ninject;
 using StardewModdingAPI;
+using StardewValley;
 using TehPers.Core.Api.DI;
 using TehPers.FishingOverhaul.Api;
 
@@ -13,7 +14,7 @@ namespace TehPers.FishingOverhaul
     )]
     internal class ModFishing : Mod
     {
-        private IModKernel? kernel = null;
+        private IModKernel? kernel;
 
         public override void Entry(IModHelper helper)
         {

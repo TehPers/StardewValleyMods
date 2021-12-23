@@ -8,9 +8,7 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// <summary>
     /// Information about the availability of a catchable fish.
     /// </summary>
-    /// <inheritdoc cref="AvailabilityInfo"/>
     /// <param name="BaseChance">The base chance of this being caught.</param>
-    /// <inheritdoc cref="AvailabilityInfo"/>
     [JsonDescribe]
     public record FishAvailabilityInfo(double BaseChance) : AvailabilityInfo(BaseChance)
     {
@@ -25,8 +23,9 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// The required fishing depth to maximize the chances of catching the fish.
         /// </summary>
         [DefaultValue(4)]
-        public int MaxDepth { get; init; } = 4;
+        public new int MaxDepth { get; init; } = 4;
 
+        /// <inheritdoc/>
         public override double? GetWeightedChance(FishingInfo fishingInfo)
         {
             return base.GetWeightedChance(fishingInfo)

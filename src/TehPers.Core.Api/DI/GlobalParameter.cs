@@ -17,7 +17,7 @@ namespace TehPers.Core.Api.DI
         public bool ShouldInherit => false;
 
         /// <inheritdoc/>
-        public bool Equals(IParameter other)
+        public bool Equals(IParameter? other)
         {
             return other is GlobalParameter;
         }

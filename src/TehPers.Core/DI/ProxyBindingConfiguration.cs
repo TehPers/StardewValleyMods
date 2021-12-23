@@ -14,23 +14,14 @@ namespace TehPers.Core.DI
         private readonly IBindingConfiguration parentConfiguration;
 
         public IBindingMetadata Metadata => this.parentConfiguration.Metadata;
-
         public BindingTarget Target { get; set; }
-
         public bool IsImplicit { get; set; }
-
         public bool IsConditional => this.Condition != null;
-
-        public Func<IRequest, bool> Condition { get; set; }
-
-        public Func<IContext, IProvider> ProviderCallback { get; set; }
-
+        public Func<IRequest, bool>? Condition { get; set; }
+        public Func<IContext, IProvider>? ProviderCallback { get; set; }
         public Func<IContext, object> ScopeCallback { get; set; }
-
         public ICollection<IParameter> Parameters { get; }
-
         public ICollection<Action<IContext, object>> ActivationActions { get; }
-
         public ICollection<Action<IContext, object>> DeactivationActions { get; }
 
         public ProxyBindingConfiguration(IBindingConfiguration parentConfiguration)
@@ -46,12 +37,9 @@ namespace TehPers.Core.DI
         {
             _ = context ?? throw new ArgumentNullException(nameof(context));
 
-            if (this.ProviderCallback == null)
-            {
-                throw new ActivationException(ExceptionFormatter.ProviderCallbackIsNull(context));
-            }
-
-            return this.ProviderCallback(context);
+            return this.ProviderCallback == null
+                ? throw new ActivationException(ExceptionFormatter.ProviderCallbackIsNull(context))
+                : this.ProviderCallback(context);
         }
 
         public object GetScope(IContext context)

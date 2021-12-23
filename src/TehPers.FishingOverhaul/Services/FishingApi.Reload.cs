@@ -8,6 +8,7 @@ namespace TehPers.FishingOverhaul.Services
 {
     partial class FishingApi
     {
+        /// <inheritdoc/>
         public void RequestReload()
         {
             // Lazily reload the fishing content

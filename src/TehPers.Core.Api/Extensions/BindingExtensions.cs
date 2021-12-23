@@ -25,6 +25,15 @@ namespace TehPers.Core.Api.Extensions
             return context.Parameters.Where(parameter => parameter.ShouldInherit).ToArray();
         }
 
+        /// <summary>
+        /// Indicates that a service should be bound to the first available implementation.
+        /// </summary>
+        /// <typeparam name="TService">The implementation type.</typeparam>
+        /// <param name="syntax">The fluent syntax.</param>
+        /// <param name="implementationTypes">The implementation types. These should be assignable to <typeparamref name="TService"/>.</param>
+        /// <returns>The fluent syntax.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if an input paramater is null.</exception>
+        /// <exception cref="ActivationException">Thrown if there was an error activating the service.</exception>
         public static object ToFirst<TService>(
             this IBindingToSyntax<TService> syntax,
             params Type[] implementationTypes
@@ -38,32 +47,54 @@ namespace TehPers.Core.Api.Extensions
                     var parameters = context.GetChildParameters();
                     foreach (var implementationType in implementationTypes)
                     {
-                        if (context.Kernel.TryGet(implementationType, parameters) is TService result)
+                        if (context.Kernel.TryGet(
+                                implementationType,
+                                parameters
+                            ) is TService result)
                         {
                             return result;
                         }
                     }
 
                     var sb = new StringBuilder();
-                    sb.AppendLine("None of the services could be activated. The following services were attempted:");
+                    sb.AppendLine(
+                        "None of the services could be activated. The following services were attempted:"
+                    );
                     foreach (var type in implementationTypes)
                     {
                         sb.Append(" - ");
                         sb.AppendLine(type.FullName);
                     }
 
-                    sb.AppendLine("Ensure that at least one of the requested services can be activated.");
+                    sb.AppendLine(
+                        "Ensure that at least one of the requested services can be activated."
+                    );
                     throw new ActivationException(sb.ToString());
                 }
             );
         }
 
+        /// <summary>
+        /// Indicates that a service should be bound to the first available implementation.
+        /// </summary>
+        /// <typeparam name="TService">The implementation type.</typeparam>
+        /// <typeparam name="T1">The only implementation type to try.</typeparam>
+        /// <param name="syntax">The fluent syntax.</param>
+        /// <returns>The fluent syntax.</returns>
         public static object ToFirst<TService, T1>(this IBindingToSyntax<TService> syntax)
             where T1 : TService
         {
             return syntax.ToFirst(typeof(T1));
         }
 
+        /// <summary>
+        /// Indicates that a service should be bound to the first available implementation.
+        /// </summary>
+        /// <typeparam name="TService">The implementation type.</typeparam>
+        /// <typeparam name="T1">The first implementation type to try.</typeparam>
+        /// <typeparam name="T2">The second implementation type to try.</typeparam>
+        /// <param name="syntax">The fluent syntax.</param>
+        /// <returns>The fluent syntax.</returns>
         public static object ToFirst<TService, T1, T2>(this IBindingToSyntax<TService> syntax)
             where T1 : TService
             where T2 : TService
@@ -71,6 +102,15 @@ namespace TehPers.Core.Api.Extensions
             return syntax.ToFirst(typeof(T1), typeof(T2));
         }
 
+        /// <summary>
+        /// Indicates that a service should be bound to the first available implementation.
+        /// </summary>
+        /// <typeparam name="TService">The implementation type.</typeparam>
+        /// <typeparam name="T1">The first implementation type to try.</typeparam>
+        /// <typeparam name="T2">The second implementation type to try.</typeparam>
+        /// <typeparam name="T3">The third implementation type to try.</typeparam>
+        /// <param name="syntax">The fluent syntax.</param>
+        /// <returns>The fluent syntax.</returns>
         public static object ToFirst<TService, T1, T2, T3>(this IBindingToSyntax<TService> syntax)
             where T1 : TService
             where T2 : TService
