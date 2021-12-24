@@ -52,7 +52,7 @@ namespace TehPers.FishingOverhaul.Services
         public event EventHandler<CaughtItemEventArgs>? CaughtItem;
 
         /// <inheritdoc/>
-        public event EventHandler<OpenedChestEventArgs>? OpenedChest;
+        public event EventHandler<OpeningChestEventArgs>? OpeningChest;
 
         /// <inheritdoc/>
         public event EventHandler<CustomEventArgs>? CustomEvent;
@@ -483,9 +483,9 @@ namespace TehPers.FishingOverhaul.Services
             this.CaughtItem?.Invoke(this, e);
         }
 
-        internal void OnOpenedChest(OpenedChestEventArgs e)
+        internal void OnOpenedChest(OpeningChestEventArgs e)
         {
-            this.OpenedChest?.Invoke(this, e);
+            this.OpeningChest?.Invoke(this, e);
         }
 
         private void OnCreatedDefaultFishingInfo(CreatedDefaultFishingInfoEventArgs e)
