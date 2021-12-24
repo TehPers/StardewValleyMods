@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using TehPers.Core.Api.Extensions;
 
 namespace TehPers.Core.Json
@@ -176,77 +175,77 @@ namespace TehPers.Core.Json
 
         public override void WriteNull()
         {
-            this.WriteValueToken(JTokenType.Null, "null");
+            this.WriteValueToken("null");
         }
 
         public override void WriteValue(bool value)
         {
-            this.WriteValueToken(JTokenType.Boolean, value ? "true" : "false");
+            this.WriteValueToken(value ? "true" : "false");
         }
 
         public override void WriteValue(sbyte value)
         {
-            this.WriteValueToken(JTokenType.Integer, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(byte value)
         {
-            this.WriteValueToken(JTokenType.Integer, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(short value)
         {
-            this.WriteValueToken(JTokenType.Integer, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(ushort value)
         {
-            this.WriteValueToken(JTokenType.Integer, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(int value)
         {
-            this.WriteValueToken(JTokenType.Integer, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(uint value)
         {
-            this.WriteValueToken(JTokenType.Integer, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(long value)
         {
-            this.WriteValueToken(JTokenType.Integer, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(ulong value)
         {
-            this.WriteValueToken(JTokenType.Integer, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(float value)
         {
-            this.WriteValueToken(JTokenType.Float, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(double value)
         {
-            this.WriteValueToken(JTokenType.Float, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(decimal value)
         {
-            this.WriteValueToken(JTokenType.Float, value.ToString(this.Culture));
+            this.WriteValueToken(value.ToString(this.Culture));
         }
 
         public override void WriteValue(char value)
         {
-            this.WriteValueToken(JTokenType.String, this.ToJsonString(value.ToString()));
+            this.WriteValueToken(DescriptiveJsonWriter.ToJsonString(value.ToString()));
         }
 
         public override void WriteValue(string? value)
         {
-            this.WriteValueToken(JTokenType.String, this.ToJsonString(value));
+            this.WriteValueToken(DescriptiveJsonWriter.ToJsonString(value));
         }
 
         public override void WriteValue(DateTime value)
@@ -260,7 +259,6 @@ namespace TehPers.Core.Json
             {
                 // Custom date format string
                 this.WriteValueToken(
-                    JTokenType.Date,
                     $"{this.QuoteChar}{value.ToUniversalTime().ToString(this.DateFormatString, this.Culture)}{this.QuoteChar}"
                 );
             }
@@ -269,7 +267,6 @@ namespace TehPers.Core.Json
         public override void WriteValue(DateTimeOffset value)
         {
             this.WriteValueToken(
-                JTokenType.Date,
                 string.IsNullOrEmpty(this.DateFormatString)
                     // ISO-8601
                     ? $"{this.QuoteChar}{value:O}{this.QuoteChar}"
@@ -281,7 +278,6 @@ namespace TehPers.Core.Json
         public override void WriteValue(Guid value)
         {
             this.WriteValueToken(
-                JTokenType.String,
                 $"{this.QuoteChar}{value.ToString("D", this.Culture)}{this.QuoteChar}"
             );
         }
@@ -289,7 +285,6 @@ namespace TehPers.Core.Json
         public override void WriteValue(TimeSpan value)
         {
             this.WriteValueToken(
-                JTokenType.TimeSpan,
                 $"{this.QuoteChar}{value.ToString(null, this.Culture)}{this.QuoteChar}"
             );
         }
@@ -322,7 +317,7 @@ namespace TehPers.Core.Json
 
         #endregion
 
-        protected void WriteValueToken(JTokenType type, string value)
+        protected void WriteValueToken(string value)
         {
             // Put a comma if needed
             if (this.needsComma.Pop())
@@ -364,7 +359,7 @@ namespace TehPers.Core.Json
             }
 
             // Write property name
-            this.writer.Write(this.ToJsonString(this.propertyName));
+            this.writer.Write(DescriptiveJsonWriter.ToJsonString(this.propertyName));
 
             // Write delimiter
             this.writer.Write(":");
@@ -378,7 +373,7 @@ namespace TehPers.Core.Json
             this.propertyComment = null;
         }
 
-        protected string ToJsonString(string? str)
+        protected static string ToJsonString(string? str)
         {
             return JsonConvert.ToString(str);
         }

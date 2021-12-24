@@ -68,13 +68,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
             var lineHeight = (float)font.LineSpacing;
             var boxTopLeft = new Vector2(this.hudConfig.TopLeftX, this.hudConfig.TopLeftY);
             var boxBottomLeft = boxTopLeft;
+            var fishingInfo = this.fishingApi.CreateDefaultFishingInfo(farmer);
             var fishChances = this.fishingApi
-                .GetFishChances(this.fishingApi.CreateDefaultFishingInfo(farmer))
+                .GetFishChances(fishingInfo)
                 .ToWeighted(value => value.Weight, value => value.Value.FishKey)
                 .Condense()
                 .Normalize()
                 .OrderByDescending(fishChance => fishChance.Weight)
-                .ToArray();
+                .ToList();
 
             // Setup the sprite batch
             e.SpriteBatch.End();
@@ -90,7 +91,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             boxBottomLeft += new Vector2(0, lineHeight);
 
             // Draw treasure chances
-            var treasureChance = this.fishingApi.GetChanceForTreasure(farmer);
+            var treasureChance = this.fishingApi.GetChanceForTreasure(fishingInfo);
             var treasureText = this.helper.Translation.Get(
                 "text.treasure",
                 new { chance = $"{treasureChance:P2}" }
@@ -100,9 +101,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
             boxBottomLeft += new Vector2(0, lineHeight);
 
             // Draw trash chances
-            var trashChance = fishChances.Length == 0
+            var trashChance = fishChances.Count == 0
                 ? 1.0
-                : 1.0 - this.fishingApi.GetChanceForFish(farmer);
+                : 1.0 - this.fishingApi.GetChanceForFish(fishingInfo);
             var trashText = this.helper.Translation.Get(
                 "text.trash",
                 new { chance = $"{trashChance:P2}" }
@@ -174,11 +175,11 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
 
             // Draw 'more fish' text
-            if (fishChances.Length > maxDisplayedFish)
+            if (fishChances.Count > maxDisplayedFish)
             {
                 var moreFishText = this.helper.Translation.Get(
                         "text.fish.more",
-                        new { quantity = fishChances.Length - maxDisplayedFish }
+                        new { quantity = fishChances.Count - maxDisplayedFish }
                     )
                     .ToString();
                 e.SpriteBatch.DrawStringWithShadow(

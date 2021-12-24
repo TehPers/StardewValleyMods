@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Ninject;
 using StardewModdingAPI;
-using StardewValley;
 using TehPers.Core.Api.DI;
 using TehPers.FishingOverhaul.Api;
 

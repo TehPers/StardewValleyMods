@@ -9,6 +9,7 @@ using StardewValley.Locations;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api.Content;
+using TehPers.FishingOverhaul.Api.Events;
 using TehPers.FishingOverhaul.Api.Weighted;
 
 namespace TehPers.FishingOverhaul.Api
@@ -19,19 +20,54 @@ namespace TehPers.FishingOverhaul.Api
     public interface IFishingApi : ISimplifiedFishingApi
     {
         /// <summary>
-        /// Invoked whenever an item is caught from the water.
+        /// Invoked after an item is caught from the water.
         /// </summary>
-        public event EventHandler<CatchInfo>? CaughtItem;
+        public event EventHandler<CaughtItemEventArgs>? CaughtItem;
 
         /// <summary>
-        /// Invoked whenever a treasure chest is opened.
+        /// Invoked before a treasure chest is opened.
         /// </summary>
-        public event EventHandler<List<Item>>? OpenedChest;
+        public event EventHandler<OpeningChestEventArgs>? OpeningChest;
 
         /// <summary>
         /// Invoked whenever an item is caught and raises a custom event.
         /// </summary>
-        public event EventHandler<CustomEvent>? CustomEvent;
+        public event EventHandler<CustomEventArgs>? CustomEvent;
+
+        /// <summary>
+        /// Invoked after the default fishing info is created.
+        /// </summary>
+        public event EventHandler<CreatedDefaultFishingInfoEventArgs>? CreatedDefaultFishingInfo;
+
+        /// <summary>
+        /// Invoked after fish chances are calculated. This is invoked at the end of
+        /// <see cref="IFishingApi.GetFishChances"/>.
+        /// </summary>
+        public event EventHandler<PreparedFishEventArgs>? PreparedFishChances;
+
+        /// <summary>
+        /// Invoked after trash chances are calculated. This is invoked at the end of
+        /// <see cref="IFishingApi.GetTrashChances"/>.
+        /// </summary>
+        public event EventHandler<PreparedTrashEventArgs>? PreparedTrashChances;
+
+        /// <summary>
+        /// Invoked after treasure chances are calculated. This is invoked at the end of
+        /// <see cref="IFishingApi.GetTreasureChances"/>.
+        /// </summary>
+        public event EventHandler<PreparedTreasureEventArgs>? PreparedTreasureChances;
+
+        /// <summary>
+        /// Invoked after the chance of catching a fish (instead of trash) is calculated. This is
+        /// invoked at the end of <see cref="IFishingApi.GetChanceForFish(FishingInfo)"/>.
+        /// </summary>
+        public event EventHandler<CalculatedFishChanceEventArgs>? CalculatedFishChance;
+
+        /// <summary>
+        /// Invoked after the chance of finding a treasure chest is calculated. This is invoked at
+        /// the end of <see cref="IFishingApi.GetChanceForTreasure(FishingInfo)"/>.
+        /// </summary>
+        public event EventHandler<CalculatedTreasureChanceEventArgs>? CalculatedTreasureChance;
 
         /// <summary>
         /// Creates a default <see cref="FishingInfo"/> for a farmer.
@@ -117,6 +153,52 @@ namespace TehPers.FishingOverhaul.Api
         }
 
         /// <summary>
+        /// Gets the chance that a fish would be caught. This does not take into account whether
+        /// there are actually fish to catch at the <see cref="Farmer"/>'s location. If no fish
+        /// can be caught, then the <see cref="Farmer"/> will always catch trash.
+        /// </summary>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
+        /// <returns>The chance a fish would be caught instead of trash.</returns>
+        public double GetChanceForFish(FishingInfo fishingInfo);
+
+        double ISimplifiedFishingApi.GetChanceForFish(Farmer farmer)
+        {
+            var fishingInfo = this.CreateDefaultFishingInfo(farmer);
+            return this.GetChanceForFish(fishingInfo);
+        }
+
+        /// <summary>
+        /// Gets the chance that treasure will be found during the fishing minigame.
+        /// </summary>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
+        /// <returns>The chance for treasure to appear during the fishing minigame.</returns>
+        public double GetChanceForTreasure(FishingInfo fishingInfo);
+
+        double ISimplifiedFishingApi.GetChanceForTreasure(Farmer farmer)
+        {
+            var fishingInfo = this.CreateDefaultFishingInfo(farmer);
+            return this.GetChanceForTreasure(fishingInfo);
+        }
+
+        void ISimplifiedFishingApi.ModifyChanceForFish(Func<Farmer, double, double> chanceModifier)
+        {
+            _ = chanceModifier ?? throw new ArgumentNullException(nameof(chanceModifier));
+
+            this.CalculatedFishChance += (_, e) =>
+                e.ChanceForFish = chanceModifier(e.FishingInfo.User, e.ChanceForFish);
+        }
+
+        void ISimplifiedFishingApi.ModifyChanceForTreasure(
+            Func<Farmer, double, double> chanceModifier
+        )
+        {
+            _ = chanceModifier ?? throw new ArgumentNullException(nameof(chanceModifier));
+
+            this.CalculatedTreasureChance += (_, e) =>
+                e.ChanceForTreasure = chanceModifier(e.FishingInfo.User, e.ChanceForTreasure);
+        }
+
+        /// <summary>
         /// Tries to get the traits for a fish.
         /// </summary>
         /// <param name="fishKey">The fish's <see cref="NamespacedKey"/>.</param>
@@ -155,21 +237,21 @@ namespace TehPers.FishingOverhaul.Api
             switch (possibleCatch)
             {
                 case PossibleCatch.Fish(var entry):
-                {
-                    isFish = true;
-                    return entry.FishKey.ToString();
-                }
+                    {
+                        isFish = true;
+                        return entry.FishKey.ToString();
+                    }
                 case PossibleCatch.Trash(var entry):
-                {
-                    isFish = false;
-                    return entry.ItemKey.ToString();
-                }
+                    {
+                        isFish = false;
+                        return entry.ItemKey.ToString();
+                    }
                 default:
-                {
-                    throw new InvalidOperationException(
-                        $"Unknown possible catch type: {possibleCatch}"
-                    );
-                }
+                    {
+                        throw new InvalidOperationException(
+                            $"Unknown possible catch type: {possibleCatch}"
+                        );
+                    }
             }
         }
 
@@ -228,8 +310,8 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// Raises a custom event for other mods to handle.
         /// </summary>
-        /// <param name="customEvent">The event to raise.</param>
-        void RaiseCustomEvent(CustomEvent customEvent);
+        /// <param name="customEventArgs">The event to raise.</param>
+        void RaiseCustomEvent(CustomEventArgs customEventArgs);
 
         /// <summary>
         /// Requests fishing data to be reloaded.

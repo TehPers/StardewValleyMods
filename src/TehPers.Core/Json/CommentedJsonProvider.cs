@@ -33,7 +33,10 @@ namespace TehPers.Core.Json
         }
 
         public void Serialize<TModel>(TModel data, StreamWriter outputStream, bool minify = false)
-            where TModel : class => this.Serialize(data, outputStream, null, minify);
+            where TModel : class
+        {
+            this.Serialize(data, outputStream, null, minify);
+        }
 
         public void Serialize<TModel>(
             TModel data,
@@ -56,8 +59,10 @@ namespace TehPers.Core.Json
         }
 
         public TModel? Deserialize<TModel>(StreamReader inputStream)
-            where TModel : class =>
-            this.Deserialize<TModel>(inputStream, null);
+            where TModel : class
+        {
+            return this.Deserialize<TModel>(inputStream, null);
+        }
 
         public TModel? Deserialize<TModel>(
             StreamReader inputStream,
@@ -75,7 +80,10 @@ namespace TehPers.Core.Json
         }
 
         public void WriteJson<TModel>(TModel data, string path, bool minify = false)
-            where TModel : class => this.WriteJson(data, path, this.defaultSource, null, minify);
+            where TModel : class
+        {
+            this.WriteJson(data, path, this.defaultSource, null, minify);
+        }
 
         public void WriteJson<TModel>(
             TModel data,
@@ -95,8 +103,10 @@ namespace TehPers.Core.Json
         }
 
         public TModel? ReadJson<TModel>(string path)
-            where TModel : class =>
-            this.ReadJson<TModel>(path, this.defaultSource, null);
+            where TModel : class
+        {
+            return this.ReadJson<TModel>(path, this.defaultSource, null);
+        }
 
         public TModel? ReadJson<TModel>(
             string path,
@@ -128,8 +138,10 @@ namespace TehPers.Core.Json
         }
 
         public TModel ReadOrCreate<TModel>(string path, bool minify = false)
-            where TModel : class, new() =>
-            this.ReadOrCreate(path, this.defaultSource, null, () => new TModel(), minify);
+            where TModel : class, new()
+        {
+            return this.ReadOrCreate(path, this.defaultSource, null, () => new TModel(), minify);
+        }
 
         public TModel ReadOrCreate<TModel>(
             string path,
@@ -137,21 +149,20 @@ namespace TehPers.Core.Json
             Action<JsonSerializerSettings>? settings,
             bool minify = false
         )
-            where TModel : class, new() =>
-            this.ReadOrCreate(path, assetProvider, settings, () => new TModel(), minify);
+            where TModel : class, new()
+        {
+            return this.ReadOrCreate(path, assetProvider, settings, () => new TModel(), minify);
+        }
 
         public TModel ReadOrCreate<TModel>(
             string path,
             Func<TModel> dataFactory,
             bool minify = false
         )
-            where TModel : class => this.ReadOrCreate(
-            path,
-            this.defaultSource,
-            null,
-            dataFactory,
-            minify
-        );
+            where TModel : class
+        {
+            return this.ReadOrCreate(path, this.defaultSource, null, dataFactory, minify);
+        }
 
         public TModel ReadOrCreate<TModel>(
             string path,
