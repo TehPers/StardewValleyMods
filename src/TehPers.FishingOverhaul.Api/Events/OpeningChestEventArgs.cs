@@ -8,7 +8,7 @@ namespace TehPers.FishingOverhaul.Api.Events
     /// <summary>
     /// Event data for whenever a treasure chest is opened.
     /// </summary>
-    public class OpenedChestEventArgs : EventArgs
+    public class OpeningChestEventArgs : EventArgs
     {
         /// <summary>
         /// Information about the <see cref="Farmer"/> that is fishing.
@@ -21,12 +21,12 @@ namespace TehPers.FishingOverhaul.Api.Events
         public IList<CaughtItem> CaughtItems { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OpenedChestEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="OpeningChestEventArgs"/> class.
         /// </summary>
         /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
         /// <param name="caughtItems">The items in the chest.</param>
         /// <exception cref="ArgumentNullException">An argument was null.</exception>
-        public OpenedChestEventArgs(FishingInfo fishingInfo, IList<CaughtItem> caughtItems)
+        public OpeningChestEventArgs(FishingInfo fishingInfo, IList<CaughtItem> caughtItems)
         {
             this.FishingInfo = fishingInfo ?? throw new ArgumentNullException(nameof(fishingInfo));
             this.CaughtItems = caughtItems ?? throw new ArgumentNullException(nameof(caughtItems));

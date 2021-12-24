@@ -20,14 +20,14 @@ namespace TehPers.FishingOverhaul.Api
     public interface IFishingApi : ISimplifiedFishingApi
     {
         /// <summary>
-        /// Invoked whenever an item is caught from the water.
+        /// Invoked after an item is caught from the water.
         /// </summary>
         public event EventHandler<CaughtItemEventArgs>? CaughtItem;
 
         /// <summary>
-        /// Invoked whenever a treasure chest is opened.
+        /// Invoked before a treasure chest is opened.
         /// </summary>
-        public event EventHandler<OpenedChestEventArgs>? OpenedChest;
+        public event EventHandler<OpeningChestEventArgs>? OpeningChest;
 
         /// <summary>
         /// Invoked whenever an item is caught and raises a custom event.

@@ -17,8 +17,9 @@ Changelog for [Teh's Fishing Overhaul].
 
 ### Changed
 
-- **(Breaking change)** `IFishingApi.OpenedChest` now uses `OpenedChestEventArgs` instead of
-  passing the list of items directly.
+- **(Breaking change)** Renamed `IFishingApi.OpenedChest` to `OpeningChest` and it now uses
+  `OpeningChestEventArgs` instead of passing the list of items directly. This gives mods more
+  flexibility if they want to modify the contents of the chest.
 - **(Breaking change)** `IFishingApi.CaughtItem` now uses `CaughtItemEventArgs` instead of
   passing the caught item directly.
 - **(Breaking change)** Renamed `CustomEvent` to `CustomEventArgs` and converted it to a class.

@@ -19,6 +19,7 @@ using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
+using TehPers.FishingOverhaul.Api.Events;
 using TehPers.FishingOverhaul.Api.Extensions;
 using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Extensions;
@@ -761,20 +762,25 @@ namespace TehPers.FishingOverhaul.Services.Setup
         }
 
         private void OpenTreasureMenuEndFunction(
-            Farmer user,
+            FishingInfo fishingInfo,
             FishingRod rod,
             IEnumerable<CaughtItem> treasure,
             int bobberDepth
         )
         {
             // Finish fishing
-            user.gainExperience(5, 10 * (bobberDepth + 1));
-            user.UsingTool = false;
-            user.completelyStopAnimatingOrDoingAction();
-            rod.doneFishing(user, true);
+            fishingInfo.User.gainExperience(5, 10 * (bobberDepth + 1));
+            fishingInfo.User.UsingTool = false;
+            fishingInfo.User.completelyStopAnimatingOrDoingAction();
+            rod.doneFishing(fishingInfo.User, true);
+
+            // Invoke opened chest events (some mods may want to modify the chest contents)
+            var eventArgs = new OpeningChestEventArgs(fishingInfo, treasure.ToList());
+            this.fishingApi.OnOpenedChest(eventArgs);
 
             // Show menu
-            var treasureItems = treasure.Select(caughtItem => caughtItem.Item).ToList();
+            var treasureItems =
+                eventArgs.CaughtItems.Select(caughtItem => caughtItem.Item).ToList();
             if (treasureItems.Any())
             {
                 var menu = new ItemGrabMenu(treasureItems, rod)
@@ -786,8 +792,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
 
             // Track fishing state
-            user.completelyStopAnimatingOrDoingAction();
-            this.fishingTracker.ActiveFisherData[user] = new(rod, new FishingState.NotFishing());
+            fishingInfo.User.completelyStopAnimatingOrDoingAction();
+            this.fishingTracker.ActiveFisherData[fishingInfo.User] =
+                new(rod, new FishingState.NotFishing());
         }
 
         public static bool DoFunction_Prefix(
@@ -1278,7 +1285,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                             {
                                                 endFunction = _ =>
                                                     patcher.OpenTreasureMenuEndFunction(
-                                                        user,
+                                                        fishingInfo,
                                                         __instance,
                                                         treasure,
                                                         ___clearWaterDistance
