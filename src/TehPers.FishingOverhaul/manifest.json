@@ -11,7 +11,7 @@
   "Dependencies": [
     {
       "UniqueID": "TehPers.Core",
-      "MinimumVersion": "1.0.0"
+      "MinimumVersion": "1.0.1"
     },
     {
       "UniqueID": "Pathoschild.ContentPatcher",
