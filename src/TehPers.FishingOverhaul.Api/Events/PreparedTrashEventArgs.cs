@@ -19,7 +19,7 @@ namespace TehPers.FishingOverhaul.Api.Events
         /// <summary>
         /// The chances of finding trash. The weights are not yet normalized.
         /// </summary>
-        public List<IWeightedValue<TrashEntry>> TrashChances { get; set; }
+        public IList<IWeightedValue<TrashEntry>> TrashChances { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PreparedTrashEventArgs"/> class.
@@ -27,7 +27,10 @@ namespace TehPers.FishingOverhaul.Api.Events
         /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
         /// <param name="trashChances">The chances of finding trash.</param>
         /// <exception cref="ArgumentNullException">An argument was null.</exception>
-        public PreparedTrashEventArgs(FishingInfo fishingInfo, List<IWeightedValue<TrashEntry>> trashChances)
+        public PreparedTrashEventArgs(
+            FishingInfo fishingInfo,
+            IList<IWeightedValue<TrashEntry>> trashChances
+        )
         {
             this.FishingInfo = fishingInfo ?? throw new ArgumentNullException(nameof(fishingInfo));
             this.TrashChances =

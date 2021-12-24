@@ -52,7 +52,7 @@ namespace TehPers.FishingOverhaul.Services
         public event EventHandler<CatchInfo>? CaughtItem;
 
         /// <inheritdoc/>
-        public event EventHandler<List<Item>>? OpenedChest;
+        public event EventHandler<OpenedChestEventArgs>? OpenedChest;
 
         /// <inheritdoc/>
         public event EventHandler<CustomEvent>? CustomEvent;
@@ -68,6 +68,12 @@ namespace TehPers.FishingOverhaul.Services
 
         /// <inheritdoc/>
         public event EventHandler<PreparedTreasureEventArgs>? PreparedTreasureChances;
+
+        /// <inheritdoc/>
+        public event EventHandler<CalculatedFishChanceEventArgs>? CalculatedFishChance;
+
+        /// <inheritdoc/>
+        public event EventHandler<CalculatedTreasureChanceEventArgs>? CalculatedTreasureChance;
 
         internal FishingApi(
             IModHelper helper,
@@ -229,7 +235,7 @@ namespace TehPers.FishingOverhaul.Services
             {
                 Seasons = Core.Api.Gameplay.Seasons.All,
                 Weathers = Core.Api.Gameplay.Weathers.All,
-                Times = Enumerable.Range(600, 2000).ToImmutableArray(),
+                Times = Enumerable.Range(600, 2600).ToImmutableArray(),
             };
         }
 
@@ -342,17 +348,31 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public double GetChanceForFish(Farmer farmer)
+        public double GetChanceForFish(FishingInfo fishingInfo)
         {
-            var streak = this.GetStreak(farmer);
-            return this.fishConfig.FishChances.GetChance(farmer, streak);
+            // Get chance for fish
+            var streak = this.GetStreak(fishingInfo.User);
+            var chanceForFish = this.fishConfig.FishChances.GetChance(fishingInfo.User, streak);
+
+            // Invoke event (in case some mod wants to change the chance)
+            var eventArgs = new CalculatedFishChanceEventArgs(fishingInfo, chanceForFish);
+            this.OnCalculatedFishChance(eventArgs);
+
+            return chanceForFish;
         }
 
         /// <inheritdoc/>
-        public double GetChanceForTreasure(Farmer farmer)
+        public double GetChanceForTreasure(FishingInfo fishingInfo)
         {
-            var streak = this.GetStreak(farmer);
-            return this.treasureConfig.TreasureChances.GetChance(farmer, streak);
+            // Get chance for treasure
+            var streak = this.GetStreak(fishingInfo.User);
+            var chanceForTreasure = this.treasureConfig.TreasureChances.GetChance(fishingInfo.User, streak);
+
+            // Invoke event (in case some mod wants to change the chance)
+            var eventArgs = new CalculatedTreasureChanceEventArgs(fishingInfo, chanceForTreasure);
+            this.OnCalculatedTreasureChance(eventArgs);
+
+            return chanceForTreasure;
         }
 
         /// <inheritdoc/>
@@ -382,7 +402,7 @@ namespace TehPers.FishingOverhaul.Services
         public PossibleCatch GetPossibleCatch(FishingInfo fishingInfo)
         {
             // Choose a random fish if one hasn't been chosen yet
-            var fishChance = this.GetChanceForFish(fishingInfo.User);
+            var fishChance = this.GetChanceForFish(fishingInfo);
             var possibleFish =
                 (IEnumerable<IWeightedValue<FishEntry?>>)this.GetFishChances(fishingInfo)
                     .Normalize(fishChance);
@@ -463,7 +483,7 @@ namespace TehPers.FishingOverhaul.Services
             this.CaughtItem?.Invoke(this, e);
         }
 
-        internal void OnOpenedChest(List<Item> e)
+        internal void OnOpenedChest(OpenedChestEventArgs e)
         {
             this.OpenedChest?.Invoke(this, e);
         }
@@ -486,6 +506,16 @@ namespace TehPers.FishingOverhaul.Services
         private void OnPreparedTreasureChances(PreparedTreasureEventArgs e)
         {
             this.PreparedTreasureChances?.Invoke(this, e);
+        }
+
+        private void OnCalculatedFishChance(CalculatedFishChanceEventArgs e)
+        {
+            this.CalculatedFishChance?.Invoke(this, e);
+        }
+
+        private void OnCalculatedTreasureChance(CalculatedTreasureChanceEventArgs e)
+        {
+            this.CalculatedTreasureChance?.Invoke(this, e);
         }
     }
 }

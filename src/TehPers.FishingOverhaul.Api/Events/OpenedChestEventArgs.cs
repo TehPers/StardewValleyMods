@@ -2,14 +2,13 @@
 using System;
 using System.Collections.Generic;
 using TehPers.FishingOverhaul.Api.Content;
-using TehPers.FishingOverhaul.Api.Weighted;
 
 namespace TehPers.FishingOverhaul.Api.Events
 {
     /// <summary>
-    /// Event data for after fish chances are calculated.
+    /// Event data for whenever a treasure chest is opened.
     /// </summary>
-    public class PreparedFishEventArgs : EventArgs
+    public class OpenedChestEventArgs : EventArgs
     {
         /// <summary>
         /// Information about the <see cref="Farmer"/> that is fishing.
@@ -17,23 +16,20 @@ namespace TehPers.FishingOverhaul.Api.Events
         public FishingInfo FishingInfo { get; }
 
         /// <summary>
-        /// The chances of finding fish. The weights are not yet normalized.
+        /// The items in the chest.
         /// </summary>
-        public List<IWeightedValue<FishEntry>> FishChances { get; set; }
+        public IList<CaughtItem> CaughtItems { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PreparedFishEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="CreatedDefaultFishingInfoEventArgs"/> class.
         /// </summary>
         /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
-        /// <param name="fishChances">The chances of finding fish.</param>
+        /// <param name="caughtItems">The items in the chest.</param>
         /// <exception cref="ArgumentNullException">An argument was null.</exception>
-        public PreparedFishEventArgs(
-            FishingInfo fishingInfo,
-            List<IWeightedValue<FishEntry>> fishChances
-        )
+        public OpenedChestEventArgs(FishingInfo fishingInfo, IList<CaughtItem> caughtItems)
         {
             this.FishingInfo = fishingInfo ?? throw new ArgumentNullException(nameof(fishingInfo));
-            this.FishChances = fishChances ?? throw new ArgumentNullException(nameof(fishChances));
+            this.CaughtItems = caughtItems ?? throw new ArgumentNullException(nameof(caughtItems));
         }
     }
 }

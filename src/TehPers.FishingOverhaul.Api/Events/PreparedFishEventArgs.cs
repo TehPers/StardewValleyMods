@@ -7,9 +7,9 @@ using TehPers.FishingOverhaul.Api.Weighted;
 namespace TehPers.FishingOverhaul.Api.Events
 {
     /// <summary>
-    /// Event data for after treasure chances are calculated.
+    /// Event data for after fish chances are calculated.
     /// </summary>
-    public class PreparedTreasureEventArgs : EventArgs
+    public class PreparedFishEventArgs : EventArgs
     {
         /// <summary>
         /// Information about the <see cref="Farmer"/> that is fishing.
@@ -17,24 +17,23 @@ namespace TehPers.FishingOverhaul.Api.Events
         public FishingInfo FishingInfo { get; }
 
         /// <summary>
-        /// The chances of finding treasure. The weights are not yet normalized.
+        /// The chances of finding fish. The weights are not yet normalized.
         /// </summary>
-        public IList<IWeightedValue<TreasureEntry>> TreasureChances { get; set; }
+        public IList<IWeightedValue<FishEntry>> FishChances { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PreparedTreasureEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="PreparedFishEventArgs"/> class.
         /// </summary>
         /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
-        /// <param name="treasureChances">The chances of finding treasure.</param>
+        /// <param name="fishChances">The chances of finding fish.</param>
         /// <exception cref="ArgumentNullException">An argument was null.</exception>
-        public PreparedTreasureEventArgs(
+        public PreparedFishEventArgs(
             FishingInfo fishingInfo,
-            IList<IWeightedValue<TreasureEntry>> treasureChances
+            IList<IWeightedValue<FishEntry>> fishChances
         )
         {
             this.FishingInfo = fishingInfo ?? throw new ArgumentNullException(nameof(fishingInfo));
-            this.TreasureChances = treasureChances
-                ?? throw new ArgumentNullException(nameof(treasureChances));
+            this.FishChances = fishChances ?? throw new ArgumentNullException(nameof(fishChances));
         }
     }
 }

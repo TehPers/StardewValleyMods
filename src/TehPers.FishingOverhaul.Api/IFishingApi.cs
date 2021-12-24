@@ -27,7 +27,7 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// Invoked whenever a treasure chest is opened.
         /// </summary>
-        public event EventHandler<List<Item>>? OpenedChest;
+        public event EventHandler<OpenedChestEventArgs>? OpenedChest;
 
         /// <summary>
         /// Invoked whenever an item is caught and raises a custom event.
@@ -40,19 +40,34 @@ namespace TehPers.FishingOverhaul.Api
         public event EventHandler<CreatedDefaultFishingInfoEventArgs>? CreatedDefaultFishingInfo;
 
         /// <summary>
-        /// Invoked after fish chances are calculated.
+        /// Invoked after fish chances are calculated. This is invoked at the end of
+        /// <see cref="IFishingApi.GetFishChances"/>.
         /// </summary>
         public event EventHandler<PreparedFishEventArgs>? PreparedFishChances;
 
         /// <summary>
-        /// Invoked after trash chances are calculated.
+        /// Invoked after trash chances are calculated. This is invoked at the end of
+        /// <see cref="IFishingApi.GetTrashChances"/>.
         /// </summary>
         public event EventHandler<PreparedTrashEventArgs>? PreparedTrashChances;
 
         /// <summary>
-        /// Invoked after treasure chances are calculated.
+        /// Invoked after treasure chances are calculated. This is invoked at the end of
+        /// <see cref="IFishingApi.GetTreasureChances"/>.
         /// </summary>
         public event EventHandler<PreparedTreasureEventArgs>? PreparedTreasureChances;
+
+        /// <summary>
+        /// Invoked after the chance of catching a fish (instead of trash) is calculated. This is
+        /// invoked at the end of <see cref="IFishingApi.GetChanceForFish(FishingInfo)"/>.
+        /// </summary>
+        public event EventHandler<CalculatedFishChanceEventArgs>? CalculatedFishChance;
+
+        /// <summary>
+        /// Invoked after the chance of finding a treasure chest is calculated. This is invoked at
+        /// the end of <see cref="IFishingApi.GetChanceForTreasure(FishingInfo)"/>.
+        /// </summary>
+        public event EventHandler<CalculatedTreasureChanceEventArgs>? CalculatedTreasureChance;
 
         /// <summary>
         /// Creates a default <see cref="FishingInfo"/> for a farmer.
@@ -135,6 +150,52 @@ namespace TehPers.FishingOverhaul.Api
                 .SelectMany(weightedValue => weightedValue.Value.ItemKeys)
                 .Select(key => key.ToString())
                 .Distinct();
+        }
+
+        /// <summary>
+        /// Gets the chance that a fish would be caught. This does not take into account whether
+        /// there are actually fish to catch at the <see cref="Farmer"/>'s location. If no fish
+        /// can be caught, then the <see cref="Farmer"/> will always catch trash.
+        /// </summary>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
+        /// <returns>The chance a fish would be caught instead of trash.</returns>
+        public double GetChanceForFish(FishingInfo fishingInfo);
+
+        double ISimplifiedFishingApi.GetChanceForFish(Farmer farmer)
+        {
+            var fishingInfo = this.CreateDefaultFishingInfo(farmer);
+            return this.GetChanceForFish(fishingInfo);
+        }
+
+        /// <summary>
+        /// Gets the chance that treasure will be found during the fishing minigame.
+        /// </summary>
+        /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
+        /// <returns>The chance for treasure to appear during the fishing minigame.</returns>
+        public double GetChanceForTreasure(FishingInfo fishingInfo);
+
+        double ISimplifiedFishingApi.GetChanceForTreasure(Farmer farmer)
+        {
+            var fishingInfo = this.CreateDefaultFishingInfo(farmer);
+            return this.GetChanceForTreasure(fishingInfo);
+        }
+
+        void ISimplifiedFishingApi.ModifyChanceForFish(Func<Farmer, double, double> chanceModifier)
+        {
+            _ = chanceModifier ?? throw new ArgumentNullException(nameof(chanceModifier));
+
+            this.CalculatedFishChance += (_, e) =>
+                e.ChanceForFish = chanceModifier(e.FishingInfo.User, e.ChanceForFish);
+        }
+
+        void ISimplifiedFishingApi.ModifyChanceForTreasure(
+            Func<Farmer, double, double> chanceModifier
+        )
+        {
+            _ = chanceModifier ?? throw new ArgumentNullException(nameof(chanceModifier));
+
+            this.CalculatedTreasureChance += (_, e) =>
+                e.ChanceForTreasure = chanceModifier(e.FishingInfo.User, e.ChanceForTreasure);
         }
 
         /// <summary>

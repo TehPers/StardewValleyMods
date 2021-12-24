@@ -2,7 +2,7 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
-## 3.1.3 - Unreleased
+## 3.2.0 - Unreleased
 
 ### Added
 
@@ -11,6 +11,23 @@ Changelog for [Teh's Fishing Overhaul].
   - Map overrides, EMP overrides, and magic bait have been changed to event handlers for this.
 - Add event for after fish/trash/treasure chances have been created to modify them.
   - Curiosity lure's effect has been changed to an event handler for this.
+- Add methods for modifying the chances of finding fish and treasure in `ISimplifiedFishingApi`.
+  This should make it easier for other mods to modify those chances without needing to directly
+  reference the full API.
+
+### Changed
+
+- **(Breaking change)** `IFishingApi.OpenedChest` now uses `OpenedChestEventArgs` instead of
+  passing the list of items directly.
+- **(Breaking change)** `IFishingApi.CaughtItem` now uses `CaughtItemEventArgs` instead of
+  passing the caught item directly.
+- **(Breaking change)** Renamed `CustomEvent` to `CustomEventArgs` and converted it to a class.
+  This change was made to keep it consistent with other event handlers.
+
+### Fixed
+
+- Fixed magic bait only checking for fish between 6:00 (6 am) and 20:00 (8 pm).
+- Fixed `IFishingApi.OpenedChest` not being invoked when a fishing chest is opened.
 
 ## 3.1.2 - 2021-12-22
 

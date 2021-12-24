@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using StardewValley;
+using System;
 
 namespace TehPers.FishingOverhaul.Api
 {
     /// <summary>
     /// Simplified API for working with fishing. Prefer <see cref="IFishingApi"/> if possible.
+    ///
+    /// You can copy this interface directly into your mod and use it with SMAPI's mod registry.
     /// </summary>
     public interface ISimplifiedFishingApi
     {
@@ -45,6 +48,29 @@ namespace TehPers.FishingOverhaul.Api
         /// <param name="farmer">The <see cref="Farmer"/> catching the treasure.</param>
         /// <returns>The chance for treasure to appear during the fishing minigame.</returns>
         double GetChanceForTreasure(Farmer farmer);
+
+        /// <summary>
+        /// Modifies the chance that a fish would be caught. The provided callback is invoked every
+        /// time <see cref="GetChanceForFish"/> is called to modify the resulting chance before
+        /// it's returned. Modifiers are invoked in the order they are registered.
+        /// </summary>
+        /// <param name="chanceModifier">
+        /// The chance modifier function. The input arguments are the <see cref="Farmer"/> and the
+        /// calculated chance, and the return value is the modified chance.
+        /// </param>
+        void ModifyChanceForFish(Func<Farmer, double, double> chanceModifier);
+
+        /// <summary>
+        /// Modifies the chance that treasure would be found while fishing. The provided callback
+        /// is invoked every time <see cref="GetChanceForTreasure"/> is called to modify the
+        /// resulting chance before it's returned. Modifiers are invoked in the order they are
+        /// registered.
+        /// </summary>
+        /// <param name="chanceModifier">
+        /// The chance modifier function. The input arguments are the <see cref="Farmer"/> and the
+        /// calculated chance, and the return value is the modified chance.
+        /// </param>
+        void ModifyChanceForTreasure(Func<Farmer, double, double> chanceModifier);
 
         /// <summary>
         /// Gets whether a fish is legendary.
