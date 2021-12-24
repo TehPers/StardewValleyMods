@@ -21,7 +21,7 @@ namespace TehPers.FishingOverhaul.Api.Events
         public IList<CaughtItem> CaughtItems { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CreatedDefaultFishingInfoEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="OpenedChestEventArgs"/> class.
         /// </summary>
         /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
         /// <param name="caughtItems">The items in the chest.</param>

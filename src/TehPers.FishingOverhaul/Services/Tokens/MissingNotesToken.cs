@@ -10,7 +10,7 @@ namespace TehPers.FishingOverhaul.Services.Tokens
 {
     internal abstract class MissingNotesToken : ISetup, IDisposable
     {
-        private const string SecretNotesAsset = @"Data\SecretNotes";
+        private const string secretNotesAsset = @"Data\SecretNotes";
 
         private readonly IAssetTracker assetTracker;
 
@@ -23,7 +23,8 @@ namespace TehPers.FishingOverhaul.Services.Tokens
                 assetTracker ?? throw new ArgumentNullException(nameof(assetTracker));
 
             this.updated = true;
-            this.SecretNotes = gameAssets.Load<Dictionary<int, string>>(MissingNotesToken.SecretNotesAsset);
+            this.SecretNotes =
+                gameAssets.Load<Dictionary<int, string>>(MissingNotesToken.secretNotesAsset);
         }
 
         void ISetup.Setup()
@@ -38,7 +39,7 @@ namespace TehPers.FishingOverhaul.Services.Tokens
 
         private void OnAssetLoading(object? sender, IAssetData e)
         {
-            if (!e.AssetNameEquals(MissingNotesToken.SecretNotesAsset))
+            if (!e.AssetNameEquals(MissingNotesToken.secretNotesAsset))
             {
                 return;
             }
@@ -47,7 +48,10 @@ namespace TehPers.FishingOverhaul.Services.Tokens
             this.SecretNotes = e.AsDictionary<int, string>().Data;
         }
 
-        public virtual bool IsReady() => Game1.player is not null && this.SecretNotes.Any();
+        public virtual bool IsReady()
+        {
+            return Game1.player is not null && this.SecretNotes.Any();
+        }
 
         public virtual bool UpdateContext()
         {

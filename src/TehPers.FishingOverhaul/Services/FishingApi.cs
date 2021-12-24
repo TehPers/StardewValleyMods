@@ -49,13 +49,13 @@ namespace TehPers.FishingOverhaul.Services
         private bool reloadRequested;
 
         /// <inheritdoc/>
-        public event EventHandler<CatchInfo>? CaughtItem;
+        public event EventHandler<CaughtItemEventArgs>? CaughtItem;
 
         /// <inheritdoc/>
         public event EventHandler<OpenedChestEventArgs>? OpenedChest;
 
         /// <inheritdoc/>
-        public event EventHandler<CustomEvent>? CustomEvent;
+        public event EventHandler<CustomEventArgs>? CustomEvent;
 
         /// <inheritdoc/>
         public event EventHandler<CreatedDefaultFishingInfoEventArgs>? CreatedDefaultFishingInfo;
@@ -473,12 +473,12 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public void RaiseCustomEvent(CustomEvent customEvent)
+        public void RaiseCustomEvent(CustomEventArgs customEventArgs)
         {
-            this.CustomEvent?.Invoke(this, customEvent);
+            this.CustomEvent?.Invoke(this, customEventArgs);
         }
 
-        internal void OnCaughtItem(CatchInfo e)
+        internal void OnCaughtItem(CaughtItemEventArgs e)
         {
             this.CaughtItem?.Invoke(this, e);
         }

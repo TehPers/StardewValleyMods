@@ -22,7 +22,7 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// Invoked whenever an item is caught from the water.
         /// </summary>
-        public event EventHandler<CatchInfo>? CaughtItem;
+        public event EventHandler<CaughtItemEventArgs>? CaughtItem;
 
         /// <summary>
         /// Invoked whenever a treasure chest is opened.
@@ -32,7 +32,7 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// Invoked whenever an item is caught and raises a custom event.
         /// </summary>
-        public event EventHandler<CustomEvent>? CustomEvent;
+        public event EventHandler<CustomEventArgs>? CustomEvent;
 
         /// <summary>
         /// Invoked after the default fishing info is created.
@@ -310,8 +310,8 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// Raises a custom event for other mods to handle.
         /// </summary>
-        /// <param name="customEvent">The event to raise.</param>
-        void RaiseCustomEvent(CustomEvent customEvent);
+        /// <param name="customEventArgs">The event to raise.</param>
+        void RaiseCustomEvent(CustomEventArgs customEventArgs);
 
         /// <summary>
         /// Requests fishing data to be reloaded.

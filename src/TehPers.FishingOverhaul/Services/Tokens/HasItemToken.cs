@@ -16,16 +16,23 @@ namespace TehPers.FishingOverhaul.Services.Tokens
         "CA1822:Mark members as static",
         Justification = "Used by Content Patcher."
     )]
-    [SuppressMessage(
-        "ReSharper",
-        "UnusedMember.Local",
-        Justification = "Used by Content Patcher."
-    )]
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used by Content Patcher.")]
     internal class HasItemToken
     {
-        public bool AllowsInput() => true;
-        public bool CanHaveMultipleValues(string? input = null) => true;
-        public bool IsReady() => Game1.player is not null;
+        public bool AllowsInput()
+        {
+            return true;
+        }
+
+        public bool CanHaveMultipleValues(string? input = null)
+        {
+            return true;
+        }
+
+        public bool IsReady()
+        {
+            return Game1.player is not null;
+        }
 
         public IEnumerable<string> GetValues(string? input)
         {

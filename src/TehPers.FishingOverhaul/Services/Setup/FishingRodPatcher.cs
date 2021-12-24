@@ -421,7 +421,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
 
             // Send event
-            this.fishingApi.OnCaughtItem(info);
+            this.fishingApi.OnCaughtItem(new(info));
             var onCatch = info switch
             {
                 CatchInfo.FishCatch c => c.FishEntry.OnCatch,

@@ -4,6 +4,7 @@ using StardewValley;
 using StardewValley.Locations;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
+using TehPers.FishingOverhaul.Api.Events;
 
 namespace TehPers.FishingOverhaul.Services.Setup
 {
@@ -28,7 +29,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.fishingApi.CustomEvent -= this.OnCustomEvent;
         }
 
-        private void OnCustomEvent(object? sender, CustomEvent e)
+        private void OnCustomEvent(object? sender, CustomEventArgs e)
         {
             var (@namespace, key) = e.EventKey;
 

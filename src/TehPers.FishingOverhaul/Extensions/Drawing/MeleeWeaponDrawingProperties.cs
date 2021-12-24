@@ -29,13 +29,19 @@ namespace TehPers.FishingOverhaul.Extensions.Drawing
 
         public Vector2 SourceSize => new(16, 16);
 
-        public Vector2 Offset(float scaleSize) => this.Type switch
+        public Vector2 Offset(float scaleSize)
         {
-            1 => new(38f, 25f),
-            _ => new(32f, 32f),
-        };
+            return this.Type switch
+            {
+                1 => new(38f, 25f),
+                _ => new(32f, 32f),
+            };
+        }
 
-        public Vector2 Origin(float scaleSize) => new(8f, 8f);
+        public Vector2 Origin(float scaleSize)
+        {
+            return new(8f, 8f);
+        }
 
         public float RealScale(float scaleSize)
         {
