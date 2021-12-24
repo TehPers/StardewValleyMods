@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using TehPers.Core.Api.Extensions;
 
 namespace TehPers.Core.Json
@@ -241,12 +240,12 @@ namespace TehPers.Core.Json
 
         public override void WriteValue(char value)
         {
-            this.WriteValueToken(this.ToJsonString(value.ToString()));
+            this.WriteValueToken(DescriptiveJsonWriter.ToJsonString(value.ToString()));
         }
 
         public override void WriteValue(string? value)
         {
-            this.WriteValueToken(this.ToJsonString(value));
+            this.WriteValueToken(DescriptiveJsonWriter.ToJsonString(value));
         }
 
         public override void WriteValue(DateTime value)
@@ -360,7 +359,7 @@ namespace TehPers.Core.Json
             }
 
             // Write property name
-            this.writer.Write(this.ToJsonString(this.propertyName));
+            this.writer.Write(DescriptiveJsonWriter.ToJsonString(this.propertyName));
 
             // Write delimiter
             this.writer.Write(":");
@@ -374,7 +373,7 @@ namespace TehPers.Core.Json
             this.propertyComment = null;
         }
 
-        protected string ToJsonString(string? str)
+        protected static string ToJsonString(string? str)
         {
             return JsonConvert.ToString(str);
         }
