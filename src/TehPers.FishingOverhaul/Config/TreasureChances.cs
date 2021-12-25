@@ -74,7 +74,8 @@ namespace TehPers.FishingOverhaul.Config
             );
         }
 
-        internal override double GetUnclampedChance(Farmer farmer, int streak)
+        /// <inheritdoc />
+        public override double GetUnclampedChance(Farmer farmer, int streak)
         {
             var chance = base.GetUnclampedChance(farmer, streak);
 

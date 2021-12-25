@@ -2,6 +2,12 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.2.1 - 2021-12-24
+
+### Fixed
+
+- Fix simplified API's members not being exported by SMAPI due to weirdness with interfaces.
+
 ## 3.2.0 - 2021-12-23
 
 ### Added

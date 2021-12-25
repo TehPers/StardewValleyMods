@@ -166,7 +166,13 @@ namespace TehPers.FishingOverhaul.Config
             this.RegisterOptions(configApi, manifest, translations);
         }
 
-        internal virtual double GetUnclampedChance(Farmer farmer, int streak)
+        /// <summary>
+        /// Gets the unclamped chance for a <see cref="Farmer"/>.
+        /// </summary>
+        /// <param name="farmer">The farmer to calculate the chance for.</param>
+        /// <param name="streak">The farmer's fishing streak.</param>
+        /// <returns>The calculated chance for that farmer.</returns>
+        public virtual double GetUnclampedChance(Farmer farmer, int streak)
         {
             // Base chance
             var chance = this.BaseChance;
@@ -192,17 +198,13 @@ namespace TehPers.FishingOverhaul.Config
         }
 
         /// <summary>
-        /// Calculates the specific chance for a farmer.
+        /// Clamps the chance to an allowed value.
         /// </summary>
-        /// <param name="farmer">The farmer to calculate the chance for.</param>
-        /// <param name="streak">The farmer's fishing streak.</param>
-        /// <returns>The calculated chance for that farmer.</returns>
-        public double GetChance(Farmer farmer, int streak)
+        /// <param name="chance">The chance to clamp.</param>
+        /// <returns>The clamped chance.</returns>
+        public double ClampChance(double chance)
         {
-            return Math.Min(
-                this.MaxChance,
-                Math.Max(this.MinChance, this.GetUnclampedChance(farmer, streak))
-            );
+            return Math.Clamp(chance, this.MinChance, this.MaxChance);
         }
     }
 }

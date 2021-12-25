@@ -331,13 +331,14 @@ namespace TehPers.FishingOverhaul.Services
         {
             // Get chance for fish
             var streak = this.GetStreak(fishingInfo.User);
-            var chanceForFish = this.fishConfig.FishChances.GetChance(fishingInfo.User, streak);
+            var chanceForFish =
+                this.fishConfig.FishChances.GetUnclampedChance(fishingInfo.User, streak);
 
             // Invoke event (in case some mod wants to change the chance)
             var eventArgs = new CalculatedFishChanceEventArgs(fishingInfo, chanceForFish);
             this.OnCalculatedFishChance(eventArgs);
 
-            return chanceForFish;
+            return this.fishConfig.FishChances.ClampChance(eventArgs.ChanceForFish);
         }
 
         /// <inheritdoc/>
@@ -346,13 +347,13 @@ namespace TehPers.FishingOverhaul.Services
             // Get chance for treasure
             var streak = this.GetStreak(fishingInfo.User);
             var chanceForTreasure =
-                this.treasureConfig.TreasureChances.GetChance(fishingInfo.User, streak);
+                this.treasureConfig.TreasureChances.GetUnclampedChance(fishingInfo.User, streak);
 
             // Invoke event (in case some mod wants to change the chance)
             var eventArgs = new CalculatedTreasureChanceEventArgs(fishingInfo, chanceForTreasure);
             this.OnCalculatedTreasureChance(eventArgs);
 
-            return chanceForTreasure;
+            return this.treasureConfig.TreasureChances.ClampChance(eventArgs.ChanceForTreasure);
         }
 
         /// <inheritdoc/>
@@ -429,6 +430,12 @@ namespace TehPers.FishingOverhaul.Services
             var streak = this.GetStreak(catchInfo.FishingInfo.User);
             var chance = 1d;
             var rewards = 0;
+            var additionalLootChance = this.treasureConfig.AdditionalLootChances.GetUnclampedChance(
+                catchInfo.FishingInfo.User,
+                streak
+            );
+            additionalLootChance =
+                this.treasureConfig.AdditionalLootChances.ClampChance(additionalLootChance);
             while (possibleLoot.Any()
                    && rewards < this.treasureConfig.MaxTreasureQuantity
                    && Game1.random.NextDouble() <= chance)
@@ -447,10 +454,7 @@ namespace TehPers.FishingOverhaul.Services
                 }
 
                 // Update chance
-                chance *= this.treasureConfig.AdditionalLootChances.GetChance(
-                    catchInfo.FishingInfo.User,
-                    streak
-                );
+                chance *= additionalLootChance;
             }
         }
 
