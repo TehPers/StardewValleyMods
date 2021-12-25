@@ -38,7 +38,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
         "IDE1006:Naming Styles",
         Justification = "Intentionally non-standard naming convention."
     )]
-    internal class FishingRodPatcher : ISetup, IDisposable
+    internal class FishingRodPatcher : Patcher, ISetup
     {
         private static readonly FieldInfo multiplayerField =
             typeof(Game1).GetField("multiplayer", BindingFlags.NonPublic | BindingFlags.Static)
@@ -50,7 +50,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private readonly IModHelper helper;
         private readonly IMonitor monitor;
-        private readonly Harmony harmony;
         private readonly FishingTracker fishingTracker;
         private readonly FishingApi fishingApi;
         private readonly ICustomBobberBarFactory customBobberBarFactory;
@@ -59,9 +58,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private readonly Queue<Action> postUpdateActions;
         private bool initialized;
-        private MethodInfo? updatePatch;
-        private MethodInfo? doFunctionPatch;
-        private MethodInfo? drawPatch;
 
         private FishingRodPatcher(
             IModHelper helper,
@@ -73,10 +69,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
             FishConfig fishConfig,
             INamespaceRegistry namespaceRegistry
         )
+            : base(harmony)
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
-            this.harmony = harmony ?? throw new ArgumentNullException(nameof(harmony));
             this.fishingTracker =
                 fishingTracker ?? throw new ArgumentNullException(nameof(fishingTracker));
             this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
@@ -88,9 +84,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
             this.postUpdateActions = new();
             this.initialized = false;
-            this.updatePatch = null;
-            this.doFunctionPatch = null;
-            this.drawPatch = null;
         }
 
         public static FishingRodPatcher Create(IContext context)
@@ -118,7 +111,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.initialized = true;
 
             // Apply patches
-            this.updatePatch = this.harmony.Patch(
+            this.Patch(
                 AccessTools.Method(typeof(FishingRod), nameof(FishingRod.tickUpdate)),
                 prefix: new(
                     AccessTools.Method(
@@ -133,7 +126,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     )
                 )
             );
-            this.doFunctionPatch = this.harmony.Patch(
+            this.Patch(
                 AccessTools.Method(typeof(FishingRod), nameof(FishingRod.DoFunction)),
                 prefix: new(
                     AccessTools.Method(
@@ -142,7 +135,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     )
                 )
             );
-            this.drawPatch = this.harmony.Patch(
+            this.Patch(
                 AccessTools.Method(typeof(FishingRod), nameof(FishingRod.draw)),
                 prefix: new(
                     AccessTools.Method(
@@ -153,7 +146,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             );
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (!this.initialized)
             {
@@ -163,29 +156,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.initialized = false;
 
             // Remove patches
-            if (this.updatePatch is { } updatePatch)
-            {
-                this.harmony.Unpatch(
-                    AccessTools.Method(typeof(FishingRod), nameof(FishingRod.tickUpdate)),
-                    updatePatch
-                );
-            }
-
-            if (this.doFunctionPatch is { } doFunctionPatch)
-            {
-                this.harmony.Unpatch(
-                    AccessTools.Method(typeof(FishingRod), nameof(FishingRod.DoFunction)),
-                    doFunctionPatch
-                );
-            }
-
-            if (this.drawPatch is { } drawPatch)
-            {
-                this.harmony.Unpatch(
-                    AccessTools.Method(typeof(FishingRod), nameof(FishingRod.DoFunction)),
-                    drawPatch
-                );
-            }
+            base.Dispose();
         }
 
         private void StartFishingMinigame(
