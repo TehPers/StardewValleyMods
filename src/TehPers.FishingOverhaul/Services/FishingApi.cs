@@ -21,7 +21,7 @@ namespace TehPers.FishingOverhaul.Services
     /// <summary>
     /// Default API for working with fishing.
     /// </summary>
-    public sealed partial class FishingApi : IFishingApi
+    public sealed partial class FishingApi : BaseFishingApi
     {
         private readonly IModHelper helper;
         private readonly IMonitor monitor;
@@ -47,33 +47,6 @@ namespace TehPers.FishingOverhaul.Services
         private readonly string stateKey;
 
         private bool reloadRequested;
-
-        /// <inheritdoc/>
-        public event EventHandler<CaughtItemEventArgs>? CaughtItem;
-
-        /// <inheritdoc/>
-        public event EventHandler<OpeningChestEventArgs>? OpeningChest;
-
-        /// <inheritdoc/>
-        public event EventHandler<CustomEventArgs>? CustomEvent;
-
-        /// <inheritdoc/>
-        public event EventHandler<CreatedDefaultFishingInfoEventArgs>? CreatedDefaultFishingInfo;
-
-        /// <inheritdoc/>
-        public event EventHandler<PreparedFishEventArgs>? PreparedFishChances;
-
-        /// <inheritdoc/>
-        public event EventHandler<PreparedTrashEventArgs>? PreparedTrashChances;
-
-        /// <inheritdoc/>
-        public event EventHandler<PreparedTreasureEventArgs>? PreparedTreasureChances;
-
-        /// <inheritdoc/>
-        public event EventHandler<CalculatedFishChanceEventArgs>? CalculatedFishChance;
-
-        /// <inheritdoc/>
-        public event EventHandler<CalculatedTreasureChanceEventArgs>? CalculatedTreasureChance;
 
         internal FishingApi(
             IModHelper helper,
@@ -188,38 +161,40 @@ namespace TehPers.FishingOverhaul.Services
 
         private void ApplyEmpOverrides(object? sender, CreatedDefaultFishingInfoEventArgs e)
         {
-            if (this.empApi.Value.TryGetValue(out var empApi))
+            if (!this.empApi.Value.TryGetValue(out var empApi))
             {
-                // Get EMP info
-                empApi.GetFishLocationsData(
-                    e.FishingInfo.User.currentLocation,
-                    e.FishingInfo.BobberPosition,
-                    out var empLocationName,
-                    out var empZone,
-                    out _
-                );
-
-                // Override data
-                e.FishingInfo = e.FishingInfo with
-                {
-                    Locations = empLocationName switch
-                    {
-                        null => e.FishingInfo.Locations,
-                        _ when Game1.getLocationFromName(empLocationName) is { } empLocation =>
-                            FishingInfo.GetDefaultLocationNames(empLocation).ToImmutableArray(),
-                        _ => ImmutableArray.Create(empLocationName),
-                    },
-                    WaterTypes = empZone switch
-                    {
-                        null => e.FishingInfo.WaterTypes,
-                        -1 => WaterTypes.All,
-                        0 => WaterTypes.River,
-                        1 => WaterTypes.PondOrOcean,
-                        2 => WaterTypes.Freshwater,
-                        _ => WaterTypes.All,
-                    },
-                };
+                return;
             }
+
+            // Get EMP info
+            empApi.GetFishLocationsData(
+                e.FishingInfo.User.currentLocation,
+                e.FishingInfo.BobberPosition,
+                out var empLocationName,
+                out var empZone,
+                out _
+            );
+
+            // Override data
+            e.FishingInfo = e.FishingInfo with
+            {
+                Locations = empLocationName switch
+                {
+                    null => e.FishingInfo.Locations,
+                    _ when Game1.getLocationFromName(empLocationName) is { } empLocation =>
+                        FishingInfo.GetDefaultLocationNames(empLocation).ToImmutableArray(),
+                    _ => ImmutableArray.Create(empLocationName),
+                },
+                WaterTypes = empZone switch
+                {
+                    null => e.FishingInfo.WaterTypes,
+                    -1 => WaterTypes.All,
+                    0 => WaterTypes.River,
+                    1 => WaterTypes.PondOrOcean,
+                    2 => WaterTypes.Freshwater,
+                    _ => WaterTypes.All,
+                },
+            };
         }
 
         private static void ApplyMagicBait(object? sender, CreatedDefaultFishingInfoEventArgs e)
@@ -256,7 +231,7 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public FishingInfo CreateDefaultFishingInfo(Farmer farmer)
+        public override FishingInfo CreateDefaultFishingInfo(Farmer farmer)
         {
             var fishingInfo = new FishingInfo(farmer);
             var eventArgs = new CreatedDefaultFishingInfoEventArgs(fishingInfo);
@@ -266,7 +241,9 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IWeightedValue<FishEntry>> GetFishChances(FishingInfo fishingInfo)
+        public override IEnumerable<IWeightedValue<FishEntry>> GetFishChances(
+            FishingInfo fishingInfo
+        )
         {
             // Reload data if necessary
             this.ReloadIfRequested();
@@ -286,7 +263,7 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public bool TryGetFishTraits(
+        public override bool TryGetFishTraits(
             NamespacedKey fishKey,
             [NotNullWhen(true)] out FishTraits? traits
         )
@@ -306,7 +283,9 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(FishingInfo fishingInfo)
+        public override IEnumerable<IWeightedValue<TrashEntry>> GetTrashChances(
+            FishingInfo fishingInfo
+        )
         {
             // Reload data if necessary
             this.ReloadIfRequested();
@@ -326,7 +305,7 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(
+        public override IEnumerable<IWeightedValue<TreasureEntry>> GetTreasureChances(
             FishingInfo fishingInfo
         )
         {
@@ -348,7 +327,7 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public double GetChanceForFish(FishingInfo fishingInfo)
+        public override double GetChanceForFish(FishingInfo fishingInfo)
         {
             // Get chance for fish
             var streak = this.GetStreak(fishingInfo.User);
@@ -362,11 +341,12 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public double GetChanceForTreasure(FishingInfo fishingInfo)
+        public override double GetChanceForTreasure(FishingInfo fishingInfo)
         {
             // Get chance for treasure
             var streak = this.GetStreak(fishingInfo.User);
-            var chanceForTreasure = this.treasureConfig.TreasureChances.GetChance(fishingInfo.User, streak);
+            var chanceForTreasure =
+                this.treasureConfig.TreasureChances.GetChance(fishingInfo.User, streak);
 
             // Invoke event (in case some mod wants to change the chance)
             var eventArgs = new CalculatedTreasureChanceEventArgs(fishingInfo, chanceForTreasure);
@@ -376,13 +356,13 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public bool IsLegendary(NamespacedKey fishKey)
+        public override bool IsLegendary(NamespacedKey fishKey)
         {
             return this.TryGetFishTraits(fishKey, out var traits) && traits.IsLegendary;
         }
 
         /// <inheritdoc/>
-        public int GetStreak(Farmer farmer)
+        public override int GetStreak(Farmer farmer)
         {
             var key = $"{this.stateKey}/streak";
             return farmer.modData.TryGetValue(key, out var rawData)
@@ -392,14 +372,14 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public void SetStreak(Farmer farmer, int streak)
+        public override void SetStreak(Farmer farmer, int streak)
         {
             var key = $"{this.stateKey}/streak";
             farmer.modData[key] = streak.ToString();
         }
 
         /// <inheritdoc/>
-        public PossibleCatch GetPossibleCatch(FishingInfo fishingInfo)
+        public override PossibleCatch GetPossibleCatch(FishingInfo fishingInfo)
         {
             // Choose a random fish if one hasn't been chosen yet
             var fishChance = this.GetChanceForFish(fishingInfo);
@@ -430,7 +410,9 @@ namespace TehPers.FishingOverhaul.Services
         }
 
         /// <inheritdoc/>
-        public IEnumerable<TreasureEntry> GetPossibleTreasure(CatchInfo.FishCatch catchInfo)
+        public override IEnumerable<TreasureEntry> GetPossibleTreasure(
+            CatchInfo.FishCatch catchInfo
+        )
         {
             // Get possible loot
             var possibleLoot = this.GetTreasureChances(catchInfo.FishingInfo).ToList();
@@ -472,50 +454,14 @@ namespace TehPers.FishingOverhaul.Services
             }
         }
 
-        /// <inheritdoc/>
-        public void RaiseCustomEvent(CustomEventArgs customEventArgs)
+        internal new void OnCaughtItem(CaughtItemEventArgs e)
         {
-            this.CustomEvent?.Invoke(this, customEventArgs);
+            base.OnCaughtItem(e);
         }
 
-        internal void OnCaughtItem(CaughtItemEventArgs e)
+        internal new void OnOpeningChest(OpeningChestEventArgs e)
         {
-            this.CaughtItem?.Invoke(this, e);
-        }
-
-        internal void OnOpenedChest(OpeningChestEventArgs e)
-        {
-            this.OpeningChest?.Invoke(this, e);
-        }
-
-        private void OnCreatedDefaultFishingInfo(CreatedDefaultFishingInfoEventArgs e)
-        {
-            this.CreatedDefaultFishingInfo?.Invoke(this, e);
-        }
-
-        private void OnPreparedFishChances(PreparedFishEventArgs e)
-        {
-            this.PreparedFishChances?.Invoke(this, e);
-        }
-
-        private void OnPreparedTrashChances(PreparedTrashEventArgs e)
-        {
-            this.PreparedTrashChances?.Invoke(this, e);
-        }
-
-        private void OnPreparedTreasureChances(PreparedTreasureEventArgs e)
-        {
-            this.PreparedTreasureChances?.Invoke(this, e);
-        }
-
-        private void OnCalculatedFishChance(CalculatedFishChanceEventArgs e)
-        {
-            this.CalculatedFishChance?.Invoke(this, e);
-        }
-
-        private void OnCalculatedTreasureChance(CalculatedTreasureChanceEventArgs e)
-        {
-            this.CalculatedTreasureChance?.Invoke(this, e);
+            base.OnOpeningChest(e);
         }
     }
 }

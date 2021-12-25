@@ -776,7 +776,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
             // Invoke opened chest events (some mods may want to modify the chest contents)
             var eventArgs = new OpeningChestEventArgs(fishingInfo, treasure.ToList());
-            this.fishingApi.OnOpenedChest(eventArgs);
+            this.fishingApi.OnOpeningChest(eventArgs);
 
             // Show menu
             var treasureItems =
