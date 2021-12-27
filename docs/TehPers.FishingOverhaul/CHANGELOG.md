@@ -2,6 +2,14 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.2.2 - 2021-12-26
+
+### Fixed
+
+- Fix `AddMail` catch actions not checking if the player has already received that mail.
+- Fix quality of fish not being increased by the fishing streak.
+- Fix "lost streak" message possibly being shown multiple times.
+
 ## 3.2.1 - 2021-12-24
 
 ### Fixed

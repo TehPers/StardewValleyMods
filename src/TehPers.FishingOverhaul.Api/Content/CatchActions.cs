@@ -1,4 +1,7 @@
-﻿using System.Collections.Immutable;
+﻿using StardewValley;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Json;
 
@@ -46,7 +49,7 @@ namespace TehPers.FishingOverhaul.Api.Content
         public void OnCatch(IFishingApi fishingApi, CatchInfo catchInfo)
         {
             var user = catchInfo.FishingInfo.User;
-            
+
             // Custom events
             foreach (var customEvent in this.CustomEvents)
             {
@@ -66,7 +69,7 @@ namespace TehPers.FishingOverhaul.Api.Content
             }
 
             // New mail
-            foreach (var mail in this.AddMail)
+            foreach (var mail in this.AddMail.Where(id => !user.hasOrWillReceiveMail(id)))
             {
                 user.mailForTomorrow.Add(mail);
             }

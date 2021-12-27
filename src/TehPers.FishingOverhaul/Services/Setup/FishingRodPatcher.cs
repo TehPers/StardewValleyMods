@@ -281,13 +281,23 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     // Perfect catch
                     case (true, _):
                         {
+                            // Set new streak
                             this.fishingApi.SetStreak(fishingInfo.User, initialStreak + 1);
-                            info = info with { FishQuality = info.FishQuality + 1 };
+
+                            // Increase quality
+                            var qualityIncrease = (initialStreak + 1)
+                                / this.fishConfig.StreakForIncreasedQuality;
+                            info = info with
+                            {
+                                FishQuality = info.FishQuality + qualityIncrease + 1
+                            };
+
                             break;
                         }
                     // Restored catch
                     case (false, TreasureState.Caught):
                         {
+                            // Show restored streak message
                             if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
                             {
                                 Game1.showGlobalMessage(
@@ -298,12 +308,20 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 );
                             }
 
+                            // Increase quality
+                            var qualityIncrease = initialStreak
+                                / this.fishConfig.StreakForIncreasedQuality;
+                            info = info with
+                            {
+                                FishQuality = info.FishQuality + qualityIncrease
+                            };
+
                             break;
                         }
                     // Not perfect
                     default:
                         {
-                            this.fishingApi.SetStreak(fishingInfo.User, 0);
+                            // Show streak lost message
                             if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
                             {
                                 Game1.showGlobalMessage(
@@ -313,6 +331,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                     )
                                 );
                             }
+
+                            // Reset streak
+                            this.fishingApi.SetStreak(fishingInfo.User, 0);
 
                             break;
                         }

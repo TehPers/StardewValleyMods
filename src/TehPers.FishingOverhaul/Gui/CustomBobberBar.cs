@@ -61,6 +61,7 @@ namespace TehPers.FishingOverhaul.Gui
         private float lastDistanceFromCatching;
         private float lastTreasureCatchLevel;
         private MinigameState state;
+        private bool notifiedCatch;
 
         /// <summary>
         /// Invoked whenever a fish is caught.
@@ -199,7 +200,10 @@ namespace TehPers.FishingOverhaul.Gui
                     DartBehavior.Smooth => BobberBar.smooth,
                     DartBehavior.Sink => BobberBar.sink,
                     DartBehavior.Floater => BobberBar.floater,
-                    _ => throw new ArgumentOutOfRangeException(nameof(fishTraits), "Invalid dart behavior.")
+                    _ => throw new ArgumentOutOfRangeException(
+                        nameof(fishTraits),
+                        "Invalid dart behavior."
+                    )
                 }
             );
         }
@@ -287,6 +291,7 @@ namespace TehPers.FishingOverhaul.Gui
                         {
                             rod.doneFishing(Game1.player, true);
                         }
+
                         this.OnLostFish();
                     }
 
@@ -565,11 +570,23 @@ namespace TehPers.FishingOverhaul.Gui
 
         private void OnCaughtFish(CatchInfo.FishCatch e)
         {
+            if (this.notifiedCatch)
+            {
+                return;
+            }
+
+            this.notifiedCatch = true;
             this.CatchFish?.Invoke(this, e);
         }
 
         private void OnLostFish()
         {
+            if (this.notifiedCatch)
+            {
+                return;
+            }
+
+            this.notifiedCatch = true;
             this.LostFish?.Invoke(this, EventArgs.Empty);
         }
 
