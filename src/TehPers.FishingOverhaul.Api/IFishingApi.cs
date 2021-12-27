@@ -2,11 +2,8 @@
 using StardewValley;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewValley.Buildings;
-using StardewValley.Locations;
-using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Api.Events;

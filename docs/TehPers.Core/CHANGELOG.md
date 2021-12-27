@@ -2,6 +2,12 @@
 
 Changelog for [TehCore].
 
+## 1.0.2 - Unreleased
+
+### Added
+
+- Add ModDrop update keys
+
 ## 1.0.1 - 2021-12-23
 
 ### Added

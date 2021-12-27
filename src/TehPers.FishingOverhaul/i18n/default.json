@@ -33,12 +33,13 @@
   "text.config.fish.drainSpeed.desc": "Affects how fast the catch bar drains when the bobber isn't on the fish.",
   "text.config.fish.streakForIncreasedQuality.name": "Streak for quality increase",
   "text.config.fish.streakForIncreasedQuality.desc":
-    "Required streak for an increase in quality. For example, 3 means that every 3 consecutive perfect catches increases your catch quality by 1.",
+    "Required streak for an increase in quality. For example, 3 means that every 3 consecutive perfect catches increases your catch quality by 1. A value of 0 or less disables any quality increase from your perfect fishing streak. (You still get a quality increase for perfectly catching a fish though.)",
   "text.config.fish.maxNormalFishQuality.enabled.name": "Max normal fish quality (enabled)",
   "text.config.fish.maxNormalFishQuality.enabled.desc":
-    "Determines the max quality fish a non-perfect catch can get, or null for no restrictions.",
+    "Whether there is a restriction on the max quality fish a non-perfect catch can get.",
   "text.config.fish.maxNormalFishQuality.name": "Max normal fish quality",
-  "text.config.fish.maxNormalFishQuality.desc": "The chance that you'll find a fish instead of trash.",
+  "text.config.fish.maxNormalFishQuality.desc":
+    "The max quality fish a non-perfect catch can get. Non-perfect catches can't get above gold quality (regardless of this setting).",
   "text.config.fish.maxFishQuality.name": "Max fish quality",
   "text.config.fish.maxFishQuality.desc":
     "The max quality fish that can be caught. 0 = normal, 1 = silver, 2 = gold, 3 = iridium, 4+ = beyond iridium.",

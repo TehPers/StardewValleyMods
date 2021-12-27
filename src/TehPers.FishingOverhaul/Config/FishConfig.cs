@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using StardewModdingAPI;
+using StardewValley;
 using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
@@ -38,7 +39,9 @@ namespace TehPers.FishingOverhaul.Config
 
         /// <summary>
         /// Required streak for an increase in quality. For example, 3 means that every 3
-        /// consecutive perfect catches increases your catch quality by 1.
+        /// consecutive perfect catches increases your catch quality by 1. A value of 0 or less
+        /// disables any quality increase from your perfect fishing streak. (You still get a
+        /// quality increase for perfectly catching a fish though.)
         /// </summary>
         [DefaultValue(3)]
         public int StreakForIncreasedQuality { get; set; } = 3;
@@ -141,7 +144,7 @@ namespace TehPers.FishingOverhaul.Config
                 () => Name("streakForIncreasedQuality"),
                 () => Desc("streakForIncreasedQuality"),
                 0,
-                100
+                20
             );
             configApi.AddBoolOption(
                 manifest,
@@ -182,6 +185,21 @@ namespace TehPers.FishingOverhaul.Config
                 () => Desc("fishChances")
             );
             this.FishChances.RegisterOptions(configApi, manifest, translations);
+        }
+
+        /// <summary>
+        /// Calculates the quality increase from a <see cref="Farmer"/>'s streak.
+        /// </summary>
+        /// <param name="streak">The streak.</param>
+        /// <returns>The number of quality levels to increase the result by.</returns>
+        public int GetQualityIncrease(int streak)
+        {
+            if (this.StreakForIncreasedQuality <= 0)
+            {
+                return 0;
+            }
+
+            return streak / this.StreakForIncreasedQuality;
         }
     }
 }

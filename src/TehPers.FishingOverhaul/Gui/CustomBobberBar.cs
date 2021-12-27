@@ -162,6 +162,7 @@ namespace TehPers.FishingOverhaul.Gui
 
             // Track other information (not all tracked by vanilla)
             this.fromFishPondField.SetValue(fromFishPond);
+            this.bossFishField.SetValue(fishTraits.IsLegendary);
 
             // Adjust quality to be increased by streak
             var fishQuality = fishSizePercent switch
@@ -510,11 +511,10 @@ namespace TehPers.FishingOverhaul.Gui
                 }
                 else
                 {
-                    var bossFish = this.bossFishField.GetValue();
                     b.Draw(
                         Game1.mouseCursors,
                         position + fishShake + everythingShake,
-                        new Rectangle(614 + (bossFish ? 20 : 0), 1840, 20, 20),
+                        new Rectangle(614 + (this.fishTraits.IsLegendary ? 20 : 0), 1840, 20, 20),
                         Color.White,
                         0.0f,
                         new(10f, 10f),

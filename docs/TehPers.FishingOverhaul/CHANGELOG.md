@@ -2,6 +2,26 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.2.3 - 2021-12-26
+
+### Added
+
+- Add ModDrop update keys.
+
+### Changed
+
+- The slider for `StreakForIncreasedQuality` in the GMCM menu now lets you choose between 0-20.
+  Other values may still be manually set in the config file directly. This change makes it easier
+  to set the slider to a more reasonable value.
+
+### Fixed
+
+- Fix legendary fish not showing the legendary fish sprite when fish are hidden in the minigame.
+- Fix divide by zero error when `StreakForIncreasedQuality` is zero. Values of 0 or less now
+  disable the fish quality increase caused by a streak.
+- Fix fish quality going above iridium. Fish quality is now capped at iridium.
+- Correct and improve the descriptions for `MaxNormalFishQuality` in the GMCM menu.
+
 ## 3.2.2 - 2021-12-26
 
 ### Fixed

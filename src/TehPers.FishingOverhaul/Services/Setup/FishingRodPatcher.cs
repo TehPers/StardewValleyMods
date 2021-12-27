@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -40,12 +39,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
     )]
     internal class FishingRodPatcher : Patcher, ISetup
     {
-        private static readonly FieldInfo multiplayerField =
-            typeof(Game1).GetField("multiplayer", BindingFlags.NonPublic | BindingFlags.Static)
-            ?? throw new(
-                $"Couldn't get field info for {nameof(FishingRodPatcher.multiplayerField)}"
-            );
-
         private static FishingRodPatcher? Instance { get; set; }
 
         private readonly IModHelper helper;
@@ -55,6 +48,8 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private readonly ICustomBobberBarFactory customBobberBarFactory;
         private readonly FishConfig fishConfig;
         private readonly INamespaceRegistry namespaceRegistry;
+
+        private readonly IReflectedField<Multiplayer> game1MultiplayerField;
 
         private readonly Queue<Action> postUpdateActions;
         private bool initialized;
@@ -81,6 +76,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
             this.namespaceRegistry = namespaceRegistry
                 ?? throw new ArgumentNullException(nameof(namespaceRegistry));
+
+            this.game1MultiplayerField =
+                helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer");
 
             this.postUpdateActions = new();
             this.initialized = false;
@@ -240,7 +238,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             customBobber.LostFish += (_, _) =>
             {
                 // Notify user
-                if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
+                if (this.fishConfig.GetQualityIncrease(initialStreak) > 0)
                 {
                     Game1.showGlobalMessage(
                         this.helper.Translation.Get(
@@ -259,7 +257,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 {
                     // Lost perfect but haven't caught treasure yet
                     case (false, TreasureState.NotCaught)
-                        when initialStreak >= this.fishConfig.StreakForIncreasedQuality:
+                        when this.fishConfig.GetQualityIncrease(initialStreak) > 0:
                         {
                             // Notify user - streak is updated when fish is either caught or not caught
                             Game1.showGlobalMessage(
@@ -285,11 +283,11 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             this.fishingApi.SetStreak(fishingInfo.User, initialStreak + 1);
 
                             // Increase quality
-                            var qualityIncrease = (initialStreak + 1)
-                                / this.fishConfig.StreakForIncreasedQuality;
+                            var streakQualityIncrease =
+                                this.fishConfig.GetQualityIncrease(initialStreak + 1);
                             info = info with
                             {
-                                FishQuality = info.FishQuality + qualityIncrease + 1
+                                FishQuality = info.FishQuality + streakQualityIncrease + 1
                             };
 
                             break;
@@ -298,7 +296,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     case (false, TreasureState.Caught):
                         {
                             // Show restored streak message
-                            if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
+                            if (this.fishConfig.GetQualityIncrease(initialStreak) > 0)
                             {
                                 Game1.showGlobalMessage(
                                     this.helper.Translation.Get(
@@ -309,11 +307,11 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             }
 
                             // Increase quality
-                            var qualityIncrease = initialStreak
-                                / this.fishConfig.StreakForIncreasedQuality;
+                            var streakQualityIncrease =
+                                this.fishConfig.GetQualityIncrease(initialStreak);
                             info = info with
                             {
-                                FishQuality = info.FishQuality + qualityIncrease
+                                FishQuality = info.FishQuality + streakQualityIncrease
                             };
 
                             break;
@@ -322,7 +320,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     default:
                         {
                             // Show streak lost message
-                            if (initialStreak >= this.fishConfig.StreakForIncreasedQuality)
+                            if (this.fishConfig.GetQualityIncrease(initialStreak) > 0)
                             {
                                 Game1.showGlobalMessage(
                                     this.helper.Translation.Get(
@@ -340,17 +338,16 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 }
 
                 // Catch item
-                this.CatchItem(
-                    rod,
-                    info with
+                info = info with
+                {
+                    FishQuality = info.FishQuality switch
                     {
-                        FishQuality = info.FishQuality switch
-                        {
-                            > 2 => info.FishQuality + 1,
-                            _ => info.FishQuality,
-                        }
+                        < 0 => 0, // Somehow quality is less than 0?
+                        > 2 => 4, // Iridium (quality = 3 is skipped)
+                        _ => info.FishQuality,
                     }
-                );
+                };
+                this.CatchItem(rod, info);
             };
 
             Game1.activeClickableMenu = customBobber;
@@ -730,7 +727,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 Game1.showGlobalMessage(
                     Game1.content.LoadString(@"Strings\StringsFromCSFiles:FishingRod.cs.14068")
                 );
-                var multiplayer = (Multiplayer)FishingRodPatcher.multiplayerField.GetValue(null)!;
+                var multiplayer = this.game1MultiplayerField.GetValue();
                 multiplayer.globalChatInfoMessage(
                     "CaughtLegendaryFish",
                     Game1.player.Name,
