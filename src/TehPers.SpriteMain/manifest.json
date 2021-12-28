@@ -1,0 +1,12 @@
+﻿{
+  "$schema": "https://smapi.io/schemas/manifest.json",
+  "Name": "Sprite main",
+  "Author": "TehPers",
+  "Version": "0.1.0",
+  "Description": "Processes sprites that are being drawn.",
+  "UniqueID": "TehPers.SpriteMain",
+  "EntryDll": "TehPers.SpriteMain.dll",
+  "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": [],
+  "Dependencies": []
+}
