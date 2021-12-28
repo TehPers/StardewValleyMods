@@ -32,6 +32,10 @@ namespace TehPers.FishingOverhaul
             this.Bind<ISetup>().To<ConsoleCommandsSetup>().InSingletonScope();
             this.Bind<ISetup>().To<MissingSecretNotesToken>().InSingletonScope();
             this.Bind<ISetup>().To<MissingJournalScrapsToken>().InSingletonScope();
+            this.Bind<ISetup>()
+                .ToMethod(LookupAnythingPatcher.Create)
+                .When(_ => this.ParentMod.Helper.ModRegistry.IsLoaded("Pathoschild.LookupAnything"))
+                .InSingletonScope();
 
             // Resources/services
             this.Bind<IFishingApi, ISimplifiedFishingApi, FishingApi>()
