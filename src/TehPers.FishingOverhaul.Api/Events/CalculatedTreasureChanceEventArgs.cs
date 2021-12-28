@@ -8,6 +8,8 @@ namespace TehPers.FishingOverhaul.Api.Events
     /// </summary>
     public class CalculatedTreasureChanceEventArgs : EventArgs
     {
+        private double chanceForTreasure;
+
         /// <summary>
         /// Information about the <see cref="Farmer"/> that is fishing.
         /// </summary>
@@ -16,7 +18,11 @@ namespace TehPers.FishingOverhaul.Api.Events
         /// <summary>
         /// The chance of finding a treasure chest.
         /// </summary>
-        public double ChanceForTreasure { get; set; }
+        public double ChanceForTreasure
+        {
+            get => this.chanceForTreasure;
+            set => this.chanceForTreasure = Math.Clamp(value, 0.0, 1.0);
+        }
 
 
         /// <summary>

@@ -2,6 +2,16 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.2.4 - 2021-12-27
+
+### Fixed
+
+- Fix chance modifiers sometimes receiving chances that are not between 0 and 1. This caused a
+  strange issue with the Walk of Life integration when your base fish chance was too high.
+- Fix green algae and seaweed being available in the wrong locations. This fix also lowers the
+  chances of finding green algae, white algae, and seaweed. Their information is now loaded from
+  `Data/Locations` and `Data/Fish` (along with any other trash entries added there).
+
 ## 3.2.3 - 2021-12-26
 
 ### Added

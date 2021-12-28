@@ -28,7 +28,7 @@ namespace TehPers.FishingOverhaul.Services
 
         // Legendary fish
         private static readonly NamespacedKey crimsonfishKey = NamespacedKey.SdvObject(159);
-        private const string CrimsonfishFlag = "TehPers.FishingOverhaul/crimsonfishCaught";
+        private const string crimsonfishFlag = "TehPers.FishingOverhaul/crimsonfishCaught";
 
         private static readonly FishEntry crimsonfishEntry = new(
             DefaultFishingSource.crimsonfishKey,
@@ -47,7 +47,7 @@ namespace TehPers.FishingOverhaul.Services
                 },
                 MinDepth = 3,
                 When = DefaultFishingSource.hasCaughtFish.Add(
-                    $"HasFlag |contains={DefaultFishingSource.CrimsonfishFlag}",
+                    $"HasFlag |contains={DefaultFishingSource.crimsonfishFlag}",
                     "false"
                 ),
             }
@@ -55,12 +55,12 @@ namespace TehPers.FishingOverhaul.Services
         {
             OnCatch = new()
             {
-                SetFlags = ImmutableArray.Create(DefaultFishingSource.CrimsonfishFlag),
+                SetFlags = ImmutableArray.Create(DefaultFishingSource.crimsonfishFlag),
             }
         };
 
         private static readonly NamespacedKey anglerKey = NamespacedKey.SdvObject(160);
-        private const string AnglerFlag = "TehPers.FishingOverhaul/anglerCaught";
+        private const string anglerFlag = "TehPers.FishingOverhaul/anglerCaught";
 
         private static readonly FishEntry anglerEntry = new(
             DefaultFishingSource.anglerKey,
@@ -78,7 +78,7 @@ namespace TehPers.FishingOverhaul.Services
                     },
                 },
                 When = DefaultFishingSource.hasCaughtFish.Add(
-                    $"HasFlag |contains={DefaultFishingSource.AnglerFlag}",
+                    $"HasFlag |contains={DefaultFishingSource.anglerFlag}",
                     "false"
                 ),
             }
@@ -86,12 +86,12 @@ namespace TehPers.FishingOverhaul.Services
         {
             OnCatch = new()
             {
-                SetFlags = ImmutableArray.Create(DefaultFishingSource.AnglerFlag),
+                SetFlags = ImmutableArray.Create(DefaultFishingSource.anglerFlag),
             }
         };
 
         private static readonly NamespacedKey legendKey = NamespacedKey.SdvObject(163);
-        private const string LegendFlag = "TehPers.FishingOverhaul/legendCaught";
+        private const string legendFlag = "TehPers.FishingOverhaul/legendCaught";
 
         private static readonly FishEntry legendEntry = new(
             DefaultFishingSource.legendKey,
@@ -105,7 +105,7 @@ namespace TehPers.FishingOverhaul.Services
                 MinFishingLevel = 10,
                 MinDepth = 4,
                 When = DefaultFishingSource.hasCaughtFish.Add(
-                    $"HasFlag |contains={DefaultFishingSource.LegendFlag}",
+                    $"HasFlag |contains={DefaultFishingSource.legendFlag}",
                     "false"
                 ),
             }
@@ -113,12 +113,12 @@ namespace TehPers.FishingOverhaul.Services
         {
             OnCatch = new()
             {
-                SetFlags = ImmutableArray.Create(DefaultFishingSource.LegendFlag),
+                SetFlags = ImmutableArray.Create(DefaultFishingSource.legendFlag),
             }
         };
 
         private static readonly NamespacedKey mutantCarpKey = NamespacedKey.SdvObject(682);
-        private const string MutantCarpFlag = "TehPers.FishingOverhaul/mutantCarpCaught";
+        private const string mutantCarpFlag = "TehPers.FishingOverhaul/mutantCarpCaught";
 
         private static readonly FishEntry mutantCarpEntry = new(
             DefaultFishingSource.mutantCarpKey,
@@ -138,7 +138,7 @@ namespace TehPers.FishingOverhaul.Services
                     },
                 },
                 When = DefaultFishingSource.hasCaughtFish.Add(
-                    $"HasFlag |contains={DefaultFishingSource.MutantCarpFlag}",
+                    $"HasFlag |contains={DefaultFishingSource.mutantCarpFlag}",
                     "false"
                 ),
             }
@@ -146,12 +146,12 @@ namespace TehPers.FishingOverhaul.Services
         {
             OnCatch = new()
             {
-                SetFlags = ImmutableArray.Create(DefaultFishingSource.MutantCarpFlag),
+                SetFlags = ImmutableArray.Create(DefaultFishingSource.mutantCarpFlag),
             }
         };
 
         private static readonly NamespacedKey glacierfishKey = NamespacedKey.SdvObject(775);
-        private const string GlacierfishFlag = "TehPers.FishingOverhaul/glacierfishCaught";
+        private const string glacierfishFlag = "TehPers.FishingOverhaul/glacierfishCaught";
 
         private static readonly FishEntry glacierfishEntry = new(
             DefaultFishingSource.glacierfishKey,
@@ -177,7 +177,7 @@ namespace TehPers.FishingOverhaul.Services
                 },
                 MinDepth = 3,
                 When = DefaultFishingSource.hasCaughtFish.Add(
-                    $"HasFlag |contains={DefaultFishingSource.GlacierfishFlag}",
+                    $"HasFlag |contains={DefaultFishingSource.glacierfishFlag}",
                     "false"
                 ),
             }
@@ -185,14 +185,14 @@ namespace TehPers.FishingOverhaul.Services
         {
             OnCatch = new()
             {
-                SetFlags = ImmutableArray.Create(DefaultFishingSource.GlacierfishFlag),
+                SetFlags = ImmutableArray.Create(DefaultFishingSource.glacierfishFlag),
             }
         };
 
         // Legendary II fish
         private static readonly NamespacedKey sonOfCrimsonfishKey = NamespacedKey.SdvObject(898);
 
-        private const string SonOfCrimsonfishFlag =
+        private const string sonOfCrimsonfishFlag =
             "TehPers.FishingOverhaul/sonOfCrimsonfishCaught";
 
         private static readonly FishEntry sonOfCrimsonfishEntry =
@@ -207,13 +207,13 @@ namespace TehPers.FishingOverhaul.Services
                 OnCatch = new()
                 {
                     SetFlags = ImmutableArray.Create(
-                        DefaultFishingSource.SonOfCrimsonfishFlag
+                        DefaultFishingSource.sonOfCrimsonfishFlag
                     ),
                 }
             };
 
         private static readonly NamespacedKey msAnglerKey = NamespacedKey.SdvObject(899);
-        private const string MsAnglerFlag = "TehPers.FishingOverhaul/msAnglerCaught";
+        private const string msAnglerFlag = "TehPers.FishingOverhaul/msAnglerCaught";
 
         private static readonly FishEntry msAnglerEntry = DefaultFishingSource.anglerEntry with
         {
@@ -225,12 +225,12 @@ namespace TehPers.FishingOverhaul.Services
             },
             OnCatch = new()
             {
-                SetFlags = ImmutableArray.Create(DefaultFishingSource.MsAnglerFlag),
+                SetFlags = ImmutableArray.Create(DefaultFishingSource.msAnglerFlag),
             }
         };
 
         private static readonly NamespacedKey legend2Key = NamespacedKey.SdvObject(900);
-        private const string Legend2Flag = "TehPers.FishingOverhaul/legendIICaught";
+        private const string legend2Flag = "TehPers.FishingOverhaul/legendIICaught";
 
         private static readonly FishEntry legend2Entry = DefaultFishingSource.legendEntry with
         {
@@ -242,12 +242,12 @@ namespace TehPers.FishingOverhaul.Services
             },
             OnCatch = new()
             {
-                SetFlags = ImmutableArray.Create(DefaultFishingSource.Legend2Flag),
+                SetFlags = ImmutableArray.Create(DefaultFishingSource.legend2Flag),
             }
         };
 
         private static readonly NamespacedKey radioactiveCarpKey = NamespacedKey.SdvObject(901);
-        private const string RadioactiveCarpFlag = "TehPers.FishingOverhaul/radioactiveCarpCaught";
+        private const string radioactiveCarpFlag = "TehPers.FishingOverhaul/radioactiveCarpCaught";
 
         private static readonly FishEntry radioactiveCarpEntry =
             DefaultFishingSource.mutantCarpEntry with
@@ -261,12 +261,12 @@ namespace TehPers.FishingOverhaul.Services
                 OnCatch = new()
                 {
                     SetFlags =
-                        ImmutableArray.Create(DefaultFishingSource.RadioactiveCarpFlag),
+                        ImmutableArray.Create(DefaultFishingSource.radioactiveCarpFlag),
                 }
             };
 
         private static readonly NamespacedKey glacierfishJrKey = NamespacedKey.SdvObject(902);
-        private const string GlacierfishJrFlag = "TehPers.FishingOverhaul/glacierfishJrCaught";
+        private const string glacierfishJrFlag = "TehPers.FishingOverhaul/glacierfishJrCaught";
 
         private static readonly FishEntry glacierfishJrEntry =
             DefaultFishingSource.glacierfishEntry with
@@ -280,7 +280,7 @@ namespace TehPers.FishingOverhaul.Services
                 OnCatch = new()
                 {
                     SetFlags =
-                        ImmutableArray.Create(DefaultFishingSource.GlacierfishJrFlag),
+                        ImmutableArray.Create(DefaultFishingSource.glacierfishJrFlag),
                 }
             };
 
@@ -302,42 +302,56 @@ namespace TehPers.FishingOverhaul.Services
             DefaultFishingSource.glacierfishJrKey,
         };
 
-        private void ReloadDefaultFishData()
+        private FishingContent GetDefaultFishData()
         {
-            this.fishEntries.Clear();
-            this.fishTraits.Clear();
+            var fishEntries = new List<FishEntry>();
+            var fishTraits = new Dictionary<NamespacedKey, FishTraits>();
+            var trashEntries = new List<TrashEntry>();
 
             // Parse the fish traits
             var fish = this.assetProvider.Load<Dictionary<int, string>>(@"Data\Fish.xnb");
-            var partialAvailabilities = new Dictionary<int, List<FishAvailabilityInfo>>(fish.Count);
+            var fishAvailabilities = new Dictionary<int, List<FishAvailabilityInfo>>(fish.Count);
+            var trashAvailabilities = new Dictionary<int, List<AvailabilityInfo>>();
             foreach (var (fishId, rawFishInfo) in fish)
             {
                 var fishInfo = rawFishInfo.Split('/');
 
                 // TODO: maybe do something with fish caught in pots
 
-                // TODO: check if this is needed
-                if (fishInfo[1] == "5")
-                {
-                    continue;
-                }
-
-                // Parse fields
-                if (!DefaultFishingSource.TryParseFishInfo(
-                        fishInfo,
-                        out var traits,
-                        out var availabilities
-                    ))
-                {
-                    continue;
-                }
-
                 var fishKey = NamespacedKey.SdvObject(fishId);
-                this.fishTraits[fishKey] = traits with
+                if (fishInfo[1] != "5")
                 {
-                    IsLegendary = DefaultFishingSource.vanillaLegendaries.Contains(fishKey),
-                };
-                partialAvailabilities[fishId] = availabilities;
+                    // Parse fish fields
+                    if (!DefaultFishingSource.TryParseFishInfo(
+                            fishInfo,
+                            out var traits,
+                            out var availabilities
+                        ))
+                    {
+                        continue;
+                    }
+
+                    // Add traits and availabilities
+                    fishTraits[fishKey] = traits with
+                    {
+                        IsLegendary = DefaultFishingSource.vanillaLegendaries.Contains(fishKey),
+                    };
+                    fishAvailabilities[fishId] = availabilities.ToList();
+                }
+                else
+                {
+                    // Parse trash fields
+                    if (!DefaultFishingSource.TryGetAvailabilities(
+                            fishInfo,
+                            out var availabilities
+                        ))
+                    {
+                        continue;
+                    }
+
+                    // Add availabilities
+                    trashAvailabilities[fishId] = availabilities.ToList();
+                }
             }
 
             // Parse the location data
@@ -395,60 +409,36 @@ namespace TehPers.FishingOverhaul.Services
                         };
 
                         // Add availabilities
-                        if (!partialAvailabilities.TryGetValue(fishId, out var availabilities))
+                        if (fishAvailabilities.TryGetValue(fishId, out var f))
                         {
-                            continue;
+                            // Fish availabilities
+                            this.AddEntries(
+                                fishEntries,
+                                f,
+                                seasons,
+                                waterTypes,
+                                locationName,
+                                availability => new(NamespacedKey.SdvObject(fishId), availability)
+                            );
                         }
-
-                        // Add all the fish entries
-                        this.fishEntries.AddRange(
-                            availabilities.Select(
-                                availability => new FishEntry(
-                                    NamespacedKey.SdvObject(fishId),
-                                    availability with
-                                    {
-                                        Seasons = seasons,
-                                        WaterTypes = waterTypes,
-                                        IncludeLocations = locationName switch
-                                        {
-                                            // Include both beach locations and beach farm
-                                            "Beach" => ImmutableArray.Create(
-                                                locationName,
-                                                "BeachNightMarket",
-                                                "Farm/Beach"
-                                            ),
-                                            // Many farms use forest fish
-                                            "Forest" => ImmutableArray.Create(
-                                                locationName,
-                                                "Farm/Riverland",
-                                                "Farm/Forest",
-                                                "Farm/Hills",
-                                                "Farm/FourCorners"
-                                            ),
-                                            // Riverland farm uses town fish
-                                            "Town" => ImmutableArray.Create(
-                                                locationName,
-                                                "Farm/Riverland"
-                                            ),
-                                            // Some farms use mountain fish
-                                            "Mountain" => ImmutableArray.Create(
-                                                locationName,
-                                                "Farm/Mountain",
-                                                "Farm/FourCorners"
-                                            ),
-                                            // Normal handling
-                                            _ => ImmutableArray.Create(locationName),
-                                        },
-                                    }
-                                )
-                            )
-                        );
+                        else if (trashAvailabilities.TryGetValue(fishId, out var t))
+                        {
+                            // Trash availabilities
+                            this.AddEntries(
+                                trashEntries,
+                                t,
+                                seasons,
+                                waterTypes,
+                                locationName,
+                                availability => new(NamespacedKey.SdvObject(fishId), availability)
+                            );
+                        }
                     }
                 }
             }
 
             // Special entries
-            this.fishEntries.AddRange(
+            fishEntries.AddRange(
                 new[]
                 {
                     // Legendary fish
@@ -565,17 +555,75 @@ namespace TehPers.FishingOverhaul.Services
 
             // Request reload
             this.ReloadRequested?.Invoke(this, EventArgs.Empty);
+
+            return new(this.manifest)
+            {
+                SetFishTraits = fishTraits.ToImmutableDictionary(),
+                AddFish = fishEntries.ToImmutableArray(),
+                AddTrash = trashEntries.ToImmutableArray(),
+            };
+        }
+
+        private void AddEntries<TAvailability, TEntry>(
+            List<TEntry> entries,
+            IEnumerable<TAvailability> availabilities,
+            Seasons seasons,
+            WaterTypes waterTypes,
+            string locationName,
+            Func<TAvailability, TEntry> toEntry
+        )
+            where TAvailability : AvailabilityInfo
+        {
+            entries.AddRange(
+                availabilities.Select(
+                    availability => toEntry(
+                        availability with
+                        {
+                            Seasons = seasons,
+                            WaterTypes = waterTypes,
+                            IncludeLocations = locationName switch
+                            {
+                                // Include both beach locations and beach farm
+                                "Beach" => ImmutableArray.Create(
+                                    locationName,
+                                    "BeachNightMarket",
+                                    "Farm/Beach"
+                                ),
+                                // Many farms use forest fish
+                                "Forest" => ImmutableArray.Create(
+                                    locationName,
+                                    "Farm/Riverland",
+                                    "Farm/Forest",
+                                    "Farm/Hills",
+                                    "Farm/FourCorners"
+                                ),
+                                // Riverland farm uses town fish
+                                "Town" => ImmutableArray.Create(locationName, "Farm/Riverland"),
+                                // Some farms use mountain fish
+                                "Mountain" => ImmutableArray.Create(
+                                    locationName,
+                                    "Farm/Mountain",
+                                    "Farm/FourCorners"
+                                ),
+                                // Normal handling
+                                _ => ImmutableArray.Create(locationName),
+                            },
+                        }
+                    )
+                )
+            );
         }
 
         private static bool TryParseFishInfo(
             IReadOnlyList<string> fishInfo,
             [NotNullWhen(true)] out FishTraits? traits,
-            [NotNullWhen(true)] out List<FishAvailabilityInfo>? partialAvailability
+            [NotNullWhen(true)] out IEnumerable<FishAvailabilityInfo>? availabilities
         )
         {
             traits = default;
-            partialAvailability = default;
-            if (fishInfo.Count < 13)
+            availabilities = default;
+
+            if (!DefaultFishingSource.TryGetAvailabilities(fishInfo, out var baseAvailabilities))
             {
                 return false;
             }
@@ -614,17 +662,61 @@ namespace TehPers.FishingOverhaul.Services
                 .Split(' ')
                 .Aggregate(
                     Weathers.None,
-                    (weathers, cur) =>
-                    {
-                        return weathers
-                            | cur switch
-                            {
-                                "sunny" => Weathers.Sunny,
-                                "rainy" => Weathers.Rainy,
-                                "both" => Weathers.All,
-                                _ => Weathers.None,
-                            };
-                    }
+                    (weathers, cur) => weathers
+                        | cur switch
+                        {
+                            "sunny" => Weathers.Sunny,
+                            "rainy" => Weathers.Rainy,
+                            "both" => Weathers.All,
+                            _ => Weathers.None,
+                        }
+                );
+
+            // Depth multiplier
+            if (!float.TryParse(fishInfo[11], out var depthMultiplier))
+            {
+                return false;
+            }
+
+            // Parse times and populate spawn availabilities
+            availabilities = baseAvailabilities.Select(
+                availability => FishAvailabilityInfo.From(availability) with
+                {
+                    DepthMultiplier = depthMultiplier
+                }
+            );
+
+            // Set traits
+            traits = new(dartFrequency, dartBehavior, minSize, maxSize);
+
+            return true;
+        }
+
+        private static bool TryGetAvailabilities(
+            IReadOnlyList<string> fishInfo,
+            [NotNullWhen(true)] out IEnumerable<AvailabilityInfo>? availabilities
+        )
+        {
+            availabilities = default;
+
+            if (fishInfo.Count < 13)
+            {
+                return false;
+            }
+
+            // Weathers
+            var weathers = fishInfo[7]
+                .Split(' ')
+                .Aggregate(
+                    Weathers.None,
+                    (weathers, cur) => weathers
+                        | cur switch
+                        {
+                            "sunny" => Weathers.Sunny,
+                            "rainy" => Weathers.Rainy,
+                            "both" => Weathers.All,
+                            _ => Weathers.None,
+                        }
                 );
 
             // Max depth
@@ -639,52 +731,43 @@ namespace TehPers.FishingOverhaul.Services
                 return false;
             }
 
-            // Depth multiplier
-            if (!float.TryParse(fishInfo[11], out var depthMultiplier))
-            {
-                return false;
-            }
-
             // Min fishing level
             if (!int.TryParse(fishInfo[12], out var minFishingLevel))
             {
                 return false;
             }
 
-            // Parse times and populate spawn availabilities
-            var times = fishInfo[5].Split(' ');
-            partialAvailability = new(times.Length / 2);
-            for (var i = 0; i < times.Length - 1; i += 2)
+            availabilities = GenerateAvailabilities();
+            return true;
+
+            IEnumerable<AvailabilityInfo> GenerateAvailabilities()
             {
-                // Start time
-                if (!int.TryParse(times[i], out var startTime))
+                // Parse times and populate spawn availabilities
+                var times = fishInfo[5].Split(' ');
+                for (var i = 0; i < times.Length - 1; i += 2)
                 {
-                    continue;
-                }
-
-                // End time
-                if (!int.TryParse(times[i + 1], out var endTime))
-                {
-                    continue;
-                }
-
-                partialAvailability.Add(
-                    new(weightedChance)
+                    // Start time
+                    if (!int.TryParse(times[i], out var startTime))
                     {
-                        DepthMultiplier = depthMultiplier,
+                        continue;
+                    }
+
+                    // End time
+                    if (!int.TryParse(times[i + 1], out var endTime))
+                    {
+                        continue;
+                    }
+
+                    yield return new(weightedChance)
+                    {
                         MaxDepth = maxDepth,
                         StartTime = startTime,
                         EndTime = endTime,
                         Weathers = weathers,
                         MinFishingLevel = minFishingLevel,
-                    }
-                );
+                    };
+                }
             }
-
-            // Set traits
-            traits = new(dartFrequency, dartBehavior, minSize, maxSize);
-
-            return true;
         }
     }
 }

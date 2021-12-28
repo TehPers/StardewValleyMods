@@ -13,7 +13,7 @@ tab_width = 4
 
 # New line preferences
 end_of_line = crlf
-insert_final_newline = false
+insert_final_newline =true
 
 #### .NET Coding Conventions ####
 
@@ -106,7 +106,7 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 # Code-block preferences
 csharp_prefer_braces = true:warning
 csharp_prefer_simple_using_statement = true
-csharp_style_namespace_declarations = file_scoped:suggestion
+csharp_style_namespace_declarations =block_scoped:suggestion
 
 # Expression-level preferences
 csharp_prefer_simple_default_expression = true:warning
@@ -259,3 +259,6 @@ dotnet_naming_rule.locals_should_be_camel_case.style = camel_case
 dotnet_naming_rule.public_const_fields_should_be_pascal_case.severity = warning
 dotnet_naming_rule.public_const_fields_should_be_pascal_case.symbols = public_const_fields
 dotnet_naming_rule.public_const_fields_should_be_pascal_case.style = pascal_case
+
+[*.{cs,vb}]
+end_of_line=crlf

@@ -146,7 +146,7 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// Maximum bobber depth required to catch this.
         /// </summary>
         [DefaultValue(null)]
-        public int? MaxDepth { get; init; } = null;
+        public virtual int? MaxDepth { get; init; } = null;
 
         /// <summary>
         /// Content Patcher conditions for when this is available.

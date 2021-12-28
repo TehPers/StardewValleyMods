@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TehPers.FishSword", "TehPer
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Util", "Util", "{C3305962-FB70-4767-A68D-F15B929F6E3E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TehPers.Core.SourceGen", "TehPers.Core.SourceGen\TehPers.Core.SourceGen.csproj", "{1BFC399C-5326-4964-B906-0F05B4CDAFE0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{81C0B98A-67AF-4EA9-AD3B-BEECCED4E8E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81C0B98A-67AF-4EA9-AD3B-BEECCED4E8E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81C0B98A-67AF-4EA9-AD3B-BEECCED4E8E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BFC399C-5326-4964-B906-0F05B4CDAFE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BFC399C-5326-4964-B906-0F05B4CDAFE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BFC399C-5326-4964-B906-0F05B4CDAFE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BFC399C-5326-4964-B906-0F05B4CDAFE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

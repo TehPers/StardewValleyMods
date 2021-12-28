@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Json;
+using TehPers.Core.SourceGen.ConstructFrom;
 
 namespace TehPers.FishingOverhaul.Api.Content
 {
@@ -10,7 +12,8 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// </summary>
     /// <param name="BaseChance">The base chance of this being caught.</param>
     [JsonDescribe]
-    public record FishAvailabilityInfo(double BaseChance) : AvailabilityInfo(BaseChance)
+    [ConstructFrom(typeof(AvailabilityInfo))]
+    public partial record FishAvailabilityInfo(double BaseChance) : AvailabilityInfo(BaseChance)
     {
         /// <summary>
         /// Effect that sending the bobber by less than the max distance has on the chance. This
@@ -22,8 +25,8 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// <summary>
         /// The required fishing depth to maximize the chances of catching the fish.
         /// </summary>
-        [DefaultValue(4)]
-        public new int MaxDepth { get; init; } = 4;
+        [DefaultValue(null)]
+        public override int? MaxDepth { get; init; } = null;
 
         /// <inheritdoc/>
         public override double? GetWeightedChance(FishingInfo fishingInfo)
@@ -33,7 +36,8 @@ namespace TehPers.FishingOverhaul.Api.Content
                     baseChance =>
                         baseChance
                         * (1
-                            - Math.Max(0, this.MaxDepth - fishingInfo.BobberDepth) * this.DepthMultiplier)
+                            - Math.Max(0, (this.MaxDepth ?? 4) - fishingInfo.BobberDepth)
+                            * this.DepthMultiplier)
                         + fishingInfo.FishingLevel / 50.0f
                 );
         }

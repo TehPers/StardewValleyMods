@@ -8,6 +8,8 @@ namespace TehPers.FishingOverhaul.Api.Events
     /// </summary>
     public class CalculatedFishChanceEventArgs : EventArgs
     {
+        private double chanceForFish;
+
         /// <summary>
         /// Information about the <see cref="Farmer"/> that is fishing.
         /// </summary>
@@ -16,7 +18,11 @@ namespace TehPers.FishingOverhaul.Api.Events
         /// <summary>
         /// The chance of hitting a fish (instead of trash).
         /// </summary>
-        public double ChanceForFish { get; set; }
+        public double ChanceForFish
+        {
+            get => this.chanceForFish;
+            set => this.chanceForFish = Math.Clamp(value, 0.0, 1.0);
+        }
 
 
         /// <summary>

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using StardewValley;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api.Content;
@@ -10,9 +9,9 @@ namespace TehPers.FishingOverhaul.Services
 {
     internal sealed partial class DefaultFishingSource
     {
-        private List<TrashEntry> GetDefaultTrashData()
+        private FishingContent GetDefaultTrashData()
         {
-            return GenerateTrashData().ToList();
+            return new(this.manifest) { AddTrash = GenerateTrashData().ToImmutableArray() };
 
             IEnumerable<TrashEntry> GenerateTrashData()
             {
@@ -45,29 +44,6 @@ namespace TehPers.FishingOverhaul.Services
                 yield return new(
                     NamespacedKey.SdvObject(172),
                     new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
-                );
-                // Seaweed
-                yield return new(
-                    NamespacedKey.SdvObject(152),
-                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Submarine") }
-                );
-                // Green algae
-                yield return new(
-                    NamespacedKey.SdvObject(153),
-                    new(1.0D) { ExcludeLocations = ImmutableArray.Create("Farm", "Submarine") }
-                );
-                // White algae
-                yield return new(
-                    NamespacedKey.SdvObject(157),
-                    new(1.0D)
-                    {
-                        IncludeLocations = ImmutableArray.Create(
-                            "BugLand",
-                            "Sewers",
-                            "WitchSwamp",
-                            "UndergroundMines"
-                        )
-                    }
                 );
                 // Pearl
                 yield return new(
@@ -477,6 +453,7 @@ namespace TehPers.FishingOverhaul.Services
                         }
                     );
                 }
+
                 // 'Boat'
                 yield return new(
                     NamespacedKey.SdvFurniture(2421),

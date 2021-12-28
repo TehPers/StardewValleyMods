@@ -10,27 +10,29 @@ namespace TehPers.FishingOverhaul.Services
 {
     internal partial class DefaultFishingSource
     {
-        private List<TreasureEntry> GetDefaultTreasureData()
+        private FishingContent GetDefaultTreasureData()
         {
-            const double archaeologyChance = 0.015625;
+            return new(this.manifest) { AddTreasure = GenerateTreasureData().ToImmutableArray() };
 
-            return new()
+            IEnumerable<TreasureEntry> GenerateTreasureData()
             {
+                const double archaeologyChance = 0.015625;
+
                 // Dressed spinner
-                new(
+                yield return new(
                     new(0.025) { MinFishingLevel = 6 },
                     ImmutableArray.Create(NamespacedKey.SdvObject(687))
-                ) { AllowDuplicates = false },
+                ) { AllowDuplicates = false };
 
                 // Bait
-                new(new(0.25), ImmutableArray.Create(NamespacedKey.SdvObject(685)))
+                yield return new(new(0.25), ImmutableArray.Create(NamespacedKey.SdvObject(685)))
                 {
                     MinQuantity = 2,
                     MaxQuantity = 4,
-                },
+                };
 
                 // Archaeology
-                new LostBookEntry(
+                yield return new LostBookEntry(
                     new(0.025 * 100000)
                     {
                         When = new Dictionary<string, string>
@@ -49,149 +51,149 @@ namespace TehPers.FishingOverhaul.Services
                             new NamespacedKey(this.manifest, "LostBook")
                         ),
                     },
-                },
-                new(
+                };
+                yield return new(
                     new(archaeologyChance * 4),
                     Enumerable.Range(585, 4).Select(NamespacedKey.SdvObject).ToImmutableArray()
-                ),
-                new(
+                );
+                yield return new(
                     new(archaeologyChance * 6),
                     Enumerable.Range(96, 6).Select(NamespacedKey.SdvObject).ToImmutableArray()
-                ),
-                new(
+                );
+                yield return new(
                     new(archaeologyChance * 25),
                     Enumerable.Range(103, 25).Select(NamespacedKey.SdvObject).ToImmutableArray()
-                ),
+                );
 
                 // Geodes
-                new(new(0.2), ImmutableArray.Create(NamespacedKey.SdvObject(535)))
+                yield return new(new(0.2), ImmutableArray.Create(NamespacedKey.SdvObject(535)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 3,
-                },
-                new(new(0.125), ImmutableArray.Create(NamespacedKey.SdvObject(536)))
+                };
+                yield return new(new(0.125), ImmutableArray.Create(NamespacedKey.SdvObject(536)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 3,
-                },
-                new(new(0.125), ImmutableArray.Create(NamespacedKey.SdvObject(537)))
+                };
+                yield return new(new(0.125), ImmutableArray.Create(NamespacedKey.SdvObject(537)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 3,
-                },
-                new(new(0.0625), ImmutableArray.Create(NamespacedKey.SdvObject(749)))
+                };
+                yield return new(new(0.0625), ImmutableArray.Create(NamespacedKey.SdvObject(749)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 3,
-                },
+                };
 
                 // Ores + coal
-                new(new(0.0075), ImmutableArray.Create(NamespacedKey.SdvObject(386)))
+                yield return new(new(0.0075), ImmutableArray.Create(NamespacedKey.SdvObject(386)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 3,
-                },
-                new(new(0.15), ImmutableArray.Create(NamespacedKey.SdvObject(384)))
+                };
+                yield return new(new(0.15), ImmutableArray.Create(NamespacedKey.SdvObject(384)))
                 {
                     MinQuantity = 3,
                     MaxQuantity = 10,
-                },
-                new(new(0.15), ImmutableArray.Create(NamespacedKey.SdvObject(380)))
+                };
+                yield return new(new(0.15), ImmutableArray.Create(NamespacedKey.SdvObject(380)))
                 {
                     MinQuantity = 3,
                     MaxQuantity = 10
-                },
-                new(new(0.15), ImmutableArray.Create(NamespacedKey.SdvObject(378)))
+                };
+                yield return new(new(0.15), ImmutableArray.Create(NamespacedKey.SdvObject(378)))
                 {
                     MinQuantity = 3,
                     MaxQuantity = 10,
-                },
-                new(new(0.3), ImmutableArray.Create(NamespacedKey.SdvObject(382)))
+                };
+                yield return new(new(0.3), ImmutableArray.Create(NamespacedKey.SdvObject(382)))
                 {
                     MinQuantity = 3,
                     MaxQuantity = 10,
-                },
+                };
 
                 // Gemstones
-                new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(60)))
+                yield return new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(60)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 6,
-                },
-                new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(62)))
+                };
+                yield return new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(62)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 6,
-                },
-                new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(64)))
+                };
+                yield return new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(64)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 6,
-                },
-                new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(66)))
+                };
+                yield return new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(66)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 6,
-                },
-                new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(68)))
+                };
+                yield return new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(68)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 6,
-                },
-                new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(70)))
+                };
+                yield return new(new(0.5), ImmutableArray.Create(NamespacedKey.SdvObject(70)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 6,
-                },
-                new(new(0.028), ImmutableArray.Create(NamespacedKey.SdvObject(72)))
+                };
+                yield return new(new(0.028), ImmutableArray.Create(NamespacedKey.SdvObject(72)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 2,
-                },
-                new(new(0.3), ImmutableArray.Create(NamespacedKey.SdvObject(82)))
+                };
+                yield return new(new(0.3), ImmutableArray.Create(NamespacedKey.SdvObject(82)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 6,
-                },
-                new(new(0.3), ImmutableArray.Create(NamespacedKey.SdvObject(84)))
+                };
+                yield return new(new(0.3), ImmutableArray.Create(NamespacedKey.SdvObject(84)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 6,
-                },
-                new(new(0.3), ImmutableArray.Create(NamespacedKey.SdvObject(86)))
+                };
+                yield return new(new(0.3), ImmutableArray.Create(NamespacedKey.SdvObject(86)))
                 {
                     MinQuantity = 1,
                     MaxQuantity = 6,
-                },
+                };
 
                 // Junk
-                new(new(0.25), ImmutableArray.Create(NamespacedKey.SdvObject(388)))
+                yield return new(new(0.25), ImmutableArray.Create(NamespacedKey.SdvObject(388)))
                 {
                     MinQuantity = 10,
                     MaxQuantity = 25,
-                },
-                new(new(0.25), ImmutableArray.Create(NamespacedKey.SdvObject(390)))
+                };
+                yield return new(new(0.25), ImmutableArray.Create(NamespacedKey.SdvObject(390)))
                 {
                     MinQuantity = 10,
                     MaxQuantity = 25,
-                },
-                new(
+                };
+                yield return new(
                     new(0.5) { MaxFishingLevel = 1 },
                     ImmutableArray.Create(NamespacedKey.SdvObject(770))
                 )
                 {
                     MinQuantity = 3,
                     MaxQuantity = 5,
-                },
-                new(new(0.005), ImmutableArray.Create(NamespacedKey.SdvObject(166)))
+                };
+                yield return new(new(0.005), ImmutableArray.Create(NamespacedKey.SdvObject(166)))
                 {
                     AllowDuplicates = false,
-                },
-                new(new(0.00025), ImmutableArray.Create(NamespacedKey.SdvObject(74)))
+                };
+                yield return new(new(0.00025), ImmutableArray.Create(NamespacedKey.SdvObject(74)))
                 {
                     AllowDuplicates = false,
-                },
-                new(
+                };
+                yield return new(
                     new(0.01)
                     {
                         When = new Dictionary<string, string>
@@ -200,20 +202,20 @@ namespace TehPers.FishingOverhaul.Services
                         }.ToImmutableDictionary(),
                     },
                     ImmutableArray.Create(NamespacedKey.SdvObject(928))
-                ),
+                );
 
                 // Rice shoot
-                new(
+                yield return new(
                     new(0.1) { Seasons = Seasons.Spring },
                     ImmutableArray.Create(NamespacedKey.SdvObject(273))
                 )
                 {
                     MinQuantity = 2,
                     MaxQuantity = 11,
-                },
+                };
 
                 // Qi beans
-                new(
+                yield return new(
                     new(0.33)
                     {
                         When = new Dictionary<string, string>
@@ -228,38 +230,38 @@ namespace TehPers.FishingOverhaul.Services
                 {
                     MinQuantity = 1,
                     MaxQuantity = 4,
-                },
+                };
 
                 // Weapons
-                new(new(0.001), ImmutableArray.Create(NamespacedKey.SdvWeapon(14)))
+                yield return new(new(0.001), ImmutableArray.Create(NamespacedKey.SdvWeapon(14)))
                 {
                     AllowDuplicates = false,
-                },
-                new(new(0.001), ImmutableArray.Create(NamespacedKey.SdvWeapon(51)))
+                };
+                yield return new(new(0.001), ImmutableArray.Create(NamespacedKey.SdvWeapon(51)))
                 {
                     AllowDuplicates = false,
-                },
+                };
 
                 // Boots
-                new(
+                yield return new(
                     new(0.005),
                     Enumerable.Range(504, 10).Select(NamespacedKey.SdvBoots).ToImmutableArray()
-                ) { AllowDuplicates = false },
+                ) { AllowDuplicates = false };
 
                 // Rings
-                new(new(0.0025), ImmutableArray.Create(NamespacedKey.SdvRing(527)))
+                yield return new(new(0.0025), ImmutableArray.Create(NamespacedKey.SdvRing(527)))
                 {
                     AllowDuplicates = false,
-                },
-                new(
+                };
+                yield return new(
                     new(0.005),
                     Enumerable.Range(516, 4).Select(NamespacedKey.SdvRing).ToImmutableArray()
-                ) { AllowDuplicates = false },
-                new(
+                ) { AllowDuplicates = false };
+                yield return new(
                     new(0.005),
                     Enumerable.Range(529, 6).Select(NamespacedKey.SdvRing).ToImmutableArray()
-                ) { AllowDuplicates = false },
-            };
+                ) { AllowDuplicates = false };
+            }
         }
     }
 }
