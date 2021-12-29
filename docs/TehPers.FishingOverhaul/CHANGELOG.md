@@ -2,6 +2,12 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.2.5 - 2021-12-28
+
+### Fixed
+
+- Fix some fish not being available unless you fish at a certain distance.
+
 ## 3.2.4 - 2021-12-27
 
 ### Fixed

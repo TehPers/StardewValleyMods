@@ -343,6 +343,7 @@ namespace TehPers.FishingOverhaul.Services
                     // Parse trash fields
                     if (!DefaultFishingSource.TryGetAvailabilities(
                             fishInfo,
+                            baseChance => new AvailabilityInfo(baseChance),
                             out var availabilities
                         ))
                     {
@@ -412,7 +413,7 @@ namespace TehPers.FishingOverhaul.Services
                         if (fishAvailabilities.TryGetValue(fishId, out var f))
                         {
                             // Fish availabilities
-                            this.AddEntries(
+                            DefaultFishingSource.AddEntries(
                                 fishEntries,
                                 f,
                                 seasons,
@@ -424,7 +425,7 @@ namespace TehPers.FishingOverhaul.Services
                         else if (trashAvailabilities.TryGetValue(fishId, out var t))
                         {
                             // Trash availabilities
-                            this.AddEntries(
+                            DefaultFishingSource.AddEntries(
                                 trashEntries,
                                 t,
                                 seasons,
@@ -564,7 +565,7 @@ namespace TehPers.FishingOverhaul.Services
             };
         }
 
-        private void AddEntries<TAvailability, TEntry>(
+        private static void AddEntries<TAvailability, TEntry>(
             List<TEntry> entries,
             IEnumerable<TAvailability> availabilities,
             Seasons seasons,
@@ -623,7 +624,11 @@ namespace TehPers.FishingOverhaul.Services
             traits = default;
             availabilities = default;
 
-            if (!DefaultFishingSource.TryGetAvailabilities(fishInfo, out var baseAvailabilities))
+            if (!DefaultFishingSource.TryGetAvailabilities(
+                    fishInfo,
+                    baseChance => new FishAvailabilityInfo(baseChance),
+                    out var baseAvailabilities
+                ))
             {
                 return false;
             }
@@ -657,32 +662,24 @@ namespace TehPers.FishingOverhaul.Services
                 return false;
             }
 
-            // Weathers
-            var weathers = fishInfo[7]
-                .Split(' ')
-                .Aggregate(
-                    Weathers.None,
-                    (weathers, cur) => weathers
-                        | cur switch
-                        {
-                            "sunny" => Weathers.Sunny,
-                            "rainy" => Weathers.Rainy,
-                            "both" => Weathers.All,
-                            _ => Weathers.None,
-                        }
-                );
-
             // Depth multiplier
             if (!float.TryParse(fishInfo[11], out var depthMultiplier))
             {
                 return false;
             }
 
+            // Max depth
+            if (!int.TryParse(fishInfo[9], out var maxDepth))
+            {
+                return false;
+            }
+
             // Parse times and populate spawn availabilities
             availabilities = baseAvailabilities.Select(
-                availability => FishAvailabilityInfo.From(availability) with
+                availability => availability with
                 {
-                    DepthMultiplier = depthMultiplier
+                    DepthMultiplier = depthMultiplier,
+                    MaxDepth = maxDepth
                 }
             );
 
@@ -692,13 +689,16 @@ namespace TehPers.FishingOverhaul.Services
             return true;
         }
 
-        private static bool TryGetAvailabilities(
+        private static bool TryGetAvailabilities<T>(
             IReadOnlyList<string> fishInfo,
-            [NotNullWhen(true)] out IEnumerable<AvailabilityInfo>? availabilities
+            Func<double, T> createAvailability,
+            [NotNullWhen(true)] out IEnumerable<T>? availabilities
         )
+            where T : AvailabilityInfo
         {
             availabilities = default;
 
+            // Check if the fish info is valid
             if (fishInfo.Count < 13)
             {
                 return false;
@@ -719,12 +719,6 @@ namespace TehPers.FishingOverhaul.Services
                         }
                 );
 
-            // Max depth
-            if (!int.TryParse(fishInfo[9], out var maxDepth))
-            {
-                return false;
-            }
-
             // Spawn multiplier
             if (!float.TryParse(fishInfo[10], out var weightedChance))
             {
@@ -740,7 +734,7 @@ namespace TehPers.FishingOverhaul.Services
             availabilities = GenerateAvailabilities();
             return true;
 
-            IEnumerable<AvailabilityInfo> GenerateAvailabilities()
+            IEnumerable<T> GenerateAvailabilities()
             {
                 // Parse times and populate spawn availabilities
                 var times = fishInfo[5].Split(' ');
@@ -758,9 +752,8 @@ namespace TehPers.FishingOverhaul.Services
                         continue;
                     }
 
-                    yield return new(weightedChance)
+                    yield return createAvailability(weightedChance) with
                     {
-                        MaxDepth = maxDepth,
                         StartTime = startTime,
                         EndTime = endTime,
                         Weathers = weathers,

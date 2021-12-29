@@ -6,18 +6,10 @@
         <EnableModZip>False</EnableModZip>
         <Nullable>Enable</Nullable>
         <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\TehPers.FishingOverhaul.Api.xml</DocumentationFile>
-
-        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-        <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\TehPers.Core.SourceGen\TehPers.Core.SourceGen.csproj" OutputItemType="Analyzer"
-                          ReferenceOutputAssembly="false" />
     </ItemGroup>
 
     <ItemGroup>
