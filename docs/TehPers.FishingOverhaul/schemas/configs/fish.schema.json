@@ -35,7 +35,7 @@
           "type": "integer",
           "minimum": -2147483648,
           "maximum": 2147483647,
-          "description": "Required streak for an increase in quality. For example, 3 means that every 3 consecutive perfect catches increases your catch quality by 1.",
+          "description": "Required streak for an increase in quality. For example, 3 means that every 3 consecutive perfect catches increases your catch quality by 1. A value of 0 or less disables any quality increase from your perfect fishing streak. (You still get a quality increase for perfectly catching a fish though.)",
           "default": 3
         },
         "MaxFishQuality": {
