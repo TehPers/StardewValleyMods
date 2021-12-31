@@ -102,6 +102,7 @@ namespace TehPers.FishingOverhaul.Config
             ITranslationHelper translations
         )
         {
+            Translation Text(string key) => translations.Get($"text.config.{key}");
             Translation Name(string key) => translations.Get($"text.config.fish.{key}.name");
             Translation Desc(string key) => translations.Get($"text.config.fish.{key}.desc");
 
@@ -148,36 +149,49 @@ namespace TehPers.FishingOverhaul.Config
                 0,
                 20
             );
-            configApi.AddBoolOption(
+            configApi.AddTextOption(
                 manifest,
-                () => this.MaxNormalFishQuality is not null,
-                val => this.MaxNormalFishQuality = val ? 0 : null,
-                () => Name("maxNormalFishQuality.enabled"),
-                () => Desc("maxNormalFishQuality.enabled")
-            );
-            configApi.AddNumberOption(
-                manifest,
-                () => this.MaxNormalFishQuality ?? 0,
-                val =>
+                () => this.MaxNormalFishQuality switch
                 {
-                    if (this.MaxNormalFishQuality is not null)
-                    {
-                        this.MaxNormalFishQuality = val;
-                    }
+                    null => "disabled",
+                    <= 0 => "basic",
+                    1 => "silver",
+                    2 => "gold",
+                    >= 3 => "iridium",
+                },
+                val => this.MaxNormalFishQuality = val switch
+                {
+                    "basic" => 0,
+                    "silver" => 1,
+                    "gold" => 2,
+                    "iridium" => 3,
+                    "disabled" or _ => null,
                 },
                 () => Name("maxNormalFishQuality"),
                 () => Desc("maxNormalFishQuality"),
-                0,
-                4
+                new[] {"disabled", "basic", "silver", "gold", "iridium"},
+                val => Text(val)
             );
-            configApi.AddNumberOption(
+            configApi.AddTextOption(
                 manifest,
-                () => this.MaxFishQuality,
-                val => this.MaxFishQuality = val,
+                () => this.MaxFishQuality switch
+                {
+                    <= 0 => "basic",
+                    1 => "silver",
+                    2 => "gold",
+                    >= 3 => "iridium",
+                },
+                val => this.MaxFishQuality = val switch
+                {
+                    "basic" => 0,
+                    "silver" => 1,
+                    "gold" => 2,
+                    "iridium" or _ => 3,
+                },
                 () => Name("maxFishQuality"),
                 () => Desc("maxFishQuality"),
-                0,
-                3
+                new[] {"basic", "silver", "gold", "iridium"},
+                val => Text(val)
             );
 
             // Fish chances
@@ -205,20 +219,34 @@ namespace TehPers.FishingOverhaul.Config
         }
 
         /// <summary>
-        /// Clamps the quality of a fish to allowed bounds.
+        /// Clamps the quality of a fish to allowed bounds. Also increases quality level 3 to
+        /// quality level 4 (before clamping it).
         /// </summary>
         /// <param name="info">The catch info.</param>
-        /// <returns></returns>
+        /// <returns>The clamped fish quality.</returns>
         public CatchInfo.FishCatch ClampQuality(CatchInfo.FishCatch info)
         {
-            var clampedQuality = Math.Clamp(info.FishQuality, 0, this.MaxFishQuality);
-            var newQuality =
+            // Calculate max allowed fish quality
+            var maxQuality =
                 !info.State.IsPerfect && this.MaxNormalFishQuality is { } maxNormalFishQuality
-                    ? Math.Min(clampedQuality, maxNormalFishQuality)
-                    : clampedQuality;
+                    ? Math.Min(maxNormalFishQuality, this.MaxFishQuality)
+                    : this.MaxFishQuality;
+            maxQuality = Math.Max(maxQuality, 0);
+
+            // Calculate fish quality
             return info with
             {
-                FishQuality = newQuality,
+                FishQuality = info.FishQuality switch
+                {
+                    // Basic
+                    <= 0 => 0,
+                    // Iridium (quality of 3 is adjusted to 4)
+                    >= 3 when maxQuality >= 3 => 4,
+                    >= 3 => maxQuality,
+                    // Other
+                    var quality when quality >= maxQuality => maxQuality,
+                    var quality => quality,
+                }
             };
         }
     }

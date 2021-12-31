@@ -2,6 +2,17 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.2.7 - 2021-12-31
+
+### Changed
+
+- GMCM config options for max fish quality have been simplified to dropdowns.
+- Max fish qualities of less than basic or greater than iridium are clamped down to valid values.
+
+### Fixed
+
+- Fix fish quality level of 3 not being adjusted to iridium (quality level 4).
+
 ## 3.2.6 - 2021-12-30
 
 ### Fixed
