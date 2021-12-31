@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
 using StardewModdingAPI;
 using StardewValley;
+using System;
 using TehPers.Core.Api.Json;
+using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
 namespace TehPers.FishingOverhaul.Config
@@ -200,6 +202,24 @@ namespace TehPers.FishingOverhaul.Config
             }
 
             return streak / this.StreakForIncreasedQuality;
+        }
+
+        /// <summary>
+        /// Clamps the quality of a fish to allowed bounds.
+        /// </summary>
+        /// <param name="info">The catch info.</param>
+        /// <returns></returns>
+        public CatchInfo.FishCatch ClampQuality(CatchInfo.FishCatch info)
+        {
+            var clampedQuality = Math.Clamp(info.FishQuality, 0, this.MaxFishQuality);
+            var newQuality =
+                !info.State.IsPerfect && this.MaxNormalFishQuality is { } maxNormalFishQuality
+                    ? Math.Min(clampedQuality, maxNormalFishQuality)
+                    : clampedQuality;
+            return info with
+            {
+                FishQuality = newQuality,
+            };
         }
     }
 }

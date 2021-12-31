@@ -2,6 +2,12 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.2.6 - 2021-12-30
+
+### Fixed
+
+- Fix `MaxFishQuality` and `MaxNormalFishQuality` not being applied to catches.
+
 ## 3.2.5 - 2021-12-28
 
 ### Fixed
