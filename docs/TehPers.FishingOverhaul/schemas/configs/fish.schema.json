@@ -10,6 +10,7 @@
     "TehPers.FishingOverhaul.Config.FishConfig": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Configuration for fish.",
       "properties": {
         "ShowFishInMinigame": {
           "type": "boolean",
@@ -72,6 +73,7 @@
     "TehPers.FishingOverhaul.Config.FishingChances": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Configuration for the chances of catching something while fishing.",
       "properties": {
         "BaseChance": {
           "type": "number",

@@ -10,6 +10,7 @@
     "TehPers.FishingOverhaul.Config.HudConfig": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Configuration for the fishing HUD.",
       "properties": {
         "ShowFishingHud": {
           "type": "boolean",

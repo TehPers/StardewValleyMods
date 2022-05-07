@@ -356,7 +356,14 @@
         "When": {
           "type": "object",
           "additionalProperties": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
           },
           "description": "Content Patcher conditions for when this is available."
         }
@@ -721,7 +728,14 @@
         "When": {
           "type": "object",
           "additionalProperties": {
-            "type": "string"
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
           },
           "description": "Content Patcher conditions for when this is available."
         }

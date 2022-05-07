@@ -10,6 +10,7 @@
     "TehPers.FishingOverhaul.Config.TreasureConfig": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Configuration for treasure.",
       "properties": {
         "MaxTreasureQuantity": {
           "type": "integer",
@@ -59,6 +60,7 @@
     "TehPers.FishingOverhaul.Config.TreasureChances": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Configuration for the chances of catching treasure while fishing.",
       "properties": {
         "MagnetFactor": {
           "type": "number",
@@ -122,6 +124,7 @@
     "TehPers.FishingOverhaul.Config.FishingChances": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Configuration for the chances of catching something while fishing.",
       "properties": {
         "BaseChance": {
           "type": "number",
