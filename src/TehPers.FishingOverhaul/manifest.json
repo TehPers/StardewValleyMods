@@ -6,7 +6,7 @@
   "Description": "Highly customizable overhaul for fishing",
   "UniqueID": "TehPers.FishingOverhaul",
   "EntryDll": "TehPers.FishingOverhaul.dll",
-  "MinimumApiVersion": "3.13.0",
+  "MinimumApiVersion": "3.14.0",
   "UpdateKeys": ["Nexus:866", "ModDrop:123679"],
   "Dependencies": [
     {

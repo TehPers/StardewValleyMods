@@ -151,8 +151,8 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// <summary>
         /// Content Patcher conditions for when this is available.
         /// </summary>
-        public ImmutableDictionary<string, string> When { get; init; } =
-            ImmutableDictionary<string, string>.Empty;
+        public ImmutableDictionary<string, string?> When { get; init; } =
+            ImmutableDictionary<string, string?>.Empty;
 
         /// <summary>
         /// Gets the weighted chance of this being caught, if any. This does not test the

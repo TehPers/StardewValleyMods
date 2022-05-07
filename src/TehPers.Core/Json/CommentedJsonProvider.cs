@@ -22,7 +22,7 @@ namespace TehPers.Core.Json
         {
             this.defaultSource = defaultSource;
 
-            this.jsonSettings = new JsonSerializerSettings
+            this.jsonSettings = new()
             {
                 Formatting = Formatting.Indented,
                 ObjectCreationHandling =
@@ -185,7 +185,7 @@ namespace TehPers.Core.Json
 
         private static JsonSerializerSettings CloneSettings(JsonSerializerSettings source)
         {
-            return new JsonSerializerSettings
+            return new()
             {
                 CheckAdditionalContent = source.CheckAdditionalContent,
                 ConstructorHandling = source.ConstructorHandling,

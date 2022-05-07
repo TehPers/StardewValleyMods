@@ -12,18 +12,16 @@ namespace TehPers.FishingOverhaul.Services
 {
     internal sealed partial class DefaultFishingSource
     {
-        private static readonly ImmutableDictionary<string, string> hasCaughtFish =
-            new Dictionary<string, string>
+        private static readonly ImmutableDictionary<string, string?> hasCaughtFish =
+            new Dictionary<string, string?>
             {
                 ["HasValue:{{HasCaughtFish}}"] = "true",
             }.ToImmutableDictionary();
 
-        private static readonly ImmutableDictionary<string, string> isLegendaryFamilyActive =
-            new Dictionary<string, string>
+        private static readonly ImmutableDictionary<string, string?> isLegendaryFamilyActive =
+            new Dictionary<string, string?>
             {
                 ["TehPers.FishingOverhaul/SpecialOrderRuleActive"] = "LEGENDARY_FAMILY",
-                // TODO: remove this once CP updates
-                ["HasMod"] = "TehPers.FishingOverhaul",
             }.ToImmutableDictionary();
 
         // Legendary fish
@@ -309,7 +307,7 @@ namespace TehPers.FishingOverhaul.Services
             var trashEntries = new List<TrashEntry>();
 
             // Parse the fish traits
-            var fish = this.assetProvider.Load<Dictionary<int, string>>(@"Data\Fish.xnb");
+            var fish = this.assetProvider.Load<Dictionary<int, string>>(@"Data\Fish");
             var fishAvailabilities = new Dictionary<int, List<FishAvailabilityInfo>>(fish.Count);
             var trashAvailabilities = new Dictionary<int, List<AvailabilityInfo>>();
             foreach (var (fishId, rawFishInfo) in fish)
@@ -332,11 +330,15 @@ namespace TehPers.FishingOverhaul.Services
                     }
 
                     // Add traits and availabilities
-                    fishTraits[fishKey] = traits with
-                    {
-                        IsLegendary = DefaultFishingSource.vanillaLegendaries.Contains(fishKey),
-                    };
-                    fishAvailabilities[fishId] = availabilities.ToList();
+                    fishTraits.Add(
+                        fishKey,
+                        traits with
+                        {
+                            IsLegendary =
+                            DefaultFishingSource.vanillaLegendaries.Contains(fishKey),
+                        }
+                    );
+                    fishAvailabilities.Add(fishId, availabilities.ToList());
                 }
                 else
                 {
@@ -356,8 +358,7 @@ namespace TehPers.FishingOverhaul.Services
             }
 
             // Parse the location data
-            var locations =
-                this.assetProvider.Load<Dictionary<string, string>>(@"Data\Locations.xnb");
+            var locations = this.assetProvider.Load<Dictionary<string, string>>(@"Data\Locations");
             foreach (var (locationName, rawLocationData) in locations)
             {
                 var locationData = rawLocationData.Split('/');

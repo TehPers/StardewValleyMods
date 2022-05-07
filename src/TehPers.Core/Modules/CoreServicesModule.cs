@@ -1,10 +1,7 @@
-﻿using Ninject;
-using TehPers.Core.Api.Content;
-using TehPers.Core.Api.DI;
+﻿using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
-using TehPers.Core.Content;
 using TehPers.Core.Integrations.DynamicGameAssets;
 using TehPers.Core.Integrations.JsonAssets;
 using TehPers.Core.Items;
@@ -18,15 +15,11 @@ namespace TehPers.Core.Modules
         {
             // Startup services
             this.Bind<ISetup>().To<NamespaceSetup>().InSingletonScope();
-            this.Bind<ISetup>()
-                .ToMethod(context => context.Kernel.Get<AssetTracker>())
-                .InSingletonScope();
 
             // Services
             this.GlobalProxyRoot.Bind<INamespaceRegistry>()
                 .To<NamespaceRegistry>()
                 .InSingletonScope();
-            this.GlobalProxyRoot.Bind<IAssetTracker>().To<AssetTracker>().InSingletonScope();
 
             // Namespaces
             this.GlobalProxyRoot.Bind<INamespaceProvider>()

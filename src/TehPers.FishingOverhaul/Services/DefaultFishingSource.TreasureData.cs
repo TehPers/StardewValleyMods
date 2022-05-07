@@ -12,7 +12,7 @@ namespace TehPers.FishingOverhaul.Services
     {
         private FishingContent GetDefaultTreasureData()
         {
-            return new(this.manifest) { AddTreasure = GenerateTreasureData().ToImmutableArray() };
+            return new(this.manifest) {AddTreasure = GenerateTreasureData().ToImmutableArray()};
 
             IEnumerable<TreasureEntry> GenerateTreasureData()
             {
@@ -20,9 +20,9 @@ namespace TehPers.FishingOverhaul.Services
 
                 // Dressed spinner
                 yield return new(
-                    new(0.025) { MinFishingLevel = 6 },
+                    new(0.025) {MinFishingLevel = 6},
                     ImmutableArray.Create(NamespacedKey.SdvObject(687))
-                ) { AllowDuplicates = false };
+                ) {AllowDuplicates = false};
 
                 // Bait
                 yield return new(new(0.25), ImmutableArray.Create(NamespacedKey.SdvObject(685)))
@@ -35,11 +35,9 @@ namespace TehPers.FishingOverhaul.Services
                 yield return new LostBookEntry(
                     new(0.025 * 100000)
                     {
-                        When = new Dictionary<string, string>
+                        When = new Dictionary<string, string?>
                         {
                             ["TehPers.FishingOverhaul/BooksFound"] = "{{Range: 0, 19}}",
-                            // TODO: remove this when CP updates
-                            ["HasMod"] = "TehPers.FishingOverhaul",
                         }.ToImmutableDictionary(),
                     }
                 )
@@ -178,7 +176,7 @@ namespace TehPers.FishingOverhaul.Services
                     MaxQuantity = 25,
                 };
                 yield return new(
-                    new(0.5) { MaxFishingLevel = 1 },
+                    new(0.5) {MaxFishingLevel = 1},
                     ImmutableArray.Create(NamespacedKey.SdvObject(770))
                 )
                 {
@@ -196,7 +194,7 @@ namespace TehPers.FishingOverhaul.Services
                 yield return new(
                     new(0.01)
                     {
-                        When = new Dictionary<string, string>
+                        When = new Dictionary<string, string?>
                         {
                             ["HasFlag: hostPlayer"] = "Farm_Eternal",
                         }.ToImmutableDictionary(),
@@ -206,7 +204,7 @@ namespace TehPers.FishingOverhaul.Services
 
                 // Rice shoot
                 yield return new(
-                    new(0.1) { Seasons = Seasons.Spring },
+                    new(0.1) {Seasons = Seasons.Spring},
                     ImmutableArray.Create(NamespacedKey.SdvObject(273))
                 )
                 {
@@ -218,11 +216,10 @@ namespace TehPers.FishingOverhaul.Services
                 yield return new(
                     new(0.33)
                     {
-                        When = new Dictionary<string, string>
+                        When = new Dictionary<string, string?>
                         {
                             ["TehPers.FishingOverhaul/SpecialOrderRuleActive"] =
                                 "DROP_QI_BEANS",
-                            ["HasMod"] = "TehPers.FishingOverhaul",
                         }.ToImmutableDictionary()
                     },
                     ImmutableArray.Create(NamespacedKey.SdvObject(890))
@@ -246,7 +243,7 @@ namespace TehPers.FishingOverhaul.Services
                 yield return new(
                     new(0.005),
                     Enumerable.Range(504, 10).Select(NamespacedKey.SdvBoots).ToImmutableArray()
-                ) { AllowDuplicates = false };
+                ) {AllowDuplicates = false};
 
                 // Rings
                 yield return new(new(0.0025), ImmutableArray.Create(NamespacedKey.SdvRing(527)))
@@ -256,11 +253,11 @@ namespace TehPers.FishingOverhaul.Services
                 yield return new(
                     new(0.005),
                     Enumerable.Range(516, 4).Select(NamespacedKey.SdvRing).ToImmutableArray()
-                ) { AllowDuplicates = false };
+                ) {AllowDuplicates = false};
                 yield return new(
                     new(0.005),
                     Enumerable.Range(529, 6).Select(NamespacedKey.SdvRing).ToImmutableArray()
-                ) { AllowDuplicates = false };
+                ) {AllowDuplicates = false};
             }
         }
     }

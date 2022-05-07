@@ -7,6 +7,8 @@ namespace TehPers.FishingOverhaul.Api
     /// </summary>
     public abstract record PossibleCatch
     {
+        private PossibleCatch() { }
+
         /// <summary>
         /// A fish catch.
         /// </summary>

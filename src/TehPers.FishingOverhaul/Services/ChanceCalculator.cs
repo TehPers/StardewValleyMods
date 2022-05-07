@@ -2,6 +2,7 @@
 using System.Linq;
 using ContentPatcher;
 using StardewModdingAPI;
+using System.Collections.Generic;
 using TehPers.Core.Api.Extensions;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
@@ -28,36 +29,39 @@ namespace TehPers.FishingOverhaul.Services
             this.availabilityInfo = availabilityInfo
                 ?? throw new ArgumentNullException(nameof(availabilityInfo));
 
-            if (availabilityInfo.When.Any())
+            // Check if any CP conditions exist
+            if (!availabilityInfo.When.Any())
             {
-                // Get Content Patcher version
-                var version =
-                    fishingManifest.Dependencies.FirstOrDefault(
-                            dependency => dependency.UniqueID == "Pathoschild.ContentPatcher"
-                        )
-                        ?.MinimumVersion
-                    ?? throw new ArgumentException(
-                        "Fishing overhaul does not depend on Content Patcher",
-                        nameof(fishingManifest)
-                    );
+                return;
+            }
 
-                // Parse conditions
-                this.managedConditions = contentPatcherApi.ParseConditions(
-                    owner,
-                    availabilityInfo.When,
-                    version,
-                    new[] { fishingManifest.UniqueID }
+            // Get CP version
+            var version =
+                fishingManifest.Dependencies.FirstOrDefault(
+                        dependency => dependency.UniqueID == "Pathoschild.ContentPatcher"
+                    )
+                    ?.MinimumVersion
+                ?? throw new ArgumentException(
+                    "Fishing overhaul does not depend on Content Patcher",
+                    nameof(fishingManifest)
                 );
 
-                // Check if conditions are valid
-                if (!this.managedConditions.IsValid)
-                {
-                    // Log error
-                    monitor.Log(
-                        $"Failed to parse conditions for one of {owner.UniqueID}'s entries: {this.managedConditions.ValidationError}",
-                        LogLevel.Error
-                    );
-                }
+            // Parse conditions
+            this.managedConditions = contentPatcherApi.ParseConditions(
+                owner,
+                availabilityInfo.When,
+                version,
+                new[] {fishingManifest.UniqueID}
+            );
+
+            // Check if conditions are valid
+            if (!this.managedConditions.IsValid)
+            {
+                // Log error
+                monitor.Log(
+                    $"Failed to parse conditions for one of {owner.UniqueID}'s entries: {this.managedConditions.ValidationError}",
+                    LogLevel.Error
+                );
             }
         }
 
