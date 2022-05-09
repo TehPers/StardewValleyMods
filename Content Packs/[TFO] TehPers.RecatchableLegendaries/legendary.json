@@ -8,12 +8,8 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Beach"
-        ],
-        "Seasons": [
-          "Summer"
-        ],
+        "IncludeLocations": ["Beach"],
+        "Seasons": ["Summer"],
         "MinFishingLevel": 5,
         "FarmerPosition": {
           "X": {
@@ -27,9 +23,7 @@
         }
       },
       "OnCatch": {
-        "SetFlags": [
-          "TehPers.FishingOverhaul/crimsonfishCaught"
-        ],
+        "SetFlags": ["TehPers.FishingOverhaul/crimsonfishCaught"],
         "StartConversations": {
           "TehPers.RecatchableLegendaries/crimsonfishDelay": 7
         }
@@ -41,12 +35,8 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Town"
-        ],
-        "Seasons": [
-          "Fall"
-        ],
+        "IncludeLocations": ["Town"],
+        "Seasons": ["Fall"],
         "MinFishingLevel": 3,
         "FarmerPosition": {
           "Y": {
@@ -59,9 +49,7 @@
         }
       },
       "OnCatch": {
-        "SetFlags": [
-          "TehPers.FishingOverhaul/anglerCaught"
-        ],
+        "SetFlags": ["TehPers.FishingOverhaul/anglerCaught"],
         "StartConversations": {
           // Delay for 7 days
           "TehPers.RecatchableLegendaries/anglerDelay": 7
@@ -74,18 +62,10 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Mountain"
-        ],
-        "Seasons": [
-          "Spring"
-        ],
-        "Weathers": [
-          "Rainy"
-        ],
-        "WaterTypes": [
-          "PondOrOcean"
-        ],
+        "IncludeLocations": ["Mountain"],
+        "Seasons": ["Spring"],
+        "Weathers": ["Rainy"],
+        "WaterTypes": ["PondOrOcean"],
         "MinFishingLevel": 10,
         "MinDepth": 4,
         "When": {
@@ -94,9 +74,7 @@
         }
       },
       "OnCatch": {
-        "SetFlags": [
-          "TehPers.FishingOverhaul/legendCaught"
-        ],
+        "SetFlags": ["TehPers.FishingOverhaul/legendCaught"],
         "StartConversations": {
           // Delay for 7 days
           "TehPers.RecatchableLegendaries/legendDelay": 7
@@ -109,9 +87,7 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Sewer"
-        ],
+        "IncludeLocations": ["Sewer"],
         "FarmerPosition": {
           "X": {
             "LessThanEq": 14
@@ -126,9 +102,7 @@
         }
       },
       "OnCatch": {
-        "SetFlags": [
-          "TehPers.FishingOverhaul/mutantCarpCaught"
-        ],
+        "SetFlags": ["TehPers.FishingOverhaul/mutantCarpCaught"],
         "StartConversations": {
           // Delay for 7 days
           "TehPers.RecatchableLegendaries/mutantCarpDelay": 7
@@ -141,15 +115,9 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Forest"
-        ],
-        "Seasons": [
-          "Winter"
-        ],
-        "WaterTypes": [
-          "River"
-        ],
+        "IncludeLocations": ["Forest"],
+        "Seasons": ["Winter"],
+        "WaterTypes": ["River"],
         "MinFishingLevel": 6,
         "FarmerPosition": {
           "X": {
@@ -168,9 +136,7 @@
         }
       },
       "OnCatch": {
-        "SetFlags": [
-          "TehPers.FishingOverhaul/glacierfishCaught"
-        ],
+        "SetFlags": ["TehPers.FishingOverhaul/glacierfishCaught"],
         "StartConversations": {
           // Delay for 7 days
           "TehPers.RecatchableLegendaries/glacierfishDelay": 7

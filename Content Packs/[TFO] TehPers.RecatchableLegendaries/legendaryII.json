@@ -8,12 +8,8 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Beach"
-        ],
-        "Seasons": [
-          "Summer"
-        ],
+        "IncludeLocations": ["Beach"],
+        "Seasons": ["Summer"],
         "MinFishingLevel": 5,
         "FarmerPosition": {
           "X": {
@@ -43,12 +39,8 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Town"
-        ],
-        "Seasons": [
-          "Fall"
-        ],
+        "IncludeLocations": ["Town"],
+        "Seasons": ["Fall"],
         "MinFishingLevel": 3,
         "FarmerPosition": {
           "Y": {
@@ -77,18 +69,10 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Mountain"
-        ],
-        "Seasons": [
-          "Spring"
-        ],
-        "Weathers": [
-          "Rainy"
-        ],
-        "WaterTypes": [
-          "PondOrOcean"
-        ],
+        "IncludeLocations": ["Mountain"],
+        "Seasons": ["Spring"],
+        "Weathers": ["Rainy"],
+        "WaterTypes": ["PondOrOcean"],
         "MinFishingLevel": 10,
         "MinDepth": 4,
         "When": {
@@ -113,9 +97,7 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Sewer"
-        ],
+        "IncludeLocations": ["Sewer"],
         "FarmerPosition": {
           "X": {
             "LessThanEq": 14
@@ -146,15 +128,9 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": [
-          "Forest"
-        ],
-        "Seasons": [
-          "Winter"
-        ],
-        "WaterTypes": [
-          "River"
-        ],
+        "IncludeLocations": ["Forest"],
+        "Seasons": ["Winter"],
+        "WaterTypes": ["River"],
         "MinFishingLevel": 6,
         "FarmerPosition": {
           "X": {

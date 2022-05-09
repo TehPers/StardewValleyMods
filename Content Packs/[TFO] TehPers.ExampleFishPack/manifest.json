@@ -5,9 +5,7 @@
   "Version": "1.0.2",
   "Description": "Example fish pack for Teh's Fishing Overhaul",
   "UniqueID": "TehPers.ExampleFishPack",
-  "UpdateKeys": [
-    "Nexus:866@TehPers.ExampleFishPack"
-  ],
+  "UpdateKeys": ["Nexus:866@TehPers.ExampleFishPack"],
   "ContentPackFor": {
     "UniqueID": "TehPers.FishingOverhaul"
   },
