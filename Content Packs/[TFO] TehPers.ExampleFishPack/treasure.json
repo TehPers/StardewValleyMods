@@ -2,7 +2,9 @@
   "$schema": "https://raw.githubusercontent.com/TehPers/StardewValleyMods/master/docs/TehPers.FishingOverhaul/schemas/contentPacks/content.schema.json",
   "AddTreasure": [
     {
-      "ItemKeys": ["StardewValley:Object/434"],
+      "ItemKeys": [
+        "StardewValley:Object/434"
+      ],
       "AvailabilityInfo": {
         "BaseChance": 0.001,
         "StartTime": 1800
@@ -10,12 +12,16 @@
       "AllowDuplicates": false
     },
     {
-      "ItemKeys": ["DGA:spacechase0.DynamicGameAssets.Example/GreenSquare"],
+      "ItemKeys": [
+        "DGA:spacechase0.DynamicGameAssets.Example/GreenSquare"
+      ],
       "MinQuantity": 2,
       "MaxQuantity": 4,
       "AvailabilityInfo": {
         "BaseChance": 1,
-        "ExcludeLocations": ["Submarine"],
+        "ExcludeLocations": [
+          "Submarine"
+        ],
         "When": {
           "HasMod": "spacechase0.DynamicGameAssets.Example"
         }
@@ -24,7 +30,9 @@
   ],
   "RemoveTreasure": [
     {
-      "ItemKeys": ["StardewValley:Object/685"]
+      "ItemKeys": [
+        "StardewValley:Object/685"
+      ]
     },
     {
       "AnyWithItem": "StardewValley:Object/127"

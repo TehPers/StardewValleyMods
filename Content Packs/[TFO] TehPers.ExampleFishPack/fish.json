@@ -6,11 +6,17 @@
       "AvailabilityInfo": {
         "BaseChance": 0.1,
         "DepthMultiplier": 0.025,
-        "IncludeLocations": ["Beach"],
+        "IncludeLocations": [
+          "Beach"
+        ],
         "StartTime": 800,
         "EndTime": 1400,
-        "Seasons": ["Spring"],
-        "Weathers": ["Sunny"]
+        "Seasons": [
+          "Spring"
+        ],
+        "Weathers": [
+          "Sunny"
+        ]
       }
     },
     {
@@ -18,21 +24,27 @@
       "AvailabilityInfo": {
         "BaseChance": 0.01,
         "DepthMultiplier": 0.0025,
-        "ExcludeLocations": ["Submarine"],
+        "ExcludeLocations": [
+          "Submarine"
+        ],
         "When": {
           "HasProfession": "Brute",
           "HasFlag |contains=TehPers.ExampleFishPack/Femur": "false"
         }
       },
       "OnCatch": {
-        "SetFlags": ["TehPers.ExampleFishPack/Femur"]
+        "SetFlags": [
+          "TehPers.ExampleFishPack/Femur"
+        ]
       }
     },
     {
       "FishKey": "StardewValley:Object/60",
       "AvailabilityInfo": {
         "BaseChance": 0.1,
-        "IncludeLocations": ["Beach"],
+        "IncludeLocations": [
+          "Beach"
+        ],
         "When": {
           "HasConversationTopic |contains=TehPers.ExampleFishPack/test": "false"
         }

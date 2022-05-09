@@ -2,7 +2,6 @@
 using System.Linq;
 using ContentPatcher;
 using StardewModdingAPI;
-using System.Collections.Generic;
 using TehPers.Core.Api.Extensions;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;

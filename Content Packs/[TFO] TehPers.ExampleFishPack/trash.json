@@ -6,8 +6,12 @@
       "ItemKey": "StardewValley:Object/72",
       "AvailabilityInfo": {
         "BaseChance": 0.01,
-        "IncludeLocations": ["UndergroundMine"],
-        "ExcludeLocations": ["UndergroundMine/10"]
+        "IncludeLocations": [
+          "UndergroundMine"
+        ],
+        "ExcludeLocations": [
+          "UndergroundMine/10"
+        ]
       }
     },
     // Add trash entry for ocean boots
@@ -15,14 +19,18 @@
       "ItemKey": "DGA:spacechase0.DynamicGameAssets.Example/OceanBoots",
       "AvailabilityInfo": {
         "BaseChance": 0.001,
-        "IncludeLocations": ["Beach"],
+        "IncludeLocations": [
+          "Beach"
+        ],
         "When": {
           "HasMod": "spacechase0.DynamicGameAssets.Example",
           "HasFlag |contains=TehPers.ExampleFishPack/OceanBoots": "false"
         }
       },
       "OnCatch": {
-        "SetFlags": ["TehPers.ExampleFishPack/OceanBoots"]
+        "SetFlags": [
+          "TehPers.ExampleFishPack/OceanBoots"
+        ]
       }
     }
   ]

@@ -43,7 +43,7 @@ namespace TehPers.FishingOverhaul.Services
                         GreaterThanEq = 82,
                     },
                 },
-                MinDepth = 3,
+                MinBobberDepth = 3,
                 When = DefaultFishingSource.hasCaughtFish.Add(
                     $"HasFlag |contains={DefaultFishingSource.crimsonfishFlag}",
                     "false"
@@ -101,7 +101,7 @@ namespace TehPers.FishingOverhaul.Services
                 Weathers = Weathers.Rainy,
                 WaterTypes = WaterTypes.PondOrOcean,
                 MinFishingLevel = 10,
-                MinDepth = 4,
+                MinBobberDepth = 4,
                 When = DefaultFishingSource.hasCaughtFish.Add(
                     $"HasFlag |contains={DefaultFishingSource.legendFlag}",
                     "false"
@@ -173,7 +173,7 @@ namespace TehPers.FishingOverhaul.Services
                         LessThan = 88,
                     },
                 },
-                MinDepth = 3,
+                MinBobberDepth = 3,
                 When = DefaultFishingSource.hasCaughtFish.Add(
                     $"HasFlag |contains={DefaultFishingSource.glacierfishFlag}",
                     "false"
@@ -680,7 +680,7 @@ namespace TehPers.FishingOverhaul.Services
                 availability => availability with
                 {
                     DepthMultiplier = depthMultiplier,
-                    MaxDepth = maxDepth
+                    MaxChanceDepth = maxDepth
                 }
             );
 

@@ -4,13 +4,12 @@
       "$ref": "#/definitions/TehPers.FishingOverhaul.Config.ContentPacks.FishTraitsPack"
     }
   ],
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft/2020-12/schema",
   "title": "FishTraitsPack",
   "definitions": {
     "TehPers.FishingOverhaul.Config.ContentPacks.FishTraitsPack": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Content which modifies the behavior of fish.",
       "properties": {
         "Add": {
           "type": "object",
@@ -34,12 +33,12 @@
           ],
           "description": "Optional '$schema' URL. This is ignored and exists entirely for convenience."
         }
-      }
+      },
+      "description": "Content which modifies the behavior of fish."
     },
     "TehPers.FishingOverhaul.Api.Content.FishTraits": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Definition for a fish's traits.",
       "required": [
         "DartFrequency",
         "DartBehavior",
@@ -78,18 +77,19 @@
           "description": "Whether the fish is legendary.",
           "default": false
         }
-      }
+      },
+      "description": "Definition for a fish's traits."
     },
     "TehPers.FishingOverhaul.Api.DartBehavior": {
       "type": "string",
-      "description": "The movement behavior of the fish in the minigame.",
       "enum": [
         "Mixed",
         "Dart",
         "Smooth",
         "Sink",
         "Floater"
-      ]
+      ],
+      "description": "The movement behavior of the fish in the minigame."
     }
   }
 }

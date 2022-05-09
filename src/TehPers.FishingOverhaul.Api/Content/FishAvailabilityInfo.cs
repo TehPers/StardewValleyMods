@@ -23,7 +23,25 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// The required fishing depth to maximize the chances of catching the fish.
         /// </summary>
         [DefaultValue(null)]
-        public new int MaxDepth { get; init; } = 4;
+        public int MaxChanceDepth { get; init; } = 4;
+
+        /// <summary>
+        /// Obsolete - use <see cref="MaxChanceDepth"/> instead.<br/>
+        /// The required fishing depth to maximize the chances of catching the fish.
+        /// </summary>
+        [Obsolete("Use " + nameof(FishAvailabilityInfo.MaxChanceDepth) + " instead.")]
+        [DefaultValue(0)]
+        public new int MaxDepth
+        {
+            get => this.MaxChanceDepth;
+            init
+            {
+                this.MaxChanceDepth = value;
+                this.ObsoletionWarnings = this.ObsoletionWarnings.Add(
+                    $"{nameof(FishAvailabilityInfo.MaxDepth)} is obsolete. Use {nameof(FishAvailabilityInfo.MaxChanceDepth)} instead."
+                );
+            }
+        }
 
         /// <inheritdoc/>
         public override double? GetWeightedChance(FishingInfo fishingInfo)
@@ -33,7 +51,7 @@ namespace TehPers.FishingOverhaul.Api.Content
                     baseChance =>
                         baseChance
                         * (1
-                            - Math.Max(0, this.MaxDepth - fishingInfo.BobberDepth)
+                            - Math.Max(0, this.MaxChanceDepth - fishingInfo.BobberDepth)
                             * this.DepthMultiplier)
                         + fishingInfo.FishingLevel / 50.0f
                 );

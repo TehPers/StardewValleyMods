@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json;
+using System;
 using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Json;
 
@@ -18,6 +19,13 @@ namespace TehPers.FishingOverhaul.Api.Content
     [JsonDescribe]
     public record AvailabilityInfo([property: JsonRequired] double BaseChance)
     {
+        /// <summary>
+        /// Obsoletion warnings from initializing this <see cref="AvailabilityInfo"/>.
+        /// </summary>
+        [JsonIgnore]
+        internal ImmutableList<string> ObsoletionWarnings { get; init; } =
+            ImmutableList<string>.Empty;
+
         /// <summary>
         /// Time this becomes available (inclusive).
         /// </summary>
@@ -39,8 +47,8 @@ namespace TehPers.FishingOverhaul.Api.Content
         {
             get => this.Seasons switch
             {
-                Seasons.All => new[] { Seasons.All },
-                _ => new[] { Seasons.Spring, Seasons.Summer, Seasons.Fall, Seasons.Winter }.Where(
+                Seasons.All => new[] {Seasons.All},
+                _ => new[] {Seasons.Spring, Seasons.Summer, Seasons.Fall, Seasons.Winter}.Where(
                     s => this.Seasons.HasFlag(s)
                 ),
             };
@@ -62,8 +70,8 @@ namespace TehPers.FishingOverhaul.Api.Content
         {
             get => this.Weathers switch
             {
-                Weathers.All => new[] { Weathers.All },
-                _ => new[] { Weathers.Sunny, Weathers.Rainy }.Where(w => this.Weathers.HasFlag(w)),
+                Weathers.All => new[] {Weathers.All},
+                _ => new[] {Weathers.Sunny, Weathers.Rainy}.Where(w => this.Weathers.HasFlag(w)),
             };
             init => this.Weathers = value.Aggregate(Weathers.None, (acc, cur) => acc | cur);
         }
@@ -85,9 +93,10 @@ namespace TehPers.FishingOverhaul.Api.Content
         {
             get => this.WaterTypes switch
             {
-                WaterTypes.All => new[] { WaterTypes.All },
-                _ => new[] { WaterTypes.River, WaterTypes.PondOrOcean, WaterTypes.Freshwater }
-                    .Where(w => this.WaterTypes.HasFlag(w)),
+                WaterTypes.All => new[] {WaterTypes.All},
+                _ => new[] {WaterTypes.River, WaterTypes.PondOrOcean, WaterTypes.Freshwater}.Where(
+                    w => this.WaterTypes.HasFlag(w)
+                ),
             };
             init => this.WaterTypes = value.Aggregate(WaterTypes.None, (acc, cur) => acc | cur);
         }
@@ -139,14 +148,48 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// <summary>
         /// Minimum bobber depth required to catch this.
         /// </summary>
+        [Obsolete("Use " + nameof(AvailabilityInfo.MinBobberDepth) + " instead")]
         [DefaultValue(0)]
-        public int MinDepth { get; init; } = 0;
+        public int MinDepth
+        {
+            get => this.MinBobberDepth;
+            init
+            {
+                this.MinBobberDepth = value;
+                this.ObsoletionWarnings = this.ObsoletionWarnings.Add(
+                    $"{nameof(AvailabilityInfo.MinDepth)} is obsolete. Use {nameof(AvailabilityInfo.MinBobberDepth)} instead."
+                );
+            }
+        }
+
+        /// <summary>
+        /// Minimum bobber depth required to catch this.
+        /// </summary>
+        [DefaultValue(0)]
+        public int MinBobberDepth { get; init; } = 0;
+
+        /// <summary>
+        /// Maximum bobber depth required to catch this.
+        /// </summary>
+        [Obsolete("Use " + nameof(AvailabilityInfo.MaxBobberDepth) + " instead")]
+        [DefaultValue(null)]
+        public int? MaxDepth
+        {
+            get => this.MaxBobberDepth;
+            init
+            {
+                this.MaxBobberDepth = value;
+                this.ObsoletionWarnings = this.ObsoletionWarnings.Add(
+                    $"{nameof(AvailabilityInfo.MaxDepth)} is obsolete. Use {nameof(AvailabilityInfo.MaxBobberDepth)} instead."
+                );
+            }
+        }
 
         /// <summary>
         /// Maximum bobber depth required to catch this.
         /// </summary>
         [DefaultValue(null)]
-        public int? MaxDepth { get; init; } = null;
+        public int? MaxBobberDepth { get; init; } = null;
 
         /// <summary>
         /// Content Patcher conditions for when this is available.
@@ -225,12 +268,12 @@ namespace TehPers.FishingOverhaul.Api.Content
             }
 
             // Verify depth is valid
-            if (fishingInfo.BobberDepth < this.MinDepth)
+            if (fishingInfo.BobberDepth < this.MinBobberDepth)
             {
                 return null;
             }
 
-            if (this.MaxDepth is { } maxDepth && fishingInfo.BobberDepth > maxDepth)
+            if (this.MaxBobberDepth is { } maxDepth && fishingInfo.BobberDepth > maxDepth)
             {
                 return null;
             }

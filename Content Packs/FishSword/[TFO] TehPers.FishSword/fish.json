@@ -16,12 +16,16 @@
       "AvailabilityInfo": {
         "BaseChance": 0.01,
         "DepthMultiplier": 0.005,
-        "MinDepth": 3,
+        "MinBobberDepth": 3,
         "MinFishingLevel": 6,
-        "Seasons": ["Fall"],
+        "Seasons": [
+          "Fall"
+        ],
         "StartTime": 1200,
         "EndTime": 1800,
-        "IncludeLocations": ["Beach"],
+        "IncludeLocations": [
+          "Beach"
+        ],
         "When": {
           "HasConversationTopic |contains=TehPers.FishSword.TFO/fishSword": "false"
         }

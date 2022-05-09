@@ -6,7 +6,9 @@
       "ItemKey": "DGA:TehPers.FishSword.DGA/SeaWeed",
       "AvailabilityInfo": {
         "BaseChance": 0.05,
-        "IncludeLocations": ["Beach"]
+        "IncludeLocations": [
+          "Beach"
+        ]
       }
     }
   ]

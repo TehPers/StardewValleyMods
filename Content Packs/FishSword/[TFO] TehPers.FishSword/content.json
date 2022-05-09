@@ -1,4 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/TehPers/StardewValleyMods/master/docs/TehPers.FishingOverhaul/schemas/contentPacks/content.schema.json",
-  "Include": ["fish.json", "trash.json"]
+  "Include": [
+    "fish.json",
+    "trash.json"
+  ]
 }

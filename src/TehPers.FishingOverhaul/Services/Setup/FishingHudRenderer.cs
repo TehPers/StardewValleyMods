@@ -37,7 +37,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.hudConfig = hudConfig ?? throw new ArgumentNullException(nameof(hudConfig));
             this.namespaceRegistry = namespaceRegistry;
             this.whitePixel = new(Game1.graphics.GraphicsDevice, 1, 1);
-            this.whitePixel.SetData(new[] { Color.White });
+            this.whitePixel.SetData(new[] {Color.White});
         }
 
         public void Setup()
@@ -69,8 +69,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             var boxTopLeft = new Vector2(this.hudConfig.TopLeftX, this.hudConfig.TopLeftY);
             var boxBottomLeft = boxTopLeft;
             var fishingInfo = this.fishingApi.CreateDefaultFishingInfo(farmer);
-            var fishChances = this.fishingApi
-                .GetFishChances(fishingInfo)
+            var fishChances = this.fishingApi.GetFishChances(fishingInfo)
                 .ToWeighted(value => value.Weight, value => value.Value.FishKey)
                 .Condense()
                 .Normalize()
@@ -84,7 +83,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             // Draw streak chances
             var streakText = this.helper.Translation.Get(
                 "text.streak",
-                new { streak = this.fishingApi.GetStreak(farmer) }
+                new {streak = this.fishingApi.GetStreak(farmer)}
             );
             e.SpriteBatch.DrawStringWithShadow(font, streakText, boxBottomLeft, textColor, 1F);
             boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
@@ -94,7 +93,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             var treasureChance = this.fishingApi.GetChanceForTreasure(fishingInfo);
             var treasureText = this.helper.Translation.Get(
                 "text.treasure",
-                new { chance = $"{treasureChance:P2}" }
+                new {chance = $"{treasureChance:P2}"}
             );
             e.SpriteBatch.DrawStringWithShadow(font, treasureText, boxBottomLeft, textColor, 1F);
             boxWidth = Math.Max(boxWidth, font.MeasureString(treasureText).X);
@@ -106,7 +105,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 : 1.0 - this.fishingApi.GetChanceForFish(fishingInfo);
             var trashText = this.helper.Translation.Get(
                 "text.trash",
-                new { chance = $"{trashChance:P2}" }
+                new {chance = $"{trashChance:P2}"}
             );
             e.SpriteBatch.DrawStringWithShadow(font, trashText, boxBottomLeft, textColor, 1F);
             boxWidth = Math.Max(boxWidth, font.MeasureString(trashText).X);
@@ -123,7 +122,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 var lineWidth = 0f;
                 var fishName = this.helper.Translation.Get(
                         "text.fish.unknownName",
-                        new { key = fishKey.ToString() }
+                        new {key = fishKey.ToString()}
                     )
                     .ToString();
                 if (this.namespaceRegistry.TryGetItemFactory(fishKey, out var factory))
@@ -179,7 +178,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             {
                 var moreFishText = this.helper.Translation.Get(
                         "text.fish.more",
-                        new { quantity = fishChances.Count - maxDisplayedFish }
+                        new {quantity = fishChances.Count - maxDisplayedFish}
                     )
                     .ToString();
                 e.SpriteBatch.DrawStringWithShadow(

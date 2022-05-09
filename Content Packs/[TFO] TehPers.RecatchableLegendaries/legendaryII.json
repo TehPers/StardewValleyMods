@@ -8,8 +8,12 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": ["Beach"],
-        "Seasons": ["Summer"],
+        "IncludeLocations": [
+          "Beach"
+        ],
+        "Seasons": [
+          "Summer"
+        ],
         "MinFishingLevel": 5,
         "FarmerPosition": {
           "X": {
@@ -20,10 +24,8 @@
         "When": {
           // The fish has been caught before
           "HasFlag": "TehPers.FishingOverhaul/sonOfCrimsonfishCaught",
-
           // The fish is no longer normally catchable
           "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
-
           // It is no longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/sonOfCrimsonfishDelay": "false"
         }
@@ -41,8 +43,12 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": ["Town"],
-        "Seasons": ["Fall"],
+        "IncludeLocations": [
+          "Town"
+        ],
+        "Seasons": [
+          "Fall"
+        ],
         "MinFishingLevel": 3,
         "FarmerPosition": {
           "Y": {
@@ -52,10 +58,8 @@
         "When": {
           // The fish has been caught before
           "HasFlag": "TehPers.FishingOverhaul/msAnglerCaught",
-
           // The fish is no longer normally catchable
           "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
-
           // It is no longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/msAngerDelay": "false"
         }
@@ -73,19 +77,25 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": ["Mountain"],
-        "Seasons": ["Spring"],
-        "Weathers": ["Rainy"],
-        "WaterTypes": ["PondOrOcean"],
+        "IncludeLocations": [
+          "Mountain"
+        ],
+        "Seasons": [
+          "Spring"
+        ],
+        "Weathers": [
+          "Rainy"
+        ],
+        "WaterTypes": [
+          "PondOrOcean"
+        ],
         "MinFishingLevel": 10,
         "MinDepth": 4,
         "When": {
           // The fish has been caught before
           "HasFlag": "TehPers.FishingOverhaul/legendIICaught",
-
           // The fish is no longer normally catchable
           "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
-
           // It is no longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/legendIIDelay": "false"
         }
@@ -103,7 +113,9 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": ["Sewer"],
+        "IncludeLocations": [
+          "Sewer"
+        ],
         "FarmerPosition": {
           "X": {
             "LessThanEq": 14
@@ -115,10 +127,8 @@
         "When": {
           // The fish has been caught before
           "HasFlag": "TehPers.FishingOverhaul/radioactiveCarpCaught",
-
           // The fish is no longer normally catchable
           "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
-
           // It is no longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/radioactiveCarpDelay": "false"
         }
@@ -136,9 +146,15 @@
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
-        "IncludeLocations": ["Forest"],
-        "Seasons": ["Winter"],
-        "WaterTypes": ["River"],
+        "IncludeLocations": [
+          "Forest"
+        ],
+        "Seasons": [
+          "Winter"
+        ],
+        "WaterTypes": [
+          "River"
+        ],
         "MinFishingLevel": 6,
         "FarmerPosition": {
           "X": {
@@ -154,10 +170,8 @@
         "When": {
           // The fish has been caught before
           "HasFlag": "TehPers.FishingOverhaul/glacierfishJrCaught",
-
           // The fish is no longer normally catchable
           "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
-
           // It is no longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/glacierfishJrDelay": "false"
         }
