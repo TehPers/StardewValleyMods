@@ -6,7 +6,16 @@ Changelog for [TehCore].
 
 ### Added
 
-- Add ModDrop update keys
+- Add ModDrop update keys.
+
+### Changed
+
+- Update to new SMAPI content API.
+- Change `BindingExtensions.BindForeignModApi<TApi>` to give a nullable binding because the mod could not have an API.
+
+### Removed
+
+- Remove asset tracking because SMAPI supports asset loading events now. This also cleans up the console output quite a bit.
 
 ## 1.0.1 - 2021-12-23
 

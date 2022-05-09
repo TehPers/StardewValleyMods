@@ -2,6 +2,19 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.3.0 - Unreleased
+
+### Added
+
+- Add two new Content Patcher tokens: `ActiveBait` and `ActiveBobber`. They get the current bait and bobber used by the main player.
+
+### Changed
+
+- **(Breaking)** `MinDepth` and `MaxDepth` in `AvailabilityInfo` are renamed to `MinBobberDepth` and `MaxBobberDepth`. Using the old names will still work but will give a deprecation warning in the logs.
+- **(Breaking)** `MaxDepth` in `FishAvailabilityInfo` is renamed to `MaxChanceDepth`. Using the old names will still work but will give a deprecation warning in the logs.
+- The above two changes mean fish entries in content packs can now use both `MaxBobberDepth` and `MaxChanceDepth` at the same time rather than only `MaxChanceDepth`.
+- Some records in the fishing API now have private constructors to ensure subtypes of them cannot be created aside from the ones built into the API.
+
 ## 3.2.7 - 2021-12-31
 
 ### Changed
