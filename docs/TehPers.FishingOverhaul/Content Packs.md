@@ -69,11 +69,12 @@ chances of catching that fish are.
 Fish availability determines when a fish is available and includes all the normal availability
 properties as well.
 
-| Property          | Type      | Required | Default | Description                                                                                                                          |
-| ----------------- | --------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `DepthMultiplier` | `number`  | No       | 0.1     | Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1. Default is 0.1. |
-| `MaxDepth`        | `integer` | No       | 4       | The required fishing depth to maximize the chances of catching the fish. Default is 4.                                               |
-| Common fields...  | ...       | ...      | ...     | Other common [availability info] properties.                                                                                         |
+| Property          | Type       | Required | Default | Description                                                                                                          |
+| ----------------- | ---------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+| `DepthMultiplier` | `number`   | No       | 0.1     | Effect that sending the bobber by less than the max distance has on the chance. This value should be no more than 1. |
+| `MaxChanceDepth`  | `integer?` | No       | 4       | The required fishing depth ([fishing zone]) to maximize the chances of catching the fish.                            |
+| ~~`MaxDepth`~~    | `integer?` | No       | 4       | **(Deprecated)** Same as `MaxChanceDepth`.                                                                           |
+| Common fields...  | ...        | ...      | ...     | Other common [availability info] properties.                                                                         |
 
 Removing fish entries uses a filter to match on specific entries that you want to remove:
 
@@ -176,7 +177,12 @@ are the properties that are common to them all:
 | `MaxFishingLevel`  | `integer?` | No       | `null`    | Maximum fishing level required to see this, or null for no max.                                                                |
 | `IncludeLocations` | `array`    | No       | `[]`      | List of locations this should be available in. (see below)                                                                     |
 | `ExcludeLocations` | `array`    | No       | `[]`      | List of locations this should not be available in. This takes priority over `IncludeLocations`.                                |
-| `Position`         | `object`   | No       | `{}`      | Bobber tile position constraints for the availability.                                                                         |
+| `Position`         | `object`   | No       | `{}`      | Constraints on the bobber's position on the map when fishing.                                                                  |
+| `FarmerPosition`   | `object`   | No       | `{}`      | Constraints on the farmer's position on the map when fishing.                                                                  |
+| `MinBobberDepth`   | `integer`  | No       | 0         | Minimum bobber depth ([fishing zone]) required to catch this.                                                                  |
+| `MaxBobberDepth`   | `integer?` | No       | `null`    | Maximum bobber depth ([fishing zone]) required to catch this.                                                                  |
+| ~~`MinDepth`~~     | `integer`  | No       | 0         | **(Deprecated)** Same as `MinBobberDepth`.                                                                                     |
+| ~~`MaxDepth`~~     | `integer?` | No       | `null`    | **(Deprecated)** Same as `MaxBobberDepth`.                                                                                     |
 | `When`             | `object`   | No       | `{}`      | Content Patcher [conditions] for when this should be available.                                                                |
 
 `IncludeLocations` and `ExcludeLocations` are arrays of location names. If `IncludeLocations` is
@@ -238,3 +244,4 @@ Some actions can be taken whenever an item is caught. By combining these actions
 [actions]: #Catch%20actions
 [content schema]: /docs/TehPers.FishingOverhaul/schemas/contentPacks/content.schema.json
 [conditions]: https://github.com/Pathoschild/StardewMods/blob/stable/ContentPatcher/docs/author-tokens-guide.md#conditions
+[fishing zone]: https://stardewvalleywiki.com/Fishing#Fishing_Zone
