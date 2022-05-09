@@ -196,7 +196,8 @@ namespace TehPers.FishingOverhaul.Services
                     new(0.2) {IncludeLocations = ImmutableArray.Create("Willys Ship")}
                 );
                 // Caroline's necklace
-                yield return new CarolineNecklaceEntry(
+                yield return new(
+                    NamespacedKey.SdvObject(GameLocation.CAROLINES_NECKLACE_ITEM),
                     new(0.25)
                     {
                         IncludeLocations = ImmutableArray.Create("Railroad"),

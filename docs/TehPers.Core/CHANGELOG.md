@@ -7,6 +7,7 @@ Changelog for [TehCore].
 ### Added
 
 - Add ModDrop update keys.
+- Add special handling for creating Caroline's necklace.
 
 ### Changed
 
