@@ -16,7 +16,7 @@
             "GreaterThanEq": 82
           }
         },
-        "MinDepth": 3,
+        "MinBobberDepth": 3,
         "When": {
           // It is not on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/crimsonfishDelay": "false"
@@ -67,7 +67,7 @@
         "Weathers": ["Rainy"],
         "WaterTypes": ["PondOrOcean"],
         "MinFishingLevel": 10,
-        "MinDepth": 4,
+        "MinBobberDepth": 4,
         "When": {
           // It is not longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/legendDelay": "false"
@@ -129,7 +129,7 @@
             "LessThan": 88
           }
         },
-        "MinDepth": 3,
+        "MinBobberDepth": 3,
         "When": {
           // It is not on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/glacierfishDelay": "false"

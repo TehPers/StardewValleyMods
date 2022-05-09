@@ -16,7 +16,7 @@
             "GreaterThanEq": 82
           }
         },
-        "MinDepth": 3,
+        "MinBobberDepth": 3,
         "When": {
           // The fish has been caught before
           "HasFlag": "TehPers.FishingOverhaul/sonOfCrimsonfishCaught",
@@ -74,7 +74,7 @@
         "Weathers": ["Rainy"],
         "WaterTypes": ["PondOrOcean"],
         "MinFishingLevel": 10,
-        "MinDepth": 4,
+        "MinBobberDepth": 4,
         "When": {
           // The fish has been caught before
           "HasFlag": "TehPers.FishingOverhaul/legendIICaught",
@@ -142,7 +142,7 @@
             "LessThan": 88
           }
         },
-        "MinDepth": 3,
+        "MinBobberDepth": 3,
         "When": {
           // The fish has been caught before
           "HasFlag": "TehPers.FishingOverhaul/glacierfishJrCaught",
