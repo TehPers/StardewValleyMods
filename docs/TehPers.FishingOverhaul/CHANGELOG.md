@@ -29,6 +29,8 @@ Changelog for [Teh's Fishing Overhaul].
 
 - Fix several items not being guaranteed catches (now that priority tiers are added).
 - Fix fossilized spine not being catchable.
+- Fix legendary fish being catchable during Qi's Extended Family.
+- Fix legendary II fish having the same season and weather requirements as their counterparts.
 
 ## 3.2.7 - 2021-12-31
 
