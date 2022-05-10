@@ -4,6 +4,7 @@ using System.Linq;
 using ContentPatcher;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
@@ -76,6 +77,11 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 this.manifest,
                 "ActiveTackle",
                 ContentPatcherSetup.GetActiveTackle
+            );
+            this.contentPatcherApi.RegisterToken(
+                this.manifest,
+                "IslandNorthBridgeFixed",
+                ContentPatcherSetup.GetIslandNorthBridgeFixed
             );
         }
 
@@ -162,6 +168,16 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
 
             return new[] {NamespacedKey.SdvObject(index).ToString()};
+        }
+
+        private static IEnumerable<string>? GetIslandNorthBridgeFixed()
+        {
+            if (Game1.getLocationFromName("IslandNorth") is not IslandNorth islandNorth)
+            {
+                return null;
+            }
+
+            return new[] {islandNorth.bridgeFixed.Value ? "true" : "false"};
         }
     }
 }

@@ -192,6 +192,18 @@ namespace TehPers.FishingOverhaul.Api.Content
         public int? MaxBobberDepth { get; init; } = null;
 
         /// <summary>
+        /// The priority tier for this entry. For all available entries, only the entries that
+        /// share the highest priority tier can be caught. For example, if all trash entries have a
+        /// tier of 0 except for a single entry that has a tier of 1, then that single entry is
+        /// guaranteed to be caught, regardless of its calculated weighted chance. If that entry
+        /// becomes unavailable, then entries from tier 0 are selected from instead. This can be
+        /// useful when creating special items that should always be caught first but which can only
+        /// be caught once, for example.
+        /// </summary>
+        [DefaultValue(0d)]
+        public double PriorityTier { get; init; } = 0d;
+
+        /// <summary>
         /// Content Patcher conditions for when this is available.
         /// </summary>
         public ImmutableDictionary<string, string?> When { get; init; } =

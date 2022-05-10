@@ -117,6 +117,7 @@ namespace TehPers.FishingOverhaul.Services
                     new(1)
                     {
                         IncludeLocations = ImmutableArray.Create("IslandSouthEast"),
+                        PriorityTier = DefaultFishingSource.specialItemTier,
                         Position = new()
                         {
                             X = new()
@@ -150,6 +151,7 @@ namespace TehPers.FishingOverhaul.Services
                     new(1)
                     {
                         IncludeLocations = ImmutableArray.Create("Forest"),
+                        PriorityTier = DefaultFishingSource.specialItemTier,
                         Position = new()
                         {
                             Y = new()
@@ -198,9 +200,10 @@ namespace TehPers.FishingOverhaul.Services
                 // Caroline's necklace
                 yield return new(
                     NamespacedKey.SdvObject(GameLocation.CAROLINES_NECKLACE_ITEM),
-                    new(0.25)
+                    new(1)
                     {
                         IncludeLocations = ImmutableArray.Create("Railroad"),
+                        PriorityTier = DefaultFishingSource.questItemTier,
                         When = new Dictionary<string, string?>
                         {
                             [$"HasFlag |contains={GameLocation.CAROLINES_NECKLACE_MAIL}"] = "false",
@@ -221,9 +224,10 @@ namespace TehPers.FishingOverhaul.Services
                 // 'Vista'
                 yield return new(
                     NamespacedKey.SdvFurniture(2423),
-                    new(0.25)
+                    new(1)
                     {
                         IncludeLocations = ImmutableArray.Create("Railroad"),
+                        PriorityTier = DefaultFishingSource.specialItemTier,
                         When = new Dictionary<string, string?>
                         {
                             ["HasFlag |contains=gotSpaFishing"] = "false",
@@ -260,6 +264,7 @@ namespace TehPers.FishingOverhaul.Services
                     new(1)
                     {
                         IncludeLocations = ImmutableArray.Create("Town"),
+                        PriorityTier = DefaultFishingSource.prioritizedTier,
                         Position = new()
                         {
                             X = new() {LessThan = 30},
@@ -272,6 +277,7 @@ namespace TehPers.FishingOverhaul.Services
                     new(1)
                     {
                         IncludeLocations = ImmutableArray.Create("Town"),
+                        PriorityTier = DefaultFishingSource.prioritizedTier,
                         Position = new()
                         {
                             X = new() {LessThan = 30},
@@ -289,12 +295,25 @@ namespace TehPers.FishingOverhaul.Services
                     NamespacedKey.SdvHat(78),
                     new(0.1) {IncludeLocations = ImmutableArray.Create("IslandFarmCave")}
                 );
+                // Fossilized Spine
+                yield return new(
+                    NamespacedKey.SdvObject(821),
+                    new(0.1)
+                    {
+                        IncludeLocations = ImmutableArray.Create("IslandNorth"),
+                        When = new Dictionary<string, string?>
+                        {
+                            ["TehPers.FishingOverhaul/IslandNorthBridgeFixed"] = "true",
+                        }.ToImmutableDictionary()
+                    }
+                );
                 // Foliage print
                 yield return new(
                     NamespacedKey.SdvFurniture(2419),
                     new(0.25)
                     {
                         IncludeLocations = ImmutableArray.Create("IslandNorth"),
+                        PriorityTier = DefaultFishingSource.specialItemTier,
                         Position = new() {Y = new() {GreaterThan = 72}},
                         When = new Dictionary<string, string?>
                         {
@@ -320,6 +339,7 @@ namespace TehPers.FishingOverhaul.Services
                     new(0.25)
                     {
                         IncludeLocations = ImmutableArray.Create("IslandNorth"),
+                        PriorityTier = DefaultFishingSource.specialItemTier,
                         Position = new()
                         {
                             X = new() {LessThan = 4},
@@ -355,7 +375,7 @@ namespace TehPers.FishingOverhaul.Services
                 // Snake skull
                 yield return new(
                     NamespacedKey.SdvObject(825),
-                    new(1.0)
+                    new(0.1)
                     {
                         IncludeLocations = ImmutableArray.Create("IslandWest"),
                         When = new Dictionary<string, string?>
@@ -440,9 +460,10 @@ namespace TehPers.FishingOverhaul.Services
                 // 'Boat'
                 yield return new(
                     NamespacedKey.SdvFurniture(2421),
-                    new(10)
+                    new(1)
                     {
                         IncludeLocations = ImmutableArray.Create("Farm/Beach"),
+                        PriorityTier = DefaultFishingSource.specialItemTier,
                         FarmerPosition = new()
                         {
                             X = new()

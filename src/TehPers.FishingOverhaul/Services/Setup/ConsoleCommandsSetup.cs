@@ -115,6 +115,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     ImmutableArray.Create(
                         new Cell(itemKeyHeader),
                         new Cell("Base chance"),
+                        new Cell("Priority tier"),
                         new Cell("Time available"),
                         new Cell("Seasons"),
                         new Cell("Weathers"),
@@ -130,6 +131,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             ImmutableArray.Create(
                                 getItemKey(entry),
                                 new Cell($"{availabilityInfo.BaseChance:F4}"),
+                                new Cell($"{availabilityInfo.PriorityTier:F2}"),
                                 new Cell(
                                     $"{availabilityInfo.StartTime:0000}-{availabilityInfo.EndTime:0000}"
                                 ),

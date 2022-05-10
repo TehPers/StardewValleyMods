@@ -8,6 +8,8 @@ Changelog for [Teh's Fishing Overhaul].
 
 - Add two new Content Patcher tokens: `ActiveBait` and `ActiveBobber`. They get the current bait and
   bobber used by the main player.
+- Add priority tiers to `AvailabilityInfo`. When selecting a fish/trash/treasure, only the entries
+  that have the highest priority tier from the set of available entries will be considered.
 
 ### Changed
 
@@ -20,6 +22,11 @@ Changelog for [Teh's Fishing Overhaul].
   `MaxChanceDepth` at the same time rather than only `MaxChanceDepth`.
 - Some records in the fishing API now have private constructors to ensure subtypes of them cannot be
   created aside from the ones built into the API.
+
+### Fixed
+
+- Fix several items not being guaranteed catches (now that priority tiers are added).
+- Fix fossilized spine not being catchable.
 
 ## 3.2.7 - 2021-12-31
 

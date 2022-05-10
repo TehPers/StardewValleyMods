@@ -9,6 +9,10 @@ namespace TehPers.FishingOverhaul.Services
 {
     internal sealed partial class DefaultFishingSource : IFishingContentSource
     {
+        private const double prioritizedTier = 10d;
+        private const double specialItemTier = 20d;
+        private const double questItemTier = 30d;
+
         private readonly IManifest manifest;
         private readonly IAssetProvider assetProvider;
 

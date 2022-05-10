@@ -240,6 +240,26 @@ namespace TehPers.FishingOverhaul.Services
             return eventArgs.FishingInfo;
         }
 
+        private static IEnumerable<IWeightedValue<TEntry>>
+            GetWeightedEntries<TEntry, TAvailability>(
+                IEnumerable<EntryManager<TEntry, TAvailability>> managers,
+                FishingInfo fishingInfo
+            )
+            where TEntry : Entry<TAvailability>
+            where TAvailability : AvailabilityInfo
+        {
+            var chances = managers.SelectMany(
+                manager => manager.ChanceCalculator.GetWeightedChance(fishingInfo)
+                    .AsEnumerable()
+                    .ToWeighted(weight => weight, _ => manager.Entry)
+            );
+            var highestTier = chances.GroupBy(entry => entry.Value.AvailabilityInfo.PriorityTier)
+                .OrderByDescending(group => group.Key)
+                .FirstOrDefault();
+
+            return highestTier ?? Enumerable.Empty<IWeightedValue<TEntry>>();
+        }
+
         /// <inheritdoc/>
         public override IEnumerable<IWeightedValue<FishEntry>> GetFishChances(
             FishingInfo fishingInfo
@@ -249,11 +269,7 @@ namespace TehPers.FishingOverhaul.Services
             this.ReloadIfRequested();
 
             // Get fish chances
-            var chances = this.fishEntries.SelectMany(
-                manager => manager.ChanceCalculator.GetWeightedChance(fishingInfo)
-                    .AsEnumerable()
-                    .ToWeighted(weight => weight, _ => manager.Entry)
-            );
+            var chances = FishingApi.GetWeightedEntries(this.fishEntries, fishingInfo);
 
             // Invoke prepared chances event (some baits/bobbers may have effects applied here)
             var preparedChancesArgs = new PreparedFishEventArgs(fishingInfo, chances.ToList());
@@ -278,7 +294,7 @@ namespace TehPers.FishingOverhaul.Services
 
             var dartFrequency =
                 (int)(this.fishConfig.GlobalDartFrequencyFactor * traits.DartFrequency);
-            traits = traits with { DartFrequency = dartFrequency };
+            traits = traits with {DartFrequency = dartFrequency};
             return true;
         }
 
@@ -291,11 +307,7 @@ namespace TehPers.FishingOverhaul.Services
             this.ReloadIfRequested();
 
             // Get trash chances
-            var chances = this.trashEntries.SelectMany(
-                manager => manager.ChanceCalculator.GetWeightedChance(fishingInfo)
-                    .AsEnumerable()
-                    .ToWeighted(weight => weight, _ => manager.Entry)
-            );
+            var chances = FishingApi.GetWeightedEntries(this.trashEntries, fishingInfo);
 
             // Invoke prepared chances event (some baits/bobbers may have effects applied here)
             var preparedChancesArgs = new PreparedTrashEventArgs(fishingInfo, chances.ToList());
@@ -313,11 +325,7 @@ namespace TehPers.FishingOverhaul.Services
             this.ReloadIfRequested();
 
             // Get treasure chances
-            var chances = this.treasureEntries.SelectMany(
-                manager => manager.ChanceCalculator.GetWeightedChance(fishingInfo)
-                    .AsEnumerable()
-                    .ToWeighted(weight => weight, _ => manager.Entry)
-            );
+            var chances = FishingApi.GetWeightedEntries(this.treasureEntries, fishingInfo);
 
             // Invoke prepared chances event (some baits/bobbers may have effects applied here)
             var preparedChancesArgs = new PreparedTreasureEventArgs(fishingInfo, chances.ToList());
