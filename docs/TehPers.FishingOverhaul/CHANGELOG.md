@@ -10,6 +10,7 @@ Changelog for [Teh's Fishing Overhaul].
   bobber used by the main player.
 - Add priority tiers to `AvailabilityInfo`. When selecting a fish/trash/treasure, only the entries
   that have the highest priority tier from the set of available entries will be considered.
+- Add a `tfo_export` console command to export all registered fish/trash/treasure entries to a file.
 
 ### Changed
 
