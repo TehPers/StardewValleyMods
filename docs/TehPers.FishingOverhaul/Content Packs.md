@@ -242,6 +242,6 @@ Some actions can be taken whenever an item is caught. By combining these actions
 [namespaced key]: #Namespaced%20key
 [availability info]: #Availability
 [actions]: #Catch%20actions
-[content schema]: /docs/TehPers.FishingOverhaul/schemas/contentPacks/content.schema.json
+[content schema]: https://raw.githubusercontent.com/TehPers/StardewValleyMods/master/docs/TehPers.FishingOverhaul/schemas/contentPacks/content.schema.json
 [conditions]: https://github.com/Pathoschild/StardewMods/blob/stable/ContentPatcher/docs/author-tokens-guide.md#conditions
 [fishing zone]: https://stardewvalleywiki.com/Fishing#Fishing_Zone

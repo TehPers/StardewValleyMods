@@ -10,6 +10,10 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     [JsonDescribe]
     public record TrashPack : JsonConfigRoot
     {
+        /// <inheritdoc cref="JsonConfigRoot.Schema" />
+        protected override string Schema =>
+            $"{JsonConfigRoot.jsonSchemaRootUrl}contentPacks/trash.schema.json";
+
         /// <summary>
         /// The trash entries to add.
         /// </summary>
@@ -21,7 +25,7 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
         /// <param name="content">The content to merge into.</param>
         public FishingContent AddTo(FishingContent content)
         {
-            return content with { AddTrash = content.AddTrash.AddRange(this.Add) };
+            return content with {AddTrash = content.AddTrash.AddRange(this.Add)};
         }
     }
 }

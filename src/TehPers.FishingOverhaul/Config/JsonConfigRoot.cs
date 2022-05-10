@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace TehPers.FishingOverhaul.Config
 {
@@ -8,15 +7,13 @@ namespace TehPers.FishingOverhaul.Config
     /// </summary>
     public abstract record JsonConfigRoot
     {
+        private protected const string jsonSchemaRootUrl =
+            "https://raw.githubusercontent.com/TehPers/StardewValleyMods/master/docs/TehPers.FishingOverhaul/schemas/";
+
         /// <summary>
         /// Optional '$schema' URL. This is ignored and exists entirely for convenience.
         /// </summary>
         [JsonProperty("$schema", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        [SuppressMessage(
-            "CodeQuality",
-            "IDE0051:Remove unused private members",
-            Justification = "Used in JSON serialization."
-        )]
-        private string? Schema { get; init; }
+        protected abstract string? Schema { get; }
     }
 }

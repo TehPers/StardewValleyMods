@@ -16,6 +16,10 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     /// </summary>
     public record FishingContentPack : JsonConfigRoot
     {
+        /// <inheritdoc cref="JsonConfigRoot.Schema"/>
+        protected override string Schema =>
+            $"{JsonConfigRoot.jsonSchemaRootUrl}contentPacks/content.schema.json";
+
         /// <summary>
         /// Fish traits to set.
         /// </summary>

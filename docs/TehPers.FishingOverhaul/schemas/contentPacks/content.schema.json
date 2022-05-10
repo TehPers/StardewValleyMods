@@ -11,6 +11,17 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "$schema": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Optional '$schema' URL. This is ignored and exists entirely for convenience."
+        },
         "SetFishTraits": {
           "type": "object",
           "additionalProperties": {
@@ -105,17 +116,6 @@
             "type": "string"
           },
           "description": "The additional content files to include. These are treated the same as your mod's content.json. The paths are relative to this file's content.json (this is different than Content Patcher!)."
-        },
-        "$schema": {
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "description": "Optional '$schema' URL. This is ignored and exists entirely for convenience."
         }
       },
       "description": "Fishing content pack."
@@ -381,6 +381,11 @@
           ],
           "description": "Maximum bobber depth required to catch this.",
           "default": null
+        },
+        "PriorityTier": {
+          "type": "number",
+          "description": "The priority tier for this entry. For all available entries, only the entries that share the highest priority tier can be caught. For example, if all trash entries have a tier of 0 except for a single entry that has a tier of 1, then that single entry is guaranteed to be caught, regardless of its calculated weighted chance. If that entry becomes unavailable, then entries from tier 0 are selected from instead. This can be useful when creating special items that should always be caught first but which can only be caught once, for example.",
+          "default": 0.0
         },
         "When": {
           "type": "object",
@@ -776,6 +781,11 @@
           ],
           "description": "Maximum bobber depth required to catch this.",
           "default": null
+        },
+        "PriorityTier": {
+          "type": "number",
+          "description": "The priority tier for this entry. For all available entries, only the entries that share the highest priority tier can be caught. For example, if all trash entries have a tier of 0 except for a single entry that has a tier of 1, then that single entry is guaranteed to be caught, regardless of its calculated weighted chance. If that entry becomes unavailable, then entries from tier 0 are selected from instead. This can be useful when creating special items that should always be caught first but which can only be caught once, for example.",
+          "default": 0.0
         },
         "When": {
           "type": "object",

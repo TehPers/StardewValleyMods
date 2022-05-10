@@ -11,17 +11,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Add": {
-          "type": "object",
-          "additionalProperties": {
-            "oneOf": [
-              {
-                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishTraits"
-              }
-            ]
-          },
-          "description": "The fish traits to add."
-        },
         "$schema": {
           "oneOf": [
             {
@@ -32,6 +21,17 @@
             }
           ],
           "description": "Optional '$schema' URL. This is ignored and exists entirely for convenience."
+        },
+        "Add": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.FishTraits"
+              }
+            ]
+          },
+          "description": "The fish traits to add."
         }
       },
       "description": "Content which modifies the behavior of fish."
