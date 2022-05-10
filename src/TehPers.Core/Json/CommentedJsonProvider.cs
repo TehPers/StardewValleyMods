@@ -97,7 +97,7 @@ namespace TehPers.Core.Json
             _ = assetProvider ?? throw new ArgumentNullException(nameof(assetProvider));
 
             // Write to stream directly
-            using var stream = assetProvider.Open(path, FileMode.OpenOrCreate);
+            using var stream = assetProvider.Open(path, FileMode.Create);
             using var writer = new StreamWriter(stream);
             this.Serialize(data, writer, settings, minify);
         }

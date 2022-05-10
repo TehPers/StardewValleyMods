@@ -1,4 +1,7 @@
-﻿using TehPers.Core.Api.DI;
+﻿using HarmonyLib;
+using Ninject;
+using StardewModdingAPI;
+using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
@@ -20,6 +23,14 @@ namespace TehPers.Core.Modules
             this.GlobalProxyRoot.Bind<INamespaceRegistry>()
                 .To<NamespaceRegistry>()
                 .InSingletonScope();
+            this.Bind<Harmony>()
+                .ToMethod(
+                    context =>
+                    {
+                        var manifest = context.Kernel.Get<IManifest>();
+                        return new(manifest.UniqueID);
+                    }
+                );
 
             // Namespaces
             this.GlobalProxyRoot.Bind<INamespaceProvider>()

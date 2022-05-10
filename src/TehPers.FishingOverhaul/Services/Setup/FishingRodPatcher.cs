@@ -52,7 +52,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private readonly IReflectedField<Multiplayer> game1MultiplayerField;
 
         private readonly Queue<Action> postUpdateActions;
-        private bool initialized;
 
         private FishingRodPatcher(
             IModHelper helper,
@@ -81,7 +80,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer");
 
             this.postUpdateActions = new();
-            this.initialized = false;
         }
 
         public static FishingRodPatcher Create(IContext context)
@@ -99,15 +97,8 @@ namespace TehPers.FishingOverhaul.Services.Setup
             return FishingRodPatcher.Instance;
         }
 
-        public void Setup()
+        public override void Setup()
         {
-            if (this.initialized)
-            {
-                return;
-            }
-
-            this.initialized = true;
-
             // Apply patches
             this.Patch(
                 AccessTools.Method(typeof(FishingRod), nameof(FishingRod.tickUpdate)),
@@ -143,20 +134,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 )
             );
         }
-
-        public override void Dispose()
-        {
-            if (!this.initialized)
-            {
-                return;
-            }
-
-            this.initialized = false;
-
-            // Remove patches
-            base.Dispose();
-        }
-
+        
         private void StartFishingMinigame(
             FishingInfo fishingInfo,
             Item fishItem,
