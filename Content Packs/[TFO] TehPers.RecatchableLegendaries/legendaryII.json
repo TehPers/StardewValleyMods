@@ -9,7 +9,6 @@
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
         "IncludeLocations": ["Beach"],
-        "Seasons": ["Summer"],
         "MinFishingLevel": 5,
         "FarmerPosition": {
           "X": {
@@ -34,13 +33,12 @@
       }
     },
     {
-      // Ms. angler
+      // Ms. Angler
       "FishKey": "StardewValley:Object/899",
       "AvailabilityInfo": {
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
         "IncludeLocations": ["Town"],
-        "Seasons": ["Fall"],
         "MinFishingLevel": 3,
         "FarmerPosition": {
           "Y": {
@@ -70,8 +68,6 @@
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
         "IncludeLocations": ["Mountain"],
-        "Seasons": ["Spring"],
-        "Weathers": ["Rainy"],
         "WaterTypes": ["PondOrOcean"],
         "MinFishingLevel": 10,
         "MinBobberDepth": 4,
@@ -129,7 +125,6 @@
         "BaseChance": 0.02,
         "DepthMultiplier": 0.005,
         "IncludeLocations": ["Forest"],
-        "Seasons": ["Winter"],
         "WaterTypes": ["River"],
         "MinFishingLevel": 6,
         "FarmerPosition": {

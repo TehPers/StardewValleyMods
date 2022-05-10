@@ -18,6 +18,12 @@ namespace TehPers.FishingOverhaul.Services
                 ["HasValue:{{HasCaughtFish}}"] = "true",
             }.ToImmutableDictionary();
 
+        private static readonly ImmutableDictionary<string, string?> legendaryBaseConditions =
+            DefaultFishingSource.hasCaughtFish.Add(
+                "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY",
+                "false"
+            );
+
         private static readonly ImmutableDictionary<string, string?> isLegendaryFamilyActive =
             new Dictionary<string, string?>
             {
@@ -44,7 +50,7 @@ namespace TehPers.FishingOverhaul.Services
                     },
                 },
                 MinBobberDepth = 3,
-                When = DefaultFishingSource.hasCaughtFish.Add(
+                When = DefaultFishingSource.legendaryBaseConditions.Add(
                     $"HasFlag |contains={DefaultFishingSource.crimsonfishFlag}",
                     "false"
                 ),
@@ -75,7 +81,7 @@ namespace TehPers.FishingOverhaul.Services
                         LessThan = 15,
                     },
                 },
-                When = DefaultFishingSource.hasCaughtFish.Add(
+                When = DefaultFishingSource.legendaryBaseConditions.Add(
                     $"HasFlag |contains={DefaultFishingSource.anglerFlag}",
                     "false"
                 ),
@@ -102,7 +108,7 @@ namespace TehPers.FishingOverhaul.Services
                 WaterTypes = WaterTypes.PondOrOcean,
                 MinFishingLevel = 10,
                 MinBobberDepth = 4,
-                When = DefaultFishingSource.hasCaughtFish.Add(
+                When = DefaultFishingSource.legendaryBaseConditions.Add(
                     $"HasFlag |contains={DefaultFishingSource.legendFlag}",
                     "false"
                 ),
@@ -135,7 +141,7 @@ namespace TehPers.FishingOverhaul.Services
                         LessThanEq = 42,
                     },
                 },
-                When = DefaultFishingSource.hasCaughtFish.Add(
+                When = DefaultFishingSource.legendaryBaseConditions.Add(
                     $"HasFlag |contains={DefaultFishingSource.mutantCarpFlag}",
                     "false"
                 ),
@@ -174,7 +180,7 @@ namespace TehPers.FishingOverhaul.Services
                     },
                 },
                 MinBobberDepth = 3,
-                When = DefaultFishingSource.hasCaughtFish.Add(
+                When = DefaultFishingSource.legendaryBaseConditions.Add(
                     $"HasFlag |contains={DefaultFishingSource.glacierfishFlag}",
                     "false"
                 ),
@@ -200,6 +206,8 @@ namespace TehPers.FishingOverhaul.Services
                 AvailabilityInfo =
                 DefaultFishingSource.crimsonfishEntry.AvailabilityInfo with
                 {
+                    Seasons = Seasons.All,
+                    Weathers = Weathers.All,
                     When = DefaultFishingSource.isLegendaryFamilyActive,
                 },
                 OnCatch = new()
@@ -219,6 +227,8 @@ namespace TehPers.FishingOverhaul.Services
             AvailabilityInfo =
             DefaultFishingSource.anglerEntry.AvailabilityInfo with
             {
+                Seasons = Seasons.All,
+                Weathers = Weathers.All,
                 When = DefaultFishingSource.isLegendaryFamilyActive,
             },
             OnCatch = new()
@@ -236,6 +246,8 @@ namespace TehPers.FishingOverhaul.Services
             AvailabilityInfo =
             DefaultFishingSource.legendEntry.AvailabilityInfo with
             {
+                Seasons = Seasons.All,
+                Weathers = Weathers.All,
                 When = DefaultFishingSource.isLegendaryFamilyActive,
             },
             OnCatch = new()
@@ -254,6 +266,8 @@ namespace TehPers.FishingOverhaul.Services
                 AvailabilityInfo =
                 DefaultFishingSource.mutantCarpEntry.AvailabilityInfo with
                 {
+                    Seasons = Seasons.All,
+                    Weathers = Weathers.All,
                     When = DefaultFishingSource.isLegendaryFamilyActive,
                 },
                 OnCatch = new()
@@ -273,6 +287,8 @@ namespace TehPers.FishingOverhaul.Services
                 AvailabilityInfo =
                 DefaultFishingSource.glacierfishEntry.AvailabilityInfo with
                 {
+                    Seasons = Seasons.All,
+                    Weathers = Weathers.All,
                     When = DefaultFishingSource.isLegendaryFamilyActive,
                 },
                 OnCatch = new()

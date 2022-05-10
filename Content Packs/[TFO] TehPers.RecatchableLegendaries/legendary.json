@@ -18,6 +18,8 @@
         },
         "MinBobberDepth": 3,
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/crimsonfishDelay": "false"
         }
@@ -44,6 +46,8 @@
           }
         },
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/anglerDelay": "false"
         }
@@ -69,6 +73,8 @@
         "MinFishingLevel": 10,
         "MinBobberDepth": 4,
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/legendDelay": "false"
         }
@@ -97,6 +103,8 @@
           }
         },
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/mutantCarpDelay": "false"
         }
@@ -131,6 +139,8 @@
         },
         "MinBobberDepth": 3,
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/glacierfishDelay": "false"
         }
