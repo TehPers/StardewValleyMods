@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using StardewModdingAPI;
-using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
 namespace TehPers.FishingOverhaul.Config
@@ -9,7 +8,6 @@ namespace TehPers.FishingOverhaul.Config
     /// Configuration for the fishing HUD.
     /// </summary>
     /// <inheritdoc cref="IModConfig"/>
-    [JsonDescribe]
     public sealed class HudConfig : IModConfig
     {
         /// <summary>

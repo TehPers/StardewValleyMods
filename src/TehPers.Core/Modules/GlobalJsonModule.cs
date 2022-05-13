@@ -33,9 +33,6 @@ namespace TehPers.Core.Modules
 
             // Custom converters
             this.GlobalProxyRoot.Bind<JsonConverter>().To<NetConverter>().InSingletonScope();
-            // this.GlobalProxyRoot.Bind<JsonConverter>()
-            //     .To<DescriptiveJsonConverter>()
-            //     .InSingletonScope();
             this.GlobalProxyRoot.Bind<JsonConverter>()
                 .To<NamespacedKeyJsonConverter>()
                 .InSingletonScope();

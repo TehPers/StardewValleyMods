@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Config.ContentPacks
@@ -7,7 +6,6 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     /// <summary>
     /// Content which controls what treasure are available to catch.
     /// </summary>
-    [JsonDescribe]
     public record TreasurePack : JsonConfigRoot
     {
         /// <inheritdoc cref="JsonConfigRoot.Schema" />

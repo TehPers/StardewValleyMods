@@ -2,7 +2,6 @@
 using StardewModdingAPI;
 using StardewValley;
 using System;
-using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 

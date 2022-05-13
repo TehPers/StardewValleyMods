@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Json;
 
 namespace TehPers.FishingOverhaul.Api.Content
 {
@@ -9,7 +7,6 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// Information about the availability of a catchable fish.
     /// </summary>
     /// <param name="BaseChance">The base chance of this being caught.</param>
-    [JsonDescribe]
     public record FishAvailabilityInfo(double BaseChance) : AvailabilityInfo(BaseChance)
     {
         /// <summary>

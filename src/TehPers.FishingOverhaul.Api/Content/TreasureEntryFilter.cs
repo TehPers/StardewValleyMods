@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using TehPers.Core.Api.Items;
-using TehPers.Core.Api.Json;
 using System.Linq;
 
 namespace TehPers.FishingOverhaul.Api.Content
@@ -8,7 +7,6 @@ namespace TehPers.FishingOverhaul.Api.Content
     /// <summary>
     /// Treasure entry filter.
     /// </summary>
-    [JsonDescribe]
     public record TreasureEntryFilter
     {
         /// <summary>

@@ -151,7 +151,10 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
                 }
                 catch (Exception ex)
                 {
-                    monitor.Log($"Failed to load included content pack '{path}'", LogLevel.Error);
+                    monitor.Log(
+                        $"Failed to load included content file for '{content.ModManifest.UniqueID}': '{path}'",
+                        LogLevel.Error
+                    );
                     monitor.Log(ex.ToString(), LogLevel.Error);
                     continue;
                 }

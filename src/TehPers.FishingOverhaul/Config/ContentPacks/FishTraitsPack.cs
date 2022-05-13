@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using TehPers.Core.Api.Items;
-using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Config.ContentPacks
@@ -8,7 +7,6 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
     /// <summary>
     /// Content which modifies the behavior of fish.
     /// </summary>
-    [JsonDescribe]
     public record FishTraitsPack : JsonConfigRoot
     {
         /// <inheritdoc cref="JsonConfigRoot.Schema" />

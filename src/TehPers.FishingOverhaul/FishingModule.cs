@@ -34,7 +34,7 @@ namespace TehPers.FishingOverhaul
             this.Bind<ISetup>().To<MissingJournalScrapsToken>().InSingletonScope();
 
             // Resources/services
-            this.Bind<IFishingApi, ISimplifiedFishingApi, FishingApi>()
+            this.GlobalProxyRoot.Bind<IFishingApi, ISimplifiedFishingApi, FishingApi>()
                 .ToMethod(
                     context => new FishingApi(
                         context.Kernel.Get<IModHelper>(),
