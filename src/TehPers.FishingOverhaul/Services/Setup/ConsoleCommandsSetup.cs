@@ -63,11 +63,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 (cmd, args) =>
                 {
                     var raw = string.Join(" ", args);
-                    if (!ExpressionParser.TryParse(
-                            raw,
-                            out var result,
-                            out var error
-                        ))
+                    if (!ExpressionParser.TryParse(raw, out var result, out var error))
                     {
                         this.monitor.Log(error, LogLevel.Error);
                         return;
@@ -179,16 +175,21 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private void Export(string command, string[] args)
         {
-            var fishEntries = this.fishingApi.fishManagers.Select(manager => manager.Entry);
-            var fishTraits = this.fishingApi.fishTraits;
-            var trashEntries = this.fishingApi.trashManagers.Select(manager => manager.Entry);
-            var treasureEntries = this.fishingApi.treasureManagers.Select(manager => manager.Entry);
             var contentPack = new FishingContentPack
             {
-                AddFish = fishEntries.ToImmutableArray(),
-                SetFishTraits = fishTraits.ToImmutableDictionary(),
-                AddTrash = trashEntries.ToImmutableArray(),
-                AddTreasure = treasureEntries.ToImmutableArray(),
+                AddFish =
+                    this.fishingApi.fishManagers.Select(manager => manager.Entry)
+                        .ToImmutableArray(),
+                SetFishTraits = this.fishingApi.fishTraits.ToImmutableDictionary(),
+                AddTrash =
+                    this.fishingApi.trashManagers.Select(manager => manager.Entry)
+                        .ToImmutableArray(),
+                AddTreasure =
+                    this.fishingApi.treasureManagers.Select(manager => manager.Entry)
+                        .ToImmutableArray(),
+                AddEffects = this.fishingApi.fishingEffectManagers
+                    .Select(manager => manager.Entry)
+                    .ToImmutableArray(),
             };
             var path = Path.Combine(
                 Constants.DataPath,
