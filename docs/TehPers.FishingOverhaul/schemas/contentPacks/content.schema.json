@@ -110,6 +110,31 @@
           },
           "description": "Treasure entries to remove. Only entries from your mod's dependencies (including Teh's Fishing Overhaul) will be removed."
         },
+        "AddEffects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": [
+              "$Effect"
+            ],
+            "properties": {
+              "$Effect": {
+                "type": "string",
+                "description": "The type of effect to apply."
+              },
+              "Conditions": {
+                "description": "Conditions for when this effect should be applied.",
+                "oneOf": [
+                  {
+                    "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.AvailabilityConditions"
+                  }
+                ]
+              }
+            }
+          },
+          "description": "Fishing effects entries to add."
+        },
         "Include": {
           "type": "array",
           "items": {
@@ -917,6 +942,169 @@
         }
       },
       "description": "Treasure entry filter."
+    },
+    "TehPers.FishingOverhaul.Api.Content.AvailabilityConditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "StartTime": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Time this becomes available (inclusive).",
+          "default": 600
+        },
+        "EndTime": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Time this is no longer available (exclusive).",
+          "default": 2600
+        },
+        "Seasons": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Gameplay.Seasons"
+              }
+            ]
+          },
+          "description": "Seasons this can be caught in."
+        },
+        "Weathers": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.Core.Api.Gameplay.Weathers"
+              }
+            ]
+          },
+          "description": "Weathers this can be caught in."
+        },
+        "WaterTypes": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/TehPers.FishingOverhaul.Api.WaterTypes"
+              }
+            ]
+          },
+          "description": "The type of water this can be caught in. Each location handles this differently."
+        },
+        "MinFishingLevel": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Required fishing level to catch this.",
+          "default": 0
+        },
+        "MaxFishingLevel": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            }
+          ],
+          "description": "Maximum fishing level required to catch this, or null for no max.",
+          "default": null
+        },
+        "IncludeLocations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of locations this should be available in. Leaving this empty will make this available everywhere. Some locations have special handling. For example, the mines use the location names \"UndergroundMine\" and \"UndergroundMine/N\", where N is the floor number (both location names are valid for the floor)."
+        },
+        "ExcludeLocations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of locations this should not be available in. This takes priority over IncludeLocations."
+        },
+        "Position": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
+            }
+          ],
+          "description": "Constraints on the bobber's position on the map when fishing."
+        },
+        "FarmerPosition": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/TehPers.FishingOverhaul.Api.Content.PositionConstraint"
+            }
+          ],
+          "description": "Constraints on the farmer's position on the map when fishing."
+        },
+        "MinDepth": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Obsolete: Use MinBobberDepth instead\n\nMinimum bobber depth required to catch this.",
+          "deprecated": true,
+          "default": 0
+        },
+        "MinBobberDepth": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647,
+          "description": "Minimum bobber depth required to catch this.",
+          "default": 0
+        },
+        "MaxDepth": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            }
+          ],
+          "description": "Obsolete: Use MaxBobberDepth instead\n\nMaximum bobber depth required to catch this.",
+          "deprecated": true,
+          "default": null
+        },
+        "MaxBobberDepth": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            }
+          ],
+          "description": "Maximum bobber depth required to catch this.",
+          "default": null
+        },
+        "When": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "description": "Content Patcher conditions for when this is available."
+        }
+      },
+      "description": "Conditions for availability."
     }
   }
 }

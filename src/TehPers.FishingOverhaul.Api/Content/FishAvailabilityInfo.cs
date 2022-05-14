@@ -41,17 +41,12 @@ namespace TehPers.FishingOverhaul.Api.Content
         }
 
         /// <inheritdoc/>
-        public override double? GetWeightedChance(FishingInfo fishingInfo)
+        public override double GetWeightedChance(FishingInfo fishingInfo)
         {
-            return base.GetWeightedChance(fishingInfo)
-                .Select(
-                    baseChance =>
-                        baseChance
-                        * (1
-                            - Math.Max(0, this.MaxChanceDepth - fishingInfo.BobberDepth)
-                            * this.DepthMultiplier)
-                        + fishingInfo.FishingLevel / 50.0f
-                );
+            var baseChance = base.GetWeightedChance(fishingInfo);
+            var depthFactor = 1
+                - Math.Max(0, this.MaxChanceDepth - fishingInfo.BobberDepth) * this.DepthMultiplier;
+            return baseChance * depthFactor + fishingInfo.FishingLevel / 50.0f;
         }
     }
 }

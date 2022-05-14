@@ -11,6 +11,7 @@ using TehPers.Core.Api.Json;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config.ContentPacks;
+using TehPers.FishingOverhaul.Parsing;
 
 namespace TehPers.FishingOverhaul.Services.Setup
 {
@@ -56,6 +57,25 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 "Exports registered entries as JSON to a file. This is the final result of adding/removing entries and setting fish traits. Usage: 'tfo_export'.",
                 this.Export
             );
+            this.helper.ConsoleCommands.Add(
+                "tfo_parse",
+                "Parses an expression. Usage: 'tfo_parse expr'",
+                (cmd, args) =>
+                {
+                    var raw = string.Join(" ", args);
+                    if (!ExpressionParser.TryParse(
+                            raw,
+                            out var result,
+                            out var error
+                        ))
+                    {
+                        this.monitor.Log(error, LogLevel.Error);
+                        return;
+                    }
+
+                    this.monitor.Log(result.ToString(), LogLevel.Info);
+                }
+            );
         }
 
         private void Reload(string command, string[] args)
@@ -76,19 +96,19 @@ namespace TehPers.FishingOverhaul.Services.Setup
             var table = entryType switch
             {
                 "fish" => GetEntriesTable(
-                    this.fishingApi.fishEntries,
+                    this.fishingApi.fishManagers,
                     "Item key",
                     entry => new(entry.Entry.FishKey.ToString()),
                     entry => entry.Entry.AvailabilityInfo
                 ),
                 "trash" => GetEntriesTable(
-                    this.fishingApi.trashEntries,
+                    this.fishingApi.trashManagers,
                     "Item key",
                     entry => new(entry.Entry.ItemKey.ToString()),
                     entry => entry.Entry.AvailabilityInfo
                 ),
                 "treasure" => GetEntriesTable(
-                    this.fishingApi.treasureEntries,
+                    this.fishingApi.treasureManagers,
                     "Item keys",
                     entry => new(entry.Entry.ItemKeys.Select(k => k.ToString())),
                     entry => entry.Entry.AvailabilityInfo
@@ -159,10 +179,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private void Export(string command, string[] args)
         {
-            var fishEntries = this.fishingApi.fishEntries.Select(manager => manager.Entry);
+            var fishEntries = this.fishingApi.fishManagers.Select(manager => manager.Entry);
             var fishTraits = this.fishingApi.fishTraits;
-            var trashEntries = this.fishingApi.trashEntries.Select(manager => manager.Entry);
-            var treasureEntries = this.fishingApi.treasureEntries.Select(manager => manager.Entry);
+            var trashEntries = this.fishingApi.trashManagers.Select(manager => manager.Entry);
+            var treasureEntries = this.fishingApi.treasureManagers.Select(manager => manager.Entry);
             var contentPack = new FishingContentPack
             {
                 AddFish = fishEntries.ToImmutableArray(),

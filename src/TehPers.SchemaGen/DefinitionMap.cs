@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.SchemaGen
 {
@@ -85,6 +86,35 @@ namespace TehPers.SchemaGen
                 ["format"] = "uuid",
             },
         };
+
+        private static readonly Dictionary<Type, Func<DefinitionMap, JObject>>
+            predefinedSchemaFactories = new()
+            {
+                [typeof(FishingEffectEntry)] = map => new()
+                {
+                    ["type"] = "object",
+                    ["additionalProperties"] = true,
+                    ["required"] = new JArray {"$Effect"},
+                    ["properties"] = new JObject
+                    {
+                        ["$Effect"] = new JObject
+                        {
+                            ["type"] = "string",
+                            ["description"] = "The type of effect to apply."
+                        },
+                        ["Conditions"] = new JObject
+                        {
+                            ["description"] = "Conditions for when this effect should be applied.",
+                            ["oneOf"] = new JArray
+                            {
+                                map.CreateRef(
+                                    typeof(AvailabilityConditions).ToContextualType()
+                                ),
+                            },
+                        },
+                    },
+                },
+            };
 
         private static readonly HashSet<Type> arrayTypes = new()
         {
@@ -170,6 +200,15 @@ namespace TehPers.SchemaGen
             {
                 // Predefined type
                 yield return (JObject)predefinedDef.DeepClone();
+                yield break;
+            }
+
+            if (DefinitionMap.predefinedSchemaFactories.TryGetValue(
+                    type,
+                    out var predefinedDefFactory
+                ))
+            {
+                yield return (JObject)predefinedDefFactory(this).DeepClone();
                 yield break;
             }
 

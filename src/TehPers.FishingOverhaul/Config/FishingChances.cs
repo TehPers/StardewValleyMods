@@ -196,7 +196,9 @@ namespace TehPers.FishingOverhaul.Config
         }
 
         /// <summary>
-        /// Clamps the chance to an allowed value.
+        /// Clamps the chance to an allowed value. This does not take any additional adjustments
+        /// by other mods into account. For example, a mod may change the range of valid values
+        /// for the chance.
         /// </summary>
         /// <param name="chance">The chance to clamp.</param>
         /// <returns>The clamped chance.</returns>

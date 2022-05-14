@@ -11,7 +11,6 @@ namespace TehPers.FishingOverhaul.Config
     /// Configuration for fish.
     /// </summary>
     /// <inheritdoc cref="IModConfig"/>
-    [JsonDescribe]
     public sealed class FishConfig : IModConfig
     {
         /// <summary>

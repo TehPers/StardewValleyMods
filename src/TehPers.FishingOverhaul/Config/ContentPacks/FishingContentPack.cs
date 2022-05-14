@@ -72,6 +72,12 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
             ImmutableArray<TreasureEntryFilter>.Empty;
 
         /// <summary>
+        /// Fishing effects entries to add.
+        /// </summary>
+        public ImmutableArray<FishingEffectEntry> AddEffects { get; init; } =
+            ImmutableArray<FishingEffectEntry>.Empty;
+
+        /// <summary>
         /// The additional content files to include. These are treated the same as your mod's
         /// content.json. The paths are relative to this file's content.json (this is different
         /// than Content Patcher!).
@@ -107,6 +113,7 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
                 RemoveTrash = content.RemoveTrash.AddRange(this.RemoveTrash),
                 AddTreasure = content.AddTreasure.AddRange(this.AddTreasure),
                 RemoveTreasure = content.RemoveTreasure.AddRange(this.RemoveTreasure),
+                AddEffects = content.AddEffects.AddRange(this.AddEffects),
             };
 
             // Add warnings

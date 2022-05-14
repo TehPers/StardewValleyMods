@@ -37,6 +37,7 @@ namespace TehPers.FishingOverhaul.Services
             this.defaultContent.Add(this.GetDefaultFishData());
             this.defaultContent.Add(this.GetDefaultTrashData());
             this.defaultContent.Add(this.GetDefaultTreasureData());
+            this.defaultContent.Add(this.GetDefaultEffectData());
 
             return this.defaultContent;
         }
