@@ -11,17 +11,17 @@ namespace TehPers.FishingOverhaul.Api.Effects
         /// Applies this effect.
         /// </summary>
         /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
-        public void Apply(FishingInfo fishingInfo);
+        void Apply(FishingInfo fishingInfo);
 
         /// <summary>
         /// Unapplies this effect.
         /// </summary>
         /// <param name="fishingInfo">Information about the <see cref="Farmer"/> that is fishing.</param>
-        public void Unapply(FishingInfo fishingInfo);
+        void Unapply(FishingInfo fishingInfo);
 
         /// <summary>
         /// Unapplies this effect from all players.
         /// </summary>
-        public void UnapplyAll();
+        void UnapplyAll();
     }
 }
