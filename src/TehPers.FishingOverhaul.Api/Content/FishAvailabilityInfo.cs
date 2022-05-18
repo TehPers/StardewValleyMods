@@ -41,9 +41,9 @@ namespace TehPers.FishingOverhaul.Api.Content
         }
 
         /// <inheritdoc/>
-        public override double GetWeightedChance(FishingInfo fishingInfo)
+        public override double GetChance(FishingInfo fishingInfo)
         {
-            var baseChance = base.GetWeightedChance(fishingInfo);
+            var baseChance = base.GetChance(fishingInfo);
             var depthFactor = 1
                 - Math.Max(0, this.MaxChanceDepth - fishingInfo.BobberDepth) * this.DepthMultiplier;
             return baseChance * depthFactor + fishingInfo.FishingLevel / 50.0f;

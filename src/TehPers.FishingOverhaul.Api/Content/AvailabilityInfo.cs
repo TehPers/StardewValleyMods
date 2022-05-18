@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 
 namespace TehPers.FishingOverhaul.Api.Content
@@ -26,12 +27,24 @@ namespace TehPers.FishingOverhaul.Api.Content
         public double PriorityTier { get; init; } = 0d;
 
         /// <summary>
+        /// Gets the weighted chance of this being caught, if any. This does not test the
+        /// conditions in <see cref="AvailabilityConditions.When"/>.
+        /// </summary>
+        /// <param name="fishingInfo">Information about the farmer that is fishing.</param>
+        /// <returns>The weighted chance of this being caught, or <see langword="null"/> if not available.</returns>
+        [Obsolete("Use " + nameof(AvailabilityInfo.GetChance) + " instead.")]
+        public double? GetWeightedChance(FishingInfo fishingInfo)
+        {
+            return this.IsAvailable(fishingInfo) ? this.GetChance(fishingInfo) : null;
+        }
+
+        /// <summary>
         /// Gets the weighted chance of this being caught. This does not test the conditions in
         /// <see cref="AvailabilityConditions.When"/>.
         /// </summary>
         /// <param name="fishingInfo">Information about the farmer that is fishing.</param>
         /// <returns>The weighted chance of this being caught.</returns>
-        public virtual double GetWeightedChance(FishingInfo fishingInfo)
+        public virtual double GetChance(FishingInfo fishingInfo)
         {
             // Calculate spawn weight
             return this.BaseChance;

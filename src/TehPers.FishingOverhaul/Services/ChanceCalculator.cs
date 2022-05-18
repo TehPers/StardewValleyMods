@@ -35,7 +35,7 @@ namespace TehPers.FishingOverhaul.Services
                 return null;
             }
 
-            return this.availabilityInfo.GetWeightedChance(fishingInfo);
+            return this.availabilityInfo.GetChance(fishingInfo);
         }
     }
 }

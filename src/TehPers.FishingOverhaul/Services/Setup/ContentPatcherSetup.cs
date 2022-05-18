@@ -4,7 +4,6 @@ using System.Linq;
 using ContentPatcher;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Tools;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
