@@ -74,9 +74,7 @@ namespace TehPers.FishingOverhaul
             this.Bind<FishingEffectManagerFactory>().ToSelf().InSingletonScope();
             this.GlobalProxyRoot.Bind<FishingEffectRegistration>()
                 .ToConstant(
-                    FishingEffectRegistration.Of<ModifyChanceEffectEntry>(
-                        "ModifyFishChance"
-                    )
+                    FishingEffectRegistration.Of<ModifyChanceEffectEntry>("ModifyFishChance")
                 )
                 .InSingletonScope();
             this.GlobalProxyRoot.Bind<ModifyChanceEffectManager>().ToSelf().InSingletonScope();

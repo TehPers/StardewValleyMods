@@ -303,7 +303,7 @@ namespace TehPers.FishingOverhaul.Services
                         IncludeLocations = ImmutableArray.Create("IslandNorth"),
                         When = new Dictionary<string, string?>
                         {
-                            ["TehPers.FishingOverhaul/IslandNorthBridgeFixed"] = "true",
+                            ["HasFlag"] = "Island_UpgradeBridge",
                         }.ToImmutableDictionary()
                     }
                 );

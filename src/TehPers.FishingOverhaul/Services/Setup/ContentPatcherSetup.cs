@@ -78,11 +78,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 "ActiveTackle",
                 ContentPatcherSetup.GetActiveTackle
             );
-            this.contentPatcherApi.RegisterToken(
-                this.manifest,
-                "IslandNorthBridgeFixed",
-                ContentPatcherSetup.GetIslandNorthBridgeFixed
-            );
         }
 
         private static IEnumerable<string>? GetSpecialOrderRuleActive()
@@ -168,16 +163,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
 
             return new[] {NamespacedKey.SdvObject(index).ToString()};
-        }
-
-        private static IEnumerable<string>? GetIslandNorthBridgeFixed()
-        {
-            if (Game1.getLocationFromName("IslandNorth") is not IslandNorth islandNorth)
-            {
-                return null;
-            }
-
-            return new[] {islandNorth.bridgeFixed.Value ? "true" : "false"};
         }
     }
 }
