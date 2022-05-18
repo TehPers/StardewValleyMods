@@ -35,6 +35,12 @@ namespace TehPers.FishingOverhaul.Config
         [DefaultValue(5)]
         public int MaxFishTypes { get; set; } = 5;
 
+        /// <summary>
+        /// Whether to show trash in the fishing HUD.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool ShowTrash { get; set; }
+
         void IModConfig.Reset()
         {
             this.ShowFishingHud = true;
@@ -81,6 +87,13 @@ namespace TehPers.FishingOverhaul.Config
                 () => Desc("maxFishTypes"),
                 0,
                 20
+            );
+            configApi.AddBoolOption(
+                manifest,
+                () => this.ShowTrash,
+                val => this.ShowTrash = val,
+                () => Name("showTrash"),
+                () => Desc("showTrash")
             );
         }
     }
