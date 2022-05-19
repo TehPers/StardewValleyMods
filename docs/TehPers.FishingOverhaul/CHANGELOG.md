@@ -25,6 +25,10 @@ Changelog for [Teh's Fishing Overhaul].
 - Some records in the fishing API now have private constructors to ensure subtypes of them cannot be
   created aside from the ones built into the API.
 - Updated schema URL in the content pack docs to point to the raw schema.
+- **(Breaking)** `AvailabilityInfo.GetWeightedChance` is deprecated in favor of a new method named
+  `Availability.GetChance`. The new method no longer returns a `double?`. Instead,
+  `AvailabilityConditions.IsAvailable` should be used to check if conditions are available
+  (ignoring CP conditions).
 
 ### Fixed
 
