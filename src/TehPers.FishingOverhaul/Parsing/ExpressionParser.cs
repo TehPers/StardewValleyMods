@@ -12,62 +12,75 @@ namespace TehPers.FishingOverhaul.Parsing
             new TokenizerBuilder<ExpressionToken>().Ignore(Character.WhiteSpace)
                 .Match(Numerics.Decimal, ExpressionToken.Number)
                 .Match(Character.Letter.AtLeastOnce(), ExpressionToken.Ident)
-                .Match(Character.EqualTo('+'), ExpressionToken.Add)
-                .Match(Character.EqualTo('-'), ExpressionToken.Subtract)
-                .Match(Character.EqualTo('*'), ExpressionToken.Multiply)
-                .Match(Character.EqualTo('/'), ExpressionToken.Divide)
-                .Match(Character.EqualTo('%'), ExpressionToken.Modulo)
-                .Match(Character.EqualTo('^'), ExpressionToken.Power)
+                .Match(Character.EqualTo('+'), ExpressionToken.Plus)
+                .Match(Character.EqualTo('-'), ExpressionToken.Minus)
+                .Match(Character.EqualTo('*'), ExpressionToken.Asterisk)
+                .Match(Character.EqualTo('/'), ExpressionToken.FSlash)
+                .Match(Character.EqualTo('%'), ExpressionToken.Percent)
+                .Match(Character.EqualTo('^'), ExpressionToken.Caret)
                 .Match(Character.EqualTo('('), ExpressionToken.LParen)
                 .Match(Character.EqualTo(')'), ExpressionToken.RParen)
                 .Build();
 
+        // <add> := PLUS
         private static readonly TokenListParser<ExpressionToken, BinaryOperator> add =
-            Token.EqualTo(ExpressionToken.Add).Value(BinaryOperator.Add);
+            Token.EqualTo(ExpressionToken.Plus).Value(BinaryOperator.Add);
 
+        // <subtract> := MINUS
         private static readonly TokenListParser<ExpressionToken, BinaryOperator> subtract =
-            Token.EqualTo(ExpressionToken.Subtract).Value(BinaryOperator.Subtract);
+            Token.EqualTo(ExpressionToken.Minus).Value(BinaryOperator.Subtract);
 
+        // <multiply> := ASTERISK
         private static readonly TokenListParser<ExpressionToken, BinaryOperator> multiply =
-            Token.EqualTo(ExpressionToken.Multiply).Value(BinaryOperator.Multiply);
+            Token.EqualTo(ExpressionToken.Asterisk).Value(BinaryOperator.Multiply);
 
+        // <divide> := FSLASH
         private static readonly TokenListParser<ExpressionToken, BinaryOperator> divide =
-            Token.EqualTo(ExpressionToken.Divide).Value(BinaryOperator.Divide);
+            Token.EqualTo(ExpressionToken.FSlash).Value(BinaryOperator.Divide);
 
+        // <modulo> := PERCENT
         private static readonly TokenListParser<ExpressionToken, BinaryOperator> modulo =
-            Token.EqualTo(ExpressionToken.Modulo).Value(BinaryOperator.Modulo);
+            Token.EqualTo(ExpressionToken.Percent).Value(BinaryOperator.Modulo);
 
+        // <power> := CARET
         private static readonly TokenListParser<ExpressionToken, BinaryOperator> power =
-            Token.EqualTo(ExpressionToken.Power).Value(BinaryOperator.Power);
+            Token.EqualTo(ExpressionToken.Caret).Value(BinaryOperator.Power);
 
-        private static readonly TokenListParser<ExpressionToken, UnaryOperator> negate =
-            Token.EqualTo(ExpressionToken.Subtract).Value(UnaryOperator.Negate);
-
+        // <number> := NUMBER
         private static readonly TokenListParser<ExpressionToken, Expr<double>> number =
             Token.EqualTo(ExpressionToken.Number)
                 .Apply(Numerics.DecimalDouble)
                 .Select(n => (Expr<double>)new ConstantExpr<double>(n))
                 .Named("number");
 
+        // <ident> := IDENT
         private static readonly TokenListParser<ExpressionToken, Expr<double>> ident =
             Token.EqualTo(ExpressionToken.Ident)
                 .Apply(Character.Letter.AtLeastOnce())
                 .Select(chars => (Expr<double>)new IdentExpr(new(chars)))
                 .Named("identifier");
 
+        // <group> := "(" <expr> ")"
         private static readonly TokenListParser<ExpressionToken, Expr<double>> group =
             Token.EqualTo(ExpressionToken.LParen)
                 .IgnoreThen(Parse.Ref(() => ExpressionParser.expr!))
                 .Then(expr => Token.EqualTo(ExpressionToken.RParen).Value(expr));
 
+        // <factor> := <group> | <number> | <ident>
         private static readonly TokenListParser<ExpressionToken, Expr<double>> factor =
             ExpressionParser.group.Or(ExpressionParser.number).Or(ExpressionParser.ident);
 
-        private static readonly TokenListParser<ExpressionToken, Expr<double>> unaryAssoc =
-            (from op in ExpressionParser.negate
-                from inner in Parse.Ref(() => ExpressionParser.unaryAssoc!)
-                select (Expr<double>)new UnaryExpr(op, inner)).Or(ExpressionParser.factor);
+        // <negative> := MINUS <unaryAssoc>
+        private static readonly TokenListParser<ExpressionToken, Expr<double>> negative =
+            Token.EqualTo(ExpressionToken.Minus)
+                .IgnoreThen(Parse.Ref(() => ExpressionParser.unaryAssoc!))
+                .Select(inner => (Expr<double>)new UnaryExpr(UnaryOperator.Negate, inner));
 
+        // <unaryAssoc> := <negative> | <factor>
+        private static readonly TokenListParser<ExpressionToken, Expr<double>> unaryAssoc =
+            ExpressionParser.negative.Or(ExpressionParser.factor);
+
+        // <exponentialAssoc> := <unaryAssoc> (<power> <unaryAssoc>)* [left-assoc]
         private static readonly TokenListParser<ExpressionToken, Expr<double>> exponentialAssoc =
             Parse.Chain(
                 ExpressionParser.power,
@@ -75,6 +88,7 @@ namespace TehPers.FishingOverhaul.Parsing
                 (op, l, r) => new BinaryExpr(op, l, r)
             );
 
+        // <multiplicativeAssoc> := <exponentialAssoc> (<multiply | divide | modulo> <exponentialAssoc>)* [left-assoc]
         private static readonly TokenListParser<ExpressionToken, Expr<double>> multiplicativeAssoc =
             Parse.Chain(
                 ExpressionParser.multiply.Or(ExpressionParser.divide).Or(ExpressionParser.modulo),
@@ -82,6 +96,7 @@ namespace TehPers.FishingOverhaul.Parsing
                 (op, l, r) => new BinaryExpr(op, l, r)
             );
 
+        // <additiveAssoc> := <multiplicativeAssoc> (<add | subtract> <multiplicativeAssoc>)* [left-assoc]
         private static readonly TokenListParser<ExpressionToken, Expr<double>> additiveAssoc =
             Parse.Chain(
                 ExpressionParser.add.Or(ExpressionParser.subtract),
@@ -89,6 +104,7 @@ namespace TehPers.FishingOverhaul.Parsing
                 (op, l, r) => new BinaryExpr(op, l, r)
             );
 
+        // <expr> := <additiveAssoc>
         private static readonly TokenListParser<ExpressionToken, Expr<double>> expr =
             ExpressionParser.additiveAssoc;
 
@@ -126,22 +142,22 @@ namespace TehPers.FishingOverhaul.Parsing
         public enum ExpressionToken
         {
             [Token(Example = "+")]
-            Add,
+            Plus,
 
             [Token(Example = "-")]
-            Subtract,
+            Minus,
 
             [Token(Example = "*")]
-            Multiply,
+            Asterisk,
 
             [Token(Example = "/")]
-            Divide,
+            FSlash,
 
             [Token(Example = "%")]
-            Modulo,
+            Percent,
 
             [Token(Example = "^")]
-            Power,
+            Caret,
 
             [Token(Example = "(")]
             LParen,
