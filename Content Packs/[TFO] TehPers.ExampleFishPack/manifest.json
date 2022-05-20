@@ -2,7 +2,7 @@
   "$schema": "https://smapi.io/schemas/manifest.json",
   "Name": "Teh's Example Fish Pack",
   "Author": "TehPers",
-  "Version": "1.0.1",
+  "Version": "1.0.2",
   "Description": "Example fish pack for Teh's Fishing Overhaul",
   "UniqueID": "TehPers.ExampleFishPack",
   "UpdateKeys": ["Nexus:866@TehPers.ExampleFishPack"],
