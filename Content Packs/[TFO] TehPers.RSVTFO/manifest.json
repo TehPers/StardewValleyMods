@@ -4,7 +4,7 @@
   "UniqueID": "TehPers.RSVTFO",
   "Author": "TehPers",
   "Description": "Adds special fishing content from Ridgeside Village to TFO.",
-  "Version": "1.0.1",
+  "Version": "1.1.0",
   "ContentPackFor": {
     "UniqueID": "TehPers.FishingOverhaul",
     "MinimumVersion": "3.3.0"
