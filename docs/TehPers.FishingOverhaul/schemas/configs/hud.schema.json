@@ -36,6 +36,11 @@
           "maximum": 2147483647,
           "description": "The number of fish to show on the fishing HUD.",
           "default": 5
+        },
+        "ShowTrash": {
+          "type": "boolean",
+          "description": "Whether to show trash in the fishing HUD.",
+          "default": false
         }
       },
       "description": "Configuration for the fishing HUD."
