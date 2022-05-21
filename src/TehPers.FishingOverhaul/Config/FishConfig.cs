@@ -2,7 +2,6 @@
 using StardewModdingAPI;
 using StardewValley;
 using System;
-using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
@@ -12,7 +11,6 @@ namespace TehPers.FishingOverhaul.Config
     /// Configuration for fish.
     /// </summary>
     /// <inheritdoc cref="IModConfig"/>
-    [JsonDescribe]
     public sealed class FishConfig : IModConfig
     {
         /// <summary>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using StardewModdingAPI;
 using StardewValley;
-using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
 namespace TehPers.FishingOverhaul.Config
@@ -12,7 +11,6 @@ namespace TehPers.FishingOverhaul.Config
     /// Configuration for the chances of catching something while fishing.
     /// </summary>
     /// <inheritdoc cref="IModConfig"/>
-    [JsonDescribe]
     public class FishingChances : IModConfig
     {
         /// <summary>
@@ -188,7 +186,7 @@ namespace TehPers.FishingOverhaul.Config
             chance += streak * this.StreakFactor;
 
             // Location
-            if (farmer.currentLocation is { Name: { } locationName }
+            if (farmer.currentLocation is {Name: { } locationName}
                 && this.LocationFactors.TryGetValue(locationName, out var factor))
             {
                 chance += factor;
@@ -198,7 +196,9 @@ namespace TehPers.FishingOverhaul.Config
         }
 
         /// <summary>
-        /// Clamps the chance to an allowed value.
+        /// Clamps the chance to an allowed value. This does not take any additional adjustments
+        /// by other mods into account. For example, a mod may change the range of valid values
+        /// for the chance.
         /// </summary>
         /// <param name="chance">The chance to clamp.</param>
         /// <returns>The clamped chance.</returns>

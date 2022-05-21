@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ContentPatcher;
 using HarmonyLib;
+using Newtonsoft.Json;
 using Ninject;
 using StardewModdingAPI;
 using TehPers.Core.Api.DI;
@@ -9,7 +10,9 @@ using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
+using TehPers.FishingOverhaul.Api.Effects;
 using TehPers.FishingOverhaul.Config;
+using TehPers.FishingOverhaul.Effects;
 using TehPers.FishingOverhaul.Integrations.Emp;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 using TehPers.FishingOverhaul.Services;
@@ -32,9 +35,13 @@ namespace TehPers.FishingOverhaul
             this.Bind<ISetup>().To<ConsoleCommandsSetup>().InSingletonScope();
             this.Bind<ISetup>().To<MissingSecretNotesToken>().InSingletonScope();
             this.Bind<ISetup>().To<MissingJournalScrapsToken>().InSingletonScope();
+            this.Bind<ISetup>().To<FishingEffectApplier>().InSingletonScope();
+            this.Bind<ISetup>()
+                .ToMethod(context => context.Kernel.Get<ModifyChanceEffectManager>())
+                .InSingletonScope();
 
             // Resources/services
-            this.Bind<IFishingApi, ISimplifiedFishingApi, FishingApi>()
+            this.GlobalProxyRoot.Bind<IFishingApi, ISimplifiedFishingApi, FishingApi>()
                 .ToMethod(
                     context => new FishingApi(
                         context.Kernel.Get<IModHelper>(),
@@ -46,6 +53,7 @@ namespace TehPers.FishingOverhaul
                         context.Kernel.Get<EntryManagerFactory<FishEntry, FishAvailabilityInfo>>(),
                         context.Kernel.Get<EntryManagerFactory<TrashEntry, AvailabilityInfo>>(),
                         context.Kernel.Get<EntryManagerFactory<TreasureEntry, AvailabilityInfo>>(),
+                        context.Kernel.Get<FishingEffectManagerFactory>(),
                         context.Kernel.Get<Lazy<IOptional<IEmpApi>>>()
                     )
                 )
@@ -61,8 +69,15 @@ namespace TehPers.FishingOverhaul
                     }
                 )
                 .InSingletonScope();
-            this.Bind(typeof(ChanceCalculatorFactory<>)).ToSelf().InSingletonScope();
+            this.Bind<CalculatorFactory>().ToSelf().InSingletonScope();
             this.Bind(typeof(EntryManagerFactory<,>)).ToSelf().InSingletonScope();
+            this.Bind<FishingEffectManagerFactory>().ToSelf().InSingletonScope();
+            this.GlobalProxyRoot.Bind<FishingEffectRegistration>()
+                .ToConstant(
+                    FishingEffectRegistration.Of<ModifyChanceEffectEntry>("ModifyFishChance")
+                )
+                .InSingletonScope();
+            this.GlobalProxyRoot.Bind<ModifyChanceEffectManager>().ToSelf().InSingletonScope();
 
             // Configs
             this.BindConfiguration<HudConfig>("config/hud.json");
@@ -75,6 +90,11 @@ namespace TehPers.FishingOverhaul
                 .InSingletonScope();
             this.GlobalProxyRoot.Bind<IFishingContentSource>()
                 .To<DefaultFishingSource>()
+                .InSingletonScope();
+
+            // JSON converters
+            this.GlobalProxyRoot.Bind<JsonConverter>()
+                .To<EffectEntryJsonConverter>()
                 .InSingletonScope();
 
             // Foreign APIs

@@ -1,6 +1,6 @@
 ﻿using Namotion.Reflection;
 
-namespace TehPers.FishingOverhaul.SchemaGen
+namespace TehPers.SchemaGen
 {
     internal record MemberData(
         ContextualAccessorInfo Accessor,

@@ -5,14 +5,13 @@ using TehPers.FishingOverhaul.Api.Content;
 
 namespace TehPers.FishingOverhaul.Services
 {
-    internal class ChanceCalculatorFactory<T>
-        where T : AvailabilityInfo
+    internal class CalculatorFactory
     {
         private readonly Lazy<IContentPatcherAPI> contentPatcherApiFactory;
         private readonly IManifest fishingManifest;
         private readonly IMonitor monitor;
 
-        public ChanceCalculatorFactory(
+        public CalculatorFactory(
             Lazy<IContentPatcherAPI> contentPatcherApiFactory,
             IManifest fishingManifest,
             IMonitor monitor
@@ -25,14 +24,25 @@ namespace TehPers.FishingOverhaul.Services
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
         }
 
-        public ChanceCalculator<T> Create(IManifest owner, T availabilityInfo)
+        public ConditionsCalculator Conditions(IManifest owner, AvailabilityConditions conditions)
         {
             return new(
                 this.monitor,
                 this.contentPatcherApiFactory.Value,
                 this.fishingManifest,
                 owner,
-                availabilityInfo
+                conditions
+            );
+        }
+
+        public ChanceCalculator Chances(IManifest owner, AvailabilityInfo info)
+        {
+            return new(
+                this.monitor,
+                this.contentPatcherApiFactory.Value,
+                this.fishingManifest,
+                owner,
+                info
             );
         }
     }

@@ -1,0 +1,4 @@
+{
+  "$schema": "https://raw.githubusercontent.com/TehPers/StardewValleyMods/master/docs/TehPers.FishingOverhaul/schemas/contentPacks/content.schema.json",
+  "Include": ["legends.json", "trash.json", "linked.json"]
+}

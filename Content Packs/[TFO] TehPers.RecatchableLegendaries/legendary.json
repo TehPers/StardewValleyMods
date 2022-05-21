@@ -16,8 +16,10 @@
             "GreaterThanEq": 82
           }
         },
-        "MinDepth": 3,
+        "MinBobberDepth": 3,
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/crimsonfishDelay": "false"
         }
@@ -44,6 +46,8 @@
           }
         },
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/anglerDelay": "false"
         }
@@ -67,8 +71,10 @@
         "Weathers": ["Rainy"],
         "WaterTypes": ["PondOrOcean"],
         "MinFishingLevel": 10,
-        "MinDepth": 4,
+        "MinBobberDepth": 4,
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not longer on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/legendDelay": "false"
         }
@@ -97,6 +103,8 @@
           }
         },
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/mutantCarpDelay": "false"
         }
@@ -129,8 +137,10 @@
             "LessThan": 88
           }
         },
-        "MinDepth": 3,
+        "MinBobberDepth": 3,
         "When": {
+          // Legendary II fish are not currently (normally) catchable
+          "TehPers.FishingOverhaul/SpecialOrderRuleActive |contains=LEGENDARY_FAMILY": "false",
           // It is not on delay
           "HasConversationTopic |contains=TehPers.RecatchableLegendaries/glacierfishDelay": "false"
         }

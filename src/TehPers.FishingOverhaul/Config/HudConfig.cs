@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using StardewModdingAPI;
-using TehPers.Core.Api.Json;
 using TehPers.FishingOverhaul.Integrations.GenericModConfigMenu;
 
 namespace TehPers.FishingOverhaul.Config
@@ -9,7 +8,6 @@ namespace TehPers.FishingOverhaul.Config
     /// Configuration for the fishing HUD.
     /// </summary>
     /// <inheritdoc cref="IModConfig"/>
-    [JsonDescribe]
     public sealed class HudConfig : IModConfig
     {
         /// <summary>
@@ -36,6 +34,12 @@ namespace TehPers.FishingOverhaul.Config
         /// </summary>
         [DefaultValue(5)]
         public int MaxFishTypes { get; set; } = 5;
+
+        /// <summary>
+        /// Whether to show trash in the fishing HUD.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool ShowTrash { get; set; }
 
         void IModConfig.Reset()
         {
@@ -83,6 +87,13 @@ namespace TehPers.FishingOverhaul.Config
                 () => Desc("maxFishTypes"),
                 0,
                 20
+            );
+            configApi.AddBoolOption(
+                manifest,
+                () => this.ShowTrash,
+                val => this.ShowTrash = val,
+                () => Name("showTrash"),
+                () => Desc("showTrash")
             );
         }
     }

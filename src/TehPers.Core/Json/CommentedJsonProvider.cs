@@ -22,7 +22,7 @@ namespace TehPers.Core.Json
         {
             this.defaultSource = defaultSource;
 
-            this.jsonSettings = new JsonSerializerSettings
+            this.jsonSettings = new()
             {
                 Formatting = Formatting.Indented,
                 ObjectCreationHandling =
@@ -97,7 +97,7 @@ namespace TehPers.Core.Json
             _ = assetProvider ?? throw new ArgumentNullException(nameof(assetProvider));
 
             // Write to stream directly
-            using var stream = assetProvider.Open(path, FileMode.OpenOrCreate);
+            using var stream = assetProvider.Open(path, FileMode.Create);
             using var writer = new StreamWriter(stream);
             this.Serialize(data, writer, settings, minify);
         }
@@ -185,7 +185,7 @@ namespace TehPers.Core.Json
 
         private static JsonSerializerSettings CloneSettings(JsonSerializerSettings source)
         {
-            return new JsonSerializerSettings
+            return new()
             {
                 CheckAdditionalContent = source.CheckAdditionalContent,
                 ConstructorHandling = source.ConstructorHandling,
