@@ -67,7 +67,7 @@ namespace TehPers.FishingOverhaul.Effects
                 throw new JsonException($"Unknown effect: '{effectName}'");
             }
 
-            var readJson = effectToken.ToObject(effectType);
+            var readJson = effectToken.ToObject(effectType, serializer);
             return readJson;
         }
 

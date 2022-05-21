@@ -126,6 +126,34 @@ Removing treasure entries uses a filter to match on specific entries that you wa
 | ItemKeys    | `string[]` | No       | `[]`    | The namespaced keys of the treasure that should be removed. This must match every listed item key in the entry you want to remove. For example, if an entry lists bait, stone, and wood as its possible item keys, you must list _all_ of those to remove it. |
 | AnyWithItem | `string`   | No       | N/A     | A namespaced key in the treasure entry. Any entry that can produce this item will be removed. This takes precedence over `ItemKeys` (if both are listed and this condition is matched, then `ItemKeys` is ignored).                                           |
 
+### Fishing Effects
+
+Certain effects can be applied while fishing. For example, a user's chance of finding a fish or
+treasure chest can be modified under certain conditions. This can be useful to force a user to
+catch a particular trash item or to reward the player after certain events occur. The format for
+fishing effects in general looks like this:
+
+| Property     | Type     | Required | Default | Description                                        |
+| ------------ | -------- | -------- | ------- | -------------------------------------------------- |
+| `$Effect`    | `string` | Yes      | N/A     | The name of the effect.                            |
+| `Conditions` | `object` | Yes      | N/A     | Conditions for when this effect should be applied. |
+
+`Conditions` can hold any property valid in an [availability info] except `PriorityTier`.
+
+#### Effect types
+
+While any SMAPI mod can add their own fishing effect types, there is one that is added by
+default:
+
+**ModifyFishChance**: Modifies a chance related to fishing:
+
+| Property     | Type                 | Required | Default | Description                                                                                                    |
+| ------------ | -------------------- | -------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| `$Effect`    | `"ModifyFishChance"` | Yes      | N/A     | The name of the effect.                                                                                        |
+| `Conditions` | `object`             | Yes      | N/A     | Conditions for when this effect should be applied.                                                             |
+| `Type`       | `string`             | Yes      | N/A     | The type of chance to modify. (`Fish`, `MinFish`, `MaxFish`, `Treasure`, `MinTreasure`, `MaxTreasure`)         |
+| `Expression` | `string`             | Yes      | N/A     | The mathematical expression to evaluate to determine the new chance, like `x * 2`. `x` is the previous chance. |
+
 ## Common
 
 There are a few common properties and types that are used throughout multiple config files.
@@ -165,25 +193,26 @@ Not all key formats are listed. Also, other mods may add their own namespaces an
 Fish, trash, and treasure have availability information to determine when they can be found. These
 are the properties that are common to them all:
 
-| Property           | Type       | Required | Default   | Description                                                                                                                    |
-| ------------------ | ---------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `BaseChance`       | `number`   | Yes      | N/A       | The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries.   |
-| `StartTime`        | `integer`  | No       | 600       | Time this becomes available (inclusive).                                                                                       |
-| `EndTime`          | `integer`  | No       | 2600      | Time this is no longer available (exclusive).                                                                                  |
-| `Seasons`          | `array`    | No       | `["All"]` | Seasons this can be caught in. Default is all. ("Spring", "Summer", "Fall", "Winter", "All")                                   |
-| `Weathers`         | `array`    | No       | `["All"]` | Weathers this can be caught in. Default is all. ("Sunny", "Rainy", "All")                                                      |
-| `WaterTypes`       | `array`    | No       | `["All"]` | The type of water this can be caught in. Each location handles this differently. ("River", "PondOrOcean", "Freshwater", "All") |
-| `MinFishingLevel`  | `integer`  | No       | 0         | Required fishing level to see this.                                                                                            |
-| `MaxFishingLevel`  | `integer?` | No       | `null`    | Maximum fishing level required to see this, or null for no max.                                                                |
-| `IncludeLocations` | `array`    | No       | `[]`      | List of locations this should be available in. (see below)                                                                     |
-| `ExcludeLocations` | `array`    | No       | `[]`      | List of locations this should not be available in. This takes priority over `IncludeLocations`.                                |
-| `Position`         | `object`   | No       | `{}`      | Constraints on the bobber's position on the map when fishing.                                                                  |
-| `FarmerPosition`   | `object`   | No       | `{}`      | Constraints on the farmer's position on the map when fishing.                                                                  |
-| `MinBobberDepth`   | `integer`  | No       | 0         | Minimum bobber depth ([fishing zone]) required to catch this.                                                                  |
-| `MaxBobberDepth`   | `integer?` | No       | `null`    | Maximum bobber depth ([fishing zone]) required to catch this.                                                                  |
-| ~~`MinDepth`~~     | `integer`  | No       | 0         | **(Deprecated)** Same as `MinBobberDepth`.                                                                                     |
-| ~~`MaxDepth`~~     | `integer?` | No       | `null`    | **(Deprecated)** Same as `MaxBobberDepth`.                                                                                     |
-| `When`             | `object`   | No       | `{}`      | Content Patcher [conditions] for when this should be available.                                                                |
+| Property           | Type       | Required | Default   | Description                                                                                                                       |
+| ------------------ | ---------- | -------- | --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `BaseChance`       | `number`   | Yes      | N/A       | The base chance this will be caught. This is not a percentage chance, but rather a weight relative to all available entries.      |
+| `StartTime`        | `integer`  | No       | 600       | Time this becomes available (inclusive).                                                                                          |
+| `EndTime`          | `integer`  | No       | 2600      | Time this is no longer available (exclusive).                                                                                     |
+| `Seasons`          | `array`    | No       | `["All"]` | Seasons this can be caught in. Default is all. ("Spring", "Summer", "Fall", "Winter", "All")                                      |
+| `Weathers`         | `array`    | No       | `["All"]` | Weathers this can be caught in. Default is all. ("Sunny", "Rainy", "All")                                                         |
+| `WaterTypes`       | `array`    | No       | `["All"]` | The type of water this can be caught in. Each location handles this differently. ("River", "PondOrOcean", "Freshwater", "All")    |
+| `MinFishingLevel`  | `integer`  | No       | 0         | Required fishing level to see this.                                                                                               |
+| `MaxFishingLevel`  | `integer?` | No       | `null`    | Maximum fishing level required to see this, or null for no max.                                                                   |
+| `IncludeLocations` | `array`    | No       | `[]`      | List of locations this should be available in. (see below)                                                                        |
+| `ExcludeLocations` | `array`    | No       | `[]`      | List of locations this should not be available in. This takes priority over `IncludeLocations`.                                   |
+| `Position`         | `object`   | No       | `{}`      | Constraints on the bobber's position on the map when fishing.                                                                     |
+| `FarmerPosition`   | `object`   | No       | `{}`      | Constraints on the farmer's position on the map when fishing.                                                                     |
+| `MinBobberDepth`   | `integer`  | No       | 0         | Minimum bobber depth ([fishing zone]) required to catch this.                                                                     |
+| `MaxBobberDepth`   | `integer?` | No       | `null`    | Maximum bobber depth ([fishing zone]) required to catch this.                                                                     |
+| ~~`MinDepth`~~     | `integer`  | No       | 0         | **(Deprecated)** Same as `MinBobberDepth`.                                                                                        |
+| ~~`MaxDepth`~~     | `integer?` | No       | `null`    | **(Deprecated)** Same as `MaxBobberDepth`.                                                                                        |
+| `When`             | `object`   | No       | `{}`      | Content Patcher [conditions] for when this should be available.                                                                   |
+| `PriorityTier`     | `number`   | No       | 0         | The priority tier for this entry. For all available entries, only the entries that share the highest priority tier can be caught. |
 
 `IncludeLocations` and `ExcludeLocations` are arrays of location names. If `IncludeLocations` is
 empty, then it is assumed that all locations (except locations in `ExcludeLocations`) are valid.

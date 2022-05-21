@@ -95,7 +95,8 @@
   ],
   "AddEffects": [
     {
-      "$Effect": "ModifyMinFishChance",
+      "$Effect": "ModifyFishChance",
+      "Type": "MinFish",
       "Expression": "1",
       "Conditions": {
         "IncludeLocations": ["Custom_Ridgeside_RidgePond"]
