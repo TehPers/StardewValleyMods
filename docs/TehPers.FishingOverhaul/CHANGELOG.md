@@ -2,7 +2,7 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
-## 3.3.0 - Unreleased
+## 3.3.0 - 2022-05-20
 
 ### Added
 

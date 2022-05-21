@@ -2,7 +2,7 @@
 
 Changelog for [TehCore].
 
-## 1.0.2 - Unreleased
+## 1.0.2 - 2022-05-20
 
 ### Added
 

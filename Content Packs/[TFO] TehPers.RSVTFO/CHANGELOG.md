@@ -1,6 +1,6 @@
 # Changelog - Recatchable Legendaries
 
-## 1.0.1 - Unreleased
+## 1.0.1 - 2022-05-20
 
 ### Added
 
