@@ -31,7 +31,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private void OnUpdateTicking(object? sender, UpdateTickingEventArgs e)
         {
             if (Game1.player is null) {
-                continue;
+                return;
             }
 
             foreach (var manager in this.fishingApi.fishingEffectManagers)
