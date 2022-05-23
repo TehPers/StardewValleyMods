@@ -2,6 +2,12 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.3.1 - 2022-05-22
+
+### Fixed
+
+- Fix NullReferenceException in FishingEffectApplier
+
 ## 3.3.0 - 2022-05-20
 
 ### Added
