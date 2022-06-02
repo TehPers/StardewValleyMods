@@ -45,7 +45,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.contentPatcherApi.RegisterToken(
                 this.manifest,
                 "SpecialOrderRuleActive",
-                ContentPatcherSetup.GetSpecialOrderRuleActive
+                new MaybeReadyToken(ContentPatcherSetup.GetSpecialOrderRuleActive)
             );
             this.contentPatcherApi.RegisterToken(
                 this.manifest,
@@ -60,30 +60,35 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.contentPatcherApi.RegisterToken(
                 this.manifest,
                 "RandomGoldenWalnuts",
-                ContentPatcherSetup.GetRandomGoldenWalnuts
+                new MaybeReadyToken(ContentPatcherSetup.GetRandomGoldenWalnuts)
             );
             this.contentPatcherApi.RegisterToken(
                 this.manifest,
                 "TidePoolGoldenWalnut",
-                ContentPatcherSetup.GetTidePoolGoldenWalnut
+                new MaybeReadyToken(ContentPatcherSetup.GetTidePoolGoldenWalnut)
             );
             this.contentPatcherApi.RegisterToken(
                 this.manifest,
                 "ActiveBait",
-                ContentPatcherSetup.GetActiveBait
+                new MaybeReadyToken(ContentPatcherSetup.GetActiveBait)
             );
             this.contentPatcherApi.RegisterToken(
                 this.manifest,
                 "ActiveTackle",
-                ContentPatcherSetup.GetActiveTackle
+                new MaybeReadyToken(ContentPatcherSetup.GetActiveTackle)
             );
         }
 
         private static IEnumerable<string>? GetSpecialOrderRuleActive()
         {
-            if (Game1.player is not {team: {specialOrders: { } specialOrders}})
+            if (Game1.player is not { } player)
             {
                 return null;
+            }
+
+            if (player is not { team: { specialOrders: { } specialOrders } })
+            {
+                return Enumerable.Empty<string>();
             }
 
             return specialOrders.SelectMany(
@@ -110,9 +115,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private static IEnumerable<string>? GetRandomGoldenWalnuts()
         {
-            if (Game1.player is not {team: {limitedNutDrops: { } limitedNutDrops}})
+            if (Game1.player is not { } player)
             {
                 return null;
+            }
+
+            if (player is not { team: { limitedNutDrops: { } limitedNutDrops } })
+            {
+                return Enumerable.Empty<string>();
             }
 
             return limitedNutDrops.TryGetValue("IslandFishing", out var fishingNuts)
@@ -122,9 +132,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private static IEnumerable<string>? GetTidePoolGoldenWalnut()
         {
-            if (Game1.player is not {team: { } team})
+            if (Game1.player is not { } player)
             {
                 return null;
+            }
+
+            if (player is not { team: { } team })
+            {
+                return Enumerable.Empty<string>();
             }
 
             return team.collectedNutTracker.TryGetValue("StardropPool", out var gotNut) && gotNut
@@ -142,7 +157,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             var index = rod.getBaitAttachmentIndex();
             if (index < 0)
             {
-                return null;
+                return Enumerable.Empty<string>();
             }
 
             return new[] {NamespacedKey.SdvObject(index).ToString()};
@@ -158,7 +173,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             var index = rod.getBobberAttachmentIndex();
             if (index < 0)
             {
-                return null;
+                return Enumerable.Empty<string>();
             }
 
             return new[] {NamespacedKey.SdvObject(index).ToString()};
