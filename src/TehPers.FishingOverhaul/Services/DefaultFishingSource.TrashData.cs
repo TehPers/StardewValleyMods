@@ -206,7 +206,8 @@ namespace TehPers.FishingOverhaul.Services
                         PriorityTier = DefaultFishingSource.questItemTier,
                         When = new Dictionary<string, string?>
                         {
-                            [$"HasFlag |contains={GameLocation.CAROLINES_NECKLACE_MAIL}%&NL&%"] = "false",
+                            [$"HasFlag |contains={GameLocation.CAROLINES_NECKLACE_MAIL}%&NL&%"] =
+                                "false",
                             [$"TehPers.FishingOverhaul/MissingSecretNotes |contains={GameLocation.NECKLACE_SECRET_NOTE_INDEX}"] =
                                 "false",
                         }.ToImmutableDictionary(),

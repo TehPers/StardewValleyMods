@@ -2,6 +2,13 @@
 
 Changelog for [Teh's Fishing Overhaul].
 
+## 3.3.2 - 2022-06-03
+
+### Fixed
+
+- Fix mutant carp only being available in certain regions of the sewers.
+- Fix fish swimming in the town fountain when they definitely don't have enough food or space.
+
 ## 3.3.1 - 2022-06-02
 
 Special thanks to [Jibb](https://www.nexusmods.com/stardewvalley/users/5639823) for finding the
