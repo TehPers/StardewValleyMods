@@ -1,0 +1,12 @@
+{
+    "$schema": "https://smapi.io/schemas/manifest.json",
+    "Name": "Fish sword (CP)",
+    "Author": "TehPers",
+    "UniqueID": "TehPers.FishSword.CP",
+    "Description": "Adds some extra goodies to fishing.",
+    "Version": "1.0.0-beta.2021.12.25",
+    "ContentPackFor": {
+      "UniqueID": "Pathoschild.ContentPatcher"
+    },
+  }
+  

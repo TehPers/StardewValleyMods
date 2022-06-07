@@ -1,0 +1,13 @@
+{
+  "$schema": "https://smapi.io/schemas/content-patcher.json",
+  "Format": "1.24.0",
+  "Changes": [
+    {
+      "Action": "EditData",
+      "Target": " Data/mail",
+      "Entries": {
+        "TehPers.FishSword.CP/goldenShellCaught": "{{i18n: goldenShellCaught}}"
+      }
+    }
+  ]
+}
