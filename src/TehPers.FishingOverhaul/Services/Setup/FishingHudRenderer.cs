@@ -6,6 +6,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Tools;
+using TehPers.Core.Api.Gui;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
@@ -43,6 +44,64 @@ namespace TehPers.FishingOverhaul.Services.Setup
         public void Setup()
         {
             this.helper.Events.Display.RenderedHud += this.RenderFishingHud;
+
+            // TODO: remove this
+            this.helper.Events.Input.ButtonPressed += (sender, args) =>
+            {
+                if (args.Button != SButton.Y)
+                {
+                    return;
+                }
+
+                var component = VerticalLayout.Of(
+                        new Label("Hello, world!", Game1.smallFont) {Color = Color.Black}
+                            .Aligned(HorizontalAlignment.Center)
+                            .WithPadding(32),
+                        HorizontalLayout.Of(
+                                new ActionTracker<Label>(
+                                        new Label("This is some text", Game1.smallFont)
+                                            {
+                                                Color = Color.Black
+                                            }
+                                    )
+                                    {
+                                        ClickReceived = (tracker, clickType) => tracker with
+                                        {
+                                            Inner = tracker.Inner with
+                                            {
+                                                Text = $"{tracker.Inner.Text} {clickType}",
+                                            }
+                                        }
+                                    }.Aligned(HorizontalAlignment.Left)
+                                    .WithPadding(64),
+                                new MenuVerticalSeparator(MenuSeparatorConnector.Separator),
+                                new Label("This is some more text", Game1.smallFont)
+                                        {
+                                            Color = Color.Black
+                                        }
+                                    .Aligned(HorizontalAlignment.Left)
+                                    .WithPadding(64)
+                            )
+                            .WithBackground(
+                                VerticalLayout.Of(
+                                    new MenuHorizontalSeparator(),
+                                    new EmptySpace(),
+                                    new MenuHorizontalSeparator()
+                                )
+                            ),
+                        new Label(
+                                "This is some text inside of an inner menu I guess...",
+                                Game1.smallFont
+                            ) {Color = Color.Black}
+                            .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
+                            .WithPadding(64)
+                            .WithBackground(new MenuBackground())
+                            .WithPadding(32),
+                        new EmptySpace()
+                    )
+                    .WithBackground(new MenuBackground());
+                Game1.activeClickableMenu = component.ToMenu();
+            };
         }
 
         public void Dispose()
