@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
@@ -9,39 +7,43 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A GUI component that can be drawn to the screen.
     /// </summary>
-    public interface IGuiComponent
+    public interface IGuiComponent<TState>
     {
         /// <summary>
         /// Gets the constraints on how this component should be rendered.
         /// </summary>
-        GuiConstraints Constraints { get; }
+        /// <returns>The constraints on how this component should be rendered.</returns>
+        GuiConstraints GetConstraints();
 
         /// <summary>
-        /// Calculates the layouts of this component and all its children.
+        /// Initializes the state of this component.
         /// </summary>
-        /// <param name="bounds">The area reserved for this component.</param>
-        /// <param name="layouts"></param>
-        /// <returns>The layouts of this component and all its children.</returns>
-        void CalculateLayouts(Rectangle bounds, List<ComponentLayout> layouts);
+        /// <param name="bounds">The bounds of this component.</param>
+        /// <returns>The component's initial state.</returns>
+        TState Initialize(Rectangle bounds);
+
+        /// <summary>
+        /// Repositions this component and updates its state.
+        /// </summary>
+        /// <param name="state">The state of this component.</param>
+        /// <param name="bounds">The area this component should be drawn in.</param>
+        /// <returns>The updated state of this component.</returns>
+        TState Reposition(TState state, Rectangle bounds);
 
         /// <summary>
         /// Draws this component to the screen. This method does not draw the component's children.
         /// </summary>
         /// <param name="batch">The batch to draw with.</param>
-        /// <param name="bounds">The area this component should be drawn in.</param>
-        void Draw(SpriteBatch batch, Rectangle bounds);
+        /// <param name="state">The state of this component.</param>
+        void Draw(SpriteBatch batch, TState state);
 
         /// <summary>
-        /// Updates this component in response to an event if necessary.
+        /// Updates this component in response to an event.
         /// </summary>
         /// <param name="e">The event data.</param>
-        /// <param name="componentBounds">The bounds for each component.</param>
-        /// <param name="newComponent">The updated component.</param>
+        /// <param name="state">The state of this component.</param>
+        /// <param name="nextState">The next state of this component.</param>
         /// <returns>Whether this component was updated.</returns>
-        bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        );
+        bool Update(GuiEvent e, TState state, [NotNullWhen(true)] out TState? nextState);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Immutable;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
@@ -8,9 +8,7 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A text label in a GUI.
     /// </summary>
-    /// <param name="Text">The text on this label.</param>
-    /// <param name="Font">The font to draw this label with.</param>
-    public record Label(string Text, SpriteFont Font) : BaseGuiComponent
+    public class Label : IGuiComponent<Label.State>
     {
         /// <summary>
         /// The color to tint the text.
@@ -32,12 +30,31 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         public float LayerDepth { get; init; } = 0;
 
-        /// <inheritdoc />
-        public override GuiConstraints Constraints => Label.GetConstraints(this.Font, this.Text);
+        /// <summary>
+        /// The text on this label.
+        /// </summary>
+        public string Text { get; }
 
-        private static GuiConstraints GetConstraints(SpriteFont font, string text)
+        /// <summary>
+        /// The font to draw this label with.
+        /// </summary>
+        public SpriteFont Font { get; }
+
+        /// <summary>
+        /// A text label in a GUI.
+        /// </summary>
+        /// <param name="text">The text on this label.</param>
+        /// <param name="font">The font to draw this label with.</param>
+        public Label(string text, SpriteFont font)
         {
-            var size = font.MeasureString(text);
+            this.Text = text ?? throw new ArgumentNullException(nameof(text));
+            this.Font = font ?? throw new ArgumentNullException(nameof(font));
+        }
+
+        /// <inheritdoc />
+        public GuiConstraints GetConstraints()
+        {
+            var size = this.Font.MeasureString(this.Text);
             return new()
             {
                 MinSize = new(size),
@@ -45,15 +62,25 @@ namespace TehPers.Core.Api.Gui
             };
         }
 
-        /// <inheritdoc/>
-        public override void Draw(SpriteBatch batch, Rectangle bounds)
+        /// <inheritdoc />
+        public State Initialize(Rectangle bounds)
         {
-            base.Draw(batch, bounds);
+            return new(bounds);
+        }
 
+        /// <inheritdoc />
+        public State Reposition(State state, Rectangle bounds)
+        {
+            return new(bounds);
+        }
+
+        /// <inheritdoc />
+        public void Draw(SpriteBatch batch, State state)
+        {
             batch.DrawString(
                 this.Font,
                 this.Text,
-                new(bounds.X, bounds.Y),
+                new(state.Bounds.X, state.Bounds.Y),
                 this.Color,
                 0,
                 Vector2.Zero,
@@ -64,14 +91,16 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public override bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        )
+        public bool Update(GuiEvent e, State state, [NotNullWhen(true)] out State? nextState)
         {
-            newComponent = default;
+            nextState = default;
             return false;
         }
+
+        /// <summary>
+        /// The state for a <see cref="Label"/>.
+        /// </summary>
+        /// <param name="Bounds">The bounds the label is being rendered in.</param>
+        public record State(Rectangle Bounds);
     }
 }

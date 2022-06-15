@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Tools;
+using System.Collections.Generic;
 using TehPers.Core.Api.Gui;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
@@ -24,8 +24,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private readonly HudConfig hudConfig;
         private readonly INamespaceRegistry namespaceRegistry;
 
-        private readonly Texture2D whitePixel;
-
         public FishingHudRenderer(
             IModHelper helper,
             IFishingApi fishingApi,
@@ -37,8 +35,6 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
             this.hudConfig = hudConfig ?? throw new ArgumentNullException(nameof(hudConfig));
             this.namespaceRegistry = namespaceRegistry;
-            this.whitePixel = new(Game1.graphics.GraphicsDevice, 1, 1);
-            this.whitePixel.SetData(new[] {Color.White});
         }
 
         public void Setup()
@@ -56,48 +52,43 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 var component = VerticalLayout.Of(
                         new Label("Hello, world!", Game1.smallFont) {Color = Color.Black}
                             .Aligned(HorizontalAlignment.Center)
-                            .WithPadding(32),
+                            .WithPadding(32, 32, 32, 0)
+                            .Wrapped(),
                         HorizontalLayout.Of(
-                                new ActionTracker<Label>(
-                                        new Label("This is some text", Game1.smallFont)
-                                            {
-                                                Color = Color.Black
-                                            }
-                                    )
-                                    {
-                                        ClickReceived = (tracker, clickType) => tracker with
+                                new Label("This is some text", Game1.smallFont)
                                         {
-                                            Inner = tracker.Inner with
-                                            {
-                                                Text = $"{tracker.Inner.Text} {clickType}",
-                                            }
+                                            Color = Color.Black
                                         }
-                                    }.Aligned(HorizontalAlignment.Left)
-                                    .WithPadding(64),
-                                new MenuVerticalSeparator(MenuSeparatorConnector.Separator),
+                                    .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
+                                    .WithPadding(32, 0)
+                                    .Wrapped(),
+                                new MenuVerticalSeparator(MenuSeparatorConnector.Separator)
+                                    .Wrapped(),
                                 new Label("This is some more text", Game1.smallFont)
                                         {
                                             Color = Color.Black
                                         }
-                                    .Aligned(HorizontalAlignment.Left)
-                                    .WithPadding(64)
+                                    .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
+                                    .WithPadding(32, 0)
+                                    .Wrapped()
                             )
                             .WithBackground(
                                 VerticalLayout.Of(
-                                    new MenuHorizontalSeparator(),
-                                    new EmptySpace(),
-                                    new MenuHorizontalSeparator()
+                                    new MenuHorizontalSeparator().Wrapped(),
+                                    new EmptySpace().Wrapped(),
+                                    new MenuHorizontalSeparator().Wrapped()
                                 )
-                            ),
+                            )
+                            .Wrapped(),
                         new Label(
                                 "This is some text inside of an inner menu I guess...",
                                 Game1.smallFont
                             ) {Color = Color.Black}
                             .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
-                            .WithPadding(64)
+                            .WithPadding(32)
                             .WithBackground(new MenuBackground())
-                            .WithPadding(32),
-                        new EmptySpace()
+                            .WithPadding(32)
+                            .Wrapped()
                     )
                     .WithBackground(new MenuBackground());
                 Game1.activeClickableMenu = component.ToMenu();
@@ -121,14 +112,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
 
             // Draw the fishing GUI to the screen
-            var normalTextColor = Color.White;
-            var fishTextColor = Color.White;
+            var normalTextColor = Color.Black;
+            var fishTextColor = Color.Black;
             var trashTextColor = Color.Gray;
             var font = Game1.smallFont;
-            var boxWidth = 0f;
-            var lineHeight = (float)font.LineSpacing;
-            var boxTopLeft = new Vector2(this.hudConfig.TopLeftX, this.hudConfig.TopLeftY);
-            var boxBottomLeft = boxTopLeft;
             var fishingInfo = this.fishingApi.CreateDefaultFishingInfo(farmer);
             var fishChances = this.fishingApi.GetFishChances(fishingInfo)
                 .ToWeighted(value => value.Weight, value => value.Value.FishKey)
@@ -140,176 +127,176 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 .Condense()
                 .OrderByDescending(x => x.Weight)
                 .ToList();
-
-            // Setup the sprite batch
-            e.SpriteBatch.End();
-            e.SpriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
-
-            // Draw streak chances
-            var streakText = this.helper.Translation.Get(
-                "text.streak",
-                new {streak = this.fishingApi.GetStreak(farmer)}
-            );
-            e.SpriteBatch.DrawStringWithShadow(
-                font,
-                streakText,
-                boxBottomLeft,
-                normalTextColor,
-                1F
-            );
-            boxWidth = Math.Max(boxWidth, font.MeasureString(streakText).X);
-            boxBottomLeft += new Vector2(0, lineHeight);
-
-            // Draw treasure chances
             var treasureChance = this.fishingApi.GetChanceForTreasure(fishingInfo);
-            var treasureText = this.helper.Translation.Get(
-                "text.treasure",
-                new {chance = $"{treasureChance:P2}"}
-            );
-            e.SpriteBatch.DrawStringWithShadow(
-                font,
-                treasureText,
-                boxBottomLeft,
-                normalTextColor,
-                1F
-            );
-            boxWidth = Math.Max(boxWidth, font.MeasureString(treasureText).X);
-            boxBottomLeft += new Vector2(0, lineHeight);
-
-            // Draw trash chances
             var chanceForFish = this.fishingApi.GetChanceForFish(fishingInfo);
             var trashChance = fishChances.Count == 0 ? 1.0 : 1.0 - chanceForFish;
-            var trashText = this.helper.Translation.Get(
-                "text.trash",
-                new {chance = $"{trashChance:P2}"}
-            );
-            e.SpriteBatch.DrawStringWithShadow(font, trashText, boxBottomLeft, normalTextColor, 1F);
-            boxWidth = Math.Max(boxWidth, font.MeasureString(trashText).X);
-            boxBottomLeft += new Vector2(0, lineHeight);
 
-            // Draw entries
-            var maxDisplayedFish = this.hudConfig.MaxFishTypes;
-            var displayedEntries = fishChances.ToWeighted(
-                x => x.Weight,
-                x => (entry: x.Value, textColor: fishTextColor)
-            );
-            if (this.hudConfig.ShowTrash)
-            {
-                displayedEntries = displayedEntries.Normalize(chanceForFish)
-                    .Concat(
-                        trashChances.ToWeighted(
-                                x => x.Weight,
-                                x => (entry: x.Value, textColor: trashTextColor)
-                            )
-                            .Normalize(1 - chanceForFish)
-                    );
-            }
-
-            displayedEntries = displayedEntries.Normalize()
-                .Where(x => x.Weight > 0d)
-                .OrderByDescending(x => x.Weight);
-
-            foreach (var displayedEntry in displayedEntries.Take(maxDisplayedFish))
-            {
-                var (entryKey, textColor) = displayedEntry.Value;
-                var chance = displayedEntry.Weight;
-
-                // Draw fish icon
-                var lineWidth = 0f;
-                var fishName = this.helper.Translation.Get(
-                        "text.fish.unknownName",
-                        new {key = entryKey.ToString()}
-                    )
-                    .ToString();
-                if (this.namespaceRegistry.TryGetItemFactory(entryKey, out var factory))
+            // Setup the sprite batch
+            var content = VerticalLayout.Build(
+                builder =>
                 {
-                    var fishItem = factory.Create();
-                    fishName = fishItem.DisplayName;
+                    // Build header
+                    builder.VerticalLayout(
+                        header =>
+                        {
+                            // Draw streak chances
+                            var streakText = this.helper.Translation.Get(
+                                "text.streak",
+                                new {streak = this.fishingApi.GetStreak(farmer)}
+                            );
+                            header.Add(
+                                new Label(streakText, font) {Color = normalTextColor}
+                                    .Aligned(HorizontalAlignment.Left)
+                                    .Wrapped()
+                            );
 
-                    const float iconScale = 0.5f;
-                    const float iconSize = 64f * iconScale;
-                    fishItem.DrawInMenuCorrected(
-                        e.SpriteBatch,
-                        boxBottomLeft,
-                        iconScale,
-                        1F,
-                        0.9F,
-                        StackDrawType.Hide,
-                        Color.White,
-                        false,
-                        new TopLeftDrawOrigin()
+                            // Draw treasure chances
+                            var treasureText = this.helper.Translation.Get(
+                                "text.treasure",
+                                new {chance = $"{treasureChance:P2}"}
+                            );
+                            header.Add(
+                                new Label(treasureText, font) {Color = normalTextColor}
+                                    .Aligned(HorizontalAlignment.Left)
+                                    .Wrapped()
+                            );
+
+                            // Draw trash chances
+                            var trashText = this.helper.Translation.Get(
+                                "text.trash",
+                                new {chance = $"{trashChance:P2}"}
+                            );
+                            header.Add(
+                                new Label(trashText, font) {Color = normalTextColor}
+                                    .Aligned(HorizontalAlignment.Left)
+                                    .Wrapped()
+                            );
+                        }
                     );
 
-                    lineWidth += iconSize;
-                    lineHeight = Math.Max(lineHeight, iconSize);
+                    // Separator
+                    builder.Add(new MenuHorizontalSeparator());
+
+                    // Entries
+                    builder.VerticalLayout(
+                        content =>
+                        {
+                            // Draw entries
+                            var maxDisplayedFish = this.hudConfig.MaxFishTypes;
+                            var displayedEntries = fishChances.ToWeighted(
+                                x => x.Weight,
+                                x => (entry: x.Value, textColor: fishTextColor)
+                            );
+                            if (this.hudConfig.ShowTrash)
+                            {
+                                displayedEntries = displayedEntries.Normalize(chanceForFish)
+                                    .Concat(
+                                        trashChances.ToWeighted(
+                                                x => x.Weight,
+                                                x => (entry: x.Value, textColor: trashTextColor)
+                                            )
+                                            .Normalize(1 - chanceForFish)
+                                    );
+                            }
+
+                            displayedEntries = displayedEntries.Normalize()
+                                .Where(x => x.Weight > 0d)
+                                .OrderByDescending(x => x.Weight);
+
+                            foreach (var displayedEntry in displayedEntries.Take(maxDisplayedFish))
+                            {
+                                var (entryKey, textColor) = displayedEntry.Value;
+                                var chance = displayedEntry.Weight;
+
+                                // Draw fish icon
+                                var itemRow = new List<WrappedComponent>();
+                                var fishName = this.helper.Translation.Get(
+                                        "text.fish.unknownName",
+                                        new {key = entryKey.ToString()}
+                                    )
+                                    .ToString();
+                                if (this.namespaceRegistry.TryGetItemFactory(
+                                        entryKey,
+                                        out var factory
+                                    ))
+                                {
+                                    var fishItem = factory.Create();
+                                    fishName = fishItem.DisplayName;
+
+                                    const float iconScale = 0.5f;
+                                    const float iconSize = 64f * iconScale;
+                                    itemRow.Add(
+                                        new SimpleComponent(
+                                            new()
+                                            {
+                                                MinSize = new(iconSize, iconSize),
+                                                MaxSize = new(iconSize, iconSize)
+                                            },
+                                            (batch, bounds) => fishItem.DrawInMenuCorrected(
+                                                batch,
+                                                new(bounds.X, bounds.Y),
+                                                iconScale,
+                                                1F,
+                                                0.9F,
+                                                StackDrawType.Hide,
+                                                Color.White,
+                                                false,
+                                                new TopLeftDrawOrigin()
+                                            )
+                                        ).Wrapped()
+                                    );
+                                }
+
+                                // Draw chance
+                                var fishText = this.helper.Translation.Get(
+                                    "text.fish",
+                                    new
+                                    {
+                                        name = fishName,
+                                        chance = $"{chance * 100.0:F2}"
+                                    }
+                                );
+                                itemRow.Add(
+                                    new Label(fishText, font) {Color = textColor}.Aligned(
+                                            HorizontalAlignment.Left,
+                                            VerticalAlignment.Center
+                                        )
+                                        .Wrapped()
+                                );
+                                content.Add(HorizontalLayout.Of(itemRow).Wrapped());
+                            }
+
+                            // Draw 'more fish' text
+                            if (fishChances.Count > maxDisplayedFish)
+                            {
+                                var moreFishText = this.helper.Translation.Get(
+                                        "text.fish.more",
+                                        new {quantity = fishChances.Count - maxDisplayedFish}
+                                    )
+                                    .ToString();
+                                content.Add(
+                                    new Label(moreFishText, font) {Color = normalTextColor}
+                                        .Aligned(HorizontalAlignment.Left)
+                                        .Wrapped()
+                                );
+                            }
+                        }
+                    );
                 }
-
-                // Draw chance
-                var fishText = this.helper.Translation.Get(
-                    "text.fish",
-                    new
-                    {
-                        name = fishName,
-                        chance = $"{chance * 100.0:F2}"
-                    }
-                );
-                e.SpriteBatch.DrawStringWithShadow(
-                    font,
-                    fishText,
-                    boxBottomLeft + new Vector2(lineWidth, 0),
-                    textColor,
-                    1F
-                );
-                var (textWidth, textHeight) = font.MeasureString(fishText);
-                lineWidth += textWidth;
-                lineHeight = Math.Max(lineHeight, textHeight);
-
-                // Update background box
-                boxWidth = Math.Max(boxWidth, lineWidth);
-                boxBottomLeft += new Vector2(0, lineHeight);
-            }
-
-            // Draw 'more fish' text
-            if (fishChances.Count > maxDisplayedFish)
-            {
-                var moreFishText = this.helper.Translation.Get(
-                        "text.fish.more",
-                        new {quantity = fishChances.Count - maxDisplayedFish}
-                    )
-                    .ToString();
-                e.SpriteBatch.DrawStringWithShadow(
-                    font,
-                    moreFishText,
-                    boxBottomLeft,
-                    normalTextColor,
-                    1F
-                );
-                boxWidth = Math.Max(boxWidth, font.MeasureString(moreFishText).X);
-                boxBottomLeft += new Vector2(0, lineHeight);
-            }
-
-            // Draw the background rectangle
-            // TODO: use a nicer background
-            e.SpriteBatch.Draw(
-                this.whitePixel,
-                new((int)boxTopLeft.X, (int)boxTopLeft.Y, (int)boxWidth, (int)boxBottomLeft.Y),
-                null,
-                new(0, 0, 0, 0.25F),
-                0f,
-                Vector2.Zero,
-                SpriteEffects.None,
-                0.85F
             );
 
-            // Reset sprite batch
-            e.SpriteBatch.End();
-            e.SpriteBatch.Begin(
-                SpriteSortMode.Deferred,
-                BlendState.AlphaBlend,
-                SamplerState.PointClamp,
-                DepthStencilState.None,
-                RasterizerState.CullCounterClockwise
+            // Draw the component
+            var component = content.WithBackground(new MenuBackground());
+            var constraints = component.GetConstraints();
+            var state = component.Initialize(
+                new(
+                    this.hudConfig.TopLeftX,
+                    this.hudConfig.TopLeftY,
+                    (int)Math.Ceiling(constraints.MinSize.Width),
+                    (int)Math.Ceiling(constraints.MinSize.Height)
+                )
             );
+            component.Draw(e.SpriteBatch, state);
         }
     }
 }

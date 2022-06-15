@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -8,56 +9,146 @@ using System.Linq;
 namespace TehPers.Core.Api.Gui
 {
     /// <summary>
-    /// A vertical layout container. Components are rendered vertically along a single column.
+    /// Utility methods for <see cref="VerticalLayout{TState}"/>.
     /// </summary>
-    /// <param name="Components">The components in this layout.</param>
-    public record VerticalLayout(ImmutableList<IGuiComponent> Components) : BaseGuiComponent
+    public static class VerticalLayout
     {
         /// <summary>
         /// Creates a new vertical layout containing the given components.
         /// </summary>
         /// <param name="components">The components in the layout.</param>
-        /// <returns>A vertical layout containing the given components.</returns>
-        public static VerticalLayout Of(params IGuiComponent[] components)
+        public static VerticalLayout<TState> Of<TState>(params IGuiComponent<TState>[] components)
         {
             return new(components.ToImmutableList());
         }
 
+        /// <summary>
+        /// Creates a new vertical layout containing the given components.
+        /// </summary>
+        /// <param name="components">The components in the layout.</param>
+        public static VerticalLayout<TState> Of<TState>(
+            IEnumerable<IGuiComponent<TState>> components
+        )
+        {
+            return new(components.ToImmutableList());
+        }
+
+        /// <summary>
+        /// Creates a new vertical layout containing the given components.
+        /// </summary>
+        /// <param name="addComponents">A callback which adds the components.</param>
+        /// <returns>The vertical layout.</returns>
+        public static VerticalLayout<WrappedComponent.State> Build(Action<Builder> addComponents)
+        {
+            var builder = new Builder();
+            addComponents(builder);
+            return builder.Build();
+        }
+
+        /// <summary>
+        /// A vertical layout builder.
+        /// </summary>
+        public class Builder : ILayoutBuilder<WrappedComponent.State,
+            VerticalLayout<WrappedComponent.State>>
+        {
+            private readonly List<IGuiComponent<WrappedComponent.State>> components;
+
+            /// <summary>
+            /// Creates a new vertical layout builder.
+            /// </summary>
+            public Builder()
+            {
+                this.components = new();
+            }
+
+            /// <summary>
+            /// Adds a new component to this layout.
+            /// </summary>
+            /// <param name="component">The component to add.</param>
+            public void Add(IGuiComponent<WrappedComponent.State> component)
+            {
+                this.components.Add(component);
+            }
+
+            /// <summary>
+            /// Adds a new component to this layout.
+            /// </summary>
+            /// <param name="component">The component to add.</param>
+            public void Add<TState>(IGuiComponent<TState> component)
+            {
+                this.components.Add(component.Wrapped());
+            }
+
+            /// <summary>
+            /// Builds the layout from this builder.
+            /// </summary>
+            /// <returns>The vertical layout.</returns>
+            public VerticalLayout<WrappedComponent.State> Build()
+            {
+                return VerticalLayout.Of(this.components);
+            }
+        }
+    }
+
+    /// <summary>
+    /// A vertical layout container. Components are rendered vertically along a single column. To
+    /// create a layout with different types of components, see <see cref="WrappedComponent"/>.
+    /// </summary>
+    /// <typeparam name="TState">The type of the inner components' states.</typeparam>
+    public class VerticalLayout<TState> : IGuiComponent<VerticalLayout<TState>.State>
+    {
+        /// <summary>The components in this layout.</summary>
+        public ImmutableList<IGuiComponent<TState>> Components { get; init; }
+
+        /// <summary>
+        /// Creates a new vertical layout containing the given components.
+        /// </summary>
+        /// <param name="components">The components in this layout.</param>
+        public VerticalLayout(ImmutableList<IGuiComponent<TState>> components)
+        {
+            this.Components = components ?? throw new ArgumentNullException(nameof(components));
+        }
+
         /// <inheritdoc />
-        public override GuiConstraints Constraints =>
-            this.Components.Aggregate(
+        public GuiConstraints GetConstraints()
+        {
+            return this.Components.Aggregate(
                 new GuiConstraints {MaxSize = new(null, 0)},
-                (prev, component) => new()
+                (prev, component) =>
                 {
-                    MinSize = new(
-                        Math.Max(prev.MinSize.Width, component.Constraints.MinSize.Width),
-                        prev.MinSize.Height + component.Constraints.MinSize.Height
-                    ),
-                    MaxSize = new(
-                        (prev.MaxSize.Width, component.Constraints.MaxSize.Width) switch
-                        {
-                            (null, var w) => w,
-                            (var w, null) => w,
-                            ({ } w1, { } w2) => Math.Min(w1, w2),
-                        },
-                        (prev.MaxSize.Height, component.Constraints.MaxSize.Height) switch
-                        {
-                            (null, _) => null,
-                            (_, null) => null,
-                            ({ } h1, { } h2) => h1 + h2,
-                        }
-                    )
+                    var constraints = component.GetConstraints();
+                    return new()
+                    {
+                        MinSize = new(
+                            Math.Max(prev.MinSize.Width, constraints.MinSize.Width),
+                            prev.MinSize.Height + constraints.MinSize.Height
+                        ),
+                        MaxSize = new(
+                            (prev.MaxSize.Width, constraints.MaxSize.Width) switch
+                            {
+                                (null, var w) => w,
+                                (var w, null) => w,
+                                ({ } w1, { } w2) => Math.Min(w1, w2),
+                            },
+                            (prev.MaxSize.Height, constraints.MaxSize.Height) switch
+                            {
+                                (null, _) => null,
+                                (_, null) => null,
+                                ({ } h1, { } h2) => h1 + h2,
+                            }
+                        )
+                    };
                 }
             );
+        }
 
-        /// <inheritdoc />
-        public override void CalculateLayouts(Rectangle bounds, List<ComponentLayout> layouts)
+        private IEnumerable<(IGuiComponent<TState> Component, Rectangle Bounds)> CalculateLayouts(
+            Rectangle bounds
+        )
         {
-            base.CalculateLayouts(bounds, layouts);
-
             // Get excess vertical space
             var sizedComponents = this.Components.Select(
-                    component => new SizedComponent(component, component.Constraints)
+                    component => new SizedComponent(component, component.GetConstraints())
                 )
                 .ToList();
             var excessHeight = sizedComponents.Aggregate(
@@ -105,10 +196,7 @@ namespace TehPers.Core.Api.Gui
                 var height = (int)Math.Ceiling(
                     sizedComponent.MinHeight + sizedComponent.AdditionalHeight
                 );
-                sizedComponent.Component.CalculateLayouts(
-                    new(bounds.X, bounds.Y, width, height),
-                    layouts
-                );
+                yield return (sizedComponent.Component, new(bounds.X, bounds.Y, width, height));
 
                 // Update remaining area
                 bounds = new(
@@ -120,41 +208,92 @@ namespace TehPers.Core.Api.Gui
             }
         }
 
+
         /// <inheritdoc />
-        public override bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        )
+        public State Initialize(Rectangle bounds)
         {
-            // Update all children
-            var changed = false;
-            var builder = this.Components.ToBuilder();
-            for (var i = 0; i < this.Components.Count; i++)
+            return new(
+                bounds,
+                this.CalculateLayouts(bounds)
+                    .ToImmutableDictionary(
+                        item => item.Component,
+                        item => item.Component.Initialize(item.Bounds)
+                    )
+            );
+        }
+
+        /// <inheritdoc />
+        public State Reposition(State state, Rectangle bounds)
+        {
+            return new(
+                bounds,
+                this.CalculateLayouts(bounds)
+                    .ToImmutableDictionary(
+                        item => item.Component,
+                        item => state.InnerStates.TryGetValue(item.Component, out var s)
+                            ? item.Component.Reposition(s, item.Bounds)
+                            : item.Component.Initialize(item.Bounds)
+                    )
+            );
+        }
+
+        /// <inheritdoc />
+        public void Draw(SpriteBatch batch, State state)
+        {
+            // Draw each child
+            foreach (var component in this.Components)
             {
-                if (!this.Components[i].Update(e, componentBounds, out var newChild))
+                // Ignore uninitialized components
+                if (!state.InnerStates.TryGetValue(component, out var innerState))
+                {
+                    continue;
+                }
+
+                component.Draw(batch, innerState);
+            }
+        }
+
+        /// <inheritdoc />
+        public bool Update(GuiEvent e, State state, [NotNullWhen(true)] out State? nextState)
+        {
+            var changed = false;
+
+            // Make sure each child is initialized
+            var needsReposition =
+                this.Components.Any(component => !state.InnerStates.ContainsKey(component));
+            if (needsReposition)
+            {
+                state = this.Reposition(state, state.Bounds);
+                changed = true;
+            }
+
+            // Update all children
+            var builder = state.InnerStates.ToBuilder();
+            foreach (var component in this.Components)
+            {
+                if (!component.Update(e, state.InnerStates[component], out var nextInnerState))
                 {
                     continue;
                 }
 
                 changed = true;
-                builder[i] = newChild;
+                builder[component] = nextInnerState;
             }
 
             // Check if any children changed
             if (changed)
             {
-                newComponent = this with {Components = builder.ToImmutable()};
+                nextState = new(state.Bounds, builder.ToImmutable());
                 return true;
             }
 
-            newComponent = default;
+            nextState = default;
             return false;
         }
 
         private class SizedComponent
         {
-            public IGuiComponent Component { get; }
+            public IGuiComponent<TState> Component { get; }
             public GuiConstraints Constraints { get; }
             public float AdditionalHeight { get; set; }
 
@@ -166,11 +305,33 @@ namespace TehPers.Core.Api.Gui
                 { } maxHeight => maxHeight - this.Constraints.MinSize.Height - this.AdditionalHeight
             };
 
-            public SizedComponent(IGuiComponent component, GuiConstraints constraints)
+            public SizedComponent(IGuiComponent<TState> component, GuiConstraints constraints)
             {
                 this.Component = component;
                 this.Constraints = constraints;
                 this.AdditionalHeight = 0;
+            }
+        }
+
+        /// <summary>
+        /// The state of a <see cref="VerticalLayout{TState}"/> component.
+        /// </summary>
+        public class State
+        {
+            internal Rectangle Bounds { get; }
+
+            internal ImmutableDictionary<IGuiComponent<TState>, TState> InnerStates
+            {
+                get;
+            }
+
+            internal State(
+                Rectangle bounds,
+                ImmutableDictionary<IGuiComponent<TState>, TState> innerStates
+            )
+            {
+                this.Bounds = bounds;
+                this.InnerStates = innerStates;
             }
         }
     }

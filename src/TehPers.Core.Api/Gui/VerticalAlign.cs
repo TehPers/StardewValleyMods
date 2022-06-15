@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
@@ -11,25 +10,28 @@ namespace TehPers.Core.Api.Gui
     /// </summary>
     /// <param name="Inner">The inner component.</param>
     /// <param name="Alignment">The type of alignment to apply.</param>
-    public record VerticalAlign(IGuiComponent Inner, VerticalAlignment Alignment) : BaseGuiComponent
+    public record VerticalAlign<TState>
+        (IGuiComponent<TState> Inner, VerticalAlignment Alignment) : IGuiComponent<TState>
     {
         /// <inheritdoc />
-        public override GuiConstraints Constraints =>
-            this.Inner.Constraints with
+        public GuiConstraints GetConstraints()
+        {
+            var innerConstraints = this.Inner.GetConstraints();
+            return innerConstraints with
             {
-                MaxSize = this.Inner.Constraints.MaxSize with
+                MaxSize = innerConstraints.MaxSize with
                 {
                     Height = null,
                 },
             };
+        }
 
-        /// <inheritdoc />
-        public override void CalculateLayouts(Rectangle bounds, List<ComponentLayout> layouts)
+        private Rectangle GetInnerBounds(Rectangle bounds)
         {
-            base.CalculateLayouts(bounds, layouts);
-
             // Calculate inner width
-            var innerHeight = this.Inner.Constraints.MaxSize.Height switch
+            var innerConstraints = this.Inner.GetConstraints();
+            // Calculate inner width
+            var innerHeight = innerConstraints.MaxSize.Height switch
             {
                 null => bounds.Height,
                 { } maxHeight => (int)Math.Ceiling(Math.Min(maxHeight, bounds.Height)),
@@ -47,24 +49,31 @@ namespace TehPers.Core.Api.Gui
             };
 
             // Layout inner component
-            this.Inner.CalculateLayouts(new(bounds.X, y, bounds.Width, innerHeight), layouts);
+            return new(bounds.X, y, bounds.Width, innerHeight);
         }
 
         /// <inheritdoc />
-        public override bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        )
+        public TState Initialize(Rectangle bounds)
         {
-            if (this.Inner.Update(e, componentBounds, out var newInner))
-            {
-                newComponent = this with {Inner = newInner};
-                return true;
-            }
+            return this.Inner.Initialize(this.GetInnerBounds(bounds));
+        }
 
-            newComponent = default;
-            return false;
+        /// <inheritdoc />
+        public TState Reposition(TState state, Rectangle bounds)
+        {
+            return this.Inner.Reposition(state, this.GetInnerBounds(bounds));
+        }
+
+        /// <inheritdoc />
+        public void Draw(SpriteBatch batch, TState state)
+        {
+            this.Inner.Draw(batch, state);
+        }
+
+        /// <inheritdoc />
+        public bool Update(GuiEvent e, TState state, [NotNullWhen(true)] out TState? nextState)
+        {
+            return this.Inner.Update(e, state, out nextState);
         }
     }
 }

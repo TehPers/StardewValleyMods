@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Immutable;
+using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
@@ -7,20 +7,47 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// Empty space in a GUI.
     /// </summary>
-    public record EmptySpace : BaseGuiComponent
+    public record EmptySpace : IGuiComponent<EmptySpace.State>
     {
         /// <inheritdoc />
-        public override GuiConstraints Constraints { get; } = new();
+        public GuiConstraints GetConstraints()
+        {
+            return new();
+        }
 
         /// <inheritdoc />
-        public override bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        )
+        public State Initialize(Rectangle bounds)
         {
-            newComponent = default;
+            return State.Instance;
+        }
+
+        /// <inheritdoc />
+        public State Reposition(State state, Rectangle bounds)
+        {
+            return state;
+        }
+
+        /// <inheritdoc />
+        public void Draw(SpriteBatch batch, State state)
+        {
+        }
+
+        /// <inheritdoc />
+        public bool Update(GuiEvent e, State state, [NotNullWhen(true)] out State? nextState)
+        {
+            nextState = default;
             return false;
+        }
+
+        /// <summary>
+        /// The state of an <see cref="EmptySpace"/> component.
+        /// </summary>
+        public sealed class State
+        {
+            /// <summary>
+            /// An instance of the state.
+            /// </summary>
+            internal static State Instance { get; } = new();
         }
     }
 }

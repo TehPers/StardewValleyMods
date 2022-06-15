@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
@@ -9,28 +8,32 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// Horizontally aligns a component. This removes any maximum width constraint.
     /// </summary>
+    /// <typeparam name="TState">The type of the inner component's state.</typeparam>
     /// <param name="Inner">The inner component.</param>
     /// <param name="Alignment">The type of alignment to apply.</param>
-    public record HorizontalAlign
-        (IGuiComponent Inner, HorizontalAlignment Alignment) : BaseGuiComponent
+    public record HorizontalAlign<TState>(
+        IGuiComponent<TState> Inner,
+        HorizontalAlignment Alignment
+    ) : IGuiComponent<TState>
     {
         /// <inheritdoc />
-        public override GuiConstraints Constraints =>
-            this.Inner.Constraints with
+        public GuiConstraints GetConstraints()
+        {
+            var innerConstraints = this.Inner.GetConstraints();
+            return innerConstraints with
             {
-                MaxSize = this.Inner.Constraints.MaxSize with
+                MaxSize = innerConstraints.MaxSize with
                 {
                     Width = null,
                 },
             };
+        }
 
-        /// <inheritdoc />
-        public override void CalculateLayouts(Rectangle bounds, List<ComponentLayout> layouts)
+        private Rectangle GetInnerBounds(Rectangle bounds)
         {
-            base.CalculateLayouts(bounds, layouts);
-
             // Calculate inner width
-            var innerWidth = this.Inner.Constraints.MaxSize.Width switch
+            var innerConstraints = this.Inner.GetConstraints();
+            var innerWidth = innerConstraints.MaxSize.Width switch
             {
                 null => bounds.Width,
                 { } maxWidth => (int)Math.Ceiling(Math.Min(maxWidth, bounds.Width)),
@@ -48,24 +51,31 @@ namespace TehPers.Core.Api.Gui
             };
 
             // Layout inner component
-            this.Inner.CalculateLayouts(new(x, bounds.Y, innerWidth, bounds.Height), layouts);
+            return new(x, bounds.Y, innerWidth, bounds.Height);
         }
 
         /// <inheritdoc />
-        public override bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        )
+        public TState Initialize(Rectangle bounds)
         {
-            if (this.Inner.Update(e, componentBounds, out var newInner))
-            {
-                newComponent = this with {Inner = newInner};
-                return true;
-            }
+            return this.Inner.Initialize(this.GetInnerBounds(bounds));
+        }
 
-            newComponent = default;
-            return false;
+        /// <inheritdoc />
+        public TState Reposition(TState state, Rectangle bounds)
+        {
+            return this.Inner.Reposition(state, this.GetInnerBounds(bounds));
+        }
+
+        /// <inheritdoc />
+        public void Draw(SpriteBatch batch, TState state)
+        {
+            this.Inner.Draw(batch, state);
+        }
+
+        /// <inheritdoc />
+        public bool Update(GuiEvent e, TState state, [NotNullWhen(true)] out TState? nextState)
+        {
+            return this.Inner.Update(e, state, out nextState);
         }
     }
 }

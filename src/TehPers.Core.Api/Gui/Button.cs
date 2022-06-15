@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿#if FALSE
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Immutable;
@@ -52,3 +53,4 @@ namespace TehPers.Core.Api.Gui
         }
     }
 }
+#endif

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
@@ -8,38 +7,42 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// Shrinks a GUI component to its minimum size.
     /// </summary>
+    /// <typeparam name="TState">The type of the inner component's state.</typeparam>
     /// <param name="Inner">The inner component.</param>
-    public record Shrink(IGuiComponent Inner) : BaseGuiComponent
+    public record Shrink<TState>(IGuiComponent<TState> Inner) : IGuiComponent<TState>
     {
         /// <inheritdoc />
-        public override GuiConstraints Constraints =>
-            this.Inner.Constraints with
-            {
-                MaxSize = new(this.Inner.Constraints.MinSize),
-            };
-
-        /// <inheritdoc />
-        public override void CalculateLayouts(Rectangle bounds, List<ComponentLayout> layouts)
+        public GuiConstraints GetConstraints()
         {
-            base.CalculateLayouts(bounds, layouts);
-            this.Inner.CalculateLayouts(bounds, layouts);
+            var innerConstraints = this.Inner.GetConstraints();
+            return innerConstraints with
+            {
+                MaxSize = new(innerConstraints.MinSize),
+            };
         }
 
         /// <inheritdoc />
-        public override bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        )
+        public TState Initialize(Rectangle bounds)
         {
-            if (this.Inner.Update(e, componentBounds, out var newInner))
-            {
-                newComponent = this with {Inner = newInner};
-                return true;
-            }
+            return this.Inner.Initialize(bounds);
+        }
 
-            newComponent = default;
-            return false;
+        /// <inheritdoc />
+        public TState Reposition(TState state, Rectangle bounds)
+        {
+            return this.Inner.Reposition(state, bounds);
+        }
+
+        /// <inheritdoc />
+        public void Draw(SpriteBatch batch, TState state)
+        {
+            this.Inner.Draw(batch, state);
+        }
+
+        /// <inheritdoc />
+        public bool Update(GuiEvent e, TState state, [NotNullWhen(true)] out TState? nextState)
+        {
+            return this.Inner.Update(e, state, out nextState);
         }
     }
 }

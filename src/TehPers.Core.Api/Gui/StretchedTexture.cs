@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
@@ -10,7 +9,7 @@ namespace TehPers.Core.Api.Gui
     /// Stretches a texture to fill a space.
     /// </summary>
     /// <param name="Texture">The texture to draw.</param>
-    public record StretchedTexture(Texture2D Texture) : BaseGuiComponent
+    public record StretchedTexture(Texture2D Texture) : IGuiComponent<StretchedTexture.State>
     {
         /// <summary>
         /// The source rectangle on the texture.
@@ -45,32 +44,23 @@ namespace TehPers.Core.Api.Gui
         public PartialGuiSize MaxScale { get; init; } = PartialGuiSize.Empty;
 
         /// <inheritdoc />
-        public override GuiConstraints Constraints => StretchedTexture.GetConstraints(
-            this.Texture,
-            this.SourceRectangle,
-            this.MinScale,
-            this.MaxScale
-        );
-
-        private static GuiConstraints GetConstraints(
-            Texture2D texture,
-            Rectangle? sourceRectangle,
-            GuiSize minScale,
-            PartialGuiSize maxScale
-        )
+        public GuiConstraints GetConstraints()
         {
-            var sourceWidth = sourceRectangle?.Width ?? texture.Width;
-            var sourceHeight = sourceRectangle?.Height ?? texture.Height;
+            var sourceWidth = this.SourceRectangle?.Width ?? this.Texture.Width;
+            var sourceHeight = this.SourceRectangle?.Height ?? this.Texture.Height;
             return new()
             {
-                MinSize = new(sourceWidth * minScale.Width, sourceHeight * minScale.Height),
+                MinSize = new(
+                    sourceWidth * this.MinScale.Width,
+                    sourceHeight * this.MinScale.Height
+                ),
                 MaxSize = new(
-                    maxScale.Width switch
+                    this.MaxScale.Width switch
                     {
                         null => null,
                         { } scale => sourceWidth * scale
                     },
-                    maxScale.Height switch
+                    this.MaxScale.Height switch
                     {
                         null => null,
                         { } scale => sourceHeight * scale
@@ -80,27 +70,39 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public override void Draw(SpriteBatch batch, Rectangle bounds)
+        public State Initialize(Rectangle bounds)
+        {
+            return new(bounds);
+        }
+
+        /// <inheritdoc />
+        public State Reposition(State state, Rectangle bounds)
+        {
+            return new(bounds);
+        }
+
+        /// <inheritdoc />
+        public void Draw(SpriteBatch batch, State state)
         {
             // Don't draw if total area is 0
-            if (bounds.Width <= 0 || bounds.Height <= 0)
+            if (state.Bounds.Width <= 0 || state.Bounds.Height <= 0)
             {
                 return;
             }
 
             var width = this.MaxScale.Width switch
             {
-                null => bounds.Width,
+                null => state.Bounds.Width,
                 { } maxScale => Math.Min(
-                    bounds.Width,
+                    state.Bounds.Width,
                     (int)Math.Ceiling(this.Texture.Width * maxScale)
                 ),
             };
             var height = this.MaxScale.Height switch
             {
-                null => bounds.Height,
+                null => state.Bounds.Height,
                 { } maxScale => Math.Min(
-                    bounds.Height,
+                    state.Bounds.Height,
                     (int)Math.Ceiling(this.Texture.Height * maxScale)
                 ),
             };
@@ -108,7 +110,7 @@ namespace TehPers.Core.Api.Gui
             // Draw the stretched sprite
             batch.Draw(
                 this.Texture,
-                new(bounds.X, bounds.Y, width, height),
+                new(state.Bounds.X, state.Bounds.Y, width, height),
                 this.SourceRectangle,
                 this.Color,
                 0,
@@ -119,14 +121,16 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public override bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        )
+        public bool Update(GuiEvent e, State state, [NotNullWhen(true)] out State? nextState)
         {
-            newComponent = default;
+            nextState = default;
             return false;
         }
+
+        /// <summary>
+        /// The state of a <see cref="StretchedTexture"/> component.
+        /// </summary>
+        /// <param name="Bounds"></param>
+        public record State(Rectangle Bounds);
     }
 }

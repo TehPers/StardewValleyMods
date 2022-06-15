@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -8,56 +9,90 @@ using System.Linq;
 namespace TehPers.Core.Api.Gui
 {
     /// <summary>
-    /// A horizontal layout container. Components are rendered horizontally along a single column.
+    /// Utility methods for <see cref="HorizontalLayout{TState}"/>.
     /// </summary>
-    /// <param name="Components">The components in this layout.</param>
-    public record HorizontalLayout(ImmutableList<IGuiComponent> Components) : BaseGuiComponent
+    public static class HorizontalLayout
     {
         /// <summary>
         /// Creates a new horizontal layout containing the given components.
         /// </summary>
         /// <param name="components">The components in the layout.</param>
-        /// <returns>A horizontal layout containing the given components.</returns>
-        public static HorizontalLayout Of(params IGuiComponent[] components)
+        public static HorizontalLayout<TState> Of<TState>(params IGuiComponent<TState>[] components)
         {
             return new(components.ToImmutableList());
         }
 
-        /// <inheritdoc />
-        public override GuiConstraints Constraints =>
-            this.Components.Aggregate(
-            new GuiConstraints {MaxSize = new(0, null)},
-            (prev, component) => new()
-            {
-                MinSize = new(
-                    prev.MinSize.Width + component.Constraints.MinSize.Width,
-                    Math.Max(prev.MinSize.Height, component.Constraints.MinSize.Height)
-                ),
-                MaxSize = new(
-                    (prev.MaxSize.Width, component.Constraints.MaxSize.Width) switch
-                    {
-                        (null, _) => null,
-                        (_, null) => null,
-                        ({ } w1, { } w2) => w1 + w2,
-                    },
-                    (prev.MaxSize.Height, component.Constraints.MaxSize.Height) switch
-                    {
-                        (null, var h) => h,
-                        (var h, null) => h,
-                        ({ } h1, { } h2) => Math.Min(h1, h2),
-                    }
-                )
-            }
-        );
-
-        /// <inheritdoc />
-        public override void CalculateLayouts(Rectangle bounds, List<ComponentLayout> layouts)
+        /// <summary>
+        /// Creates a new horizontal layout containing the given components.
+        /// </summary>
+        /// <param name="components">The components in the layout.</param>
+        public static HorizontalLayout<TState> Of<TState>(
+            IEnumerable<IGuiComponent<TState>> components
+        )
         {
-            base.CalculateLayouts(bounds, layouts);
+            return new(components.ToImmutableList());
+        }
+    }
 
+    /// <summary>
+    /// A horizontal layout container. Components are rendered horizontally along a single row. To
+    /// create a layout with different types of components, see <see cref="WrappedComponent"/>.
+    /// </summary>
+    /// <typeparam name="TState">The type of the inner components' states.</typeparam>
+    public class HorizontalLayout<TState> : IGuiComponent<HorizontalLayout<TState>.State>
+    {
+        /// <summary>The components in this layout.</summary>
+        public ImmutableList<IGuiComponent<TState>> Components { get; init; }
+
+        /// <summary>
+        /// Creates a new horizontal layout containing the given components.
+        /// </summary>
+        /// <param name="components">The components in this layout.</param>
+        public HorizontalLayout(ImmutableList<IGuiComponent<TState>> components)
+        {
+            this.Components = components ?? throw new ArgumentNullException(nameof(components));
+        }
+
+        /// <inheritdoc />
+        public GuiConstraints GetConstraints()
+        {
+            return this.Components.Aggregate(
+                new GuiConstraints {MaxSize = new(0, null)},
+                (prev, component) =>
+                {
+                    var innerConstraints = component.GetConstraints();
+                    return new()
+                    {
+                        MinSize = new(
+                            prev.MinSize.Width + innerConstraints.MinSize.Width,
+                            Math.Max(prev.MinSize.Height, innerConstraints.MinSize.Height)
+                        ),
+                        MaxSize = new(
+                            (prev.MaxSize.Width, innerConstraints.MaxSize.Width) switch
+                            {
+                                (null, _) => null,
+                                (_, null) => null,
+                                ({ } w1, { } w2) => w1 + w2,
+                            },
+                            (prev.MaxSize.Height, innerConstraints.MaxSize.Height) switch
+                            {
+                                (null, var h) => h,
+                                (var h, null) => h,
+                                ({ } h1, { } h2) => Math.Min(h1, h2),
+                            }
+                        )
+                    };
+                }
+            );
+        }
+
+        private IEnumerable<(IGuiComponent<TState> Component, Rectangle Bounds)> CalculateLayouts(
+            Rectangle bounds
+        )
+        {
             // Get excess horizontal space
             var sizedComponents = this.Components.Select(
-                    component => new SizedComponent(component, component.Constraints)
+                    component => new SizedComponent(component, component.GetConstraints())
                 )
                 .ToList();
             var excessWidth = sizedComponents.Aggregate(
@@ -100,10 +135,7 @@ namespace TehPers.Core.Api.Gui
                 var width = (int)Math.Ceiling(
                     sizedComponent.MinWidth + sizedComponent.AdditionalWidth
                 );
-                sizedComponent.Component.CalculateLayouts(
-                    new(bounds.X, bounds.Y, width, height),
-                    layouts
-                );
+                yield return (sizedComponent.Component, new(bounds.X, bounds.Y, width, height));
 
                 // Update remaining area
                 bounds = new(bounds.X + width, bounds.Y, Math.Max(0, bounds.Width - width), height);
@@ -111,40 +143,90 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public override bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        )
+        public State Initialize(Rectangle bounds)
         {
-            // Update all children
-            var changed = false;
-            var builder = this.Components.ToBuilder();
-            for (var i = 0; i < this.Components.Count; i++)
+            return new(
+                bounds,
+                this.CalculateLayouts(bounds)
+                    .ToImmutableDictionary(
+                        item => item.Component,
+                        item => item.Component.Initialize(item.Bounds)
+                    )
+            );
+        }
+
+        /// <inheritdoc />
+        public State Reposition(State state, Rectangle bounds)
+        {
+            return new(
+                bounds,
+                this.CalculateLayouts(bounds)
+                    .ToImmutableDictionary(
+                        item => item.Component,
+                        item => state.InnerStates.TryGetValue(item.Component, out var s)
+                            ? item.Component.Reposition(s, item.Bounds)
+                            : item.Component.Initialize(item.Bounds)
+                    )
+            );
+        }
+
+        /// <inheritdoc />
+        public void Draw(SpriteBatch batch, State state)
+        {
+            // Draw each child
+            foreach (var component in this.Components)
             {
-                if (!this.Components[i].Update(e, componentBounds, out var newChild))
+                // Ignore uninitialized components
+                if (!state.InnerStates.TryGetValue(component, out var innerState))
+                {
+                    continue;
+                }
+
+                component.Draw(batch, innerState);
+            }
+        }
+
+        /// <inheritdoc />
+        public bool Update(GuiEvent e, State state, [NotNullWhen(true)] out State? nextState)
+        {
+            var changed = false;
+
+            // Make sure each child is initialized
+            var needsReposition =
+                this.Components.Any(component => !state.InnerStates.ContainsKey(component));
+            if (needsReposition)
+            {
+                state = this.Reposition(state, state.Bounds);
+                changed = true;
+            }
+
+            // Update all children
+            var builder = state.InnerStates.ToBuilder();
+            foreach (var component in this.Components)
+            {
+                if (!component.Update(e, state.InnerStates[component], out var nextInnerState))
                 {
                     continue;
                 }
 
                 changed = true;
-                builder[i] = newChild;
+                builder[component] = nextInnerState;
             }
 
             // Check if any children changed
             if (changed)
             {
-                newComponent = this with {Components = builder.ToImmutable()};
+                nextState = new(state.Bounds, builder.ToImmutable());
                 return true;
             }
 
-            newComponent = default;
+            nextState = default;
             return false;
         }
 
         private class SizedComponent
         {
-            public IGuiComponent Component { get; }
+            public IGuiComponent<TState> Component { get; }
             public GuiConstraints Constraints { get; }
             public float AdditionalWidth { get; set; }
 
@@ -156,11 +238,33 @@ namespace TehPers.Core.Api.Gui
                 { } maxWidth => maxWidth - this.Constraints.MinSize.Width - this.AdditionalWidth
             };
 
-            public SizedComponent(IGuiComponent component, GuiConstraints constraints)
+            public SizedComponent(IGuiComponent<TState> component, GuiConstraints constraints)
             {
                 this.Component = component;
                 this.Constraints = constraints;
                 this.AdditionalWidth = 0;
+            }
+        }
+
+        /// <summary>
+        /// The state of a <see cref="HorizontalLayout{TState}"/> component.
+        /// </summary>
+        public class State
+        {
+            internal Rectangle Bounds { get; }
+
+            internal ImmutableDictionary<IGuiComponent<TState>, TState> InnerStates
+            {
+                get;
+            }
+
+            internal State(
+                Rectangle bounds,
+                ImmutableDictionary<IGuiComponent<TState>, TState> innerStates
+            )
+            {
+                this.Bounds = bounds;
+                this.InnerStates = innerStates;
             }
         }
     }
