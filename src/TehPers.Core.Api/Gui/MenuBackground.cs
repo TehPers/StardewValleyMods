@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using System.Diagnostics.CodeAnalysis;
+using TehPers.Core.Api.Gui.Layouts;
 
 namespace TehPers.Core.Api.Gui
 {

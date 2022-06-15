@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Layouts
 {
     /// <summary>
     /// Utility methods for <see cref="VerticalLayout{TState}"/>.
@@ -71,21 +71,12 @@ namespace TehPers.Core.Api.Gui
             }
 
             /// <summary>
-            /// Adds a new component to this layout.
-            /// </summary>
-            /// <param name="component">The component to add.</param>
-            public void Add<TState>(IGuiComponent<TState> component)
-            {
-                this.components.Add(component.Wrapped());
-            }
-
-            /// <summary>
             /// Builds the layout from this builder.
             /// </summary>
             /// <returns>The vertical layout.</returns>
             public VerticalLayout<WrappedComponent.State> Build()
             {
-                return VerticalLayout.Of(this.components);
+                return Of(this.components);
             }
         }
     }
@@ -113,7 +104,7 @@ namespace TehPers.Core.Api.Gui
         public GuiConstraints GetConstraints()
         {
             return this.Components.Aggregate(
-                new GuiConstraints {MaxSize = new(null, 0)},
+                new GuiConstraints { MaxSize = new(null, 0) },
                 (prev, component) =>
                 {
                     var constraints = component.GetConstraints();

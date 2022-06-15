@@ -7,6 +7,7 @@ using StardewValley;
 using StardewValley.Tools;
 using System.Collections.Generic;
 using TehPers.Core.Api.Gui;
+using TehPers.Core.Api.Gui.Layouts;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
@@ -102,6 +103,55 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private void RenderFishingHud(object? sender, RenderedHudEventArgs e)
         {
+            var c = VerticalLayout.Build(
+                builder =>
+                {
+                    builder.Add(new EmptySpace());
+                    builder.Add(
+                        HorizontalLayout.Build(
+                                builder =>
+                                {
+                                    builder.Add(
+                                        new Label("start", Game1.smallFont) {Color = Color.Black}
+                                            .WithPadding(96)
+                                    );
+                                    builder.Add(
+                                        new MenuVerticalSeparator(MenuSeparatorConnector.MenuBorder)
+                                    );
+                                    builder.Add(
+                                        new Label("item 1", Game1.smallFont) {Color = Color.Black}
+                                            .WithPadding(64)
+                                            .Aligned(VerticalAlignment.Center)
+                                    );
+                                    builder.Add(
+                                        new Label("item 2", Game1.smallFont) {Color = Color.Black}
+                                            .WithPadding(64)
+                                            .Aligned(VerticalAlignment.Center)
+                                    );
+                                    builder.Add(
+                                        new Label("item 3", Game1.smallFont) {Color = Color.Black}
+                                            .WithPadding(64)
+                                            .Aligned(VerticalAlignment.Center)
+                                    );
+                                    builder.Add(
+                                        new StretchedTexture(Game1.objectSpriteSheet)
+                                            {
+                                                MinScale = new(0, 0)
+                                            }.WithPadding(64)
+                                            .Aligned(VerticalAlignment.Center)
+                                    );
+                                    builder.Add(new EmptySpace());
+                                }
+                            )
+                            .WithBackground(new MenuBackground())
+                    );
+                }
+            );
+            c.Draw(
+                e.SpriteBatch,
+                c.Initialize(new(0, 0, Game1.viewport.Width, Game1.viewport.Height))
+            );
+
             // Check if HUD should be rendered
             var farmer = Game1.player;
             if (!this.hudConfig.ShowFishingHud
@@ -135,6 +185,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
             var content = VerticalLayout.Build(
                 builder =>
                 {
+                    var mapped = builder.Select(c => c.Aligned(HorizontalAlignment.Left));
+                    mapped.Add(new Label("Hello, world!", Game1.smallFont) {Color = Color.Black});
+
                     // Build header
                     builder.VerticalLayout(
                         header =>

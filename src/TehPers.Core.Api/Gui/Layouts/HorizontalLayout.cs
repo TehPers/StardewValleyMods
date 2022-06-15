@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Layouts
 {
     /// <summary>
     /// Utility methods for <see cref="HorizontalLayout{TState}"/>.
@@ -31,6 +31,53 @@ namespace TehPers.Core.Api.Gui
         )
         {
             return new(components.ToImmutableList());
+        }
+
+        /// <summary>
+        /// Creates a new horizontal layout containing the given components.
+        /// </summary>
+        /// <param name="addComponents">A callback which adds the components.</param>
+        /// <returns>The horizontal layout.</returns>
+        public static HorizontalLayout<WrappedComponent.State> Build(Action<Builder> addComponents)
+        {
+            var builder = new Builder();
+            addComponents(builder);
+            return builder.Build();
+        }
+
+        /// <summary>
+        /// A horizontal layout builder.
+        /// </summary>
+        public class Builder : ILayoutBuilder<WrappedComponent.State,
+            HorizontalLayout<WrappedComponent.State>>
+        {
+            private readonly List<IGuiComponent<WrappedComponent.State>> components;
+
+            /// <summary>
+            /// Creates a new horizontal layout builder.
+            /// </summary>
+            public Builder()
+            {
+                this.components = new();
+            }
+
+            /// <summary>
+            /// Adds a new component to this layout.
+            /// </summary>
+            /// <param name="component">The component to add.</param>
+            public void Add(IGuiComponent<WrappedComponent.State> component)
+            {
+                this.components.Add(component);
+            }
+
+            /// <summary>
+            /// Builds the layout from this builder.
+            /// </summary>
+            /// <returns>The horizontal layout.</returns>
+            public HorizontalLayout<WrappedComponent.State> Build()
+            {
+                return Of(this.components);
+            }
         }
     }
 
@@ -57,7 +104,7 @@ namespace TehPers.Core.Api.Gui
         public GuiConstraints GetConstraints()
         {
             return this.Components.Aggregate(
-                new GuiConstraints {MaxSize = new(0, null)},
+                new GuiConstraints { MaxSize = new(0, null) },
                 (prev, component) =>
                 {
                     var innerConstraints = component.GetConstraints();

@@ -1,4 +1,4 @@
-﻿namespace TehPers.Core.Api.Gui
+﻿namespace TehPers.Core.Api.Gui.Layouts
 {
     /// <summary>
     /// A builder for a GUI layout.
