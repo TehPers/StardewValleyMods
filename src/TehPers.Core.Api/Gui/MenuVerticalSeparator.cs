@@ -37,106 +37,105 @@ namespace TehPers.Core.Api.Gui
         )
         {
             return VerticalLayout.Build(
-                    builder =>
+                builder =>
+                {
+                    // Top connector
+                    switch (topConnector)
                     {
-                        // Top connector
-                        switch (topConnector)
-                        {
-                            case MenuSeparatorConnector.PinMenuBorder:
-                                builder.Add(
-                                    new StretchedTexture(Game1.menuTexture)
-                                    {
-                                        MinScale = GuiSize.One,
-                                        MaxScale = PartialGuiSize.One,
-                                        SourceRectangle = new(64, 0, 64, 64),
-                                    }
-                                );
-                                break;
-                            case MenuSeparatorConnector.MenuBorder:
-                                builder.Add(
-                                    new StretchedTexture(Game1.menuTexture)
-                                    {
-                                        MinScale = GuiSize.One,
-                                        MaxScale = PartialGuiSize.One,
-                                        SourceRectangle = new(0, 704, 64, 64),
-                                    }
-                                );
-                                break;
-                            case MenuSeparatorConnector.Separator:
-                                builder.Add(
-                                    new StretchedTexture(Game1.menuTexture)
-                                    {
-                                        MinScale = GuiSize.One,
-                                        MaxScale = PartialGuiSize.One,
-                                        SourceRectangle = new(192, 896, 64, 64),
-                                    }
-                                );
-                                break;
-                            case MenuSeparatorConnector.None:
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(
-                                    nameof(topConnector),
-                                    topConnector,
-                                    null
-                                );
-                        }
-
-                        // Body
-                        builder.Add(
-                            new StretchedTexture(Game1.menuTexture)
-                            {
-                                MinScale = GuiSize.One,
-                                MaxScale = new(1, null),
-                                SourceRectangle = new(64, 64, 64, 64),
-                            }
-                        );
-
-                        // Bottom connector
-                        switch (bottomConnector)
-                        {
-                            case MenuSeparatorConnector.PinMenuBorder:
-                                builder.Add(
-                                    new StretchedTexture(Game1.menuTexture)
-                                    {
-                                        MinScale = GuiSize.One,
-                                        MaxScale = PartialGuiSize.One,
-                                        SourceRectangle = new(64, 192, 64, 64),
-                                    }
-                                );
-                                break;
-                            case MenuSeparatorConnector.MenuBorder:
-                                builder.Add(
-                                    new StretchedTexture(Game1.menuTexture)
-                                    {
-                                        MinScale = GuiSize.One,
-                                        MaxScale = PartialGuiSize.One,
-                                        SourceRectangle = new(128, 960, 64, 64),
-                                    }
-                                );
-                                break;
-                            case MenuSeparatorConnector.Separator:
-                                builder.Add(
-                                    new StretchedTexture(Game1.menuTexture)
-                                    {
-                                        MinScale = GuiSize.One,
-                                        MaxScale = PartialGuiSize.One,
-                                        SourceRectangle = new(192, 576, 64, 64),
-                                    }
-                                );
-                                break;
-                            case MenuSeparatorConnector.None:
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(
-                                    nameof(bottomConnector),
-                                    bottomConnector,
-                                    null
-                                );
-                        }
+                        case MenuSeparatorConnector.PinMenuBorder:
+                            builder.Add(
+                                new StretchedTexture(Game1.menuTexture)
+                                {
+                                    MinScale = GuiSize.One,
+                                    MaxScale = PartialGuiSize.One,
+                                    SourceRectangle = new(64, 0, 64, 64),
+                                }
+                            );
+                            break;
+                        case MenuSeparatorConnector.MenuBorder:
+                            builder.Add(
+                                new StretchedTexture(Game1.menuTexture)
+                                {
+                                    MinScale = GuiSize.One,
+                                    MaxScale = PartialGuiSize.One,
+                                    SourceRectangle = new(0, 704, 64, 64),
+                                }
+                            );
+                            break;
+                        case MenuSeparatorConnector.Separator:
+                            builder.Add(
+                                new StretchedTexture(Game1.menuTexture)
+                                {
+                                    MinScale = GuiSize.One,
+                                    MaxScale = PartialGuiSize.One,
+                                    SourceRectangle = new(192, 896, 64, 64),
+                                }
+                            );
+                            break;
+                        case MenuSeparatorConnector.None:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(
+                                nameof(topConnector),
+                                topConnector,
+                                null
+                            );
                     }
-                )
-                .IgnoreResponse();
+
+                    // Body
+                    builder.Add(
+                        new StretchedTexture(Game1.menuTexture)
+                        {
+                            MinScale = GuiSize.One,
+                            MaxScale = new(1, null),
+                            SourceRectangle = new(64, 64, 64, 64),
+                        }
+                    );
+
+                    // Bottom connector
+                    switch (bottomConnector)
+                    {
+                        case MenuSeparatorConnector.PinMenuBorder:
+                            builder.Add(
+                                new StretchedTexture(Game1.menuTexture)
+                                {
+                                    MinScale = GuiSize.One,
+                                    MaxScale = PartialGuiSize.One,
+                                    SourceRectangle = new(64, 192, 64, 64),
+                                }
+                            );
+                            break;
+                        case MenuSeparatorConnector.MenuBorder:
+                            builder.Add(
+                                new StretchedTexture(Game1.menuTexture)
+                                {
+                                    MinScale = GuiSize.One,
+                                    MaxScale = PartialGuiSize.One,
+                                    SourceRectangle = new(128, 960, 64, 64),
+                                }
+                            );
+                            break;
+                        case MenuSeparatorConnector.Separator:
+                            builder.Add(
+                                new StretchedTexture(Game1.menuTexture)
+                                {
+                                    MinScale = GuiSize.One,
+                                    MaxScale = PartialGuiSize.One,
+                                    SourceRectangle = new(192, 576, 64, 64),
+                                }
+                            );
+                            break;
+                        case MenuSeparatorConnector.None:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(
+                                nameof(bottomConnector),
+                                bottomConnector,
+                                null
+                            );
+                    }
+                }
+            );
         }
     }
 }

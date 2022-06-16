@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace TehPers.Core.Api.Gui.Layouts
 {
@@ -9,78 +8,95 @@ namespace TehPers.Core.Api.Gui.Layouts
     public static class LayoutBuilder
     {
         /// <summary>
-        /// Adds a new component to this layout.
+        /// Adds a nested vertical layout to this layout.
         /// </summary>
-        /// <param name="layout">The layout builder.</param>
-        /// <param name="component">The component to add.</param>
-        /// <typeparam name="TResponse">The type of the component's response.</typeparam>
-        /// <typeparam name="TLayout">The type of the resulting layout.</typeparam>
-        public static void Add<TResponse, TLayout>(
-            this ILayoutBuilder<Unit, TLayout> layout,
-            IGuiComponent<TResponse> component
+        /// <param name="builder">The outer layout builder.</param>
+        /// <param name="addComponents">The components to add to the inner layout.</param>
+        public static void Vertical(
+            this ILayoutBuilder builder,
+            Action<ILayoutBuilder> addComponents
         )
         {
-            layout.Add(component.IgnoreResponse());
+            builder.Add(VerticalLayout.Build(addComponents));
         }
 
         /// <summary>
         /// Adds a nested vertical layout to this layout.
         /// </summary>
-        /// <typeparam name="TLayout">The type of the outer layout.</typeparam>
-        /// <param name="layout">The outer layout.</param>
+        /// <param name="builder">The outer layout builder.</param>
+        /// <param name="defaultAlignment">The default row alignment.</param>
         /// <param name="addComponents">The components to add to the inner layout.</param>
-        public static void Vertical<TLayout>(
-            this ILayoutBuilder<Unit, TLayout> layout,
-            Action<ILayoutBuilder<Unit, VerticalLayout<Unit>>> addComponents
+        public static void Vertical(
+            this ILayoutBuilder builder,
+            HorizontalAlignment defaultAlignment,
+            Action<ILayoutBuilder> addComponents
         )
         {
-            layout.Add(VerticalLayout.Build(addComponents));
-        }
-
-        /// <summary>
-        /// Adds a nested vertical layout to this layout.
-        /// </summary>
-        /// <typeparam name="TResponse">The type of the inner layout's components' responses.</typeparam>
-        /// <typeparam name="TLayout">The type of the outer layout.</typeparam>
-        /// <param name="layout">The outer layout.</param>
-        /// <param name="addComponents">The components to add to the inner layout.</param>
-        public static void Vertical<TResponse, TLayout>(
-            this ILayoutBuilder<IEnumerable<VerticalLayout<TResponse>.ResponseItem>, TLayout>
-                layout,
-            Action<ILayoutBuilder<TResponse, VerticalLayout<TResponse>>> addComponents
-        )
-        {
-            layout.Add(VerticalLayout.Build(addComponents));
+            builder.Add(VerticalLayout.Build(addComponents, defaultAlignment));
         }
 
         /// <summary>
         /// Adds a nested horizontal layout to this layout.
         /// </summary>
-        /// <typeparam name="TLayout">The type of the outer layout.</typeparam>
-        /// <param name="layout">The outer layout.</param>
+        /// <param name="builder">The outer layout builder.</param>
         /// <param name="addComponents">The components to add to the inner layout.</param>
-        public static void Horizontal<TLayout>(
-            this ILayoutBuilder<Unit, TLayout> layout,
-            Action<ILayoutBuilder<Unit, HorizontalLayout<Unit>>> addComponents
+        public static void Horizontal(
+            this ILayoutBuilder builder,
+            Action<ILayoutBuilder> addComponents
         )
         {
-            layout.Add(HorizontalLayout.Build(addComponents));
+            builder.Add(HorizontalLayout.Build(addComponents));
         }
 
         /// <summary>
         /// Adds a nested horizontal layout to this layout.
         /// </summary>
-        /// <typeparam name="TResponse">The type of the inner layout's components' responses.</typeparam>
-        /// <typeparam name="TLayout">The type of the outer layout.</typeparam>
-        /// <param name="layout">The outer layout.</param>
+        /// <param name="builder">The outer layout builder.</param>
+        /// <param name="defaultAlignment">The default column alignment.</param>
         /// <param name="addComponents">The components to add to the inner layout.</param>
-        public static void Horizontal<TResponse, TLayout>(
-            this ILayoutBuilder<IEnumerable<HorizontalLayout<TResponse>.ResponseItem>, TLayout>
-                layout,
-            Action<ILayoutBuilder<TResponse, HorizontalLayout<TResponse>>> addComponents
+        public static void Horizontal(
+            this ILayoutBuilder builder,
+            VerticalAlignment defaultAlignment,
+            Action<ILayoutBuilder> addComponents
         )
         {
-            layout.Add(HorizontalLayout.Build(addComponents));
+            builder.Add(HorizontalLayout.Build(addComponents, defaultAlignment));
+        }
+
+        /// <summary>
+        /// Projects each component added to this layout to a new component.
+        /// </summary>
+        /// <param name="builder">The layout builder.</param>
+        /// <param name="f">A function which projects a component to a new component.</param>
+        /// <returns>The new layout builder.</returns>
+        public static ILayoutBuilder Select(
+            this ILayoutBuilder builder,
+            Func<IGuiComponent, IGuiComponent> f
+        )
+        {
+            return new MappedLayoutBuilder(builder, f);
+        }
+
+        private class MappedLayoutBuilder : ILayoutBuilder
+        {
+            private readonly ILayoutBuilder inner;
+            private readonly Func<IGuiComponent, IGuiComponent> f;
+
+            public MappedLayoutBuilder(ILayoutBuilder inner, Func<IGuiComponent, IGuiComponent> f)
+            {
+                this.inner = inner;
+                this.f = f;
+            }
+
+            public void Add(IGuiComponent component)
+            {
+                this.inner.Add(this.f(component));
+            }
+
+            public IGuiComponent Build()
+            {
+                return this.inner.Build();
+            }
         }
     }
 }

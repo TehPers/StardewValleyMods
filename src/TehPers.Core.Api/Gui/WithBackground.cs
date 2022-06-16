@@ -6,14 +6,9 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// Draws a component with a background.
     /// </summary>
-    /// <typeparam name="TFgResponse">The type of the foreground component's response.</typeparam>
-    /// <typeparam name="TBgResponse">The type of the background component's response.</typeparam>
     /// <param name="Foreground">The foreground component.</param>
     /// <param name="Background">The background component.</param>
-    public record WithBackground<TFgResponse, TBgResponse>(
-        IGuiComponent<TFgResponse> Foreground,
-        IGuiComponent<TBgResponse> Background
-    ) : IGuiComponent<WithBackground<TFgResponse, TBgResponse>.Response>
+    public record WithBackground(IGuiComponent Foreground, IGuiComponent Background) : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
@@ -45,18 +40,10 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public Response Handle(GuiEvent e, Rectangle bounds)
+        public void Handle(GuiEvent e, Rectangle bounds)
         {
-            var bg = this.Background.Handle(e, bounds);
-            var fg = this.Foreground.Handle(e, bounds);
-            return new(fg, bg);
+            this.Background.Handle(e, bounds);
+            this.Foreground.Handle(e, bounds);
         }
-
-        /// <summary>
-        /// The response from a <see cref="WithBackground{TFgState,TBgState}"/> component.
-        /// </summary>
-        /// <param name="Foreground">The foreground response.</param>
-        /// <param name="Background">The background response.</param>
-        public record Response(TFgResponse Foreground, TBgResponse Background);
     }
 }

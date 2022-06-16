@@ -6,13 +6,12 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// Horizontally aligns a component. This removes any maximum width constraint.
     /// </summary>
-    /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
     /// <param name="Inner">The inner component.</param>
     /// <param name="Alignment">The type of alignment to apply.</param>
-    public record HorizontalAlign<TResponse>(
-        IGuiComponent<TResponse> Inner,
+    public record HorizontalAlign(
+        IGuiComponent Inner,
         HorizontalAlignment Alignment
-    ) : IGuiComponent<TResponse>
+    ) : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
@@ -28,9 +27,9 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public TResponse Handle(GuiEvent e, Rectangle bounds)
+        public void Handle(GuiEvent e, Rectangle bounds)
         {
-            return this.Inner.Handle(e, this.GetInnerBounds(bounds));
+            this.Inner.Handle(e, this.GetInnerBounds(bounds));
         }
 
         private Rectangle GetInnerBounds(Rectangle bounds)

@@ -6,19 +6,18 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// Adds padding to a component.
     /// </summary>
-    /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
     /// <param name="Inner">The inner component.</param>
     /// <param name="Left">Padding to add to the left side.</param>
     /// <param name="Right">Padding to add to the right side.</param>
     /// <param name="Top">Padding to add to the top.</param>
     /// <param name="Bottom">Padding to add to the bottom.</param>
-    public record WithPadding<TResponse>(
-        IGuiComponent<TResponse> Inner,
+    public record WithPadding(
+        IGuiComponent Inner,
         float Left,
         float Right,
         float Top,
         float Bottom
-    ) : IGuiComponent<TResponse>
+    ) : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
@@ -46,9 +45,9 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public TResponse Handle(GuiEvent e, Rectangle bounds)
+        public void Handle(GuiEvent e, Rectangle bounds)
         {
-            return this.Inner.Handle(e, this.GetInnerBounds(bounds));
+            this.Inner.Handle(e, this.GetInnerBounds(bounds));
         }
 
         private Rectangle GetInnerBounds(Rectangle bounds)

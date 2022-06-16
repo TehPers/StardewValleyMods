@@ -19,26 +19,25 @@ namespace TehPers.Core.Api.Gui
         private static IGuiComponent CreateInner()
         {
             return HorizontalLayout.Of(
-                    new StretchedTexture(Game1.menuTexture)
-                    {
-                        MinScale = GuiSize.One,
-                        MaxScale = PartialGuiSize.One,
-                        SourceRectangle = new(0, 64, 64, 64),
-                    },
-                    new StretchedTexture(Game1.menuTexture)
-                    {
-                        MinScale = GuiSize.One,
-                        MaxScale = new(null, 1),
-                        SourceRectangle = new(128, 64, 64, 64),
-                    },
-                    new StretchedTexture(Game1.menuTexture)
-                    {
-                        MinScale = GuiSize.One,
-                        MaxScale = PartialGuiSize.One,
-                        SourceRectangle = new(192, 64, 64, 64),
-                    }
-                )
-                .IgnoreResponse();
+                new StretchedTexture(Game1.menuTexture)
+                {
+                    MinScale = GuiSize.One,
+                    MaxScale = PartialGuiSize.One,
+                    SourceRectangle = new(0, 64, 64, 64),
+                },
+                new StretchedTexture(Game1.menuTexture)
+                {
+                    MinScale = GuiSize.One,
+                    MaxScale = new(null, 1),
+                    SourceRectangle = new(128, 64, 64, 64),
+                },
+                new StretchedTexture(Game1.menuTexture)
+                {
+                    MinScale = GuiSize.One,
+                    MaxScale = PartialGuiSize.One,
+                    SourceRectangle = new(192, 64, 64, 64),
+                }
+            );
         }
     }
 }

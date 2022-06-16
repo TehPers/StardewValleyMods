@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -6,7 +7,8 @@ namespace TehPers.Core.Api.Gui
     /// A button that can be clicked.
     /// </summary>
     /// <param name="Label">The button label component.</param>
-    public record Button(IGuiComponent<Unit> Label) : IGuiComponent<Button.Response>
+    /// <param name="OnClick">The action to perform when the button is clicked.</param>
+    public record Button(IGuiComponent Label, Action<ClickType> OnClick) : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
@@ -15,30 +17,12 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public Response Handle(GuiEvent e, Rectangle bounds)
+        public void Handle(GuiEvent e, Rectangle bounds)
         {
             this.Label.Handle(e, bounds);
-            return new(e.ClickType(bounds));
-        }
-
-        /// <summary>
-        /// A response from a <see cref="Button"/> component.
-        /// </summary>
-        public class Response
-        {
-            /// <summary>
-            /// The type of click that the button received, if any.
-            /// </summary>
-            public ClickType? ClickType { get; }
-
-            /// <summary>
-            /// Whether the button was clicked.
-            /// </summary>
-            public bool Clicked => this.ClickType is not null;
-
-            internal Response(ClickType? clickType)
+            if (e.ClickType(bounds) is { } clickType)
             {
-                this.ClickType = clickType;
+                this.OnClick(clickType);
             }
         }
     }

@@ -7,107 +7,10 @@ using System.Linq;
 namespace TehPers.Core.Api.Gui.Layouts
 {
     /// <summary>
-    /// Utility methods for <see cref="HorizontalLayout{TState}"/>.
-    /// </summary>
-    public static class HorizontalLayout
-    {
-        /// <summary>
-        /// Creates a new horizontal layout containing the given components.
-        /// </summary>
-        /// <param name="components">The components in the layout.</param>
-        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
-        /// <returns>The horizontal layout.</returns>
-        public static HorizontalLayout<TResponse> Of<TResponse>(
-            params IGuiComponent<TResponse>[] components
-        )
-        {
-            return new(components.ToImmutableArray());
-        }
-
-        /// <summary>
-        /// Creates a new horizontal layout containing the given components.
-        /// </summary>
-        /// <param name="components">The components in the layout.</param>
-        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
-        /// <returns>The horizontal layout.</returns>
-        public static HorizontalLayout<TResponse> Of<TResponse>(
-            IEnumerable<IGuiComponent<TResponse>> components
-        )
-        {
-            return new(components.ToImmutableArray());
-        }
-
-        /// <summary>
-        /// Creates a new horizontal layout containing the given components.
-        /// </summary>
-        /// <param name="addComponents">A callback which adds the components.</param>
-        /// <returns>The horizontal layout.</returns>
-        public static HorizontalLayout<Unit> Build(
-            Action<ILayoutBuilder<Unit, HorizontalLayout<Unit>>> addComponents
-        )
-        {
-            return HorizontalLayout.Build<Unit>(addComponents);
-        }
-
-        /// <summary>
-        /// Creates a new horizontal layout containing the given components.
-        /// </summary>
-        /// <param name="addComponents">A callback which adds the components.</param>
-        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
-        /// <returns>The horizontal layout.</returns>
-        public static HorizontalLayout<TResponse> Build<TResponse>(
-            Action<ILayoutBuilder<TResponse, HorizontalLayout<TResponse>>> addComponents
-        )
-        {
-            var builder = new Builder<TResponse>();
-            addComponents(builder);
-            return builder.Build();
-        }
-
-        /// <summary>
-        /// A horizontal layout builder.
-        /// </summary>
-        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
-        private class Builder<TResponse> : ILayoutBuilder<TResponse, HorizontalLayout<TResponse>>
-        {
-            private readonly List<IGuiComponent<TResponse>> components;
-
-            /// <summary>
-            /// Creates a new horizontal layout builder.
-            /// </summary>
-            public Builder()
-            {
-                this.components = new();
-            }
-
-            /// <summary>
-            /// Adds a new component to this layout.
-            /// </summary>
-            /// <param name="component">The component to add.</param>
-            public void Add(IGuiComponent<TResponse> component)
-            {
-                this.components.Add(component);
-            }
-
-            /// <summary>
-            /// Builds the layout from this builder.
-            /// </summary>
-            /// <returns>The horizontal layout.</returns>
-            public HorizontalLayout<TResponse> Build()
-            {
-                return new(this.components.ToImmutableArray());
-            }
-        }
-    }
-
-    /// <summary>
     /// A horizontal layout container. Components are rendered horizontally along a single row.
     /// </summary>
     /// <param name="Components">The components in this layout.</param>
-    /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
-    public record HorizontalLayout<TResponse>
-        (ImmutableArray<IGuiComponent<TResponse>> Components) : IGuiComponent<
-            IEnumerable<HorizontalLayout<TResponse>.ResponseItem>>
+    public record HorizontalLayout(ImmutableArray<IGuiComponent> Components) : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
@@ -143,7 +46,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         }
 
         /// <inheritdoc />
-        public IEnumerable<ResponseItem> Handle(GuiEvent e, Rectangle bounds)
+        public void Handle(GuiEvent e, Rectangle bounds)
         {
             // Get excess horizontal space
             var sizedComponents = this.Components.Select(
@@ -177,7 +80,6 @@ namespace TehPers.Core.Api.Gui.Layouts
             }
 
             // Layout components, using up excess space if able
-            var responses = new List<ResponseItem>(this.Components.Length);
             foreach (var sizedComponent in sizedComponents)
             {
                 // Calculate height and y-position
@@ -191,29 +93,52 @@ namespace TehPers.Core.Api.Gui.Layouts
                 var width = (int)Math.Ceiling(
                     sizedComponent.MinWidth + sizedComponent.AdditionalWidth
                 );
-                var response = sizedComponent.Component.Handle(
-                    e,
-                    new(bounds.X, bounds.Y, width, height)
-                );
-                responses.Add(new(sizedComponent.Component, response));
+                sizedComponent.Component.Handle(e, new(bounds.X, bounds.Y, width, height));
 
                 // Update remaining area
                 bounds = new(bounds.X + width, bounds.Y, Math.Max(0, bounds.Width - width), height);
             }
-
-            return responses;
         }
 
         /// <summary>
-        /// The type of response of a <see cref="HorizontalLayout{TResponse}"/>.
+        /// Creates a new horizontal layout containing the given components.
         /// </summary>
-        /// <param name="Component">The component that responded.</param>
-        /// <param name="Response">The component's response.</param>
-        public record ResponseItem(IGuiComponent<TResponse> Component, TResponse Response);
+        /// <param name="components">The components in the layout.</param>
+        /// <returns>The horizontal layout.</returns>
+        public static HorizontalLayout Of(params IGuiComponent[] components)
+        {
+            return new(components.ToImmutableArray());
+        }
+
+        /// <summary>
+        /// Creates a new horizontal layout containing the given components.
+        /// </summary>
+        /// <param name="components">The components in the layout.</param>
+        /// <returns>The horizontal layout.</returns>
+        public static HorizontalLayout Of(IEnumerable<IGuiComponent> components)
+        {
+            return new(components.ToImmutableArray());
+        }
+
+        /// <summary>
+        /// Creates a new horizontal layout containing the given components.
+        /// </summary>
+        /// <param name="addComponents">A callback which adds the components.</param>
+        /// <param name="defaultAlignment">The default column alignment.</param>
+        /// <returns>The horizontal layout.</returns>
+        public static HorizontalLayout Build(
+            Action<ILayoutBuilder> addComponents,
+            VerticalAlignment defaultAlignment = VerticalAlignment.Top
+        )
+        {
+            var builder = new Builder(defaultAlignment);
+            addComponents(builder);
+            return builder.Build();
+        }
 
         private class SizedComponent
         {
-            public IGuiComponent<TResponse> Component { get; }
+            public IGuiComponent Component { get; }
             public GuiConstraints Constraints { get; }
             public float AdditionalWidth { get; set; }
 
@@ -225,7 +150,7 @@ namespace TehPers.Core.Api.Gui.Layouts
                 { } maxWidth => maxWidth - this.Constraints.MinSize.Width - this.AdditionalWidth
             };
 
-            public SizedComponent(IGuiComponent<TResponse> component, GuiConstraints constraints)
+            public SizedComponent(IGuiComponent component, GuiConstraints constraints)
             {
                 this.Component = component;
                 this.Constraints = constraints;
@@ -233,25 +158,30 @@ namespace TehPers.Core.Api.Gui.Layouts
             }
         }
 
-        /// <summary>
-        /// The state of a <see cref="HorizontalLayout{TState}"/> component.
-        /// </summary>
-        public class State
+        private class Builder : ILayoutBuilder
         {
-            internal Rectangle Bounds { get; }
+            private readonly VerticalAlignment defaultAlignment;
+            private readonly List<IGuiComponent> components;
 
-            internal ImmutableDictionary<IGuiComponent<TResponse>, TResponse> InnerStates
+            public Builder(VerticalAlignment defaultAlignment)
             {
-                get;
+                this.defaultAlignment = defaultAlignment;
+                this.components = new();
             }
 
-            internal State(
-                Rectangle bounds,
-                ImmutableDictionary<IGuiComponent<TResponse>, TResponse> innerStates
-            )
+            public void Add(IGuiComponent component)
             {
-                this.Bounds = bounds;
-                this.InnerStates = innerStates;
+                this.components.Add(component.Aligned(this.defaultAlignment));
+            }
+
+            public HorizontalLayout Build()
+            {
+                return new(this.components.ToImmutableArray());
+            }
+
+            IGuiComponent ILayoutBuilder.Build()
+            {
+                return this.Build();
             }
         }
     }

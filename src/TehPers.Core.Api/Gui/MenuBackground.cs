@@ -56,7 +56,7 @@ namespace TehPers.Core.Api.Gui
 
                         // Middle row
                         builder.Add(
-                            HorizontalLayout.Build<Unit>(
+                            HorizontalLayout.Build(
                                 builder =>
                                 {
                                     builder.Add(
@@ -117,8 +117,7 @@ namespace TehPers.Core.Api.Gui
                 .WithBackground(
                     new StretchedTexture(Game1.menuTexture) {SourceRectangle = new(64, 128, 64, 64)}
                         .WithPadding(32)
-                )
-                .IgnoreResponse();
+                );
         }
     }
 }

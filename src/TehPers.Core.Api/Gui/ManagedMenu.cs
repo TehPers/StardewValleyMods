@@ -6,23 +6,8 @@ using System;
 
 namespace TehPers.Core.Api.Gui
 {
-    internal class SimpleManagedMenu : ManagedMenu
-    {
-        private readonly IGuiComponent<Unit> root;
-
-        public SimpleManagedMenu(IGuiComponent<Unit> root)
-        {
-            this.root = root;
-        }
-
-        protected override IGuiComponent<Unit> CreateRoot()
-        {
-            return this.root;
-        }
-    }
-
     /// <summary>
-    /// A fully managed menu that wraps an <see cref="IGuiComponent{TState}"/>.
+    /// A fully managed menu that wraps an <see cref="IGuiComponent"/>.
     /// </summary>
     public abstract class ManagedMenu : IClickableMenu
     {
@@ -30,7 +15,7 @@ namespace TehPers.Core.Api.Gui
         /// Creates the root component.
         /// </summary>
         /// <returns>The root component.</returns>
-        protected abstract IGuiComponent<Unit> CreateRoot();
+        protected abstract IGuiComponent CreateRoot();
 
         private void OnGuiEvent(GuiEvent e)
         {
@@ -45,7 +30,7 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         /// <param name="root">The root component.</param>
         /// <returns>The menu's bounds.</returns>
-        protected virtual Rectangle GetBounds(IGuiComponent<Unit> root)
+        protected virtual Rectangle GetBounds(IGuiComponent root)
         {
             var constraints = root.GetConstraints();
             var width = (int)Math.Ceiling(constraints.MinSize.Width);

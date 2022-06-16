@@ -16,25 +16,46 @@ namespace TehPers.FishingOverhaul.Services.Setup
     // TODO: remove this
     internal class TestMenu : ManagedMenu
     {
-        private string text = "Clicks: ";
+        private string text = "Click me!";
+        private int count = 0;
 
-        protected override IGuiComponent<Unit> CreateRoot()
+        protected override IGuiComponent CreateRoot()
         {
             return VerticalLayout.Build(
                     builder =>
                     {
-                        // TODO: remove responses?
-                        var button = new Button(
-                            new Label("Click me!", Game1.smallFont) {Color = Color.Black}.Aligned(
-                                HorizontalAlignment.Center
-                            )
+                        builder.Add(
+                            new Label(this.text, Game1.smallFont).Aligned(
+                                    HorizontalAlignment.Center
+                                )
+                                .OnClick(
+                                    clickType =>
+                                    {
+                                        this.text += $" <{clickType}>";
+                                        this.count += 1;
+                                    }
+                                )
                         );
-                        builder.Add(button);
-                    }
+                        builder.Horizontal(
+                            row =>
+                            {
+                                row.Add(new Label("You have clicked ", Game1.smallFont));
+                                row.Add(
+                                    new Label(
+                                        this.count.ToString("G"),
+                                        Game1.smallFont,
+                                        color: Color.DarkGreen
+                                    )
+                                );
+                                row.Add(new Label(" times!", Game1.smallFont));
+                            }
+                        );
+                    },
+                    HorizontalAlignment.Center
                 )
                 .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
-                .WithBackground(new MenuBackground())
-                .IgnoreResponse();
+                .WithPadding(64)
+                .WithBackground(new MenuBackground());
         }
     }
 
@@ -70,70 +91,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     return;
                 }
 
-                var component = VerticalLayout.Build(
-                        builder =>
-                        {
-                            builder.Add(
-                                new Label("Hello, world!", Game1.smallFont) {Color = Color.Black}
-                                    .Aligned(HorizontalAlignment.Center)
-                                    .WithPadding(32, 32, 32, 0)
-                            );
-                            builder.Add(
-                                HorizontalLayout.Build(
-                                        builder =>
-                                        {
-                                            builder.Add(
-                                                new Label("This is some text", Game1.smallFont)
-                                                    {
-                                                        Color = Color.Black
-                                                    }.Aligned(
-                                                        HorizontalAlignment.Center,
-                                                        VerticalAlignment.Center
-                                                    )
-                                                    .WithPadding(32, 0)
-                                            );
-                                            builder.Add(
-                                                new MenuVerticalSeparator(
-                                                    MenuSeparatorConnector.Separator
-                                                )
-                                            );
-                                            builder.Add(
-                                                new Label("This is some more text", Game1.smallFont)
-                                                    {
-                                                        Color = Color.Black
-                                                    }.Aligned(
-                                                        HorizontalAlignment.Center,
-                                                        VerticalAlignment.Center
-                                                    )
-                                                    .WithPadding(32, 0)
-                                            );
-                                        }
-                                    )
-                                    .WithBackground(
-                                        VerticalLayout.Build(
-                                            builder =>
-                                            {
-                                                builder.Add(new MenuHorizontalSeparator());
-                                                builder.Add(new EmptySpace());
-                                                builder.Add(new MenuHorizontalSeparator());
-                                            }
-                                        )
-                                    )
-                            );
-                            builder.Add(
-                                new Label(
-                                        "This is some text inside of an inner menu I guess...",
-                                        Game1.smallFont
-                                    ) {Color = Color.Black}
-                                    .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
-                                    .WithPadding(32)
-                                    .WithBackground(new MenuBackground())
-                                    .WithPadding(32)
-                            );
-                        }
-                    )
-                    .WithBackground(new MenuBackground());
-                Game1.activeClickableMenu = component.ToMenu();
+                Game1.activeClickableMenu = new TestMenu();
             };
         }
 

@@ -243,7 +243,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 }
             );
 
-            return component.WithBackground(new MenuBackground()).IgnoreResponse();
+            return component.WithBackground(new MenuBackground());
         }
     }
 }

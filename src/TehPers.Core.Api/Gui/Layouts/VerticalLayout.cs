@@ -7,113 +7,16 @@ using System.Linq;
 namespace TehPers.Core.Api.Gui.Layouts
 {
     /// <summary>
-    /// Utility methods for <see cref="VerticalLayout{TResponse}"/>.
-    /// </summary>
-    public static class VerticalLayout
-    {
-        /// <summary>
-        /// Creates a new vertical layout containing the given components.
-        /// </summary>
-        /// <param name="components">The components in the layout.</param>
-        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
-        /// <returns>The vertical layout.</returns>
-        public static VerticalLayout<TResponse> Of<TResponse>(
-            params IGuiComponent<TResponse>[] components
-        )
-        {
-            return new(components.ToImmutableList());
-        }
-
-        /// <summary>
-        /// Creates a new vertical layout containing the given components.
-        /// </summary>
-        /// <param name="components">The components in the layout.</param>
-        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
-        /// <returns>The vertical layout.</returns>
-        public static VerticalLayout<TResponse> Of<TResponse>(
-            IEnumerable<IGuiComponent<TResponse>> components
-        )
-        {
-            return new(components.ToImmutableList());
-        }
-
-        /// <summary>
-        /// Creates a new vertical layout containing the given components.
-        /// </summary>
-        /// <param name="addComponents">A callback which adds the components.</param>
-        /// <returns>The vertical layout.</returns>
-        public static VerticalLayout<Unit> Build(
-            Action<ILayoutBuilder<Unit, VerticalLayout<Unit>>> addComponents
-        )
-        {
-            return VerticalLayout.Build<Unit>(addComponents);
-        }
-
-        /// <summary>
-        /// Creates a new vertical layout containing the given components.
-        /// </summary>
-        /// <param name="addComponents">A callback which adds the components.</param>
-        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
-        /// <returns>The vertical layout.</returns>
-        public static VerticalLayout<TResponse> Build<TResponse>(
-            Action<ILayoutBuilder<TResponse, VerticalLayout<TResponse>>> addComponents
-        )
-        {
-            var builder = new Builder<TResponse>();
-            addComponents(builder);
-            return builder.Build();
-        }
-
-        /// <summary>
-        /// A vertical layout builder.
-        /// </summary>
-        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
-        private class Builder<TResponse> : ILayoutBuilder<TResponse, VerticalLayout<TResponse>>
-        {
-            private readonly List<IGuiComponent<TResponse>> components;
-
-            /// <summary>
-            /// Creates a new vertical layout builder.
-            /// </summary>
-            public Builder()
-            {
-                this.components = new();
-            }
-
-            /// <summary>
-            /// Adds a new component to this layout.
-            /// </summary>
-            /// <param name="component">The component to add.</param>
-            public void Add(IGuiComponent<TResponse> component)
-            {
-                this.components.Add(component);
-            }
-
-            /// <summary>
-            /// Builds the layout from this builder.
-            /// </summary>
-            /// <returns>The vertical layout.</returns>
-            public VerticalLayout<TResponse> Build()
-            {
-                return new(this.components.ToImmutableArray());
-            }
-        }
-    }
-
-    /// <summary>
     /// A vertical layout container. Components are rendered vertically along a single column.
     /// </summary>
-    /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
     /// <param name="Components">The inner components.</param>
-    public record VerticalLayout<TResponse>
-        (ImmutableArray<IGuiComponent<TResponse>> Components) : IGuiComponent<
-            IEnumerable<VerticalLayout<TResponse>.ResponseItem>>
+    public record VerticalLayout(ImmutableArray<IGuiComponent> Components) : IGuiComponent
     {
         /// <summary>
         /// Creates a new vertical layout containing the given components.
         /// </summary>
         /// <param name="components">The components in the layout.</param>
-        public VerticalLayout(params IGuiComponent<TResponse>[] components)
+        public VerticalLayout(params IGuiComponent[] components)
             : this(components.ToImmutableArray())
         {
         }
@@ -122,7 +25,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// Creates a new vertical layout containing the given components.
         /// </summary>
         /// <param name="components">The components in the layout.</param>
-        public VerticalLayout(IEnumerable<IGuiComponent<TResponse>> components)
+        public VerticalLayout(IEnumerable<IGuiComponent> components)
             : this(components.ToImmutableArray())
         {
         }
@@ -161,7 +64,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         }
 
         /// <inheritdoc />
-        public IEnumerable<ResponseItem> Handle(GuiEvent e, Rectangle bounds)
+        public void Handle(GuiEvent e, Rectangle bounds)
         {
             // Get excess vertical space
             var sizedComponents = this.Components.Select(
@@ -200,7 +103,6 @@ namespace TehPers.Core.Api.Gui.Layouts
             }
 
             // Layout components, using up excess space if able
-            var responses = new List<ResponseItem>(this.Components.Length);
             foreach (var sizedComponent in sizedComponents)
             {
                 // Calculate width and x-position
@@ -214,11 +116,7 @@ namespace TehPers.Core.Api.Gui.Layouts
                 var height = (int)Math.Ceiling(
                     sizedComponent.MinHeight + sizedComponent.AdditionalHeight
                 );
-                var response = sizedComponent.Component.Handle(
-                    e,
-                    new(bounds.X, bounds.Y, width, height)
-                );
-                responses.Add(new(sizedComponent.Component, response));
+                sizedComponent.Component.Handle(e, new(bounds.X, bounds.Y, width, height));
 
                 // Update remaining area
                 bounds = new(
@@ -228,20 +126,47 @@ namespace TehPers.Core.Api.Gui.Layouts
                     Math.Max(0, bounds.Height - height)
                 );
             }
-
-            return responses;
         }
 
         /// <summary>
-        /// The type of response of a <see cref="VerticalLayout{TResponse}"/>.
+        /// Creates a new vertical layout containing the given components.
         /// </summary>
-        /// <param name="Component">The component that responded.</param>
-        /// <param name="Response">The component's response.</param>
-        public record ResponseItem(IGuiComponent<TResponse> Component, TResponse Response);
+        /// <param name="components">The components in the layout.</param>
+        /// <returns>The vertical layout.</returns>
+        public static VerticalLayout Of(params IGuiComponent[] components)
+        {
+            return new(components.ToImmutableList());
+        }
+
+        /// <summary>
+        /// Creates a new vertical layout containing the given components.
+        /// </summary>
+        /// <param name="components">The components in the layout.</param>
+        /// <returns>The vertical layout.</returns>
+        public static VerticalLayout Of(IEnumerable<IGuiComponent> components)
+        {
+            return new(components.ToImmutableList());
+        }
+
+        /// <summary>
+        /// Creates a new vertical layout containing the given components.
+        /// </summary>
+        /// <param name="addComponents">A callback which adds the components.</param>
+        /// <param name="defaultAlignment">The default row alignment.</param>
+        /// <returns>The vertical layout.</returns>
+        public static VerticalLayout Build(
+            Action<ILayoutBuilder> addComponents,
+            HorizontalAlignment defaultAlignment = HorizontalAlignment.Left
+        )
+        {
+            var builder = new Builder(defaultAlignment);
+            addComponents(builder);
+            return builder.Build();
+        }
 
         private class SizedComponent
         {
-            public IGuiComponent<TResponse> Component { get; }
+            public IGuiComponent Component { get; }
             public GuiConstraints Constraints { get; }
             public float AdditionalHeight { get; set; }
 
@@ -253,11 +178,38 @@ namespace TehPers.Core.Api.Gui.Layouts
                 { } maxHeight => maxHeight - this.Constraints.MinSize.Height - this.AdditionalHeight
             };
 
-            public SizedComponent(IGuiComponent<TResponse> component, GuiConstraints constraints)
+            public SizedComponent(IGuiComponent component, GuiConstraints constraints)
             {
                 this.Component = component;
                 this.Constraints = constraints;
                 this.AdditionalHeight = 0;
+            }
+        }
+
+        private class Builder : ILayoutBuilder
+        {
+            private readonly HorizontalAlignment defaultAlignment;
+            private readonly List<IGuiComponent> components;
+
+            public Builder(HorizontalAlignment defaultAlignment)
+            {
+                this.defaultAlignment = defaultAlignment;
+                this.components = new();
+            }
+
+            public void Add(IGuiComponent component)
+            {
+                this.components.Add(component.Aligned(this.defaultAlignment));
+            }
+
+            public VerticalLayout Build()
+            {
+                return new(this.components.ToImmutableArray());
+            }
+
+            IGuiComponent ILayoutBuilder.Build()
+            {
+                return this.Build();
             }
         }
     }

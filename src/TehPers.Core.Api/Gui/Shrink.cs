@@ -5,9 +5,8 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// Shrinks a GUI component to its minimum size.
     /// </summary>
-    /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
     /// <param name="Inner">The inner component.</param>
-    public record Shrink<TResponse>(IGuiComponent<TResponse> Inner) : IGuiComponent<TResponse>
+    public record Shrink(IGuiComponent Inner) : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
@@ -20,9 +19,9 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public TResponse Handle(GuiEvent e, Rectangle bounds)
+        public void Handle(GuiEvent e, Rectangle bounds)
         {
-            return this.Inner.Handle(e, bounds);
+            this.Inner.Handle(e, bounds);
         }
     }
 }

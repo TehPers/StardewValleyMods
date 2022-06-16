@@ -13,7 +13,7 @@ namespace TehPers.Core.Api.Gui
         /// <summary>
         /// The color to tint the text.
         /// </summary>
-        public Color Color { get; init; } = Color.White;
+        public Color Color { get; init; } = Color.Black;
 
         /// <summary>
         /// The scale of the text.
@@ -29,6 +29,31 @@ namespace TehPers.Core.Api.Gui
         /// The layer depth of the text.
         /// </summary>
         public float LayerDepth { get; init; } = 0;
+
+        /// <summary>
+        /// Creates a new <see cref="Label"/> component.
+        /// </summary>
+        /// <param name="text">The text on this label.</param>
+        /// <param name="font">The font to draw this label with.</param>
+        /// <param name="color">The color to tint the text.</param>
+        /// <param name="scale">The scale of the text.</param>
+        /// <param name="spriteEffects">The effects to apply to the font's sprites.</param>
+        /// <param name="layerDepth">The layer depth of the text.</param>
+        public Label(
+            string text,
+            SpriteFont font,
+            Color? color = default,
+            Vector2? scale = default,
+            SpriteEffects? spriteEffects = default,
+            float? layerDepth = default
+        )
+            : this(text, font)
+        {
+            this.Color = color ?? this.Color;
+            this.Scale = scale ?? this.Scale;
+            this.SpriteEffects = spriteEffects ?? this.SpriteEffects;
+            this.LayerDepth = layerDepth ?? this.LayerDepth;
+        }
 
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
