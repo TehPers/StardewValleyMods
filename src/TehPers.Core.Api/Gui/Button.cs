@@ -1,9 +1,4 @@
-﻿#if FALSE
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
+﻿using Microsoft.Xna.Framework;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -11,46 +6,40 @@ namespace TehPers.Core.Api.Gui
     /// A button that can be clicked.
     /// </summary>
     /// <param name="Label">The button label component.</param>
-    public record Button(IGuiComponent Label) : BaseGuiComponent
+    public record Button(IGuiComponent<Unit> Label) : IGuiComponent<Button.Response>
     {
-        /// <summary>
-        /// An action or transformation to apply when this button is clicked.
-        /// </summary>
-        public Func<Button, ClickType, Button?>? OnClick { get; init; }
-
-        private readonly IGuiComponent inner = Label.WithBackground(new EmptySpace());
-
         /// <inheritdoc />
-        public override GuiConstraints Constraints => this.inner.Constraints;
-
-        /// <inheritdoc />
-        public override void Draw(SpriteBatch batch, Rectangle bounds)
+        public GuiConstraints GetConstraints()
         {
+            return this.Label.GetConstraints();
         }
 
         /// <inheritdoc />
-        public override bool Update(
-            GuiEvent e,
-            IImmutableDictionary<IGuiComponent, Rectangle> componentBounds,
-            [NotNullWhen(true)] out IGuiComponent? newComponent
-        )
+        public Response Handle(GuiEvent e, Rectangle bounds)
         {
-            if (componentBounds.TryGetValue(this, out var bounds))
-            {
-                // Click handling
-                if (this.OnClick is { } onClick
-                    && e is GuiEvent.ReceiveClick(var position, var clickType)
-                    && bounds.Contains(position)
-                    && onClick(this, clickType) is { } newButton)
-                {
-                    newComponent = newButton;
-                    return true;
-                }
-            }
+            this.Label.Handle(e, bounds);
+            return new(e.ClickType(bounds));
+        }
 
-            newComponent = default;
-            return false;
+        /// <summary>
+        /// A response from a <see cref="Button"/> component.
+        /// </summary>
+        public class Response
+        {
+            /// <summary>
+            /// The type of click that the button received, if any.
+            /// </summary>
+            public ClickType? ClickType { get; }
+
+            /// <summary>
+            /// Whether the button was clicked.
+            /// </summary>
+            public bool Clicked => this.ClickType is not null;
+
+            internal Response(ClickType? clickType)
+            {
+                this.ClickType = clickType;
+            }
         }
     }
 }
-#endif

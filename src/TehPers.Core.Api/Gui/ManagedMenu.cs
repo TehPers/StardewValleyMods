@@ -6,46 +6,48 @@ using System;
 
 namespace TehPers.Core.Api.Gui
 {
+    internal class SimpleManagedMenu : ManagedMenu
+    {
+        private readonly IGuiComponent<Unit> root;
+
+        public SimpleManagedMenu(IGuiComponent<Unit> root)
+        {
+            this.root = root;
+        }
+
+        protected override IGuiComponent<Unit> CreateRoot()
+        {
+            return this.root;
+        }
+    }
+
     /// <summary>
     /// A fully managed menu that wraps an <see cref="IGuiComponent{TState}"/>.
     /// </summary>
-    public class ManagedMenu<TState> : IClickableMenu
+    public abstract class ManagedMenu : IClickableMenu
     {
-        private readonly Texture2D whitePixel;
-
-        private readonly IGuiComponent<TState> root;
-        private TState rootState;
-
         /// <summary>
-        /// Creates a <see cref="ManagedMenu{TState}"/> from an <see cref="IGuiComponent{TState}"/>.
+        /// Creates the root component.
         /// </summary>
-        /// <param name="root">The root component.</param>
-        public ManagedMenu(IGuiComponent<TState> root)
-        {
-            this.root = root ?? throw new ArgumentNullException(nameof(root));
-
-            this.whitePixel = new(Game1.graphics.GraphicsDevice, 1, 1);
-            this.whitePixel.SetData(new[] {Color.White});
-
-            // Initialize root state
-            var bounds = ManagedMenu<TState>.GetBounds(this.root);
-            this.rootState = this.root.Initialize(bounds);
-        }
+        /// <returns>The root component.</returns>
+        protected abstract IGuiComponent<Unit> CreateRoot();
 
         private void OnGuiEvent(GuiEvent e)
         {
-            if (!this.root.Update(e, this.rootState, out var newState))
-            {
-                return;
-            }
-
-            this.rootState = newState;
-            this.RecalculateLayouts();
+            var root = this.CreateRoot();
+            var bounds = this.GetBounds(root);
+            this.SetBounds(bounds);
+            root.Handle(e, bounds);
         }
 
-        private static Rectangle GetBounds(IGuiComponent<TState> component)
+        /// <summary>
+        /// Caclulates the bounds of the menu.
+        /// </summary>
+        /// <param name="root">The root component.</param>
+        /// <returns>The menu's bounds.</returns>
+        protected virtual Rectangle GetBounds(IGuiComponent<Unit> root)
         {
-            var constraints = component.GetConstraints();
+            var constraints = root.GetConstraints();
             var width = (int)Math.Ceiling(constraints.MinSize.Width);
             var height = (int)Math.Ceiling(constraints.MinSize.Height);
             var x = (Game1.uiViewport.Width - width) / 2;
@@ -59,14 +61,6 @@ namespace TehPers.Core.Api.Gui
             this.yPositionOnScreen = bounds.Y;
             this.width = bounds.Width;
             this.height = bounds.Height;
-        }
-
-        private void RecalculateLayouts()
-        {
-            // Resize from constraints
-            var newBounds = ManagedMenu<TState>.GetBounds(this.root);
-            this.rootState = this.root.Reposition(this.rootState, newBounds);
-            this.SetBounds(newBounds);
         }
 
         /// <inheritdoc />
@@ -90,33 +84,20 @@ namespace TehPers.Core.Api.Gui
             base.receiveRightClick(x, y, playSound);
         }
 
-        private void DrawRect(SpriteBatch batch, Rectangle rect, Color color)
-        {
-            batch.Draw(this.whitePixel, new Rectangle(rect.Left, rect.Top, rect.Width, 2), color);
-            batch.Draw(
-                this.whitePixel,
-                new Rectangle(rect.Left, rect.Bottom - 2, rect.Width, 2),
-                color
-            );
-            batch.Draw(this.whitePixel, new Rectangle(rect.Left, rect.Top, 2, rect.Height), color);
-            batch.Draw(
-                this.whitePixel,
-                new Rectangle(rect.Right - 2, rect.Top, 2, rect.Height),
-                color
-            );
-        }
 
         /// <inheritdoc />
         public override void draw(SpriteBatch batch)
         {
-            // Draw components
-            this.root.Draw(batch, this.rootState);
+            this.OnGuiEvent(new GuiEvent.Draw(batch));
+            this.DrawCursor(batch);
+        }
 
-            // foreach (var layout in this.layouts)
-            // {
-            //     var color = new Color(0f, 0f, 1f, 0.1f);
-            // }
-
+        /// <summary>
+        /// Draws the mouse cursor.
+        /// </summary>
+        /// <param name="batch">The sprite batch to draw with.</param>
+        protected virtual void DrawCursor(SpriteBatch batch)
+        {
             batch.Draw(
                 Game1.mouseCursors,
                 new(Game1.getOldMouseX(), Game1.getOldMouseY()),

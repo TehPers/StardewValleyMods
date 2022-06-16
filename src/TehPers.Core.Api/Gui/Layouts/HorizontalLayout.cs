@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace TehPers.Core.Api.Gui.Layouts
@@ -17,20 +15,26 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// Creates a new horizontal layout containing the given components.
         /// </summary>
         /// <param name="components">The components in the layout.</param>
-        public static HorizontalLayout<TState> Of<TState>(params IGuiComponent<TState>[] components)
+        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
+        /// <returns>The horizontal layout.</returns>
+        public static HorizontalLayout<TResponse> Of<TResponse>(
+            params IGuiComponent<TResponse>[] components
+        )
         {
-            return new(components.ToImmutableList());
+            return new(components.ToImmutableArray());
         }
 
         /// <summary>
         /// Creates a new horizontal layout containing the given components.
         /// </summary>
         /// <param name="components">The components in the layout.</param>
-        public static HorizontalLayout<TState> Of<TState>(
-            IEnumerable<IGuiComponent<TState>> components
+        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
+        /// <returns>The horizontal layout.</returns>
+        public static HorizontalLayout<TResponse> Of<TResponse>(
+            IEnumerable<IGuiComponent<TResponse>> components
         )
         {
-            return new(components.ToImmutableList());
+            return new(components.ToImmutableArray());
         }
 
         /// <summary>
@@ -38,9 +42,24 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// </summary>
         /// <param name="addComponents">A callback which adds the components.</param>
         /// <returns>The horizontal layout.</returns>
-        public static HorizontalLayout<WrappedComponent.State> Build(Action<Builder> addComponents)
+        public static HorizontalLayout<Unit> Build(
+            Action<ILayoutBuilder<Unit, HorizontalLayout<Unit>>> addComponents
+        )
         {
-            var builder = new Builder();
+            return HorizontalLayout.Build<Unit>(addComponents);
+        }
+
+        /// <summary>
+        /// Creates a new horizontal layout containing the given components.
+        /// </summary>
+        /// <param name="addComponents">A callback which adds the components.</param>
+        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
+        /// <returns>The horizontal layout.</returns>
+        public static HorizontalLayout<TResponse> Build<TResponse>(
+            Action<ILayoutBuilder<TResponse, HorizontalLayout<TResponse>>> addComponents
+        )
+        {
+            var builder = new Builder<TResponse>();
             addComponents(builder);
             return builder.Build();
         }
@@ -48,10 +67,10 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// <summary>
         /// A horizontal layout builder.
         /// </summary>
-        public class Builder : ILayoutBuilder<WrappedComponent.State,
-            HorizontalLayout<WrappedComponent.State>>
+        /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
+        private class Builder<TResponse> : ILayoutBuilder<TResponse, HorizontalLayout<TResponse>>
         {
-            private readonly List<IGuiComponent<WrappedComponent.State>> components;
+            private readonly List<IGuiComponent<TResponse>> components;
 
             /// <summary>
             /// Creates a new horizontal layout builder.
@@ -65,7 +84,7 @@ namespace TehPers.Core.Api.Gui.Layouts
             /// Adds a new component to this layout.
             /// </summary>
             /// <param name="component">The component to add.</param>
-            public void Add(IGuiComponent<WrappedComponent.State> component)
+            public void Add(IGuiComponent<TResponse> component)
             {
                 this.components.Add(component);
             }
@@ -74,37 +93,27 @@ namespace TehPers.Core.Api.Gui.Layouts
             /// Builds the layout from this builder.
             /// </summary>
             /// <returns>The horizontal layout.</returns>
-            public HorizontalLayout<WrappedComponent.State> Build()
+            public HorizontalLayout<TResponse> Build()
             {
-                return Of(this.components);
+                return new(this.components.ToImmutableArray());
             }
         }
     }
 
     /// <summary>
-    /// A horizontal layout container. Components are rendered horizontally along a single row. To
-    /// create a layout with different types of components, see <see cref="WrappedComponent"/>.
+    /// A horizontal layout container. Components are rendered horizontally along a single row.
     /// </summary>
-    /// <typeparam name="TState">The type of the inner components' states.</typeparam>
-    public class HorizontalLayout<TState> : IGuiComponent<HorizontalLayout<TState>.State>
+    /// <param name="Components">The components in this layout.</param>
+    /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
+    public record HorizontalLayout<TResponse>
+        (ImmutableArray<IGuiComponent<TResponse>> Components) : IGuiComponent<
+            IEnumerable<HorizontalLayout<TResponse>.ResponseItem>>
     {
-        /// <summary>The components in this layout.</summary>
-        public ImmutableList<IGuiComponent<TState>> Components { get; init; }
-
-        /// <summary>
-        /// Creates a new horizontal layout containing the given components.
-        /// </summary>
-        /// <param name="components">The components in this layout.</param>
-        public HorizontalLayout(ImmutableList<IGuiComponent<TState>> components)
-        {
-            this.Components = components ?? throw new ArgumentNullException(nameof(components));
-        }
-
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
         {
             return this.Components.Aggregate(
-                new GuiConstraints { MaxSize = new(0, null) },
+                new GuiConstraints {MaxSize = new(0, null)},
                 (prev, component) =>
                 {
                     var innerConstraints = component.GetConstraints();
@@ -133,9 +142,8 @@ namespace TehPers.Core.Api.Gui.Layouts
             );
         }
 
-        private IEnumerable<(IGuiComponent<TState> Component, Rectangle Bounds)> CalculateLayouts(
-            Rectangle bounds
-        )
+        /// <inheritdoc />
+        public IEnumerable<ResponseItem> Handle(GuiEvent e, Rectangle bounds)
         {
             // Get excess horizontal space
             var sizedComponents = this.Components.Select(
@@ -169,6 +177,7 @@ namespace TehPers.Core.Api.Gui.Layouts
             }
 
             // Layout components, using up excess space if able
+            var responses = new List<ResponseItem>(this.Components.Length);
             foreach (var sizedComponent in sizedComponents)
             {
                 // Calculate height and y-position
@@ -182,98 +191,29 @@ namespace TehPers.Core.Api.Gui.Layouts
                 var width = (int)Math.Ceiling(
                     sizedComponent.MinWidth + sizedComponent.AdditionalWidth
                 );
-                yield return (sizedComponent.Component, new(bounds.X, bounds.Y, width, height));
+                var response = sizedComponent.Component.Handle(
+                    e,
+                    new(bounds.X, bounds.Y, width, height)
+                );
+                responses.Add(new(sizedComponent.Component, response));
 
                 // Update remaining area
                 bounds = new(bounds.X + width, bounds.Y, Math.Max(0, bounds.Width - width), height);
             }
+
+            return responses;
         }
 
-        /// <inheritdoc />
-        public State Initialize(Rectangle bounds)
-        {
-            return new(
-                bounds,
-                this.CalculateLayouts(bounds)
-                    .ToImmutableDictionary(
-                        item => item.Component,
-                        item => item.Component.Initialize(item.Bounds)
-                    )
-            );
-        }
-
-        /// <inheritdoc />
-        public State Reposition(State state, Rectangle bounds)
-        {
-            return new(
-                bounds,
-                this.CalculateLayouts(bounds)
-                    .ToImmutableDictionary(
-                        item => item.Component,
-                        item => state.InnerStates.TryGetValue(item.Component, out var s)
-                            ? item.Component.Reposition(s, item.Bounds)
-                            : item.Component.Initialize(item.Bounds)
-                    )
-            );
-        }
-
-        /// <inheritdoc />
-        public void Draw(SpriteBatch batch, State state)
-        {
-            // Draw each child
-            foreach (var component in this.Components)
-            {
-                // Ignore uninitialized components
-                if (!state.InnerStates.TryGetValue(component, out var innerState))
-                {
-                    continue;
-                }
-
-                component.Draw(batch, innerState);
-            }
-        }
-
-        /// <inheritdoc />
-        public bool Update(GuiEvent e, State state, [NotNullWhen(true)] out State? nextState)
-        {
-            var changed = false;
-
-            // Make sure each child is initialized
-            var needsReposition =
-                this.Components.Any(component => !state.InnerStates.ContainsKey(component));
-            if (needsReposition)
-            {
-                state = this.Reposition(state, state.Bounds);
-                changed = true;
-            }
-
-            // Update all children
-            var builder = state.InnerStates.ToBuilder();
-            foreach (var component in this.Components)
-            {
-                if (!component.Update(e, state.InnerStates[component], out var nextInnerState))
-                {
-                    continue;
-                }
-
-                changed = true;
-                builder[component] = nextInnerState;
-            }
-
-            // Check if any children changed
-            if (changed)
-            {
-                nextState = new(state.Bounds, builder.ToImmutable());
-                return true;
-            }
-
-            nextState = default;
-            return false;
-        }
+        /// <summary>
+        /// The type of response of a <see cref="HorizontalLayout{TResponse}"/>.
+        /// </summary>
+        /// <param name="Component">The component that responded.</param>
+        /// <param name="Response">The component's response.</param>
+        public record ResponseItem(IGuiComponent<TResponse> Component, TResponse Response);
 
         private class SizedComponent
         {
-            public IGuiComponent<TState> Component { get; }
+            public IGuiComponent<TResponse> Component { get; }
             public GuiConstraints Constraints { get; }
             public float AdditionalWidth { get; set; }
 
@@ -285,7 +225,7 @@ namespace TehPers.Core.Api.Gui.Layouts
                 { } maxWidth => maxWidth - this.Constraints.MinSize.Width - this.AdditionalWidth
             };
 
-            public SizedComponent(IGuiComponent<TState> component, GuiConstraints constraints)
+            public SizedComponent(IGuiComponent<TResponse> component, GuiConstraints constraints)
             {
                 this.Component = component;
                 this.Constraints = constraints;
@@ -300,14 +240,14 @@ namespace TehPers.Core.Api.Gui.Layouts
         {
             internal Rectangle Bounds { get; }
 
-            internal ImmutableDictionary<IGuiComponent<TState>, TState> InnerStates
+            internal ImmutableDictionary<IGuiComponent<TResponse>, TResponse> InnerStates
             {
                 get;
             }
 
             internal State(
                 Rectangle bounds,
-                ImmutableDictionary<IGuiComponent<TState>, TState> innerStates
+                ImmutableDictionary<IGuiComponent<TResponse>, TResponse> innerStates
             )
             {
                 this.Bounds = bounds;

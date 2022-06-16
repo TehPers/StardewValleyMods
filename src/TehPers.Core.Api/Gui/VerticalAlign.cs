@@ -1,17 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
 {
     /// <summary>
     /// Vertically aligns a component. This removes any maximum height constraint.
     /// </summary>
+    /// <typeparam name="TResponse">The type of the inner component's response.</typeparam>
     /// <param name="Inner">The inner component.</param>
     /// <param name="Alignment">The type of alignment to apply.</param>
-    public record VerticalAlign<TState>
-        (IGuiComponent<TState> Inner, VerticalAlignment Alignment) : IGuiComponent<TState>
+    public record VerticalAlign<TResponse>(
+        IGuiComponent<TResponse> Inner,
+        VerticalAlignment Alignment
+    ) : IGuiComponent<TResponse>
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
@@ -24,6 +25,12 @@ namespace TehPers.Core.Api.Gui
                     Height = null,
                 },
             };
+        }
+
+        /// <inheritdoc />
+        public TResponse Handle(GuiEvent e, Rectangle bounds)
+        {
+            return this.Inner.Handle(e, this.GetInnerBounds(bounds));
         }
 
         private Rectangle GetInnerBounds(Rectangle bounds)
@@ -50,30 +57,6 @@ namespace TehPers.Core.Api.Gui
 
             // Layout inner component
             return new(bounds.X, y, bounds.Width, innerHeight);
-        }
-
-        /// <inheritdoc />
-        public TState Initialize(Rectangle bounds)
-        {
-            return this.Inner.Initialize(this.GetInnerBounds(bounds));
-        }
-
-        /// <inheritdoc />
-        public TState Reposition(TState state, Rectangle bounds)
-        {
-            return this.Inner.Reposition(state, this.GetInnerBounds(bounds));
-        }
-
-        /// <inheritdoc />
-        public void Draw(SpriteBatch batch, TState state)
-        {
-            this.Inner.Draw(batch, state);
-        }
-
-        /// <inheritdoc />
-        public bool Update(GuiEvent e, TState state, [NotNullWhen(true)] out TState? nextState)
-        {
-            return this.Inner.Update(e, state, out nextState);
         }
     }
 }

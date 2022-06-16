@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -21,6 +22,12 @@ namespace TehPers.Core.Api.Gui
         /// <param name="Position">The cursor position when receiving the click.</param>
         /// <param name="ClickType">The type of click received.</param>
         public sealed record ReceiveClick(Point Position, ClickType ClickType) : GuiEvent;
+
+        /// <summary>
+        /// The component is being drawn.
+        /// </summary>
+        /// <param name="Batch">The sprite batch to draw with.</param>
+        public sealed record Draw(SpriteBatch Batch) : GuiEvent;
 
         /// <summary>
         /// A custom event.

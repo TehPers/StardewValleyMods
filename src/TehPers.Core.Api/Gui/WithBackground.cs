@@ -1,38 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
 {
     /// <summary>
     /// Draws a component with a background.
     /// </summary>
-    /// <typeparam name="TFgState">The type of the foreground component's state.</typeparam>
-    /// <typeparam name="TBgState">The type of the background component's state.</typeparam>
-    public class
-        WithBackground<TFgState, TBgState> : IGuiComponent<WithBackground<TFgState, TBgState>.State>
+    /// <typeparam name="TFgResponse">The type of the foreground component's response.</typeparam>
+    /// <typeparam name="TBgResponse">The type of the background component's response.</typeparam>
+    /// <param name="Foreground">The foreground component.</param>
+    /// <param name="Background">The background component.</param>
+    public record WithBackground<TFgResponse, TBgResponse>(
+        IGuiComponent<TFgResponse> Foreground,
+        IGuiComponent<TBgResponse> Background
+    ) : IGuiComponent<WithBackground<TFgResponse, TBgResponse>.Response>
     {
-        /// <summary>The inner component.</summary>
-        public IGuiComponent<TFgState> Foreground { get; init; }
-
-        /// <summary>The background component.</summary>
-        public IGuiComponent<TBgState> Background { get; init; }
-
-        /// <summary>
-        /// Draws a component with a background.
-        /// </summary>
-        /// <param name="foreground">The inner component.</param>
-        /// <param name="background">The background component.</param>
-        public WithBackground(
-            IGuiComponent<TFgState> foreground,
-            IGuiComponent<TBgState> background
-        )
-        {
-            this.Foreground = foreground;
-            this.Background = background;
-        }
-
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
         {
@@ -63,55 +45,18 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public State Initialize(Rectangle bounds)
+        public Response Handle(GuiEvent e, Rectangle bounds)
         {
-            return new(this.Foreground.Initialize(bounds), this.Background.Initialize(bounds));
-        }
-
-        /// <inheritdoc />
-        public State Reposition(State state, Rectangle bounds)
-        {
-            return new(
-                this.Foreground.Reposition(state.FgState, bounds),
-                this.Background.Reposition(state.BgState, bounds)
-            );
-        }
-
-        /// <inheritdoc />
-        public bool Update(GuiEvent e, State state, [NotNullWhen(true)] out State? nextState)
-        {
-            var changed = false;
-            nextState = state;
-
-            // Update foreground state
-            if (this.Foreground.Update(e, state.FgState, out var nextFgState))
-            {
-                changed = true;
-                nextState = nextState with {FgState = nextFgState};
-            }
-
-            // Update background state
-            if (this.Background.Update(e, state.BgState, out var nextBgState))
-            {
-                changed = true;
-                nextState = nextState with {BgState = nextBgState};
-            }
-
-            return changed;
-        }
-
-        /// <inheritdoc />
-        public void Draw(SpriteBatch batch, State state)
-        {
-            this.Background.Draw(batch, state.BgState);
-            this.Foreground.Draw(batch, state.FgState);
+            var bg = this.Background.Handle(e, bounds);
+            var fg = this.Foreground.Handle(e, bounds);
+            return new(fg, bg);
         }
 
         /// <summary>
-        /// The state of a <see cref="WithBackground{TFgState,TBgState}"/> component.
+        /// The response from a <see cref="WithBackground{TFgState,TBgState}"/> component.
         /// </summary>
-        /// <param name="FgState">The foreground state.</param>
-        /// <param name="BgState">The background state.</param>
-        public record State(TFgState FgState, TBgState BgState);
+        /// <param name="Foreground">The foreground response.</param>
+        /// <param name="Background">The background response.</param>
+        public record Response(TFgResponse Foreground, TBgResponse Background);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -9,7 +8,7 @@ namespace TehPers.Core.Api.Gui
     /// Stretches a texture to fill a space.
     /// </summary>
     /// <param name="Texture">The texture to draw.</param>
-    public record StretchedTexture(Texture2D Texture) : IGuiComponent<StretchedTexture.State>
+    public record StretchedTexture(Texture2D Texture) : IGuiComponent
     {
         /// <summary>
         /// The source rectangle on the texture.
@@ -70,67 +69,47 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <inheritdoc />
-        public State Initialize(Rectangle bounds)
+        public void Handle(GuiEvent e, Rectangle bounds)
         {
-            return new(bounds);
-        }
+            e.Draw(
+                batch =>
+                {
+                    // Don't draw if total area is 0
+                    if (bounds.Width <= 0 || bounds.Height <= 0)
+                    {
+                        return;
+                    }
 
-        /// <inheritdoc />
-        public State Reposition(State state, Rectangle bounds)
-        {
-            return new(bounds);
-        }
+                    var width = this.MaxScale.Width switch
+                    {
+                        null => bounds.Width,
+                        { } maxScale => Math.Min(
+                            bounds.Width,
+                            (int)Math.Ceiling(this.Texture.Width * maxScale)
+                        ),
+                    };
+                    var height = this.MaxScale.Height switch
+                    {
+                        null => bounds.Height,
+                        { } maxScale => Math.Min(
+                            bounds.Height,
+                            (int)Math.Ceiling(this.Texture.Height * maxScale)
+                        ),
+                    };
 
-        /// <inheritdoc />
-        public void Draw(SpriteBatch batch, State state)
-        {
-            // Don't draw if total area is 0
-            if (state.Bounds.Width <= 0 || state.Bounds.Height <= 0)
-            {
-                return;
-            }
-
-            var width = this.MaxScale.Width switch
-            {
-                null => state.Bounds.Width,
-                { } maxScale => Math.Min(
-                    state.Bounds.Width,
-                    (int)Math.Ceiling(this.Texture.Width * maxScale)
-                ),
-            };
-            var height = this.MaxScale.Height switch
-            {
-                null => state.Bounds.Height,
-                { } maxScale => Math.Min(
-                    state.Bounds.Height,
-                    (int)Math.Ceiling(this.Texture.Height * maxScale)
-                ),
-            };
-
-            // Draw the stretched sprite
-            batch.Draw(
-                this.Texture,
-                new(state.Bounds.X, state.Bounds.Y, width, height),
-                this.SourceRectangle,
-                this.Color,
-                0,
-                Vector2.Zero,
-                this.Effects,
-                this.LayerDepth
+                    // Draw the stretched sprite
+                    batch.Draw(
+                        this.Texture,
+                        new(bounds.X, bounds.Y, width, height),
+                        this.SourceRectangle,
+                        this.Color,
+                        0,
+                        Vector2.Zero,
+                        this.Effects,
+                        this.LayerDepth
+                    );
+                }
             );
         }
-
-        /// <inheritdoc />
-        public bool Update(GuiEvent e, State state, [NotNullWhen(true)] out State? nextState)
-        {
-            nextState = default;
-            return false;
-        }
-
-        /// <summary>
-        /// The state of a <see cref="StretchedTexture"/> component.
-        /// </summary>
-        /// <param name="Bounds"></param>
-        public record State(Rectangle Bounds);
     }
 }
