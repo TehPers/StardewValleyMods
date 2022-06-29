@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.Menus;
 using System;
@@ -9,8 +10,22 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A fully managed menu that wraps an <see cref="IGuiComponent"/>.
     /// </summary>
-    public abstract class ManagedMenu : IClickableMenu
+    public abstract class ManagedMenu : IClickableMenu, IDisposable
     {
+        /// <summary>
+        /// Creates a new managed menu.
+        /// </summary>
+        protected ManagedMenu()
+        {
+            Game1.game1.Window.TextInput += this.WindowOnTextInput;
+        }
+
+        /// <inheritdoc />
+        public virtual void Dispose()
+        {
+            Game1.game1.Window.TextInput -= this.WindowOnTextInput;
+        }
+
         /// <summary>
         /// Creates the root component.
         /// </summary>
@@ -69,6 +84,32 @@ namespace TehPers.Core.Api.Gui
             base.receiveRightClick(x, y, playSound);
         }
 
+        /// <inheritdoc />
+        public override void receiveScrollWheelAction(int direction)
+        {
+            base.receiveScrollWheelAction(direction);
+            this.OnGuiEvent(new GuiEvent.Scroll(direction));
+        }
+
+        private void WindowOnTextInput(object? sender, TextInputEventArgs e)
+        {
+            this.OnGuiEvent(new GuiEvent.TextInput(e.Key, e.Character));
+        }
+
+        /// <inheritdoc />
+        public override void receiveKeyPress(Keys key)
+        {
+            base.receiveKeyPress(key);
+
+            this.OnGuiEvent(new GuiEvent.KeyboardInput(key));
+        }
+
+        /// <inheritdoc />
+        public override void receiveGamePadButton(Buttons b)
+        {
+            base.receiveGamePadButton(b);
+            this.OnGuiEvent(new GuiEvent.GamePadInput(b));
+        }
 
         /// <inheritdoc />
         public override void draw(SpriteBatch batch)

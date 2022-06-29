@@ -1,5 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using StardewModdingAPI;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -22,6 +25,31 @@ namespace TehPers.Core.Api.Gui
         /// <param name="Position">The cursor position when receiving the click.</param>
         /// <param name="ClickType">The type of click received.</param>
         public sealed record ReceiveClick(Point Position, ClickType ClickType) : GuiEvent;
+
+        /// <summary>
+        /// The mouse was scrolled.
+        /// </summary>
+        /// <param name="Direction">The direction and amount the mouse wheel was scrolled.</param>
+        public sealed record Scroll(int Direction) : GuiEvent;
+
+        /// <summary>
+        /// Text was input by the user.
+        /// </summary>
+        /// <param name="Key">The key that was pressed.</param>
+        /// <param name="Character">The character that was input.</param>
+        public sealed record TextInput(Keys Key, char Character) : GuiEvent;
+
+        /// <summary>
+        /// A keyboard key press was received.
+        /// </summary>
+        /// <param name="Key">The key that was pressed.</param>
+        public sealed record KeyboardInput(Keys Key) : GuiEvent;
+
+        /// <summary>
+        /// A game pad button press was received.
+        /// </summary>
+        /// <param name="Button">The button that was pressed.</param>
+        public sealed record GamePadInput(Buttons Button) : GuiEvent;
 
         /// <summary>
         /// The component is being drawn.
