@@ -13,17 +13,29 @@ namespace TehPers.Core.Api.Gui
     public abstract class ManagedMenu : IClickableMenu, IDisposable
     {
         /// <summary>
+        /// Gets the keyboard subscriber, if any.
+        /// </summary>
+        protected IKeyboardSubscriber? KeyboardSubscriber { get; }
+
+        /// <summary>
         /// Creates a new managed menu.
         /// </summary>
-        protected ManagedMenu()
+        /// <param name="handleInput">Whether this menu needs to handle input.</param>
+        protected ManagedMenu(bool handleInput = false)
         {
-            Game1.game1.Window.TextInput += this.WindowOnTextInput;
+            if (handleInput)
+            {
+                this.KeyboardSubscriber = new GuiKeyboardSubscriber(this);
+            }
         }
 
         /// <inheritdoc />
         public virtual void Dispose()
         {
-            Game1.game1.Window.TextInput -= this.WindowOnTextInput;
+            if (this.KeyboardSubscriber is not null)
+            {
+                this.KeyboardSubscriber.Selected = false;
+            }
         }
 
         /// <summary>
@@ -32,7 +44,11 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The root component.</returns>
         protected abstract IGuiComponent CreateRoot();
 
-        private void OnGuiEvent(GuiEvent e)
+        /// <summary>
+        /// Handles a GUI event.
+        /// </summary>
+        /// <param name="e">The event to handle.</param>
+        public virtual void ReceiveEvent(GuiEvent e)
         {
             var root = this.CreateRoot();
             var bounds = this.GetBounds(root);
@@ -66,21 +82,21 @@ namespace TehPers.Core.Api.Gui
         /// <inheritdoc />
         public override void update(GameTime time)
         {
-            this.OnGuiEvent(new GuiEvent.UpdateTick(time));
+            this.ReceiveEvent(new GuiEvent.UpdateTick(time));
             base.update(time);
         }
 
         /// <inheritdoc />
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            this.OnGuiEvent(new GuiEvent.ReceiveClick(new(x, y), ClickType.Left));
+            this.ReceiveEvent(new GuiEvent.ReceiveClick(new(x, y), ClickType.Left));
             base.receiveLeftClick(x, y, playSound);
         }
 
         /// <inheritdoc />
         public override void receiveRightClick(int x, int y, bool playSound = true)
         {
-            this.OnGuiEvent(new GuiEvent.ReceiveClick(new(x, y), ClickType.Right));
+            this.ReceiveEvent(new GuiEvent.ReceiveClick(new(x, y), ClickType.Right));
             base.receiveRightClick(x, y, playSound);
         }
 
@@ -88,33 +104,34 @@ namespace TehPers.Core.Api.Gui
         public override void receiveScrollWheelAction(int direction)
         {
             base.receiveScrollWheelAction(direction);
-            this.OnGuiEvent(new GuiEvent.Scroll(direction));
-        }
-
-        private void WindowOnTextInput(object? sender, TextInputEventArgs e)
-        {
-            this.OnGuiEvent(new GuiEvent.TextInput(e.Key, e.Character));
+            this.ReceiveEvent(new GuiEvent.Scroll(direction));
         }
 
         /// <inheritdoc />
         public override void receiveKeyPress(Keys key)
         {
-            base.receiveKeyPress(key);
+            this.ReceiveEvent(new GuiEvent.KeyboardInput(key));
 
-            this.OnGuiEvent(new GuiEvent.KeyboardInput(key));
+            // Don't exit if this is capturing keyboard input
+            // TODO: configurable?
+            var isExitButton = Game1.options.doesInputListContain(Game1.options.menuButton, key);
+            if (!isExitButton || this.KeyboardSubscriber is not {Selected: true})
+            {
+                base.receiveKeyPress(key);
+            }
         }
 
         /// <inheritdoc />
         public override void receiveGamePadButton(Buttons b)
         {
             base.receiveGamePadButton(b);
-            this.OnGuiEvent(new GuiEvent.GamePadInput(b));
+            this.ReceiveEvent(new GuiEvent.GamePadInput(b));
         }
 
         /// <inheritdoc />
         public override void draw(SpriteBatch batch)
         {
-            this.OnGuiEvent(new GuiEvent.Draw(batch));
+            this.ReceiveEvent(new GuiEvent.Draw(batch));
             this.DrawCursor(batch);
         }
 

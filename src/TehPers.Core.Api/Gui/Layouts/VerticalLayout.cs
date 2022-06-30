@@ -152,9 +152,22 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// Creates a new vertical layout containing the given components.
         /// </summary>
         /// <param name="addComponents">A callback which adds the components.</param>
+        /// <returns>The vertical layout.</returns>
+        public static VerticalLayout Build(Action<ILayoutBuilder> addComponents)
+        {
+            var builder = new Builder(null);
+            addComponents(builder);
+            return builder.Build();
+        }
+
+        /// <summary>
+        /// Creates a new vertical layout containing the given components. The components are
+        /// automatically aligned as they're added to the layout.
+        /// </summary>
+        /// <param name="addComponents">A callback which adds the components.</param>
         /// <param name="defaultAlignment">The default row alignment.</param>
         /// <returns>The vertical layout.</returns>
-        public static VerticalLayout Build(
+        public static VerticalLayout BuildAligned(
             Action<ILayoutBuilder> addComponents,
             HorizontalAlignment defaultAlignment = HorizontalAlignment.Left
         )
@@ -188,10 +201,10 @@ namespace TehPers.Core.Api.Gui.Layouts
 
         private class Builder : ILayoutBuilder
         {
-            private readonly HorizontalAlignment defaultAlignment;
+            private readonly HorizontalAlignment? defaultAlignment;
             private readonly List<IGuiComponent> components;
 
-            public Builder(HorizontalAlignment defaultAlignment)
+            public Builder(HorizontalAlignment? defaultAlignment)
             {
                 this.defaultAlignment = defaultAlignment;
                 this.components = new();
@@ -199,7 +212,12 @@ namespace TehPers.Core.Api.Gui.Layouts
 
             public void Add(IGuiComponent component)
             {
-                this.components.Add(component.Aligned(this.defaultAlignment));
+                if (this.defaultAlignment is { } defaultAlignment)
+                {
+                    component = component.Aligned(defaultAlignment);
+                }
+
+                this.components.Add(component);
             }
 
             public VerticalLayout Build()

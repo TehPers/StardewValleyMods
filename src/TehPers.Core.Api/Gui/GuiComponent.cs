@@ -6,7 +6,7 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// Extension methods for components.
     /// </summary>
-    public static class ComponentExtensions
+    public static class GuiComponent
     {
         /// <summary>
         /// Converts this component to an <see cref="IClickableMenu"/>.

@@ -36,7 +36,7 @@ namespace TehPers.Core.Api.Gui
             MenuSeparatorConnector bottomConnector
         )
         {
-            return VerticalLayout.Build(
+            return VerticalLayout.BuildAligned(
                 builder =>
                 {
                     // Top connector

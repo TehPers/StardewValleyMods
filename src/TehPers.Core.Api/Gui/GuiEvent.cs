@@ -35,9 +35,8 @@ namespace TehPers.Core.Api.Gui
         /// <summary>
         /// Text was input by the user.
         /// </summary>
-        /// <param name="Key">The key that was pressed.</param>
-        /// <param name="Character">The character that was input.</param>
-        public sealed record TextInput(Keys Key, char Character) : GuiEvent;
+        /// <param name="Text">The text that was input.</param>
+        public sealed record TextInput(string Text) : GuiEvent;
 
         /// <summary>
         /// A keyboard key press was received.

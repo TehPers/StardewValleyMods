@@ -1,94 +1,37 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using StardewModdingAPI;
 using StardewValley;
-using System;
 
 namespace TehPers.Core.Api.Gui
 {
     /// <summary>
-    /// A text input component.
+    /// A standard text box.
     /// </summary>
-    public class TextBox : IGuiComponent, IKeyboardSubscriber
+    public class TextBox : WrapperComponent
     {
-        private readonly State state;
-
         /// <summary>
-        /// The font of the text in the input.
+        /// Creates a new text box.
         /// </summary>
-        public SpriteFont Font { get; init; } = Game1.smallFont;
-
-        /// <summary>
-        /// Creates a new <see cref="TextBox"/>.
-        /// </summary>
-        /// <param name="state"></param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public TextBox(State state)
+        /// <param name="textState">The state of the text input.</param>
+        /// <param name="inputHelper">The input helper.</param>
+        public TextBox(TextInput.State textState, IInputHelper inputHelper)
+            : base(TextBox.CreateInner(textState, inputHelper))
         {
-            this.state = state ?? throw new ArgumentNullException(nameof(state));
         }
 
-        /// <inheritdoc />
-        public GuiConstraints GetConstraints()
+        private static IGuiComponent CreateInner(
+            TextInput.State textState,
+            IInputHelper inputHelper
+        )
         {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void Handle(GuiEvent e, Rectangle bounds)
-        {
-            // Focus handling
-            if (e.Clicked(bounds, ClickType.Left))
-            {
-                this.state.Focused = true;
-            }
-            else if (e is GuiEvent.ReceiveClick)
-            {
-                this.state.Focused = false;
-            }
-
-            // Text input
-            if (e is GuiEvent.TextInput(var key, var character))
-            {
-            }
-        }
-
-
-        /// <inheritdoc />
-        public void RecieveTextInput(char inputChar)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void RecieveTextInput(string text)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void RecieveCommandInput(char command)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void RecieveSpecialInput(Keys key)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public bool Selected { get; set; }
-
-        /// <summary>
-        /// The state for a <see cref="TextBox"/>.
-        /// </summary>
-        public class State
-        {
-            public string Text { get; set; } = string.Empty;
-
-            public bool Focused { get; internal set; } = false;
+            var background = Game1.content.Load<Texture2D>(@"LooseSprites\textBox");
+            return new TextInput(textState, inputHelper)
+                {
+                    HighlightedTextBackgroundColor = new(Color.DeepSkyBlue, 0.5f),
+                    CursorColor = new(Color.Black, 0.75f),
+                }.WithPadding(16, 6, 6, 8)
+                .WithBackground(new StretchedTexture(background));
         }
     }
 }
