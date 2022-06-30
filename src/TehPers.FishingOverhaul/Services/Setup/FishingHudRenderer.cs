@@ -16,12 +16,21 @@ namespace TehPers.FishingOverhaul.Services.Setup
     // TODO: remove this
     internal class TestMenu : ManagedMenu
     {
+        private readonly IModHelper helper;
         private string text = "Click me!";
         private int count = 0;
+        private readonly TextInput.State textState = new();
+
+        public TestMenu(IModHelper helper)
+            : base(true)
+        {
+            this.helper = helper;
+        }
 
         protected override IGuiComponent CreateRoot()
         {
-            return VerticalLayout.Build(
+            this.KeyboardSubscriber!.Selected = this.textState.Focused;
+            return VerticalLayout.BuildAligned(
                     builder =>
                     {
                         builder.Add(
@@ -49,6 +58,12 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 );
                                 row.Add(new Label(" times!", Game1.smallFont));
                             }
+                        );
+                        builder.Add(new TextBox(this.textState, this.helper.Input));
+                        builder.Add(
+                            new Label(this.textState.Text, Game1.smallFont).Aligned(
+                                HorizontalAlignment.Center
+                            )
                         );
                     },
                     HorizontalAlignment.Center
@@ -86,12 +101,12 @@ namespace TehPers.FishingOverhaul.Services.Setup
             // TODO: remove this
             this.helper.Events.Input.ButtonPressed += (sender, args) =>
             {
-                if (args.Button != SButton.Y)
+                if (args.Button != SButton.Y || Game1.activeClickableMenu is not null)
                 {
                     return;
                 }
 
-                Game1.activeClickableMenu = new TestMenu();
+                Game1.InUIMode(() => Game1.activeClickableMenu = new TestMenu(this.helper));
             };
         }
 

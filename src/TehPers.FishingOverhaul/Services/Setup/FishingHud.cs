@@ -5,11 +5,11 @@ using System.Linq;
 using TehPers.Core.Api.Gui;
 using TehPers.Core.Api.Gui.Layouts;
 using TehPers.Core.Api.Items;
+using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Extensions.Drawing;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Extensions;
 using TehPers.FishingOverhaul.Config;
-using TehPers.FishingOverhaul.Extensions;
-using TehPers.FishingOverhaul.Extensions.Drawing;
 
 namespace TehPers.FishingOverhaul.Services.Setup
 {
@@ -80,12 +80,12 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 .ToList();
 
             // Setup the sprite batch
-            var component = VerticalLayout.Build(
+            var component = VerticalLayout.BuildAligned(
                 builder =>
                 {
                     // Build header
                     builder.Add(
-                        VerticalLayout.Build(
+                        VerticalLayout.BuildAligned(
                                 header =>
                                 {
                                     // Draw streak chances
@@ -135,7 +135,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
                         // Entries
                         builder.Add(
-                            VerticalLayout.Build(
+                            VerticalLayout.BuildAligned(
                                     content =>
                                     {
                                         // Draw entries

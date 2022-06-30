@@ -7,11 +7,11 @@ using StardewValley.Menus;
 using System;
 using System.Linq;
 using StardewValley.Tools;
+using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Extensions.Drawing;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config;
-using TehPers.FishingOverhaul.Extensions;
-using TehPers.FishingOverhaul.Extensions.Drawing;
 
 namespace TehPers.FishingOverhaul.Gui
 {

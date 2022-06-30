@@ -14,6 +14,7 @@ using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Tools;
 using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Extensions.Drawing;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
@@ -21,8 +22,6 @@ using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Api.Events;
 using TehPers.FishingOverhaul.Api.Extensions;
 using TehPers.FishingOverhaul.Config;
-using TehPers.FishingOverhaul.Extensions;
-using TehPers.FishingOverhaul.Extensions.Drawing;
 using SObject = StardewValley.Object;
 
 namespace TehPers.FishingOverhaul.Services.Setup
