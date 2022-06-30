@@ -4,12 +4,15 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Objects;
 using StardewValley.Tools;
-using TehPers.FishingOverhaul.Extensions.Drawing;
+using TehPers.Core.Api.Extensions.Drawing;
 using SObject = StardewValley.Object;
 
-namespace TehPers.FishingOverhaul.Extensions
+namespace TehPers.Core.Api.Extensions
 {
-    internal static class DrawingExtensions
+    /// <summary>
+    /// Extensions to allow for easier drawing.
+    /// </summary>
+    public static class DrawingExtensions
     {
         /// <summary>Draws a string with a shadow behind it.</summary>
         /// <param name="batch">The batch to draw with.</param>

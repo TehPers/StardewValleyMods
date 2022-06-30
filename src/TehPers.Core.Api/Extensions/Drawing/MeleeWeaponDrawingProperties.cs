@@ -2,9 +2,9 @@
 using Microsoft.Xna.Framework;
 using StardewValley.Tools;
 
-namespace TehPers.FishingOverhaul.Extensions.Drawing
+namespace TehPers.Core.Api.Extensions.Drawing
 {
-    internal record MeleeWeaponDrawingProperties(int Type, bool IsScythe) : IDrawingProperties
+    public record MeleeWeaponDrawingProperties(int Type, bool IsScythe) : IDrawingProperties
     {
         private static readonly FieldInfo addedSwordScale =
             typeof(MeleeWeapon).GetField(

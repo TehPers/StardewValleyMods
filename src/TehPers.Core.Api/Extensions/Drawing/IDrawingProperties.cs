@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TehPers.FishingOverhaul.Extensions.Drawing
+namespace TehPers.Core.Api.Extensions.Drawing
 {
-    internal interface IDrawingProperties
+    public interface IDrawingProperties
     {
         Vector2 SourceSize { get; }
 

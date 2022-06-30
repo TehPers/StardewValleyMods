@@ -1,19 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TehPers.FishingOverhaul.Extensions.Drawing
+namespace TehPers.Core.Api.Extensions.Drawing
 {
-    internal record BootsDrawingProperties : IDrawingProperties
+    public record ToolDrawingProperties : IDrawingProperties
     {
         public Vector2 SourceSize => new(16f, 16f);
 
         public Vector2 Offset(float scaleSize)
         {
-            return new(32f * scaleSize, 32f * scaleSize);
+            return new(32f, 32f);
         }
 
         public Vector2 Origin(float scaleSize)
         {
-            return new(8f * scaleSize, 8f * scaleSize);
+            return new(8f, 8f);
         }
 
         public float RealScale(float scaleSize)

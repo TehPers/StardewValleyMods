@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TehPers.FishingOverhaul.Extensions.Drawing
+namespace TehPers.Core.Api.Extensions.Drawing
 {
-    internal record FlooringDrawingProperties : IDrawingProperties
+    public record FlooringDrawingProperties : IDrawingProperties
     {
         public Vector2 SourceSize => new(28f, 26f);
 

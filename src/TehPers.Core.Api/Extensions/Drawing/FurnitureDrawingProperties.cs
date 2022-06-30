@@ -1,11 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TehPers.FishingOverhaul.Extensions.Drawing
+namespace TehPers.Core.Api.Extensions.Drawing
 {
-    internal record HatDrawingProperties : IDrawingProperties
+    public record FurnitureDrawingProperties
+        (Vector2 SourceSize, float ScaleSize) : IDrawingProperties
     {
-        public Vector2 SourceSize => new(20f, 20f);
-
         public Vector2 Offset(float scaleSize)
         {
             return new(32f, 32f);
@@ -13,12 +12,12 @@ namespace TehPers.FishingOverhaul.Extensions.Drawing
 
         public Vector2 Origin(float scaleSize)
         {
-            return new(10f, 10f);
+            return this.SourceSize / 2f;
         }
 
         public float RealScale(float scaleSize)
         {
-            return 4f * scaleSize;
+            return this.ScaleSize * scaleSize;
         }
     }
 }

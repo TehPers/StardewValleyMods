@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TehPers.FishingOverhaul.Extensions.Drawing
+namespace TehPers.Core.Api.Extensions.Drawing
 {
-    internal interface IDrawOrigin
+    public interface IDrawOrigin
     {
         Vector2 GetTranslation(Vector2 size);
     }
