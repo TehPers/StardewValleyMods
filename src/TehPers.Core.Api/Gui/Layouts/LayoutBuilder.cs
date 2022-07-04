@@ -8,6 +8,16 @@ namespace TehPers.Core.Api.Gui.Layouts
     public static class LayoutBuilder
     {
         /// <summary>
+        /// Adds this component to a layout.
+        /// </summary>
+        /// <param name="component">The component to add to the layout.</param>
+        /// <param name="builder">The layout builder.</param>
+        public static void AddTo(this IGuiComponent component, ILayoutBuilder builder)
+        {
+            builder.Add(component);
+        }
+
+        /// <summary>
         /// Adds a nested vertical layout to this layout.
         /// </summary>
         /// <param name="builder">The outer layout builder.</param>

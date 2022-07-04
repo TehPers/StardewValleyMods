@@ -6,16 +6,15 @@ using StardewValley;
 using System;
 using System.Collections.Immutable;
 using System.Text;
+using TehPers.Core.Api.Extensions;
 
 namespace TehPers.Core.Api.Gui
 {
     /// <summary>
     /// A single-line text input component.
     /// </summary>
-    public class TextInput : IGuiComponent
+    internal record TextInputComponent : IGuiComponent
     {
-        private static readonly Texture2D whitePixel;
-
         /// <summary>
         /// The default sound cue to play when text is inserted.
         /// </summary>
@@ -31,21 +30,18 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         public static ImmutableDictionary<char, string?> AllInsertionCues { get; }
 
-        static TextInput()
+        static TextInputComponent()
         {
-            TextInput.whitePixel = new(Game1.spriteBatch.GraphicsDevice, 1, 1);
-            TextInput.whitePixel.SetData(new[] {Color.White});
-
             var insertionCuesBuilder = ImmutableDictionary.CreateBuilder<char, string?>();
             insertionCuesBuilder['$'] = "money";
             insertionCuesBuilder['*'] = "hammer";
             insertionCuesBuilder['+'] = "slimeHit";
             insertionCuesBuilder['<'] = "crystal";
             insertionCuesBuilder['='] = "coin";
-            TextInput.AllInsertionCues = insertionCuesBuilder.ToImmutable();
+            TextInputComponent.AllInsertionCues = insertionCuesBuilder.ToImmutable();
         }
 
-        private readonly State state;
+        private readonly TextInputState state;
         private readonly IInputHelper inputHelper;
 
         /// <summary>
@@ -64,42 +60,42 @@ namespace TehPers.Core.Api.Gui
         public Color? CursorColor { get; init; } = null;
 
         /// <summary>
-        /// The background color of the highlighted text.
-        /// </summary>
-        public Color? HighlightedTextBackgroundColor { get; init; } = Color.DeepSkyBlue;
-
-        /// <summary>
         /// The color of the highlighted text.
         /// </summary>
         public Color? HighlightedTextColor { get; init; } = null;
 
         /// <summary>
+        /// The background color of the highlighted text.
+        /// </summary>
+        public Color? HighlightedTextBackgroundColor { get; init; } = Color.DeepSkyBlue;
+
+        /// <summary>
         /// Whether this component should lose focus when ESC is received.
         /// </summary>
         public bool UnfocusOnEsc { get; init; } = true;
-        
+
         /// <summary>
         /// The sound cue to play when text is typed and no specific cue overrides it.
         /// </summary>
-        public string? InsertionCue { get; init; } = TextInput.DefaultInsertionCue;
+        public string? InsertionCue { get; init; } = TextInputComponent.DefaultInsertionCue;
 
         /// <summary>
         /// The sound cue to play when specific characters are typed instead.
         /// </summary>
         public ImmutableDictionary<char, string?> OverrideInsertionCues { get; init; } =
-            TextInput.AllInsertionCues;
+            TextInputComponent.AllInsertionCues;
 
         /// <summary>
         /// The sound cue to play when text is deleted.
         /// </summary>
-        public string? DeletionCue { get; init; } = TextInput.DefaultDeletionCue;
+        public string? DeletionCue { get; init; } = TextInputComponent.DefaultDeletionCue;
 
         /// <summary>
-        /// Creates a new <see cref="TextInput"/>.
+        /// Creates a new <see cref="TextInputComponent"/>.
         /// </summary>
-        /// <param name="state">The state of the text box.</param>
+        /// <param name="state">The state of the text input.</param>
         /// <param name="inputHelper">The input helper.</param>
-        public TextInput(State state, IInputHelper inputHelper)
+        public TextInputComponent(TextInputState state, IInputHelper inputHelper)
         {
             this.state = state ?? throw new ArgumentNullException(nameof(state));
             this.inputHelper = inputHelper ?? throw new ArgumentNullException(nameof(inputHelper));
@@ -132,12 +128,13 @@ namespace TehPers.Core.Api.Gui
             }
 
             // Drawing
-            e.Draw(batch => this.Draw(batch, bounds));
+            e.Draw(batch => batch.WithScissorRect(bounds, batch => this.Draw(batch, bounds)));
         }
 
         private void PlayInsertionCue(string text)
         {
-            if (text.Length == 1 && this.OverrideInsertionCues.TryGetValue(text[0], out var overrideCue))
+            if (text.Length == 1
+                && this.OverrideInsertionCues.TryGetValue(text[0], out var overrideCue))
             {
                 if (overrideCue is not null)
                 {
@@ -160,7 +157,7 @@ namespace TehPers.Core.Api.Gui
                 Game1.playSound(this.DeletionCue);
             }
         }
-        
+
         private void HandleInput(GuiEvent e)
         {
             // Text input
@@ -454,7 +451,7 @@ namespace TehPers.Core.Api.Gui
                 if (this.HighlightedTextBackgroundColor is { } highlightColor)
                 {
                     batch.Draw(
-                        TextInput.whitePixel,
+                        DrawUtils.WhitePixel,
                         new Rectangle(xPos, bounds.Top, selectionWidth, bounds.Height),
                         highlightColor
                     );
@@ -467,7 +464,7 @@ namespace TehPers.Core.Api.Gui
                         ? xPos
                         : xPos + selectionWidth;
                     batch.Draw(
-                        TextInput.whitePixel,
+                        DrawUtils.WhitePixel,
                         new Rectangle(cursorPos, bounds.Top, 2, bounds.Height),
                         this.CursorColor ?? this.TextColor
                     );
@@ -489,7 +486,7 @@ namespace TehPers.Core.Api.Gui
                 if (shouldDrawCursor)
                 {
                     batch.Draw(
-                        TextInput.whitePixel,
+                        DrawUtils.WhitePixel,
                         new Rectangle(xPos, bounds.Top, 2, bounds.Height),
                         this.CursorColor ?? this.TextColor
                     );
@@ -502,102 +499,6 @@ namespace TehPers.Core.Api.Gui
                 var afterCursor = this.state.Text[selectionEnd..];
                 batch.DrawString(this.Font, afterCursor, new(xPos, bounds.Y), this.TextColor);
             }
-        }
-
-        /// <summary>
-        /// The state for a <see cref="TextInput"/>.
-        /// </summary>
-        public class State
-        {
-            /// <summary>
-            /// The text in the input.
-            /// </summary>
-            public string Text { get; set; } = string.Empty;
-
-            /// <summary>
-            /// Whether the input is focused.
-            /// </summary>
-            public bool Focused { get; set; }
-
-            /// <summary>
-            /// The method of text insertion.
-            /// </summary>
-            public InsertMode InsertionMode { get; set; } = InsertMode.Insert;
-
-            private int anchorCursor;
-
-            /// <summary>
-            /// The anchor cursor. This is the primary one that's moved around.
-            /// </summary>
-            public int AnchorCursor
-            {
-                get => this.anchorCursor;
-                set
-                {
-                    if (this.selectionCursor == value)
-                    {
-                        this.selectionCursor = null;
-                    }
-
-                    this.anchorCursor = Math.Clamp(value, 0, this.Text.Length);
-                }
-            }
-
-            private int? selectionCursor;
-
-            /// <summary>
-            /// The selection cursor, if any text is selected. This is the one used whenever text
-            /// is being selected.
-            /// </summary>
-            public int? SelectionCursor
-            {
-                get => this.selectionCursor;
-                set
-                {
-                    if (value == this.AnchorCursor)
-                    {
-                        this.selectionCursor = null;
-                        return;
-                    }
-
-                    this.selectionCursor =
-                        value is { } val ? Math.Clamp(val, 0, this.Text.Length) : null;
-                }
-            }
-
-            /// <summary>
-            /// Gets the range of selected text, if any.
-            /// </summary>
-            public (int Start, int End)? Selection
-            {
-                get
-                {
-                    if (this.SelectionCursor is not { } selectionCursor)
-                    {
-                        return null;
-                    }
-
-                    return selectionCursor > this.AnchorCursor
-                        ? (this.AnchorCursor, selectionCursor)
-                        : (selectionCursor, this.AnchorCursor);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Modes of text insertion.
-        /// </summary>
-        public enum InsertMode
-        {
-            /// <summary>
-            /// Inserts the text at the cursor position.
-            /// </summary>
-            Insert,
-
-            /// <summary>
-            /// Replaces the text at the cursor position.
-            /// </summary>
-            Replace,
         }
     }
 }

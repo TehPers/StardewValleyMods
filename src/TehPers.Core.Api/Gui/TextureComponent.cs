@@ -8,7 +8,7 @@ namespace TehPers.Core.Api.Gui
     /// Stretches a texture to fill a space.
     /// </summary>
     /// <param name="Texture">The texture to draw.</param>
-    public record StretchedTexture(Texture2D Texture) : IGuiComponent
+    internal record TextureComponent(Texture2D Texture) : IGuiComponent
     {
         /// <summary>
         /// The source rectangle on the texture.

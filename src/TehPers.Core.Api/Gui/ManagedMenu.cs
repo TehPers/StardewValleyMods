@@ -36,6 +36,8 @@ namespace TehPers.Core.Api.Gui
             {
                 this.KeyboardSubscriber.Selected = false;
             }
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

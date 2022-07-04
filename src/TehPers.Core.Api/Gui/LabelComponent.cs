@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -7,9 +8,13 @@ namespace TehPers.Core.Api.Gui
     /// A text label in a GUI.
     /// </summary>
     /// <param name="Text">The text on this label.</param>
-    /// <param name="Font">The font to draw this label with.</param>
-    public record Label(string Text, SpriteFont Font) : IGuiComponent
+    internal record LabelComponent(string Text) : IGuiComponent
     {
+        /// <summary>
+        /// The font to draw this label with.
+        /// </summary>
+        public SpriteFont Font { get; init; } = Game1.smallFont;
+
         /// <summary>
         /// The color to tint the text.
         /// </summary>
@@ -29,32 +34,7 @@ namespace TehPers.Core.Api.Gui
         /// The layer depth of the text.
         /// </summary>
         public float LayerDepth { get; init; } = 0;
-
-        /// <summary>
-        /// Creates a new <see cref="Label"/> component.
-        /// </summary>
-        /// <param name="text">The text on this label.</param>
-        /// <param name="font">The font to draw this label with.</param>
-        /// <param name="color">The color to tint the text.</param>
-        /// <param name="scale">The scale of the text.</param>
-        /// <param name="spriteEffects">The effects to apply to the font's sprites.</param>
-        /// <param name="layerDepth">The layer depth of the text.</param>
-        public Label(
-            string text,
-            SpriteFont font,
-            Color? color = default,
-            Vector2? scale = default,
-            SpriteEffects? spriteEffects = default,
-            float? layerDepth = default
-        )
-            : this(text, font)
-        {
-            this.Color = color ?? this.Color;
-            this.Scale = scale ?? this.Scale;
-            this.SpriteEffects = spriteEffects ?? this.SpriteEffects;
-            this.LayerDepth = layerDepth ?? this.LayerDepth;
-        }
-
+        
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
         {

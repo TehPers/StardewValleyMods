@@ -5,7 +5,7 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// Empty space in a GUI.
     /// </summary>
-    public record EmptySpace : IGuiComponent
+    internal record EmptyComponent : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()

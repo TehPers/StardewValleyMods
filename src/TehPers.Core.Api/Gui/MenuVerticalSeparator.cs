@@ -7,44 +7,44 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A vertical separator in a menu.
     /// </summary>
-    public class MenuVerticalSeparator : WrapperComponent
+    internal record MenuVerticalSeparator() : WrapperComponent
     {
+        protected override IGuiComponent Inner => this.CreateInner();
+
         /// <summary>
-        /// A vertical separator in a menu.
+        /// The end T-connector to put at the top of this separator.
         /// </summary>
-        /// <param name="topConnector">The end T-connector to put at the top of this separator.</param>
-        /// <param name="bottomConnector">The end T-connector to put at the bottom of this separator.</param>
-        public MenuVerticalSeparator(
-            MenuSeparatorConnector topConnector,
-            MenuSeparatorConnector bottomConnector
-        )
-            : base(MenuVerticalSeparator.CreateInner(topConnector, bottomConnector))
-        {
-        }
+        public MenuSeparatorConnector TopConnector { get; init; } =
+            MenuSeparatorConnector.MenuBorder;
+
+        /// <summary>
+        /// The end T-connector to put at the bottom of this separator.
+        /// </summary>
+        public MenuSeparatorConnector BottomConnector { get; init; } =
+            MenuSeparatorConnector.MenuBorder;
 
         /// <summary>
         /// Creates a vertical separator with matching end T-connectors.
         /// </summary>
         /// <param name="connector">The T-connectors to add to the ends of the separator.</param>
         public MenuVerticalSeparator(MenuSeparatorConnector connector)
-            : this(connector, connector)
+            : this()
         {
+            this.TopConnector = connector;
+            this.BottomConnector = connector;
         }
 
-        private static IGuiComponent CreateInner(
-            MenuSeparatorConnector topConnector,
-            MenuSeparatorConnector bottomConnector
-        )
+        private IGuiComponent CreateInner()
         {
             return VerticalLayout.BuildAligned(
                 builder =>
                 {
                     // Top connector
-                    switch (topConnector)
+                    switch (this.TopConnector)
                     {
                         case MenuSeparatorConnector.PinMenuBorder:
                             builder.Add(
-                                new StretchedTexture(Game1.menuTexture)
+                                new TextureComponent(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -54,7 +54,7 @@ namespace TehPers.Core.Api.Gui
                             break;
                         case MenuSeparatorConnector.MenuBorder:
                             builder.Add(
-                                new StretchedTexture(Game1.menuTexture)
+                                new TextureComponent(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -64,7 +64,7 @@ namespace TehPers.Core.Api.Gui
                             break;
                         case MenuSeparatorConnector.Separator:
                             builder.Add(
-                                new StretchedTexture(Game1.menuTexture)
+                                new TextureComponent(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -76,15 +76,15 @@ namespace TehPers.Core.Api.Gui
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(
-                                nameof(topConnector),
-                                topConnector,
+                                nameof(this.TopConnector),
+                                this.TopConnector,
                                 null
                             );
                     }
 
                     // Body
                     builder.Add(
-                        new StretchedTexture(Game1.menuTexture)
+                        new TextureComponent(Game1.menuTexture)
                         {
                             MinScale = GuiSize.One,
                             MaxScale = new(1, null),
@@ -93,11 +93,11 @@ namespace TehPers.Core.Api.Gui
                     );
 
                     // Bottom connector
-                    switch (bottomConnector)
+                    switch (this.BottomConnector)
                     {
                         case MenuSeparatorConnector.PinMenuBorder:
                             builder.Add(
-                                new StretchedTexture(Game1.menuTexture)
+                                new TextureComponent(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -107,7 +107,7 @@ namespace TehPers.Core.Api.Gui
                             break;
                         case MenuSeparatorConnector.MenuBorder:
                             builder.Add(
-                                new StretchedTexture(Game1.menuTexture)
+                                new TextureComponent(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -117,7 +117,7 @@ namespace TehPers.Core.Api.Gui
                             break;
                         case MenuSeparatorConnector.Separator:
                             builder.Add(
-                                new StretchedTexture(Game1.menuTexture)
+                                new TextureComponent(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -129,8 +129,8 @@ namespace TehPers.Core.Api.Gui
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(
-                                nameof(bottomConnector),
-                                bottomConnector,
+                                nameof(MenuVerticalSeparator.BottomConnector),
+                                this.BottomConnector,
                                 null
                             );
                     }

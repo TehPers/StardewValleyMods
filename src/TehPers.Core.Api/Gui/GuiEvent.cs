@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using StardewModdingAPI;
-using System.Diagnostics.CodeAnalysis;
 
 namespace TehPers.Core.Api.Gui
 {

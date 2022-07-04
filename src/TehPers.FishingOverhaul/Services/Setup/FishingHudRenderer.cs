@@ -19,7 +19,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private readonly IModHelper helper;
         private string text = "Click me!";
         private int count = 0;
-        private readonly TextInput.State textState = new();
+        private readonly TextInputState textTextInputState = new();
 
         public TestMenu(IModHelper helper)
             : base(true)
@@ -29,48 +29,37 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         protected override IGuiComponent CreateRoot()
         {
-            this.KeyboardSubscriber!.Selected = this.textState.Focused;
+            this.KeyboardSubscriber!.Selected = this.textTextInputState.Focused;
             return VerticalLayout.BuildAligned(
                     builder =>
                     {
-                        builder.Add(
-                            new Label(this.text, Game1.smallFont).Aligned(
-                                    HorizontalAlignment.Center
-                                )
-                                .OnClick(
-                                    clickType =>
-                                    {
-                                        this.text += $" <{clickType}>";
-                                        this.count += 1;
-                                    }
-                                )
-                        );
+                        GuiComponent.Label(this.text)
+                            .Aligned(HorizontalAlignment.Center)
+                            .OnClick(
+                                clickType =>
+                                {
+                                    this.text += $" <{clickType}>";
+                                    this.count += 1;
+                                }
+                            )
+                            .AddTo(builder);
                         builder.Horizontal(
                             row =>
                             {
-                                row.Add(new Label("You have clicked ", Game1.smallFont));
-                                row.Add(
-                                    new Label(
-                                        this.count.ToString("G"),
-                                        Game1.smallFont,
-                                        color: Color.DarkGreen
-                                    )
-                                );
-                                row.Add(new Label(" times!", Game1.smallFont));
+                                GuiComponent.Label("You have clicked ").AddTo(row);
+                                GuiComponent.Label(this.count.ToString("G"), color: Color.DarkGreen)
+                                    .AddTo(row);
+                                GuiComponent.Label(" times!").AddTo(row);
                             }
                         );
-                        builder.Add(new TextBox(this.textState, this.helper.Input));
-                        builder.Add(
-                            new Label(this.textState.Text, Game1.smallFont).Aligned(
-                                HorizontalAlignment.Center
-                            )
-                        );
+                        GuiComponent.TextBox(this.textTextInputState, this.helper.Input)
+                            .AddTo(builder);
                     },
                     HorizontalAlignment.Center
                 )
                 .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
                 .WithPadding(64)
-                .WithBackground(new MenuBackground());
+                .WithBackground(GuiComponent.MenuBackground());
         }
     }
 

@@ -1,5 +1,9 @@
-﻿using StardewValley.Menus;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
+using StardewValley.Menus;
 using System;
+using System.Collections.Immutable;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -138,10 +142,205 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         /// <param name="component">The component to check for clicks for.</param>
         /// <param name="onClick">The action to perform.</param>
-        /// <returns>The component wrapped in a button.</returns>
-        public static Button OnClick(this IGuiComponent component, Action<ClickType> onClick)
+        /// <returns>The component, wrapped by a click handler.</returns>
+        public static IGuiComponent OnClick(this IGuiComponent component, Action<ClickType> onClick)
         {
-            return new(component, onClick);
+            return new ClickHandler(component, onClick);
+        }
+
+        /// <summary>
+        /// Further constrains a component's size.
+        /// </summary>
+        /// <param name="component">The component to constrain.</param>
+        /// <param name="minSize">The additional minimum size constraints, if any.</param>
+        /// <param name="maxSize">The additional maximum size constraints, if any.</param>
+        /// <returns>The constrained component.</returns>
+        public static IGuiComponent Constrained(
+            this IGuiComponent component,
+            PartialGuiSize? minSize = null,
+            PartialGuiSize? maxSize = null
+        )
+        {
+            return new ConstrainedComponent(component)
+            {
+                MinSize = minSize ?? PartialGuiSize.Empty,
+                MaxSize = maxSize ?? PartialGuiSize.Empty,
+            };
+        }
+
+        /// <summary>
+        /// Clips this component, removing its minimum size constraint. This constrains its
+        /// rendering area and mouse inputs if it is shrunk.
+        /// </summary>
+        /// <param name="component">The component to clip.</param>
+        /// <returns>The clipped component.</returns>
+        public static IGuiComponent Clipped(this IGuiComponent component)
+        {
+            return new ClippedComponent(component);
+        }
+
+        /// <summary>
+        /// Creates a new text label.
+        /// </summary>
+        /// <param name="text">The text in the label.</param>
+        /// <param name="font">The font to render the text with.</param>
+        /// <param name="color">The color of the text.</param>
+        /// <param name="scale">The scale to apply to the text.</param>
+        /// <param name="spriteEffects">The sprite effects to apply to the text.</param>
+        /// <param name="layerDepth">The layer depth to render the text at.</param>
+        /// <returns>The label component.</returns>
+        public static IGuiComponent Label(
+            string text,
+            SpriteFont? font = null,
+            Color? color = null,
+            Vector2? scale = null,
+            SpriteEffects? spriteEffects = null,
+            float? layerDepth = null
+        )
+        {
+            return new LabelComponent(text).MaybeInitRef(font, (l, f) => l with {Font = f})
+                .MaybeInitVal(color, (l, c) => l with {Color = c})
+                .MaybeInitVal(scale, (l, s) => l with {Scale = s})
+                .MaybeInitVal(spriteEffects, (l, s) => l with {SpriteEffects = s})
+                .MaybeInitVal(layerDepth, (l, d) => l with {LayerDepth = d});
+        }
+
+        /// <summary>
+        /// Creates a new text label.
+        /// </summary>
+        /// <returns>The label component.</returns>
+        /// <param name="state">The state of the text input.</param>
+        /// <param name="inputHelper">The input helper.</param>
+        /// <param name="font">The font of the text in the input.</param>
+        /// <param name="textColor">The color of the text.</param>
+        /// <param name="cursorColor">The color of the cursor.</param>
+        /// <param name="highlightedTextColor">The color of the highlighted text.</param>
+        /// <param name="highlightedTextBackgroundColor">The background color of the highlighted text.</param>
+        /// <param name="unfocusOnEsc">Whether this component should lose focus when ESC is received.</param>
+        /// <param name="insertionCue">The sound cue to play when text is typed and no specific cue overrides it.</param>
+        /// <param name="overrideInsertionCues">The sound cue to play when specific characters are typed instead.</param>
+        /// <param name="deletionCue">The sound cue to play when text is deleted.</param>
+        /// <returns>The text input component.</returns>
+        public static IGuiComponent TextInput(
+            TextInputState state,
+            IInputHelper inputHelper,
+            SpriteFont? font = null,
+            Color? textColor = null,
+            Color? cursorColor = null,
+            Color? highlightedTextColor = null,
+            Color? highlightedTextBackgroundColor = null,
+            bool? unfocusOnEsc = null,
+            string? insertionCue = null,
+            ImmutableDictionary<char, string?>? overrideInsertionCues = null,
+            string? deletionCue = null
+        )
+        {
+            return new TextInputComponent(state, inputHelper)
+                .MaybeInitRef(font, (input, f) => input with {Font = f})
+                .MaybeInitVal(textColor, (input, c) => input with {TextColor = c})
+                .MaybeInitVal(cursorColor, (input, c) => input with {CursorColor = c})
+                .MaybeInitVal(
+                    highlightedTextColor,
+                    (input, c) => input with {HighlightedTextColor = c}
+                )
+                .MaybeInitVal(
+                    highlightedTextBackgroundColor,
+                    (input, c) => input with {HighlightedTextBackgroundColor = c}
+                )
+                .MaybeInitVal(unfocusOnEsc, (input, b) => input with {UnfocusOnEsc = b})
+                .MaybeInitRef(insertionCue, (input, s) => input with {InsertionCue = s})
+                .MaybeInitRef(
+                    overrideInsertionCues,
+                    (input, d) => input with {OverrideInsertionCues = d}
+                )
+                .MaybeInitRef(deletionCue, (input, s) => input with {DeletionCue = s});
+        }
+
+        /// <summary>
+        /// Creates a new stretchable texture component. To stop the texture from stretching, set
+        /// the <paramref name="minScale"/> to <see cref="GuiSize.One"/> and the
+        /// <paramref name="maxScale"/> to <see cref="PartialGuiSize.One"/>.
+        /// </summary>
+        /// <param name="texture">The texture to draw.</param>
+        /// <param name="sourceRectangle">The source rectangle on the texture.</param>
+        /// <param name="color">The color to tint the texture.</param>
+        /// <param name="effects">The sprite effects to apply to the texture.</param>
+        /// <param name="layerDepth">The layer depth to draw the background on.</param>
+        /// <param name="minScale">The minimum scaled size of this texture.</param>
+        /// <param name="maxScale">The maximum scaled size of this texture.</param>
+        /// <returns>The texture component.</returns>
+        public static IGuiComponent Texture(
+            Texture2D texture,
+            Rectangle? sourceRectangle = null,
+            Color? color = null,
+            SpriteEffects? effects = null,
+            float? layerDepth = null,
+            GuiSize? minScale = null,
+            PartialGuiSize? maxScale = null
+        )
+        {
+            return new TextureComponent(texture)
+                .MaybeInitVal(sourceRectangle, (t, s) => t with {SourceRectangle = s})
+                .MaybeInitVal(color, (t, c) => t with {Color = c})
+                .MaybeInitVal(effects, (t, e) => t with {Effects = e})
+                .MaybeInitVal(layerDepth, (t, d) => t with {LayerDepth = d})
+                .MaybeInitRef(minScale, (t, s) => t with {MinScale = s})
+                .MaybeInitRef(maxScale, (t, s) => t with {MaxScale = s});
+        }
+
+        /// <summary>
+        /// Creates a new empty component. This can stretch to any size and just fills space.
+        /// </summary>
+        /// <returns>The empty component.</returns>
+        public static IGuiComponent Empty()
+        {
+            return new EmptyComponent();
+        }
+
+        /// <summary>
+        /// Creates a new menu background component.
+        /// </summary>
+        /// <param name="layerDepth">The layer depth to draw the component on.</param>
+        /// <returns>The menu background component.</returns>
+        public static IGuiComponent MenuBackground(float? layerDepth = null)
+        {
+            return new MenuBackgroundComponent().MaybeInitVal(
+                layerDepth,
+                (m, d) => m with {LayerDepth = d}
+            );
+        }
+
+        /// <summary>
+        /// Creates a new menu horizontal separator component.
+        /// </summary>
+        /// <param name="layerDepth">The layer depth to draw the component on.</param>
+        /// <returns>The menu horizontal separator component.</returns>
+        public static IGuiComponent MenuHorizontalSeparator(float? layerDepth = null)
+        {
+            return new MenuHorizontalSeparatorComponent().MaybeInitVal(
+                layerDepth,
+                (m, d) => m with {LayerDepth = d}
+            );
+        }
+
+        private static T MaybeInitRef<T, TProp>(
+            this T value,
+            TProp? propValue,
+            Func<T, TProp, T> init
+        )
+            where TProp : class
+        {
+            return propValue is { } v ? init(value, v) : value;
+        }
+
+        private static T MaybeInitVal<T, TProp>(
+            this T value,
+            TProp? propValue,
+            Func<T, TProp, T> init
+        )
+            where TProp : struct
+        {
+            return propValue is { } v ? init(value, v) : value;
         }
     }
 }
