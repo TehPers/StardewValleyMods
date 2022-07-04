@@ -4,6 +4,11 @@ using StardewValley.Tools;
 
 namespace TehPers.Core.Api.Extensions.Drawing
 {
+    /// <summary>
+    /// Properties about how melee weapons are drawn in menus.
+    /// </summary>
+    /// <param name="Type">The type of melee weapon.</param>
+    /// <param name="IsScythe">Whether the weapon is a type of scythe.</param>
     public record MeleeWeaponDrawingProperties(int Type, bool IsScythe) : IDrawingProperties
     {
         private static readonly FieldInfo addedSwordScale =
@@ -11,24 +16,32 @@ namespace TehPers.Core.Api.Extensions.Drawing
                 nameof(MeleeWeaponDrawingProperties.addedSwordScale),
                 BindingFlags.Static | BindingFlags.NonPublic
             )
-            ?? throw new($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedSwordScale)}.");
+            ?? throw new(
+                $"Missing info for {nameof(MeleeWeaponDrawingProperties.addedSwordScale)}."
+            );
 
         private static readonly FieldInfo addedDaggerScale =
             typeof(MeleeWeapon).GetField(
                 nameof(MeleeWeaponDrawingProperties.addedDaggerScale),
                 BindingFlags.Static | BindingFlags.NonPublic
             )
-            ?? throw new($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedDaggerScale)}.");
+            ?? throw new(
+                $"Missing info for {nameof(MeleeWeaponDrawingProperties.addedDaggerScale)}."
+            );
 
         private static readonly FieldInfo addedClubScale =
             typeof(MeleeWeapon).GetField(
                 nameof(MeleeWeaponDrawingProperties.addedClubScale),
                 BindingFlags.Static | BindingFlags.NonPublic
             )
-            ?? throw new($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedClubScale)}.");
+            ?? throw new(
+                $"Missing info for {nameof(MeleeWeaponDrawingProperties.addedClubScale)}."
+            );
 
+        /// <inheritdoc />
         public Vector2 SourceSize => new(16, 16);
 
+        /// <inheritdoc />
         public Vector2 Offset(float scaleSize)
         {
             return this.Type switch
@@ -38,11 +51,13 @@ namespace TehPers.Core.Api.Extensions.Drawing
             };
         }
 
+        /// <inheritdoc />
         public Vector2 Origin(float scaleSize)
         {
             return new(8f, 8f);
         }
 
+        /// <inheritdoc />
         public float RealScale(float scaleSize)
         {
             var addedScale = (this.Type, this.IsScythe) switch
