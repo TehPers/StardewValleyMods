@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <DebugType>portable</DebugType>
+    <Deterministic>false</Deterministic>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="manifest.json" />
+    <Compile Include="BuildMenu.fs" />
+    <Compile Include="ModEntry.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="6.0.5" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="$(GameModsPath)/TehPers.Core/TehPers.Core.Api.dll" />
+    <Reference Include="$(GameModsPath)/TehPers.Core/Ninject.dll" />
+    <Reference Include="$(GameModsPath)/TehPers.FishingOverhaul/TehPers.FishingOverhaul.Api.dll" />
+  </ItemGroup>
+</Project>
