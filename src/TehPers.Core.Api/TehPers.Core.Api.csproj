@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Ninject" Version="3.3.5" />
+        <PackageReference Include="Ninject" Version="3.3.6" />
         <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
     </ItemGroup>
 
