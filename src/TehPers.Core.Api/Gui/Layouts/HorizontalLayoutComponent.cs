@@ -10,13 +10,14 @@ namespace TehPers.Core.Api.Gui.Layouts
     /// A horizontal layout container. Components are rendered horizontally along a single row.
     /// </summary>
     /// <param name="Components">The components in this layout.</param>
-    public record HorizontalLayout(ImmutableArray<IGuiComponent> Components) : IGuiComponent
+    internal record HorizontalLayoutComponent
+        (ImmutableArray<IGuiComponent> Components) : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
         {
             return this.Components.Aggregate(
-                new GuiConstraints {MaxSize = new(0, null)},
+                new GuiConstraints { MaxSize = new(0, null) },
                 (prev, component) =>
                 {
                     var innerConstraints = component.GetConstraints();
@@ -105,7 +106,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// </summary>
         /// <param name="components">The components in the layout.</param>
         /// <returns>The horizontal layout.</returns>
-        public static HorizontalLayout Of(params IGuiComponent[] components)
+        public static HorizontalLayoutComponent Of(params IGuiComponent[] components)
         {
             return new(components.ToImmutableArray());
         }
@@ -115,7 +116,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// </summary>
         /// <param name="components">The components in the layout.</param>
         /// <returns>The horizontal layout.</returns>
-        public static HorizontalLayout Of(IEnumerable<IGuiComponent> components)
+        public static HorizontalLayoutComponent Of(IEnumerable<IGuiComponent> components)
         {
             return new(components.ToImmutableArray());
         }
@@ -125,7 +126,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// </summary>
         /// <param name="addComponents">A callback which adds the components.</param>
         /// <returns>The horizontal layout.</returns>
-        public static HorizontalLayout Build(Action<ILayoutBuilder> addComponents)
+        public static HorizontalLayoutComponent Build(Action<ILayoutBuilder> addComponents)
         {
             var builder = new Builder(null);
             addComponents(builder);
@@ -139,7 +140,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// <param name="addComponents">A callback which adds the components.</param>
         /// <param name="defaultAlignment">The default column alignment.</param>
         /// <returns>The horizontal layout.</returns>
-        public static HorizontalLayout BuildAligned(
+        public static HorizontalLayoutComponent BuildAligned(
             Action<ILayoutBuilder> addComponents,
             VerticalAlignment defaultAlignment = VerticalAlignment.Top
         )
@@ -192,7 +193,7 @@ namespace TehPers.Core.Api.Gui.Layouts
                 this.components.Add(component);
             }
 
-            public HorizontalLayout Build()
+            public HorizontalLayoutComponent Build()
             {
                 return new(this.components.ToImmutableArray());
             }

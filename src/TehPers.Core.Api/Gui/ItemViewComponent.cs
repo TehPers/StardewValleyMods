@@ -9,7 +9,7 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A component which renders an item.
     /// </summary>
-    public class ItemView : IGuiComponent
+    public class ItemViewComponent : IGuiComponent
     {
         /// <summary>
         /// The item to render.
@@ -42,10 +42,10 @@ namespace TehPers.Core.Api.Gui
         public bool DrawShadow { get; init; } = true;
 
         /// <summary>
-        /// Creates a new <see cref="ItemView"/>.
+        /// Creates a new <see cref="ItemViewComponent"/>.
         /// </summary>
         /// <param name="item">The item to show in this view.</param>
-        public ItemView(Item item)
+        public ItemViewComponent(Item item)
         {
             this.Item = item;
         }

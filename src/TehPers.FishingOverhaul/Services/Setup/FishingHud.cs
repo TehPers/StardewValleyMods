@@ -13,8 +13,10 @@ using TehPers.FishingOverhaul.Config;
 
 namespace TehPers.FishingOverhaul.Services.Setup
 {
-    internal class FishingHud : WrapperComponent
+    internal class FishingHud : IGuiComponent
     {
+        private readonly IGuiComponent inner;
+
         public FishingHud(
             IFishingApi fishingApi,
             IModHelper helper,
@@ -22,10 +24,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
             INamespaceRegistry namespaceRegistry,
             Farmer farmer
         )
-            : base(
-                FishingHud.CreateComponent(fishingApi, helper, hudConfig, namespaceRegistry, farmer)
-            )
         {
+            this.inner = FishingHud.CreateComponent(
+                fishingApi,
+                helper,
+                hudConfig,
+                namespaceRegistry,
+                farmer
+            );
         }
 
         private static IGuiComponent CreateComponent(
@@ -80,48 +86,56 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 .ToList();
 
             // Setup the sprite batch
-            var component = VerticalLayout.BuildAligned(
+            var component = GuiComponent.Vertical(
+                HorizontalAlignment.Left,
                 builder =>
                 {
                     // Build header
                     builder.Add(
-                        VerticalLayout.BuildAligned(
+                        GuiComponent.Vertical(
+                                HorizontalAlignment.Left,
                                 header =>
                                 {
                                     // Draw streak chances
                                     var streakText = helper.Translation.Get(
                                         "text.streak",
-                                        new {streak = fishingApi.GetStreak(farmer)}
+                                        new { streak = fishingApi.GetStreak(farmer) }
                                     );
                                     header.Add(
-                                        new Label(streakText, font) {Color = normalTextColor}
-                                            .Aligned(
-                                                HorizontalAlignment.Left
+                                        GuiComponent.Label(
+                                                streakText,
+                                                font: font,
+                                                color: normalTextColor
                                             )
+                                            .Aligned(HorizontalAlignment.Left)
                                     );
 
                                     // Draw treasure chances
                                     var treasureText = helper.Translation.Get(
                                         "text.treasure",
-                                        new {chance = $"{treasureChance:P2}"}
+                                        new { chance = $"{treasureChance:P2}" }
                                     );
                                     header.Add(
-                                        new Label(treasureText, font) {Color = normalTextColor}
-                                            .Aligned(
-                                                HorizontalAlignment.Left
+                                        GuiComponent.Label(
+                                                treasureText,
+                                                font: font,
+                                                color: normalTextColor
                                             )
+                                            .Aligned(HorizontalAlignment.Left)
                                     );
 
                                     // Draw trash chances
                                     var trashText = helper.Translation.Get(
                                         "text.trash",
-                                        new {chance = $"{trashChance:P2}"}
+                                        new { chance = $"{trashChance:P2}" }
                                     );
                                     header.Add(
-                                        new Label(trashText, font) {Color = normalTextColor}
-                                            .Aligned(
-                                                HorizontalAlignment.Left
+                                        GuiComponent.Label(
+                                                trashText,
+                                                font: font,
+                                                color: normalTextColor
                                             )
+                                            .Aligned(HorizontalAlignment.Left)
                                     );
                                 }
                             )
@@ -131,11 +145,12 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     if (displayedEntries.Any())
                     {
                         // Separator
-                        builder.Add(new MenuHorizontalSeparator());
+                        builder.Add(GuiComponent.MenuHorizontalSeparator());
 
                         // Entries
                         builder.Add(
-                            VerticalLayout.BuildAligned(
+                            GuiComponent.Vertical(
+                                    HorizontalAlignment.Left,
                                     content =>
                                     {
                                         // Draw entries
@@ -150,7 +165,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                                 {
                                                     var fishName = helper.Translation.Get(
                                                             "text.fish.unknownName",
-                                                            new {key = entryKey.ToString()}
+                                                            new { key = entryKey.ToString() }
                                                         )
                                                         .ToString();
                                                     if (namespaceRegistry.TryGetItemFactory(
@@ -202,10 +217,12 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                                         }
                                                     );
                                                     itemRow.Add(
-                                                        new Label(fishText, font)
-                                                                {
-                                                                    Color = textColor
-                                                                }
+                                                        GuiComponent
+                                                            .Label(
+                                                                fishText,
+                                                                font: font,
+                                                                color: textColor
+                                                            )
                                                             .Aligned(
                                                                 HorizontalAlignment.Left,
                                                                 VerticalAlignment.Center
@@ -228,10 +245,11 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                                 )
                                                 .ToString();
                                             content.Add(
-                                                new Label(moreFishText, font)
-                                                        {
-                                                            Color = normalTextColor
-                                                        }
+                                                GuiComponent.Label(
+                                                        moreFishText,
+                                                        font: font,
+                                                        normalTextColor
+                                                    )
                                                     .Aligned(HorizontalAlignment.Left)
                                             );
                                         }
@@ -243,7 +261,17 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 }
             );
 
-            return component.WithBackground(new MenuBackground());
+            return component.WithBackground(GuiComponent.MenuBackground());
+        }
+
+        public GuiConstraints GetConstraints()
+        {
+            return this.inner.GetConstraints();
+        }
+
+        public void Handle(GuiEvent e, Rectangle bounds)
+        {
+            this.inner.Handle(e, bounds);
         }
     }
 }

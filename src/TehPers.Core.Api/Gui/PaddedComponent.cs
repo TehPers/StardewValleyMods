@@ -11,7 +11,7 @@ namespace TehPers.Core.Api.Gui
     /// <param name="Right">Padding to add to the right side.</param>
     /// <param name="Top">Padding to add to the top.</param>
     /// <param name="Bottom">Padding to add to the bottom.</param>
-    public record WithPadding(
+    public record PaddedComponent(
         IGuiComponent Inner,
         float Left,
         float Right,

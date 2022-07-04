@@ -6,10 +6,30 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A component that executes an action when clicked.
     /// </summary>
-    /// <param name="Inner">The inner component.</param>
-    /// <param name="OnClick">The action to perform when the button is clicked.</param>
-    internal record ClickHandler(IGuiComponent Inner, Action<ClickType> OnClick) : WrapperComponent(Inner)
+    internal record ClickHandler : WrapperComponent
     {
+        /// <summary>
+        /// The inner component.
+        /// </summary>
+        public override IGuiComponent Inner { get; }
+
+        /// <summary>
+        /// The action to perform when the button is clicked.
+        /// </summary>
+        public Action<ClickType> OnClick { get; init; }
+
+
+        /// <summary>
+        /// A component that executes an action when clicked.
+        /// </summary>
+        /// <param name="inner">The inner component.</param>
+        /// <param name="onClick">The action to perform when the button is clicked.</param>
+        public ClickHandler(IGuiComponent inner, Action<ClickType> onClick)
+        {
+            this.Inner = inner;
+            this.OnClick = onClick;
+        }
+
         /// <inheritdoc />
         public override void Handle(GuiEvent e, Rectangle bounds)
         {

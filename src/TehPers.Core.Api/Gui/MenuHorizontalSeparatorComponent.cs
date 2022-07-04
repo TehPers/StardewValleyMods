@@ -8,7 +8,7 @@ namespace TehPers.Core.Api.Gui
     /// </summary>
     internal record MenuHorizontalSeparatorComponent : WrapperComponent
     {
-        protected override IGuiComponent Inner => this.CreateInner();
+        public override IGuiComponent Inner => this.CreateInner();
 
         /// <summary>
         /// The layer depth to draw the component on.
@@ -17,7 +17,7 @@ namespace TehPers.Core.Api.Gui
 
         private IGuiComponent CreateInner()
         {
-            return HorizontalLayout.Of(
+            return HorizontalLayoutComponent.Of(
                 GuiComponent.Texture(
                     Game1.menuTexture,
                     minScale: GuiSize.One,

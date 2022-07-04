@@ -8,7 +8,7 @@ namespace TehPers.Core.Api.Gui
     /// </summary>
     internal record MenuBackgroundComponent : WrapperComponent
     {
-        protected override IGuiComponent Inner => this.CreateInner();
+        public override IGuiComponent Inner => this.CreateInner();
 
         /// <summary>
         /// The layer depth to draw the component on.
@@ -17,12 +17,12 @@ namespace TehPers.Core.Api.Gui
         
         private IGuiComponent CreateInner()
         {
-            return VerticalLayout.Build(
+            return VerticalLayoutComponent.Build(
                     builder =>
                     {
                         // Top row
                         builder.Add(
-                            HorizontalLayout.Build(
+                            HorizontalLayoutComponent.Build(
                                 builder =>
                                 {
                                     builder.Add(
@@ -58,7 +58,7 @@ namespace TehPers.Core.Api.Gui
 
                         // Middle row
                         builder.Add(
-                            HorizontalLayout.Build(
+                            HorizontalLayoutComponent.Build(
                                 builder =>
                                 {
                                     builder.Add(
@@ -86,7 +86,7 @@ namespace TehPers.Core.Api.Gui
 
                         // Bottom row
                         builder.Add(
-                            HorizontalLayout.Build(
+                            HorizontalLayoutComponent.Build(
                                 builder =>
                                 {
                                     builder.Add(

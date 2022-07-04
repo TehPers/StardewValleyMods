@@ -19,7 +19,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private readonly IModHelper helper;
         private string text = "Click me!";
         private int count = 0;
-        private readonly TextInputState textTextInputState = new();
+        private readonly TextInputState textState = new();
 
         public TestMenu(IModHelper helper)
             : base(true)
@@ -29,8 +29,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         protected override IGuiComponent CreateRoot()
         {
-            this.KeyboardSubscriber!.Selected = this.textTextInputState.Focused;
-            return VerticalLayout.BuildAligned(
+            this.KeyboardSubscriber!.Selected = this.textState.Focused;
+            return GuiComponent.Vertical(
+                    HorizontalAlignment.Center,
                     builder =>
                     {
                         GuiComponent.Label(this.text)
@@ -52,10 +53,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 GuiComponent.Label(" times!").AddTo(row);
                             }
                         );
-                        GuiComponent.TextBox(this.textTextInputState, this.helper.Input)
+                        GuiComponent.TextBox(this.textState, this.helper.Input)
                             .AddTo(builder);
-                    },
-                    HorizontalAlignment.Center
+                    }
                 )
                 .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
                 .WithPadding(64)

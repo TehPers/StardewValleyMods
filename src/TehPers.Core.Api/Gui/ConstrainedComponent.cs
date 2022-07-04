@@ -7,7 +7,7 @@ namespace TehPers.Core.Api.Gui
     /// </summary>
     internal record ConstrainedComponent : WrapperComponent
     {
-        protected override IGuiComponent Inner { get; }
+        public override IGuiComponent Inner { get; }
 
         /// <summary>
         /// The additional minimum size constraints for the component. This cannot make the

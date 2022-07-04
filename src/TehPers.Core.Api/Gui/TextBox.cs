@@ -10,10 +10,9 @@ namespace TehPers.Core.Api.Gui
     /// </summary>
     internal record TextBox : WrapperComponent
     {
-        private readonly TextInputState state;
-        private readonly IInputHelper inputHelper;
+        private readonly IGuiComponent textInput;
 
-        protected override IGuiComponent Inner => this.CreateInner(this.state, this.inputHelper);
+        public override IGuiComponent Inner => this.CreateInner();
 
         /// <summary>
         /// Creates a new text box.
@@ -21,22 +20,29 @@ namespace TehPers.Core.Api.Gui
         /// <param name="state">The state of the text input.</param>
         /// <param name="inputHelper">The input helper.</param>
         public TextBox(TextInputState state, IInputHelper inputHelper)
-        {
-            this.state = state;
-            this.inputHelper = inputHelper;
-        }
-
-        private IGuiComponent CreateInner(
-            TextInputState state,
-            IInputHelper inputHelper
-        )
-        {
-            var background = Game1.content.Load<Texture2D>(@"LooseSprites\textBox");
-            return new TextInputComponent(state, inputHelper)
+            : this(
+                new TextInputComponent(state, inputHelper)
                 {
                     HighlightedTextBackgroundColor = new(Color.DeepSkyBlue, 0.5f),
                     CursorColor = new(Color.Black, 0.75f),
-                }.WithPadding(16, 6, 6, 8)
+                }
+            )
+        {
+        }
+
+        /// <summary>
+        /// Creates a new text box.
+        /// </summary>
+        /// <param name="textInput">The inner text input.</param>
+        public TextBox(IGuiComponent textInput)
+        {
+            this.textInput = textInput;
+        }
+
+        private IGuiComponent CreateInner()
+        {
+            var background = Game1.content.Load<Texture2D>(@"LooseSprites\textBox");
+            return this.textInput.WithPadding(16, 6, 6, 8)
                 .WithBackground(new TextureComponent(background));
         }
     }

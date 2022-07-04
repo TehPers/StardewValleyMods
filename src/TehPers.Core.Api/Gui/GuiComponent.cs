@@ -4,6 +4,8 @@ using StardewModdingAPI;
 using StardewValley.Menus;
 using System;
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
+using TehPers.Core.Api.Gui.Layouts;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -42,12 +44,12 @@ namespace TehPers.Core.Api.Gui
         /// <param name="component">The component to horizontally align.</param>
         /// <param name="horizontal">The horizontal alignment to apply.</param>
         /// <returns>The aligned component.</returns>
-        public static HorizontalAlign Aligned(
+        public static IGuiComponent Aligned(
             this IGuiComponent component,
             HorizontalAlignment horizontal
         )
         {
-            return new(component, horizontal);
+            return new HorizontalAlignComponent(component, horizontal);
         }
 
         /// <summary>
@@ -56,12 +58,12 @@ namespace TehPers.Core.Api.Gui
         /// <param name="component">The component to vertically align.</param>
         /// <param name="vertical">The vertical alignment to apply.</param>
         /// <returns>The aligned component.</returns>
-        public static VerticalAlign Aligned(
+        public static IGuiComponent Aligned(
             this IGuiComponent component,
             VerticalAlignment vertical
         )
         {
-            return new(component, vertical);
+            return new VerticalAlignComponent(component, vertical);
         }
 
         /// <summary>
@@ -71,7 +73,7 @@ namespace TehPers.Core.Api.Gui
         /// <param name="horizontal">The horizontal alignment to apply.</param>
         /// <param name="vertical">The vertical alignment to apply.</param>
         /// <returns>The aligned component.</returns>
-        public static VerticalAlign Aligned(
+        public static IGuiComponent Aligned(
             this IGuiComponent component,
             HorizontalAlignment horizontal,
             VerticalAlignment vertical
@@ -86,7 +88,7 @@ namespace TehPers.Core.Api.Gui
         /// <param name="component">The component to add padding to.</param>
         /// <param name="sides">The amount of padding on all sides.</param>
         /// <returns>The padded component.</returns>
-        public static WithPadding WithPadding(this IGuiComponent component, float sides)
+        public static IGuiComponent WithPadding(this IGuiComponent component, float sides)
         {
             return component.WithPadding(sides, sides, sides, sides);
         }
@@ -98,7 +100,7 @@ namespace TehPers.Core.Api.Gui
         /// <param name="leftRight">The amount of padding on the left and right.</param>
         /// <param name="topBottom">The amount of padding on the top and bottom.</param>
         /// <returns>The padded component.</returns>
-        public static WithPadding WithPadding(
+        public static IGuiComponent WithPadding(
             this IGuiComponent component,
             float leftRight,
             float topBottom
@@ -116,7 +118,7 @@ namespace TehPers.Core.Api.Gui
         /// <param name="top">The amount of padding on the top.</param>
         /// <param name="bottom">The amount of padding on the bottom.</param>
         /// <returns>The padded component.</returns>
-        public static WithPadding WithPadding(
+        public static IGuiComponent WithPadding(
             this IGuiComponent component,
             float left,
             float right,
@@ -124,7 +126,7 @@ namespace TehPers.Core.Api.Gui
             float bottom
         )
         {
-            return new(component, left, right, top, bottom);
+            return new PaddedComponent(component, left, right, top, bottom);
         }
 
         /// <summary>
@@ -132,9 +134,9 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         /// <param name="component">The component to shrink.</param>
         /// <returns>The shrunk component.</returns>
-        public static Shrink Shrink(this IGuiComponent component)
+        public static IGuiComponent Shrink(this IGuiComponent component)
         {
-            return new(component);
+            return new ShrinkComponent(component);
         }
 
         /// <summary>
@@ -198,11 +200,11 @@ namespace TehPers.Core.Api.Gui
             float? layerDepth = null
         )
         {
-            return new LabelComponent(text).MaybeInitRef(font, (l, f) => l with {Font = f})
-                .MaybeInitVal(color, (l, c) => l with {Color = c})
-                .MaybeInitVal(scale, (l, s) => l with {Scale = s})
-                .MaybeInitVal(spriteEffects, (l, s) => l with {SpriteEffects = s})
-                .MaybeInitVal(layerDepth, (l, d) => l with {LayerDepth = d});
+            return new LabelComponent(text).MaybeInitRef(font, (l, f) => l with { Font = f })
+                .MaybeInitVal(color, (l, c) => l with { Color = c })
+                .MaybeInitVal(scale, (l, s) => l with { Scale = s })
+                .MaybeInitVal(spriteEffects, (l, s) => l with { SpriteEffects = s })
+                .MaybeInitVal(layerDepth, (l, d) => l with { LayerDepth = d });
         }
 
         /// <summary>
@@ -236,24 +238,45 @@ namespace TehPers.Core.Api.Gui
         )
         {
             return new TextInputComponent(state, inputHelper)
-                .MaybeInitRef(font, (input, f) => input with {Font = f})
-                .MaybeInitVal(textColor, (input, c) => input with {TextColor = c})
-                .MaybeInitVal(cursorColor, (input, c) => input with {CursorColor = c})
+                .MaybeInitRef(font, (input, f) => input with { Font = f })
+                .MaybeInitVal(textColor, (input, c) => input with { TextColor = c })
+                .MaybeInitVal(cursorColor, (input, c) => input with { CursorColor = c })
                 .MaybeInitVal(
                     highlightedTextColor,
-                    (input, c) => input with {HighlightedTextColor = c}
+                    (input, c) => input with { HighlightedTextColor = c }
                 )
                 .MaybeInitVal(
                     highlightedTextBackgroundColor,
-                    (input, c) => input with {HighlightedTextBackgroundColor = c}
+                    (input, c) => input with { HighlightedTextBackgroundColor = c }
                 )
-                .MaybeInitVal(unfocusOnEsc, (input, b) => input with {UnfocusOnEsc = b})
-                .MaybeInitRef(insertionCue, (input, s) => input with {InsertionCue = s})
+                .MaybeInitVal(unfocusOnEsc, (input, b) => input with { UnfocusOnEsc = b })
+                .MaybeInitRef(insertionCue, (input, s) => input with { InsertionCue = s })
                 .MaybeInitRef(
                     overrideInsertionCues,
-                    (input, d) => input with {OverrideInsertionCues = d}
+                    (input, d) => input with { OverrideInsertionCues = d }
                 )
-                .MaybeInitRef(deletionCue, (input, s) => input with {DeletionCue = s});
+                .MaybeInitRef(deletionCue, (input, s) => input with { DeletionCue = s });
+        }
+
+        /// <summary>
+        /// Creates a new textbox.
+        /// </summary>
+        /// <param name="state">The state of the text input.</param>
+        /// <param name="inputHelper">The input helper.</param>
+        /// <returns>The textbox component.</returns>
+        public static IGuiComponent TextBox(TextInputState state, IInputHelper inputHelper)
+        {
+            return new TextBox(state, inputHelper);
+        }
+
+        /// <summary>
+        /// Creates a new textbox.
+        /// </summary>
+        /// <param name="input">The text input component.</param>
+        /// <returns>The textbox component.</returns>
+        public static IGuiComponent TextBox(IGuiComponent input)
+        {
+            return new TextBox(input);
         }
 
         /// <summary>
@@ -280,12 +303,12 @@ namespace TehPers.Core.Api.Gui
         )
         {
             return new TextureComponent(texture)
-                .MaybeInitVal(sourceRectangle, (t, s) => t with {SourceRectangle = s})
-                .MaybeInitVal(color, (t, c) => t with {Color = c})
-                .MaybeInitVal(effects, (t, e) => t with {Effects = e})
-                .MaybeInitVal(layerDepth, (t, d) => t with {LayerDepth = d})
-                .MaybeInitRef(minScale, (t, s) => t with {MinScale = s})
-                .MaybeInitRef(maxScale, (t, s) => t with {MaxScale = s});
+                .MaybeInitVal(sourceRectangle, (t, s) => t with { SourceRectangle = s })
+                .MaybeInitVal(color, (t, c) => t with { Color = c })
+                .MaybeInitVal(effects, (t, e) => t with { Effects = e })
+                .MaybeInitVal(layerDepth, (t, d) => t with { LayerDepth = d })
+                .MaybeInitRef(minScale, (t, s) => t with { MinScale = s })
+                .MaybeInitRef(maxScale, (t, s) => t with { MaxScale = s });
         }
 
         /// <summary>
@@ -306,7 +329,7 @@ namespace TehPers.Core.Api.Gui
         {
             return new MenuBackgroundComponent().MaybeInitVal(
                 layerDepth,
-                (m, d) => m with {LayerDepth = d}
+                (m, d) => m with { LayerDepth = d }
             );
         }
 
@@ -319,10 +342,61 @@ namespace TehPers.Core.Api.Gui
         {
             return new MenuHorizontalSeparatorComponent().MaybeInitVal(
                 layerDepth,
-                (m, d) => m with {LayerDepth = d}
+                (m, d) => m with { LayerDepth = d }
             );
         }
 
+        /// <summary>
+        /// Creates a new horizontal layout containing the given components.
+        /// </summary>
+        /// <param name="addComponents">A callback which adds the components.</param>
+        /// <returns>The horizontal layout.</returns>
+        public static IGuiComponent Horizontal(Action<ILayoutBuilder> addComponents)
+        {
+            return HorizontalLayoutComponent.Build(addComponents);
+        }
+
+        /// <summary>
+        /// Creates a new horizontal layout containing the given components. The components are
+        /// automatically aligned as they're added to the layout.
+        /// </summary>
+        /// <param name="defaultAlignment">The default row alignment.</param>
+        /// <param name="addComponents">A callback which adds the components.</param>
+        /// <returns>The horizontal layout.</returns>
+        public static IGuiComponent Horizontal(
+            VerticalAlignment defaultAlignment,
+            Action<ILayoutBuilder> addComponents
+        )
+        {
+            return HorizontalLayoutComponent.BuildAligned(addComponents, defaultAlignment);
+        }
+
+        /// <summary>
+        /// Creates a new vertical layout containing the given components.
+        /// </summary>
+        /// <param name="addComponents">A callback which adds the components.</param>
+        /// <returns>The vertical layout.</returns>
+        public static IGuiComponent Vertical(Action<ILayoutBuilder> addComponents)
+        {
+            return VerticalLayoutComponent.Build(addComponents);
+        }
+
+        /// <summary>
+        /// Creates a new vertical layout containing the given components. The components are
+        /// automatically aligned as they're added to the layout.
+        /// </summary>
+        /// <param name="defaultAlignment">The default row alignment.</param>
+        /// <param name="addComponents">A callback which adds the components.</param>
+        /// <returns>The vertical layout.</returns>
+        public static IGuiComponent Vertical(
+            HorizontalAlignment defaultAlignment,
+            Action<ILayoutBuilder> addComponents
+        )
+        {
+            return VerticalLayoutComponent.BuildAligned(addComponents, defaultAlignment);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T MaybeInitRef<T, TProp>(
             this T value,
             TProp? propValue,
@@ -333,6 +407,7 @@ namespace TehPers.Core.Api.Gui
             return propValue is { } v ? init(value, v) : value;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T MaybeInitVal<T, TProp>(
             this T value,
             TProp? propValue,

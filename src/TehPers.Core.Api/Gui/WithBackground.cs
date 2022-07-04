@@ -35,7 +35,6 @@ namespace TehPers.Core.Api.Gui
                         ({ } h1, { } h2) => Math.Min(h1, h2),
                     }
                 ),
-                AllowBuffer = bgConstraints.AllowBuffer && fgConstraints.AllowBuffer,
             };
         }
 

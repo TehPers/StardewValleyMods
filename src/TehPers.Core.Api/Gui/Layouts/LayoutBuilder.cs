@@ -27,7 +27,7 @@ namespace TehPers.Core.Api.Gui.Layouts
             Action<ILayoutBuilder> addComponents
         )
         {
-            builder.Add(VerticalLayout.BuildAligned(addComponents));
+            builder.Add(VerticalLayoutComponent.BuildAligned(addComponents));
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace TehPers.Core.Api.Gui.Layouts
             Action<ILayoutBuilder> addComponents
         )
         {
-            builder.Add(VerticalLayout.BuildAligned(addComponents, defaultAlignment));
+            builder.Add(VerticalLayoutComponent.BuildAligned(addComponents, defaultAlignment));
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace TehPers.Core.Api.Gui.Layouts
             Action<ILayoutBuilder> addComponents
         )
         {
-            builder.Add(HorizontalLayout.BuildAligned(addComponents));
+            builder.Add(HorizontalLayoutComponent.BuildAligned(addComponents));
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace TehPers.Core.Api.Gui.Layouts
             Action<ILayoutBuilder> addComponents
         )
         {
-            builder.Add(HorizontalLayout.BuildAligned(addComponents, defaultAlignment));
+            builder.Add(HorizontalLayoutComponent.BuildAligned(addComponents, defaultAlignment));
         }
 
         /// <summary>

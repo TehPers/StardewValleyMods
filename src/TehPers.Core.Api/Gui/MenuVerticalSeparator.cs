@@ -9,7 +9,7 @@ namespace TehPers.Core.Api.Gui
     /// </summary>
     internal record MenuVerticalSeparator() : WrapperComponent
     {
-        protected override IGuiComponent Inner => this.CreateInner();
+        public override IGuiComponent Inner => this.CreateInner();
 
         /// <summary>
         /// The end T-connector to put at the top of this separator.
@@ -36,7 +36,7 @@ namespace TehPers.Core.Api.Gui
 
         private IGuiComponent CreateInner()
         {
-            return VerticalLayout.BuildAligned(
+            return VerticalLayoutComponent.BuildAligned(
                 builder =>
                 {
                     // Top connector

@@ -10,7 +10,7 @@ namespace TehPers.Core.Api.Gui
     /// </summary>
     internal record ClippedComponent : WrapperComponent
     {
-        protected override IGuiComponent Inner { get; }
+        public override IGuiComponent Inner { get; }
 
         /// <summary>
         /// Creates a new clipped component.

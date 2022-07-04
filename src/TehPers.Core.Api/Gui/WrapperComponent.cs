@@ -10,7 +10,7 @@ namespace TehPers.Core.Api.Gui
         /// <summary>
         /// The inner component.
         /// </summary>
-        protected abstract IGuiComponent Inner { get; }
+        public abstract IGuiComponent Inner { get; }
         
         /// <inheritdoc />
         public virtual GuiConstraints GetConstraints()
