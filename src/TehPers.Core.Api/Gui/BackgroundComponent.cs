@@ -8,7 +8,7 @@ namespace TehPers.Core.Api.Gui
     /// </summary>
     /// <param name="Foreground">The foreground component.</param>
     /// <param name="Background">The background component.</param>
-    public record WithBackground(IGuiComponent Foreground, IGuiComponent Background) : IGuiComponent
+    internal record BackgroundComponent(IGuiComponent Foreground, IGuiComponent Background) : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()

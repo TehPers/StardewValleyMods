@@ -9,7 +9,7 @@ namespace TehPers.Core.Api.Gui
     /// </summary>
     /// <param name="Constraints">The constraints on the component.</param>
     /// <param name="Draw">A callback which draws the component.</param>
-    public record SimpleComponent(
+    internal record SimpleComponent(
         GuiConstraints Constraints,
         Action<SpriteBatch, Rectangle> Draw
     ) : IGuiComponent

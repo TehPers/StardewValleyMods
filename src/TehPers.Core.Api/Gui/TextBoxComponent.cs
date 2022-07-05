@@ -8,7 +8,7 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A standard text box.
     /// </summary>
-    internal record TextBox : WrapperComponent
+    internal record TextBoxComponent : WrapperComponent
     {
         private readonly IGuiComponent textInput;
 
@@ -19,7 +19,7 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         /// <param name="state">The state of the text input.</param>
         /// <param name="inputHelper">The input helper.</param>
-        public TextBox(TextInputState state, IInputHelper inputHelper)
+        public TextBoxComponent(TextInputState state, IInputHelper inputHelper)
             : this(
                 new TextInputComponent(state, inputHelper)
                 {
@@ -34,7 +34,7 @@ namespace TehPers.Core.Api.Gui
         /// Creates a new text box.
         /// </summary>
         /// <param name="textInput">The inner text input.</param>
-        public TextBox(IGuiComponent textInput)
+        public TextBoxComponent(IGuiComponent textInput)
         {
             this.textInput = textInput;
         }

@@ -6,7 +6,7 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A component that executes an action when clicked.
     /// </summary>
-    internal record ClickHandler : WrapperComponent
+    internal record ClickHandlerComponent : WrapperComponent
     {
         /// <summary>
         /// The inner component.
@@ -24,7 +24,7 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         /// <param name="inner">The inner component.</param>
         /// <param name="onClick">The action to perform when the button is clicked.</param>
-        public ClickHandler(IGuiComponent inner, Action<ClickType> onClick)
+        public ClickHandlerComponent(IGuiComponent inner, Action<ClickType> onClick)
         {
             this.Inner = inner;
             this.OnClick = onClick;

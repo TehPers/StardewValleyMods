@@ -6,12 +6,12 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A dialogue box.
     /// </summary>
-    public class DialogueBox : IGuiComponent
+    internal record DialogueBoxComponent : IGuiComponent
     {
         /// <summary>
         /// The portrait to show, if any.
         /// </summary>
-        public SpeakerPortrait Speaker { get; init; } = SpeakerPortrait.None;
+        public DialogueSpeakerPortrait? Speaker { get; init; } = null;
 
         /// <summary>
         /// Whether to only draw the dialogue box itself.
@@ -45,35 +45,14 @@ namespace TehPers.Core.Api.Gui
                         bounds.Y,
                         bounds.Width,
                         bounds.Height,
-                        this.Speaker is not SpeakerPortrait.None,
+                        this.Speaker is not null,
                         this.DrawOnlyBox,
                         this.Message,
-                        this.Speaker is SpeakerPortrait.ObjectPortrait
+                        this.Speaker is DialogueSpeakerPortrait.ObjectPortrait
                     );
                     Game1.spriteBatch = prevBatch;
                 }
             );
-        }
-
-        /// <summary>
-        /// The speaker portrait to show, if any.
-        /// </summary>
-        public enum SpeakerPortrait
-        {
-            /// <summary>
-            /// No portrait should be shown.
-            /// </summary>
-            None,
-
-            /// <summary>
-            /// The portrait for <see cref="Game1.currentSpeaker"/> should be shown.
-            /// </summary>
-            CurrentSpeakerPortrait,
-
-            /// <summary>
-            /// The portrait for <see cref="Game1.objectDialoguePortraitPerson"/> should be shown.
-            /// </summary>
-            ObjectPortrait,
         }
     }
 }

@@ -9,13 +9,9 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A component which renders an item.
     /// </summary>
-    public class ItemViewComponent : IGuiComponent
+    /// <param name="Item">The item to show in this view.</param>
+    internal record ItemViewComponent(Item Item) : IGuiComponent
     {
-        /// <summary>
-        /// The item to render.
-        /// </summary>
-        public Item Item { get; }
-
         /// <summary>
         /// The transparency of the item.
         /// </summary>
@@ -40,16 +36,7 @@ namespace TehPers.Core.Api.Gui
         /// Whether to draw the item's shadow.
         /// </summary>
         public bool DrawShadow { get; init; } = true;
-
-        /// <summary>
-        /// Creates a new <see cref="ItemViewComponent"/>.
-        /// </summary>
-        /// <param name="item">The item to show in this view.</param>
-        public ItemViewComponent(Item item)
-        {
-            this.Item = item;
-        }
-
+        
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
         {

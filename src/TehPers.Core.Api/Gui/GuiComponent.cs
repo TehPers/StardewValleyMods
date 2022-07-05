@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Immutable;
@@ -30,12 +31,12 @@ namespace TehPers.Core.Api.Gui
         /// <param name="component">The component to add a background to.</param>
         /// <param name="background">The background component.</param>
         /// <returns>A component that applies a background to the inner component.</returns>
-        public static WithBackground WithBackground(
+        public static IGuiComponent WithBackground(
             this IGuiComponent component,
             IGuiComponent background
         )
         {
-            return new(component, background);
+            return new BackgroundComponent(component, background);
         }
 
         /// <summary>
@@ -147,7 +148,7 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The component, wrapped by a click handler.</returns>
         public static IGuiComponent OnClick(this IGuiComponent component, Action<ClickType> onClick)
         {
-            return new ClickHandler(component, onClick);
+            return new ClickHandlerComponent(component, onClick);
         }
 
         /// <summary>
@@ -183,6 +184,7 @@ namespace TehPers.Core.Api.Gui
 
         /// <summary>
         /// Creates a new text label.
+        /// 
         /// </summary>
         /// <param name="text">The text in the label.</param>
         /// <param name="font">The font to render the text with.</param>
@@ -266,7 +268,7 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The textbox component.</returns>
         public static IGuiComponent TextBox(TextInputState state, IInputHelper inputHelper)
         {
-            return new TextBox(state, inputHelper);
+            return new TextBoxComponent(state, inputHelper);
         }
 
         /// <summary>
@@ -276,7 +278,7 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The textbox component.</returns>
         public static IGuiComponent TextBox(IGuiComponent input)
         {
-            return new TextBox(input);
+            return new TextBoxComponent(input);
         }
 
         /// <summary>
@@ -312,6 +314,33 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <summary>
+        /// Creates a new component which renders an item.
+        /// </summary>
+        /// <param name="item">The item to show in this view.</param>
+        /// <param name="transparency">The transparency of the item.</param>
+        /// <param name="layerDepth">The layer depth to draw at.</param>
+        /// <param name="drawStackNumber">How to draw the stack number, if any.</param>
+        /// <param name="color">The color to tint the item.</param>
+        /// <param name="drawShadow">Whether to draw the item's shadow.</param>
+        /// <returns>The item view component.</returns>
+        public static IGuiComponent ItemView(
+            Item item,
+            float? transparency = null,
+            float? layerDepth = null,
+            StackDrawType? drawStackNumber = null,
+            Color? color = null,
+            bool? drawShadow = null
+        )
+        {
+            return new ItemViewComponent(item)
+                .MaybeInitVal(transparency, (i, t) => i with { Transparency = t })
+                .MaybeInitVal(layerDepth, (i, d) => i with { LayerDepth = d })
+                .MaybeInitVal(drawStackNumber, (i, d) => i with { DrawStackNumber = d })
+                .MaybeInitVal(color, (i, c) => i with { Color = c })
+                .MaybeInitVal(drawShadow, (i, d) => i with { DrawShadow = d });
+        }
+
+        /// <summary>
         /// Creates a new empty component. This can stretch to any size and just fills space.
         /// </summary>
         /// <returns>The empty component.</returns>
@@ -319,6 +348,21 @@ namespace TehPers.Core.Api.Gui
         {
             return new EmptyComponent();
         }
+
+        /// <summary>
+        /// Creates a new component with simple functionality.
+        /// </summary>
+        /// <param name="constraints">The constraints on the component.</param>
+        /// <param name="draw">A callback which draws the component.</param>
+        /// <returns>The new component.</returns>
+        public static IGuiComponent Simple(
+            GuiConstraints constraints,
+            Action<SpriteBatch, Rectangle> draw
+        )
+        {
+            return new SimpleComponent(constraints, draw);
+        }
+
 
         /// <summary>
         /// Creates a new menu background component.
@@ -344,6 +388,42 @@ namespace TehPers.Core.Api.Gui
                 layerDepth,
                 (m, d) => m with { LayerDepth = d }
             );
+        }
+
+        /*
+        /// <summary>
+        /// The portrait to show, if any.
+        /// </summary>
+        public SpeakerPortrait Speaker { get; init; } = SpeakerPortrait.None;
+
+        /// <summary>
+        /// Whether to only draw the dialogue box itself.
+        /// </summary>
+        public bool DrawOnlyBox { get; init; } = true;
+
+        /// <summary>
+        /// The message to show in the dialogue box.
+        /// </summary>
+        public string? Message { get; init; } = null;
+         */
+
+        /// <summary>
+        /// Creates a new dialogue box component.
+        /// </summary>
+        /// <param name="speaker">The portrait to show, if any.</param>
+        /// <param name="drawOnlyBox">Whether to only draw the dialogue box itself.</param>
+        /// <param name="message">The message to show in the dialogue box.</param>
+        /// <returns>The new dialogue box component.</returns>
+        public static IGuiComponent DialogueBox(
+            DialogueSpeakerPortrait? speaker = null,
+            bool? drawOnlyBox = null,
+            string? message = null
+        )
+        {
+            return new DialogueBoxComponent()
+                .MaybeInitVal(speaker, (d, s) => d with { Speaker = s })
+                .MaybeInitVal(drawOnlyBox, (d, b) => d with { DrawOnlyBox = b })
+                .MaybeInitRef(message, (d, m) => d with { Message = m });
         }
 
         /// <summary>
