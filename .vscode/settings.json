@@ -1,8 +1,7 @@
 {
   "markdown.extension.list.indentationSize": "inherit",
   "files.associations": {
-    "*.json": "jsonc",
-    "*.fs": "fsharp"
+    "*.json": "jsonc"
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
