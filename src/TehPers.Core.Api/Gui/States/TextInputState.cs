@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using TehPers.Core.Api.Gui.Components;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.States
 {
     /// <summary>
-    /// The state for a <see cref="TextInputComponent"/>.
+    /// The state for a <see cref="TextInput"/>.
     /// </summary>
     public class TextInputState
     {

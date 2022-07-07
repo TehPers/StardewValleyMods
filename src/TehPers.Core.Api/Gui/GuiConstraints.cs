@@ -1,4 +1,6 @@
-﻿namespace TehPers.Core.Api.Gui
+﻿using TehPers.Core.Api.Gui.Components;
+
+namespace TehPers.Core.Api.Gui
 {
     /// <summary>
     /// Constraints on how an <see cref="IGuiComponent"/> should be rendered.

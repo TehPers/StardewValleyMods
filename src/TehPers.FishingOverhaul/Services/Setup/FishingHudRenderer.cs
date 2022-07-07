@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -6,6 +8,7 @@ using StardewValley;
 using StardewValley.Tools;
 using TehPers.Core.Api.Gui;
 using TehPers.Core.Api.Gui.Layouts;
+using TehPers.Core.Api.Gui.States;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
@@ -20,9 +23,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private string text = "Click me!";
         private int count = 0;
         private readonly TextInputState textState = new();
+        private readonly DropdownState<int> dropdownState = new(
+            Enumerable.Range(1, 10)
+                .Select(n => (n, $"Item{n}"))
+                .ToList()
+        );
 
         public TestMenu(IModHelper helper)
-            : base(true)
+            : base(helper, true)
         {
             this.helper = helper;
         }
@@ -44,7 +52,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 }
                             )
                             .AddTo(builder);
-                        builder.Horizontal(
+                        GuiComponent.Horizontal(
                             row =>
                             {
                                 GuiComponent.Label("You have clicked ").AddTo(row);
@@ -52,8 +60,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                     .AddTo(row);
                                 GuiComponent.Label(" times!").AddTo(row);
                             }
-                        );
+                        ).AddTo(builder);
                         GuiComponent.TextBox(this.textState, this.helper.Input)
+                            .AddTo(builder);
+                        GuiComponent.Dropdown(this.dropdownState)
                             .AddTo(builder);
                     }
                 )

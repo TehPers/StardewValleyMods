@@ -2,13 +2,14 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using TehPers.Core.Api.Gui.States;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// A standard text box.
     /// </summary>
-    internal record TextBoxComponent : WrapperComponent
+    internal record TextBox : ComponentWrapper
     {
         private readonly IGuiComponent textInput;
 
@@ -19,9 +20,9 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         /// <param name="state">The state of the text input.</param>
         /// <param name="inputHelper">The input helper.</param>
-        public TextBoxComponent(TextInputState state, IInputHelper inputHelper)
+        public TextBox(TextInputState state, IInputHelper inputHelper)
             : this(
-                new TextInputComponent(state, inputHelper)
+                new TextInput(state, inputHelper)
                 {
                     HighlightedTextBackgroundColor = new(Color.DeepSkyBlue, 0.5f),
                     CursorColor = new(Color.Black, 0.75f),
@@ -34,7 +35,7 @@ namespace TehPers.Core.Api.Gui
         /// Creates a new text box.
         /// </summary>
         /// <param name="textInput">The inner text input.</param>
-        public TextBoxComponent(IGuiComponent textInput)
+        public TextBox(IGuiComponent textInput)
         {
             this.textInput = textInput;
         }
@@ -43,7 +44,7 @@ namespace TehPers.Core.Api.Gui
         {
             var background = Game1.content.Load<Texture2D>(@"LooseSprites\textBox");
             return this.textInput.WithPadding(16, 6, 6, 8)
-                .WithBackground(new TextureComponent(background));
+                .WithBackground(new TextureBox(background));
         }
     }
 }

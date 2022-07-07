@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// Vertically aligns a component. This removes any maximum height constraint.
     /// </summary>
-    internal record VerticalAlignComponent : WrapperComponent
+    internal record VerticalAligner : ComponentWrapper
     {
         private readonly VerticalAlignment alignment;
 
@@ -17,7 +17,7 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         /// <param name="inner">The inner component.</param>
         /// <param name="alignment">The type of alignment to apply.</param>
-        public VerticalAlignComponent(IGuiComponent inner, VerticalAlignment alignment)
+        public VerticalAligner(IGuiComponent inner, VerticalAlignment alignment)
         {
             this.Inner = inner;
             this.alignment = alignment;

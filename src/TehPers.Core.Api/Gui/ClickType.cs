@@ -11,9 +11,8 @@
         Left,
 
         /// <summary>
-        /// A click from the middle mouse button. This is not used (by default).
+        /// A click from the middle mouse button.
         /// </summary>
-        // TODO: add this?
         Middle,
 
         /// <summary>

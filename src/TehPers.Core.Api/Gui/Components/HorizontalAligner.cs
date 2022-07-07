@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// Horizontally aligns a component. This removes any maximum width constraint.
     /// </summary>
-    internal record HorizontalAlignComponent : WrapperComponent
+    internal record HorizontalAligner : ComponentWrapper
     {
         private readonly HorizontalAlignment alignment;
 
@@ -17,7 +17,7 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         /// <param name="inner">The inner component.</param>
         /// <param name="alignment">The type of alignment to apply.</param>
-        public HorizontalAlignComponent(IGuiComponent inner, HorizontalAlignment alignment)
+        public HorizontalAligner(IGuiComponent inner, HorizontalAlignment alignment)
         {
             this.Inner = inner;
             this.alignment = alignment;

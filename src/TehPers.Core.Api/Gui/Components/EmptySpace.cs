@@ -1,11 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// Empty space in a GUI.
     /// </summary>
-    internal record EmptyComponent : IGuiComponent
+    internal record EmptySpace : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()

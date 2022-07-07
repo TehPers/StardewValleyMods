@@ -1,5 +1,6 @@
 ﻿using StardewValley;
 using System;
+using TehPers.Core.Api.Gui.Components;
 using TehPers.Core.Api.Gui.Layouts;
 
 namespace TehPers.Core.Api.Gui
@@ -7,7 +8,7 @@ namespace TehPers.Core.Api.Gui
     /// <summary>
     /// A vertical separator in a menu.
     /// </summary>
-    internal record MenuVerticalSeparator() : WrapperComponent
+    internal record MenuVerticalSeparator() : ComponentWrapper
     {
         public override IGuiComponent Inner => this.CreateInner();
 
@@ -44,7 +45,7 @@ namespace TehPers.Core.Api.Gui
                     {
                         case MenuSeparatorConnector.PinMenuBorder:
                             builder.Add(
-                                new TextureComponent(Game1.menuTexture)
+                                new TextureBox(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -54,7 +55,7 @@ namespace TehPers.Core.Api.Gui
                             break;
                         case MenuSeparatorConnector.MenuBorder:
                             builder.Add(
-                                new TextureComponent(Game1.menuTexture)
+                                new TextureBox(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -64,7 +65,7 @@ namespace TehPers.Core.Api.Gui
                             break;
                         case MenuSeparatorConnector.Separator:
                             builder.Add(
-                                new TextureComponent(Game1.menuTexture)
+                                new TextureBox(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -84,7 +85,7 @@ namespace TehPers.Core.Api.Gui
 
                     // Body
                     builder.Add(
-                        new TextureComponent(Game1.menuTexture)
+                        new TextureBox(Game1.menuTexture)
                         {
                             MinScale = GuiSize.One,
                             MaxScale = new(1, null),
@@ -97,7 +98,7 @@ namespace TehPers.Core.Api.Gui
                     {
                         case MenuSeparatorConnector.PinMenuBorder:
                             builder.Add(
-                                new TextureComponent(Game1.menuTexture)
+                                new TextureBox(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -107,7 +108,7 @@ namespace TehPers.Core.Api.Gui
                             break;
                         case MenuSeparatorConnector.MenuBorder:
                             builder.Add(
-                                new TextureComponent(Game1.menuTexture)
+                                new TextureBox(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,
@@ -117,7 +118,7 @@ namespace TehPers.Core.Api.Gui
                             break;
                         case MenuSeparatorConnector.Separator:
                             builder.Add(
-                                new TextureComponent(Game1.menuTexture)
+                                new TextureBox(Game1.menuTexture)
                                 {
                                     MinScale = GuiSize.One,
                                     MaxScale = PartialGuiSize.One,

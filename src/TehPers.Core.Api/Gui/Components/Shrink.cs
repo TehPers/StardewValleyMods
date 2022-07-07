@@ -1,9 +1,9 @@
-﻿namespace TehPers.Core.Api.Gui
+﻿namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// Shrinks a GUI component to its minimum size.
     /// </summary>
-    internal record ShrinkComponent : WrapperComponent
+    internal record Shrink : ComponentWrapper
     {
         public override IGuiComponent Inner { get; }
 
@@ -11,7 +11,7 @@
         /// Shrinks a GUI component to its minimum size.
         /// </summary>
         /// <param name="inner">The inner component.</param>
-        public ShrinkComponent(IGuiComponent inner)
+        public Shrink(IGuiComponent inner)
         {
             this.Inner = inner;
         }

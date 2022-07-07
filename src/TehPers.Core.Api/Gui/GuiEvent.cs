@@ -18,6 +18,12 @@ namespace TehPers.Core.Api.Gui
         public sealed record UpdateTick(GameTime Time) : GuiEvent;
 
         /// <summary>
+        /// A position was hovered over by the cursor.
+        /// </summary>
+        /// <param name="Position">The position being hovered over.</param>
+        public sealed record Hover(Point Position) : GuiEvent;
+
+        /// <summary>
         /// A mouse click was received.
         /// </summary>
         /// <param name="Position">The cursor position when receiving the click.</param>

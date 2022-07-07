@@ -1,17 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// An extendable wrapper around an existing component.
     /// </summary>
-    internal abstract record WrapperComponent : IGuiComponent
+    internal abstract record ComponentWrapper : IGuiComponent
     {
         /// <summary>
         /// The inner component.
         /// </summary>
         public abstract IGuiComponent Inner { get; }
-        
+
         /// <inheritdoc />
         public virtual GuiConstraints GetConstraints()
         {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// Adds padding to a component.
@@ -11,7 +11,7 @@ namespace TehPers.Core.Api.Gui
     /// <param name="Right">Padding to add to the right side.</param>
     /// <param name="Top">Padding to add to the top.</param>
     /// <param name="Bottom">Padding to add to the bottom.</param>
-    internal record PaddedComponent(
+    internal record ComponentPadder(
         IGuiComponent Inner,
         float Left,
         float Right,

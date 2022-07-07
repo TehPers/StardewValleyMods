@@ -1,10 +1,14 @@
-﻿namespace TehPers.Core.Api.Gui
+﻿using StardewModdingAPI;
+using TehPers.Core.Api.Gui.Components;
+
+namespace TehPers.Core.Api.Gui
 {
     internal class SimpleManagedMenu : ManagedMenu
     {
         private readonly IGuiComponent root;
 
-        public SimpleManagedMenu(IGuiComponent root)
+        public SimpleManagedMenu(IGuiComponent root, IModHelper helper)
+            : base(helper)
         {
             this.root = root;
         }

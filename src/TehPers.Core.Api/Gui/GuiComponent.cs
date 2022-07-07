@@ -2,11 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Menus;
 using System;
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using TehPers.Core.Api.Gui.Components;
 using TehPers.Core.Api.Gui.Layouts;
+using TehPers.Core.Api.Gui.States;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -16,13 +17,17 @@ namespace TehPers.Core.Api.Gui
     public static class GuiComponent
     {
         /// <summary>
-        /// Converts this component to an <see cref="IClickableMenu"/>.
+        /// Converts this component to an <see cref="StardewValley.Menus.IClickableMenu"/>.
         /// </summary>
         /// <param name="component">The component to turn into a menu.</param>
+        /// <param name="helper">The helper to use.</param>
         /// <returns>The menu.</returns>
-        public static IClickableMenu ToMenu(this IGuiComponent component)
+        public static StardewValley.Menus.IClickableMenu ToMenu(
+            this IGuiComponent component,
+            IModHelper helper
+        )
         {
-            return new SimpleManagedMenu(component);
+            return new SimpleManagedMenu(component, helper);
         }
 
         /// <summary>
@@ -36,7 +41,7 @@ namespace TehPers.Core.Api.Gui
             IGuiComponent background
         )
         {
-            return new BackgroundComponent(component, background);
+            return new WithBackground(component, background);
         }
 
         /// <summary>
@@ -50,7 +55,7 @@ namespace TehPers.Core.Api.Gui
             HorizontalAlignment horizontal
         )
         {
-            return new HorizontalAlignComponent(component, horizontal);
+            return new HorizontalAligner(component, horizontal);
         }
 
         /// <summary>
@@ -64,7 +69,7 @@ namespace TehPers.Core.Api.Gui
             VerticalAlignment vertical
         )
         {
-            return new VerticalAlignComponent(component, vertical);
+            return new VerticalAligner(component, vertical);
         }
 
         /// <summary>
@@ -127,7 +132,7 @@ namespace TehPers.Core.Api.Gui
             float bottom
         )
         {
-            return new PaddedComponent(component, left, right, top, bottom);
+            return new ComponentPadder(component, left, right, top, bottom);
         }
 
         /// <summary>
@@ -137,18 +142,47 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The shrunk component.</returns>
         public static IGuiComponent Shrink(this IGuiComponent component)
         {
-            return new ShrinkComponent(component);
+            return new Shrink(component);
         }
 
         /// <summary>
         /// Executes an action when this control is clicked.
         /// </summary>
-        /// <param name="component">The component to check for clicks for.</param>
+        /// <param name="component">The inner component.</param>
         /// <param name="onClick">The action to perform.</param>
-        /// <returns>The component, wrapped by a click handler.</returns>
+        /// <returns>The component, wrapped by a click detector.</returns>
         public static IGuiComponent OnClick(this IGuiComponent component, Action<ClickType> onClick)
         {
-            return new ClickHandlerComponent(component, onClick);
+            return new ClickDetector(component, onClick);
+        }
+
+        /// <summary>
+        /// Executes an action when this control is clicked.
+        /// </summary>
+        /// <param name="component">The inner component.</param>
+        /// <param name="clickType">The type of click to detect.</param>
+        /// <param name="onClick">The action to perform.</param>
+        /// <returns>The component, wrapped by a click detector.</returns>
+        public static IGuiComponent OnClick(this IGuiComponent component, ClickType clickType, Action onClick)
+        {
+            return component.OnClick(ct =>
+            {
+                if (clickType == ct)
+                {
+                    onClick();
+                }
+            });
+        }
+
+        /// <summary>
+        /// Executes an action when this control is hovered.
+        /// </summary>
+        /// <param name="component">The inner component.</param>
+        /// <param name="onHover">The action to perform.</param>
+        /// <returns>The component, wrapped by a hover detector.</returns>
+        public static IGuiComponent OnHover(this IGuiComponent component, Action onHover)
+        {
+            return new HoverDetector(component, onHover);
         }
 
         /// <summary>
@@ -164,7 +198,7 @@ namespace TehPers.Core.Api.Gui
             PartialGuiSize? maxSize = null
         )
         {
-            return new ConstrainedComponent(component)
+            return new Constrainer(component)
             {
                 MinSize = minSize ?? PartialGuiSize.Empty,
                 MaxSize = maxSize ?? PartialGuiSize.Empty,
@@ -179,7 +213,7 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The clipped component.</returns>
         public static IGuiComponent Clipped(this IGuiComponent component)
         {
-            return new ClippedComponent(component);
+            return new Clipper(component);
         }
 
         /// <summary>
@@ -239,7 +273,7 @@ namespace TehPers.Core.Api.Gui
             string? deletionCue = null
         )
         {
-            return new TextInputComponent(state, inputHelper)
+            return new TextInput(state, inputHelper)
                 .MaybeInitRef(font, (input, f) => input with { Font = f })
                 .MaybeInitVal(textColor, (input, c) => input with { TextColor = c })
                 .MaybeInitVal(cursorColor, (input, c) => input with { CursorColor = c })
@@ -268,7 +302,7 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The textbox component.</returns>
         public static IGuiComponent TextBox(TextInputState state, IInputHelper inputHelper)
         {
-            return new TextBoxComponent(state, inputHelper);
+            return new TextBox(state, inputHelper);
         }
 
         /// <summary>
@@ -278,7 +312,7 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The textbox component.</returns>
         public static IGuiComponent TextBox(IGuiComponent input)
         {
-            return new TextBoxComponent(input);
+            return new TextBox(input);
         }
 
         /// <summary>
@@ -304,7 +338,7 @@ namespace TehPers.Core.Api.Gui
             PartialGuiSize? maxScale = null
         )
         {
-            return new TextureComponent(texture)
+            return new TextureBox(texture)
                 .MaybeInitVal(sourceRectangle, (t, s) => t with { SourceRectangle = s })
                 .MaybeInitVal(color, (t, c) => t with { Color = c })
                 .MaybeInitVal(effects, (t, e) => t with { Effects = e })
@@ -319,6 +353,7 @@ namespace TehPers.Core.Api.Gui
         /// <param name="item">The item to show in this view.</param>
         /// <param name="transparency">The transparency of the item.</param>
         /// <param name="layerDepth">The layer depth to draw at.</param>
+        /// <param name="sideLength">The side length of this item view.</param>
         /// <param name="drawStackNumber">How to draw the stack number, if any.</param>
         /// <param name="color">The color to tint the item.</param>
         /// <param name="drawShadow">Whether to draw the item's shadow.</param>
@@ -327,14 +362,16 @@ namespace TehPers.Core.Api.Gui
             Item item,
             float? transparency = null,
             float? layerDepth = null,
+            float? sideLength = null,
             StackDrawType? drawStackNumber = null,
             Color? color = null,
             bool? drawShadow = null
         )
         {
-            return new ItemViewComponent(item)
+            return new ItemView(item)
                 .MaybeInitVal(transparency, (i, t) => i with { Transparency = t })
                 .MaybeInitVal(layerDepth, (i, d) => i with { LayerDepth = d })
+                .MaybeInitVal(sideLength, (i, s) => i with { SideLength = s })
                 .MaybeInitVal(drawStackNumber, (i, d) => i with { DrawStackNumber = d })
                 .MaybeInitVal(color, (i, c) => i with { Color = c })
                 .MaybeInitVal(drawShadow, (i, d) => i with { DrawShadow = d });
@@ -346,7 +383,21 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The empty component.</returns>
         public static IGuiComponent Empty()
         {
-            return new EmptyComponent();
+            return new EmptySpace();
+        }
+
+        /// <summary>
+        /// Creates a new dropdown component.
+        /// </summary>
+        /// <typeparam name="T">The type of items that can be chosen.</typeparam>
+        /// <param name="state">The state of the dropdown component.</param>
+        /// <param name="layerDepth">The layer depth the component should be rendered at.</param>
+        /// <returns>The dropdown component.</returns>
+        public static IGuiComponent Dropdown<T>(DropdownState<T> state, float? layerDepth = null)
+        {
+            // TODO
+            return new Dropdown<T>(state)
+                .MaybeInitVal(layerDepth, (d, l) => d with { LayerDepth = l });
         }
 
         /// <summary>
@@ -363,6 +414,53 @@ namespace TehPers.Core.Api.Gui
             return new SimpleComponent(constraints, draw);
         }
 
+        /// <summary>
+        /// Fills a space with a texture created from a 3x3 grid, where the sides and center can be
+        /// stretched.
+        /// </summary>
+        /// <param name="texture">The source texture.</param>
+        /// <param name="topLeft">The source rectangle of the top left corner, if any.</param>
+        /// <param name="topCenter">The source rectangle of the top center edge, if any.</param>
+        /// <param name="topRight">The source rectangle of the top right corner, if any.</param>
+        /// <param name="centerLeft">The source rectangle of the center left edge, if any.</param>
+        /// <param name="center">The source rectangle of the center, if any.</param>
+        /// <param name="centerRight">The source rectangle of the center right edge, if any.</param>
+        /// <param name="bottomLeft">The source rectangle of the bottom left corner, if any.</param>
+        /// <param name="bottomCenter">The source rectangle of the bottom center edge, if any.</param>
+        /// <param name="bottomRight">The source rectangle of the bottom right corner, if any.</param>
+        /// <param name="minScale">The minimum scale of the individual texture parts.</param>
+        /// <param name="layerDepth">The layer depth to draw it at.</param>
+        /// <returns>The grid texture component.</returns>
+        public static IGuiComponent GridTexture(
+            Texture2D texture,
+            Rectangle? topLeft,
+            Rectangle? topCenter,
+            Rectangle? topRight,
+            Rectangle? centerLeft,
+            Rectangle? center,
+            Rectangle? centerRight,
+            Rectangle? bottomLeft,
+            Rectangle? bottomCenter,
+            Rectangle? bottomRight,
+            GuiSize? minScale = null,
+            float? layerDepth = null
+        )
+        {
+            return new GridTexture(
+                texture,
+                topLeft,
+                topCenter,
+                topRight,
+                centerLeft,
+                center,
+                centerRight,
+                bottomLeft,
+                bottomCenter,
+                bottomRight
+            )
+            .MaybeInitRef(minScale, (t, s) => t with { MinScale = s })
+            .MaybeInitVal(layerDepth, (t, d) => t with { LayerDepth = d });
+        }
 
         /// <summary>
         /// Creates a new menu background component.
@@ -371,9 +469,28 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The menu background component.</returns>
         public static IGuiComponent MenuBackground(float? layerDepth = null)
         {
-            return new MenuBackgroundComponent().MaybeInitVal(
-                layerDepth,
-                (m, d) => m with { LayerDepth = d }
+            return GuiComponent.GridTexture(
+                Game1.menuTexture,
+                new(0, 0, 64, 64),
+                new(128, 0, 64, 64),
+                new(192, 0, 64, 64),
+                new(0, 128, 64, 64),
+                null,
+                new(192, 128, 64, 64),
+                new(0, 192, 64, 64),
+                new(128, 192, 64, 64),
+                new(192, 192, 64, 64),
+                layerDepth: layerDepth
+            )
+            .WithBackground(
+                GuiComponent.Texture(
+                    Game1.menuTexture,
+                    sourceRectangle: new(64, 128, 64, 64),
+                    minScale: GuiSize.Zero,
+                    maxScale: PartialGuiSize.Empty,
+                    layerDepth: layerDepth
+                )
+                .WithPadding(32)
             );
         }
 
@@ -384,28 +501,11 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The menu horizontal separator component.</returns>
         public static IGuiComponent MenuHorizontalSeparator(float? layerDepth = null)
         {
-            return new MenuHorizontalSeparatorComponent().MaybeInitVal(
+            return new HorizontalSeparator().MaybeInitVal(
                 layerDepth,
                 (m, d) => m with { LayerDepth = d }
             );
         }
-
-        /*
-        /// <summary>
-        /// The portrait to show, if any.
-        /// </summary>
-        public SpeakerPortrait Speaker { get; init; } = SpeakerPortrait.None;
-
-        /// <summary>
-        /// Whether to only draw the dialogue box itself.
-        /// </summary>
-        public bool DrawOnlyBox { get; init; } = true;
-
-        /// <summary>
-        /// The message to show in the dialogue box.
-        /// </summary>
-        public string? Message { get; init; } = null;
-         */
 
         /// <summary>
         /// Creates a new dialogue box component.
@@ -420,8 +520,7 @@ namespace TehPers.Core.Api.Gui
             string? message = null
         )
         {
-            return new DialogueBoxComponent()
-                .MaybeInitVal(speaker, (d, s) => d with { Speaker = s })
+            return new DialogueBox().MaybeInitVal(speaker, (d, s) => d with { Speaker = s })
                 .MaybeInitVal(drawOnlyBox, (d, b) => d with { DrawOnlyBox = b })
                 .MaybeInitRef(message, (d, m) => d with { Message = m });
         }

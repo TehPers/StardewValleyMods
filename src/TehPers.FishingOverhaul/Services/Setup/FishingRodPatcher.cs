@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
+using System.Xml.Serialization;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -133,7 +135,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 )
             );
         }
-        
+
         private void StartFishingMinigame(
             FishingInfo fishingInfo,
             Item fishItem,
@@ -220,7 +222,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     Game1.showGlobalMessage(
                         this.helper.Translation.Get(
                             "text.streak.lost",
-                            new {streak = initialStreak}
+                            new { streak = initialStreak }
                         )
                     );
                 }
@@ -240,7 +242,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             Game1.showGlobalMessage(
                                 this.helper.Translation.Get(
                                     "text.streak.warning",
-                                    new {streak = initialStreak}
+                                    new { streak = initialStreak }
                                 )
                             );
 
@@ -278,7 +280,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 Game1.showGlobalMessage(
                                     this.helper.Translation.Get(
                                         "text.streak.restored",
-                                        new {streak = initialStreak}
+                                        new { streak = initialStreak }
                                     )
                                 );
                             }
@@ -302,7 +304,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 Game1.showGlobalMessage(
                                     this.helper.Translation.Get(
                                         "text.streak.lost",
-                                        new {streak = initialStreak}
+                                        new { streak = initialStreak }
                                     )
                                 );
                             }
@@ -332,7 +334,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             this.monitor.Log($"{fishingInfo.User.Name} caught {info}.");
 
             // Custom handling for fish catches
-            if (info is CatchInfo.FishCatch (_, _, _, var fishSize, var isLegendary, var fishQuality
+            if (info is CatchInfo.FishCatch(_, _, _, var fishSize, var isLegendary, var fishQuality
                 , var fishDifficulty, var (isPerfect, treasureState), _, var caughtDouble))
             {
                 // Update caught item
@@ -392,7 +394,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             // Get particle sprite
             var (textureName, sourceRect) = item switch
             {
-                SObject {ParentSheetIndex: var index} => (@"Maps\springobjects",
+                SObject { ParentSheetIndex: var index } => (@"Maps\springobjects",
                     Game1.getSourceRectForStandardTileSheet(
                         Game1.objectSpriteSheet,
                         index,
@@ -448,7 +450,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         endSound = "tinyWhip"
                     }
                 );
-                if (info is CatchInfo.FishCatch {CaughtDouble: true})
+                if (info is CatchInfo.FishCatch { CaughtDouble: true })
                 {
                     var y2 = 0.0008f;
                     var f2 = (float)(distToBobber
@@ -538,7 +540,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         endSound = "tinyWhip"
                     }
                 );
-                if (info is CatchInfo.FishCatch {CaughtDouble: true})
+                if (info is CatchInfo.FishCatch { CaughtDouble: true })
                 {
                     var num14 = rod.bobber.Y - (fishingInfo.User.getStandingY() - 64);
                     var num15 = Math.Abs((float)(num14 + 256.0 + 32.0));
@@ -691,7 +693,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 rod.doneFishing(user);
             }
 
-            if (info is CatchInfo.FishCatch {IsLegendary: true})
+            if (info is CatchInfo.FishCatch { IsLegendary: true })
             {
                 Game1.showGlobalMessage(
                     Game1.content.LoadString(@"Strings\StringsFromCSFiles:FishingRod.cs.14068")
@@ -1148,7 +1150,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
                         if (catchInfo is not CatchInfo.FishCatch
                             {
-                                State: {Treasure: TreasureState.Caught}
+                                State: { Treasure: TreasureState.Caught }
                             } caughtFish)
                         {
                             // Add item to user's inventory, or show the menu if not enough space
@@ -1167,7 +1169,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             }
 
                             Game1.activeClickableMenu =
-                                new ItemGrabMenu(new List<Item> {item}, __instance).setEssential(
+                                new ItemGrabMenu(new List<Item> { item }, __instance).setEssential(
                                     true
                                 );
                         }
@@ -1355,7 +1357,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         );
 
                         // Draw item in hand
-                        var count = info.Item is SObject {Stack: var stack} ? stack : 1;
+                        var count = info.Item is SObject { Stack: var stack } ? stack : 1;
                         count = Math.Min(1, count);
                         foreach (var fishIndex in Enumerable.Range(0, count))
                         {
@@ -1381,7 +1383,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         }
 
                         // Draw item name
-                        var isLegendary = info is CatchInfo.FishCatch {IsLegendary: true};
+                        var isLegendary = info is CatchInfo.FishCatch { IsLegendary: true };
                         b.DrawString(
                             Game1.smallFont,
                             info.Item.DisplayName,
@@ -1404,7 +1406,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         );
 
                         // Draw fish specific labels
-                        if (info is CatchInfo.FishCatch {FishSize: var fishSize})
+                        if (info is CatchInfo.FishCatch { FishSize: var fishSize })
                         {
                             // Draw fish length label
                             b.DrawString(

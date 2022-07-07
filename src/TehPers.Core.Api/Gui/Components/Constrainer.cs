@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// Adds constraints to a component's size. This cannot be used to remove constraints.
     /// </summary>
-    internal record ConstrainedComponent : WrapperComponent
+    internal record Constrainer : ComponentWrapper
     {
         public override IGuiComponent Inner { get; }
 
@@ -25,7 +25,7 @@ namespace TehPers.Core.Api.Gui
         /// Adds constraints to a component's size. This cannot be used to remove constraints.
         /// </summary>
         /// <param name="inner">The inner component.</param>
-        public ConstrainedComponent(IGuiComponent inner)
+        public Constrainer(IGuiComponent inner)
         {
             this.Inner = inner;
         }

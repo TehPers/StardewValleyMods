@@ -5,8 +5,6 @@ using System.Linq;
 using TehPers.Core.Api.Gui;
 using TehPers.Core.Api.Gui.Layouts;
 using TehPers.Core.Api.Items;
-using TehPers.Core.Api.Extensions;
-using TehPers.Core.Api.Extensions.Drawing;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Extensions;
 using TehPers.FishingOverhaul.Config;
@@ -91,172 +89,123 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 builder =>
                 {
                     // Build header
-                    builder.Add(
-                        GuiComponent.Vertical(
-                                HorizontalAlignment.Left,
-                                header =>
-                                {
-                                    // Draw streak chances
-                                    var streakText = helper.Translation.Get(
-                                        "text.streak",
-                                        new { streak = fishingApi.GetStreak(farmer) }
-                                    );
-                                    header.Add(
-                                        GuiComponent.Label(
-                                                streakText,
-                                                font: font,
-                                                color: normalTextColor
-                                            )
-                                            .Aligned(HorizontalAlignment.Left)
-                                    );
+                    GuiComponent.Vertical(
+                            HorizontalAlignment.Left,
+                            header =>
+                            {
+                                // Draw streak chances
+                                var streakText = helper.Translation.Get(
+                                    "text.streak",
+                                    new {streak = fishingApi.GetStreak(farmer)}
+                                );
+                                GuiComponent.Label(streakText, font: font, color: normalTextColor)
+                                    .Aligned(HorizontalAlignment.Left)
+                                    .AddTo(header);
 
-                                    // Draw treasure chances
-                                    var treasureText = helper.Translation.Get(
-                                        "text.treasure",
-                                        new { chance = $"{treasureChance:P2}" }
-                                    );
-                                    header.Add(
-                                        GuiComponent.Label(
-                                                treasureText,
-                                                font: font,
-                                                color: normalTextColor
-                                            )
-                                            .Aligned(HorizontalAlignment.Left)
-                                    );
+                                // Draw treasure chances
+                                var treasureText = helper.Translation.Get(
+                                    "text.treasure",
+                                    new {chance = $"{treasureChance:P2}"}
+                                );
 
-                                    // Draw trash chances
-                                    var trashText = helper.Translation.Get(
-                                        "text.trash",
-                                        new { chance = $"{trashChance:P2}" }
-                                    );
-                                    header.Add(
-                                        GuiComponent.Label(
-                                                trashText,
-                                                font: font,
-                                                color: normalTextColor
-                                            )
-                                            .Aligned(HorizontalAlignment.Left)
-                                    );
-                                }
-                            )
-                            .WithPadding(64, 64, 64, 0)
-                    );
+                                GuiComponent.Label(treasureText, font: font, color: normalTextColor)
+                                    .Aligned(HorizontalAlignment.Left)
+                                    .AddTo(header);
+
+                                // Draw trash chances
+                                var trashText = helper.Translation.Get(
+                                    "text.trash",
+                                    new {chance = $"{trashChance:P2}"}
+                                );
+                                GuiComponent.Label(trashText, font: font, color: normalTextColor)
+                                    .Aligned(HorizontalAlignment.Left)
+                                    .AddTo(header);
+                            }
+                        )
+                        .WithPadding(64, 64, 64, 0)
+                        .AddTo(builder);
 
                     if (displayedEntries.Any())
                     {
                         // Separator
-                        builder.Add(GuiComponent.MenuHorizontalSeparator());
+                        GuiComponent.MenuHorizontalSeparator().AddTo(builder);
 
                         // Entries
-                        builder.Add(
-                            GuiComponent.Vertical(
-                                    HorizontalAlignment.Left,
-                                    content =>
+                        GuiComponent.Vertical(
+                                HorizontalAlignment.Left,
+                                content =>
+                                {
+                                    // Draw entries
+                                    foreach (var displayedEntry in displayedEntries)
                                     {
-                                        // Draw entries
-                                        foreach (var displayedEntry in displayedEntries)
-                                        {
-                                            var (entryKey, textColor) = displayedEntry.Value;
-                                            var chance = displayedEntry.Weight;
+                                        var (entryKey, textColor) = displayedEntry.Value;
+                                        var chance = displayedEntry.Weight;
 
-                                            // Draw fish icon
-                                            content.Horizontal(
-                                                itemRow =>
-                                                {
-                                                    var fishName = helper.Translation.Get(
-                                                            "text.fish.unknownName",
-                                                            new { key = entryKey.ToString() }
-                                                        )
-                                                        .ToString();
-                                                    if (namespaceRegistry.TryGetItemFactory(
-                                                            entryKey,
-                                                            out var factory
-                                                        ))
-                                                    {
-                                                        var fishItem = factory.Create();
-                                                        fishName = fishItem.DisplayName;
-
-                                                        const float iconScale = 0.5f;
-                                                        const float iconSize = 64f * iconScale;
-                                                        itemRow.Add(
-                                                            new SimpleComponent(
-                                                                new()
-                                                                {
-                                                                    MinSize = new(
-                                                                        iconSize,
-                                                                        iconSize
-                                                                    ),
-                                                                    MaxSize = new(
-                                                                        iconSize,
-                                                                        iconSize
-                                                                    )
-                                                                },
-                                                                (batch, bounds) =>
-                                                                    fishItem.DrawInMenuCorrected(
-                                                                        batch,
-                                                                        new(bounds.X, bounds.Y),
-                                                                        iconScale,
-                                                                        1F,
-                                                                        0.9F,
-                                                                        StackDrawType.Hide,
-                                                                        Color.White,
-                                                                        false,
-                                                                        new TopLeftDrawOrigin()
-                                                                    )
-                                                            )
-                                                        );
-                                                    }
-
-                                                    // Draw chance
-                                                    var fishText = helper.Translation.Get(
-                                                        "text.fish",
-                                                        new
-                                                        {
-                                                            name = fishName,
-                                                            chance = $"{chance * 100.0:F2}"
-                                                        }
-                                                    );
-                                                    itemRow.Add(
-                                                        GuiComponent
-                                                            .Label(
-                                                                fishText,
-                                                                font: font,
-                                                                color: textColor
-                                                            )
-                                                            .Aligned(
-                                                                HorizontalAlignment.Left,
-                                                                VerticalAlignment.Center
-                                                            )
-                                                    );
-                                                }
-                                            );
-                                        }
-
-                                        // Draw 'more fish' text
-                                        if (fishChances.Count > maxDisplayedFish)
-                                        {
-                                            var moreFishText = helper.Translation.Get(
-                                                    "text.fish.more",
-                                                    new
-                                                        {
-                                                            quantity = fishChances.Count
-                                                                - maxDisplayedFish
-                                                        }
-                                                )
-                                                .ToString();
-                                            content.Add(
-                                                GuiComponent.Label(
-                                                        moreFishText,
-                                                        font: font,
-                                                        normalTextColor
+                                        // Draw fish icon
+                                        GuiComponent.Horizontal(
+                                            itemRow =>
+                                            {
+                                                var fishName = helper.Translation.Get(
+                                                        "text.fish.unknownName",
+                                                        new {key = entryKey.ToString()}
                                                     )
-                                                    .Aligned(HorizontalAlignment.Left)
-                                            );
-                                        }
+                                                    .ToString();
+                                                if (namespaceRegistry.TryGetItemFactory(
+                                                        entryKey,
+                                                        out var factory
+                                                    ))
+                                                {
+                                                    var fishItem = factory.Create();
+                                                    fishName = fishItem.DisplayName;
+
+                                                    GuiComponent.ItemView(fishItem, sideLength: 32f)
+                                                        .AddTo(itemRow);
+                                                }
+
+                                                // Draw chance
+                                                var fishText = helper.Translation.Get(
+                                                    "text.fish",
+                                                    new
+                                                    {
+                                                        name = fishName,
+                                                        chance = $"{chance * 100.0:F2}"
+                                                    }
+                                                );
+                                                GuiComponent
+                                                    .Label(fishText, font: font, color: textColor)
+                                                    .Aligned(
+                                                        HorizontalAlignment.Left,
+                                                        VerticalAlignment.Center
+                                                    )
+                                                    .AddTo(itemRow);
+                                            }
+                                        ).AddTo(content);
                                     }
-                                )
-                                .WithPadding(64, 64, 0, 64)
-                        );
+
+                                    // Draw 'more fish' text
+                                    if (fishChances.Count > maxDisplayedFish)
+                                    {
+                                        var moreFishText = helper.Translation.Get(
+                                                "text.fish.more",
+                                                new
+                                                    {
+                                                        quantity = fishChances.Count
+                                                            - maxDisplayedFish
+                                                    }
+                                            )
+                                            .ToString();
+                                        GuiComponent.Label(
+                                                moreFishText,
+                                                font: font,
+                                                normalTextColor
+                                            )
+                                            .Aligned(HorizontalAlignment.Left)
+                                            .AddTo(content);
+                                    }
+                                }
+                            )
+                            .WithPadding(64, 64, 0, 64)
+                            .AddTo(builder);
                     }
                 }
             );

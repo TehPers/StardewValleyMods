@@ -4,13 +4,13 @@ using System;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Extensions.Drawing;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// A component which renders an item.
     /// </summary>
     /// <param name="Item">The item to show in this view.</param>
-    internal record ItemViewComponent(Item Item) : IGuiComponent
+    internal record ItemView(Item Item) : IGuiComponent
     {
         /// <summary>
         /// The transparency of the item.
@@ -21,6 +21,11 @@ namespace TehPers.Core.Api.Gui
         /// The layer depth to draw at.
         /// </summary>
         public float LayerDepth { get; init; } = 1f;
+
+        /// <summary>
+        /// The side length of this item view.
+        /// </summary>
+        public float SideLength { get; init; } = 64f;
 
         /// <summary>
         /// How to draw the stack number, if any.
@@ -36,11 +41,15 @@ namespace TehPers.Core.Api.Gui
         /// Whether to draw the item's shadow.
         /// </summary>
         public bool DrawShadow { get; init; } = true;
-        
+
         /// <inheritdoc />
         public GuiConstraints GetConstraints()
         {
-            return new();
+            return new()
+            {
+                MinSize = new(this.SideLength, this.SideLength),
+                MaxSize = new(this.SideLength, this.SideLength),
+            };
         }
 
         /// <inheritdoc />
@@ -49,8 +58,7 @@ namespace TehPers.Core.Api.Gui
             e.Draw(
                 batch =>
                 {
-                    var sideLength = Math.Min(bounds.Width, bounds.Height);
-                    var scaleSize = sideLength / 64f;
+                    var scaleSize = this.SideLength / 64f;
                     this.Item.DrawInMenuCorrected(
                         batch,
                         new(bounds.X, bounds.Y),

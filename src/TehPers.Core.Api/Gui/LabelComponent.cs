@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using TehPers.Core.Api.Gui.Components;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -18,7 +19,7 @@ namespace TehPers.Core.Api.Gui
         /// <summary>
         /// The color to tint the text.
         /// </summary>
-        public Color Color { get; init; } = Color.Black;
+        public Color Color { get; init; } = Game1.textColor;
 
         /// <summary>
         /// The scale of the text.

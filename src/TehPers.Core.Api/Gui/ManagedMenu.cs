@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
 using System;
+using TehPers.Core.Api.Gui.Components;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -13,6 +16,11 @@ namespace TehPers.Core.Api.Gui
     public abstract class ManagedMenu : IClickableMenu, IDisposable
     {
         /// <summary>
+        /// Gets the mod helper provided to this menu.
+        /// </summary>
+        protected IModHelper Helper { get; }
+
+        /// <summary>
         /// Gets the keyboard subscriber, if any.
         /// </summary>
         protected IKeyboardSubscriber? KeyboardSubscriber { get; }
@@ -20,24 +28,35 @@ namespace TehPers.Core.Api.Gui
         /// <summary>
         /// Creates a new managed menu.
         /// </summary>
-        /// <param name="handleInput">Whether this menu needs to handle input.</param>
-        protected ManagedMenu(bool handleInput = false)
+        /// <param name="helper">The mod helper to use.</param>
+        /// <param name="captureInput">Whether this menu needs to capture all text input.</param>
+        protected ManagedMenu(IModHelper helper, bool captureInput = false)
         {
-            if (handleInput)
+            this.Helper = helper ?? throw new ArgumentNullException(nameof(helper));
+
+            // Capture keyboard input if needed
+            if (captureInput)
             {
                 this.KeyboardSubscriber = new GuiKeyboardSubscriber(this);
             }
+
+            // Add event handlers for additional types of events
+            this.Helper.Events.Input.ButtonReleased += this.OnButtonReleased;
         }
 
         /// <inheritdoc />
         public virtual void Dispose()
         {
+            GC.SuppressFinalize(this);
+
+            // Deselect keyboard subscriber
             if (this.KeyboardSubscriber is not null)
             {
                 this.KeyboardSubscriber.Selected = false;
             }
 
-            GC.SuppressFinalize(this);
+            // Remove event handlers
+            this.Helper.Events.Input.ButtonReleased -= this.OnButtonReleased;
         }
 
         /// <summary>
@@ -88,6 +107,13 @@ namespace TehPers.Core.Api.Gui
             base.update(time);
         }
 
+        /// <inheritdoc/>
+        public override void performHoverAction(int x, int y)
+        {
+            this.ReceiveEvent(new GuiEvent.Hover(new(x, y)));
+            base.performHoverAction(x, y);
+        }
+
         /// <inheritdoc />
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
@@ -128,6 +154,23 @@ namespace TehPers.Core.Api.Gui
         {
             base.receiveGamePadButton(b);
             this.ReceiveEvent(new GuiEvent.GamePadInput(b));
+        }
+
+        private void OnButtonReleased(object? sender, ButtonReleasedEventArgs e)
+        {
+            if (e.IsSuppressed())
+            {
+                return;
+            }
+
+            switch (e.Button)
+            {
+                case SButton.MouseMiddle:
+                    this.ReceiveEvent(
+                        new GuiEvent.ReceiveClick(Game1.getMousePosition(), ClickType.Middle)
+                    );
+                    break;
+            }
         }
 
         /// <inheritdoc />

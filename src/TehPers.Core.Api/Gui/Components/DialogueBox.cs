@@ -1,12 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// A dialogue box.
     /// </summary>
-    internal record DialogueBoxComponent : IGuiComponent
+    internal record DialogueBox : IGuiComponent
     {
         /// <summary>
         /// The portrait to show, if any.

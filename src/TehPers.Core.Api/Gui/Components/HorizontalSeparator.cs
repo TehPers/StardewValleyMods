@@ -1,12 +1,12 @@
 ﻿using StardewValley;
 using TehPers.Core.Api.Gui.Layouts;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// A horizontal separator in a menu.
     /// </summary>
-    internal record MenuHorizontalSeparatorComponent : WrapperComponent
+    internal record HorizontalSeparator : ComponentWrapper
     {
         public override IGuiComponent Inner => this.CreateInner();
 

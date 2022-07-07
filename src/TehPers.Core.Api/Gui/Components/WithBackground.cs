@@ -1,14 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// Draws a component with a background.
     /// </summary>
     /// <param name="Foreground">The foreground component.</param>
     /// <param name="Background">The background component.</param>
-    internal record BackgroundComponent(IGuiComponent Foreground, IGuiComponent Background) : IGuiComponent
+    internal record WithBackground(IGuiComponent Foreground, IGuiComponent Background) : IGuiComponent
     {
         /// <inheritdoc />
         public GuiConstraints GetConstraints()

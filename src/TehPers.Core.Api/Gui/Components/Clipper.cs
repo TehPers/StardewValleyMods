@@ -2,13 +2,13 @@
 using System;
 using TehPers.Core.Api.Extensions;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// Clips this component, removing its minimum size constraint. This constrains its rendering
     /// area and mouse inputs if it is shrunk.
     /// </summary>
-    internal record ClippedComponent : WrapperComponent
+    internal record Clipper : ComponentWrapper
     {
         public override IGuiComponent Inner { get; }
 
@@ -16,7 +16,7 @@ namespace TehPers.Core.Api.Gui
         /// Creates a new clipped component.
         /// </summary>
         /// <param name="inner">The component to clip.</param>
-        public ClippedComponent(IGuiComponent inner)
+        public Clipper(IGuiComponent inner)
         {
             this.Inner = inner;
         }
@@ -34,11 +34,17 @@ namespace TehPers.Core.Api.Gui
         public override void Handle(GuiEvent e, Rectangle bounds)
         {
             var guiConstraints = this.Inner.GetConstraints();
+            var innerWidth = guiConstraints.MaxSize.Width is { } maxWidth
+                ? Math.Clamp(bounds.Width, guiConstraints.MinSize.Width, maxWidth)
+                : guiConstraints.MinSize.Width;
+            var innerHeight = guiConstraints.MaxSize.Height is { } maxHeight
+                ? Math.Clamp(bounds.Height, guiConstraints.MinSize.Height, maxHeight)
+                : guiConstraints.MinSize.Height;
             var innerBounds = new Rectangle(
                 bounds.X,
                 bounds.Y,
-                (int)Math.Ceiling(guiConstraints.MinSize.Width),
-                (int)Math.Ceiling(guiConstraints.MinSize.Height)
+                (int)Math.Ceiling(innerWidth),
+                (int)Math.Ceiling(innerHeight)
             );
             switch (e)
             {

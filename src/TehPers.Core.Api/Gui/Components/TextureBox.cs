@@ -2,13 +2,13 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// Stretches a texture to fill a space.
     /// </summary>
     /// <param name="Texture">The texture to draw.</param>
-    internal record TextureComponent(Texture2D Texture) : IGuiComponent
+    internal record TextureBox(Texture2D Texture) : IGuiComponent
     {
         /// <summary>
         /// The source rectangle on the texture.
@@ -34,13 +34,13 @@ namespace TehPers.Core.Api.Gui
         /// The minimum scaled size of this texture. A min scaled width of 2 means that this
         /// texture must be stretched by at least double its original width, for example.
         /// </summary>
-        public GuiSize MinScale { get; init; } = GuiSize.Zero;
+        public GuiSize MinScale { get; init; } = GuiSize.One;
 
         /// <summary>
         /// The maximum scaled size of this texture. A max scaled width of 2 means that this
         /// texture can only be stretched up to double its original width, for example.
         /// </summary>
-        public PartialGuiSize MaxScale { get; init; } = PartialGuiSize.Empty;
+        public PartialGuiSize MaxScale { get; init; } = PartialGuiSize.One;
 
         /// <inheritdoc />
         public GuiConstraints GetConstraints()

@@ -7,13 +7,14 @@ using System;
 using System.Collections.Immutable;
 using System.Text;
 using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Gui.States;
 
-namespace TehPers.Core.Api.Gui
+namespace TehPers.Core.Api.Gui.Components
 {
     /// <summary>
     /// A single-line text input component.
     /// </summary>
-    internal record TextInputComponent : IGuiComponent
+    internal record TextInput : IGuiComponent
     {
         /// <summary>
         /// The default sound cue to play when text is inserted.
@@ -30,7 +31,7 @@ namespace TehPers.Core.Api.Gui
         /// </summary>
         public static ImmutableDictionary<char, string?> AllInsertionCues { get; }
 
-        static TextInputComponent()
+        static TextInput()
         {
             var insertionCuesBuilder = ImmutableDictionary.CreateBuilder<char, string?>();
             insertionCuesBuilder['$'] = "money";
@@ -38,7 +39,7 @@ namespace TehPers.Core.Api.Gui
             insertionCuesBuilder['+'] = "slimeHit";
             insertionCuesBuilder['<'] = "crystal";
             insertionCuesBuilder['='] = "coin";
-            TextInputComponent.AllInsertionCues = insertionCuesBuilder.ToImmutable();
+            AllInsertionCues = insertionCuesBuilder.ToImmutable();
         }
 
         private readonly TextInputState state;
@@ -77,25 +78,25 @@ namespace TehPers.Core.Api.Gui
         /// <summary>
         /// The sound cue to play when text is typed and no specific cue overrides it.
         /// </summary>
-        public string? InsertionCue { get; init; } = TextInputComponent.DefaultInsertionCue;
+        public string? InsertionCue { get; init; } = DefaultInsertionCue;
 
         /// <summary>
         /// The sound cue to play when specific characters are typed instead.
         /// </summary>
         public ImmutableDictionary<char, string?> OverrideInsertionCues { get; init; } =
-            TextInputComponent.AllInsertionCues;
+            AllInsertionCues;
 
         /// <summary>
         /// The sound cue to play when text is deleted.
         /// </summary>
-        public string? DeletionCue { get; init; } = TextInputComponent.DefaultDeletionCue;
+        public string? DeletionCue { get; init; } = DefaultDeletionCue;
 
         /// <summary>
-        /// Creates a new <see cref="TextInputComponent"/>.
+        /// Creates a new <see cref="TextInput"/>.
         /// </summary>
         /// <param name="state">The state of the text input.</param>
         /// <param name="inputHelper">The input helper.</param>
-        public TextInputComponent(TextInputState state, IInputHelper inputHelper)
+        public TextInput(TextInputState state, IInputHelper inputHelper)
         {
             this.state = state ?? throw new ArgumentNullException(nameof(state));
             this.inputHelper = inputHelper ?? throw new ArgumentNullException(nameof(inputHelper));
