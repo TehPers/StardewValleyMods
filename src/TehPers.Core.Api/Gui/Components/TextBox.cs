@@ -44,7 +44,7 @@ namespace TehPers.Core.Api.Gui.Components
         {
             var background = Game1.content.Load<Texture2D>(@"LooseSprites\textBox");
             return this.textInput.WithPadding(16, 6, 6, 8)
-                .WithBackground(new TextureBox(background));
+                .WithBackground(GuiComponent.Texture(background));
         }
     }
 }

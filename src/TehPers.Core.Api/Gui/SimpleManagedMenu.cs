@@ -1,5 +1,4 @@
 ﻿using StardewModdingAPI;
-using TehPers.Core.Api.Gui.Components;
 
 namespace TehPers.Core.Api.Gui
 {

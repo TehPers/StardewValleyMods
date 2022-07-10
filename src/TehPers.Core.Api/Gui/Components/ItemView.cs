@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
-using System;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Extensions.Drawing;
 

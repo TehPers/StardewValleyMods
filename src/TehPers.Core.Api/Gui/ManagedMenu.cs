@@ -6,7 +6,6 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
 using System;
-using TehPers.Core.Api.Gui.Components;
 
 namespace TehPers.Core.Api.Gui
 {

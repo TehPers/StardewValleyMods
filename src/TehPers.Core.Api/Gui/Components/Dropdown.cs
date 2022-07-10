@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.Menus;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using TehPers.Core.Api.Gui.Layouts;
 using TehPers.Core.Api.Gui.States;
@@ -21,7 +20,7 @@ namespace TehPers.Core.Api.Gui.Components
             return GuiComponent.Horizontal(
                 builder =>
                 {
-                    var bg = GuiComponent.GridTexture(
+                    var bg = GuiComponent.TextureBox(
                         Game1.mouseCursors,
                         new(433, 451, 1, 1),
                         new(434, 451, 1, 1),
@@ -69,6 +68,12 @@ namespace TehPers.Core.Api.Gui.Components
         public override void Handle(GuiEvent e, Rectangle bounds)
         {
             base.Handle(e, bounds);
+
+            if (e is GuiEvent.ReceiveClick)
+            {
+                // TODO: make sure this works and closes it when clicking off the dropdown
+                this.State.Dropped = false;
+            }
 
             // Add dropdown overlay if needed
             if (this.State.Dropped)
@@ -170,7 +175,7 @@ namespace TehPers.Core.Api.Gui.Components
             })
             .WithPadding(4)
             .WithBackground(
-                GuiComponent.GridTexture(
+                GuiComponent.TextureBox(
                     Game1.mouseCursors,
                     new(433, 451, 1, 1),
                     new(434, 451, 1, 1),

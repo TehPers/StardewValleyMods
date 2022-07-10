@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using TehPers.Core.Api.Gui.Components;
 
 namespace TehPers.Core.Api.Gui.Layouts
 {
@@ -11,13 +10,13 @@ namespace TehPers.Core.Api.Gui.Layouts
     /// A vertical layout container. Components are rendered vertically along a single column.
     /// </summary>
     /// <param name="Components">The inner components.</param>
-    internal record VerticalLayoutComponent(ImmutableArray<IGuiComponent> Components) : IGuiComponent
+    internal record VerticalLayout(ImmutableArray<IGuiComponent> Components) : IGuiComponent
     {
         /// <summary>
         /// Creates a new vertical layout containing the given components.
         /// </summary>
         /// <param name="components">The components in the layout.</param>
-        public VerticalLayoutComponent(params IGuiComponent[] components)
+        public VerticalLayout(params IGuiComponent[] components)
             : this(components.ToImmutableArray())
         {
         }
@@ -26,7 +25,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// Creates a new vertical layout containing the given components.
         /// </summary>
         /// <param name="components">The components in the layout.</param>
-        public VerticalLayoutComponent(IEnumerable<IGuiComponent> components)
+        public VerticalLayout(IEnumerable<IGuiComponent> components)
             : this(components.ToImmutableArray())
         {
         }
@@ -134,7 +133,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// </summary>
         /// <param name="components">The components in the layout.</param>
         /// <returns>The vertical layout.</returns>
-        public static VerticalLayoutComponent Of(params IGuiComponent[] components)
+        public static VerticalLayout Of(params IGuiComponent[] components)
         {
             return new(components.ToImmutableList());
         }
@@ -144,7 +143,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// </summary>
         /// <param name="components">The components in the layout.</param>
         /// <returns>The vertical layout.</returns>
-        public static VerticalLayoutComponent Of(IEnumerable<IGuiComponent> components)
+        public static VerticalLayout Of(IEnumerable<IGuiComponent> components)
         {
             return new(components.ToImmutableList());
         }
@@ -154,7 +153,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// </summary>
         /// <param name="addComponents">A callback which adds the components.</param>
         /// <returns>The vertical layout.</returns>
-        public static VerticalLayoutComponent Build(Action<ILayoutBuilder> addComponents)
+        public static VerticalLayout Build(Action<ILayoutBuilder> addComponents)
         {
             var builder = new Builder(null);
             addComponents(builder);
@@ -168,7 +167,7 @@ namespace TehPers.Core.Api.Gui.Layouts
         /// <param name="addComponents">A callback which adds the components.</param>
         /// <param name="defaultAlignment">The default row alignment.</param>
         /// <returns>The vertical layout.</returns>
-        public static VerticalLayoutComponent BuildAligned(
+        public static VerticalLayout BuildAligned(
             Action<ILayoutBuilder> addComponents,
             HorizontalAlignment defaultAlignment = HorizontalAlignment.Left
         )
@@ -221,7 +220,7 @@ namespace TehPers.Core.Api.Gui.Layouts
                 this.components.Add(component);
             }
 
-            public VerticalLayoutComponent Build()
+            public VerticalLayout Build()
             {
                 return new(this.components.ToImmutableArray());
             }

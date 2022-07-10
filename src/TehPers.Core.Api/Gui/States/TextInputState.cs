@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using TehPers.Core.Api.Gui.Components;
 
 namespace TehPers.Core.Api.Gui.States

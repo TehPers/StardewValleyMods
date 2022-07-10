@@ -17,7 +17,7 @@ namespace TehPers.Core.Api.Gui.Components
 
         private IGuiComponent CreateInner()
         {
-            return HorizontalLayoutComponent.Of(
+            return HorizontalLayout.Of(
                 GuiComponent.Texture(
                     Game1.menuTexture,
                     minScale: GuiSize.One,

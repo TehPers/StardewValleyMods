@@ -186,7 +186,7 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <summary>
-        /// Further constrains a component's size.
+        /// Further constrains a component's size. This cannot be used to remove constraints.
         /// </summary>
         /// <param name="component">The component to constrain.</param>
         /// <param name="minSize">The additional minimum size constraints, if any.</param>
@@ -236,7 +236,7 @@ namespace TehPers.Core.Api.Gui
             float? layerDepth = null
         )
         {
-            return new LabelComponent(text).MaybeInitRef(font, (l, f) => l with { Font = f })
+            return new Label(text).MaybeInitRef(font, (l, f) => l with { Font = f })
                 .MaybeInitVal(color, (l, c) => l with { Color = c })
                 .MaybeInitVal(scale, (l, s) => l with { Scale = s })
                 .MaybeInitVal(spriteEffects, (l, s) => l with { SpriteEffects = s })
@@ -338,7 +338,7 @@ namespace TehPers.Core.Api.Gui
             PartialGuiSize? maxScale = null
         )
         {
-            return new TextureBox(texture)
+            return new StretchedTexture(texture)
                 .MaybeInitVal(sourceRectangle, (t, s) => t with { SourceRectangle = s })
                 .MaybeInitVal(color, (t, c) => t with { Color = c })
                 .MaybeInitVal(effects, (t, e) => t with { Effects = e })
@@ -419,6 +419,56 @@ namespace TehPers.Core.Api.Gui
         /// stretched.
         /// </summary>
         /// <param name="texture">The source texture.</param>
+        /// <param name="sourceRectangle">
+        /// The source rectangle of the texture box. The rectangle will be split evenly into a 3x3
+        /// grid, and the sides and center of the grid will be stretched as needed. As a result,
+        /// the dimensions of this rectangle must be multiples of 3.
+        /// </param>
+        /// <param name="minScale">The minimum scale of the individual texture parts.</param>
+        /// <param name="layerDepth">The layer depth to draw it at.</param>
+        /// <returns>The grid texture component.</returns>
+        public static IGuiComponent TextureBox(
+            Texture2D texture,
+            Rectangle sourceRectangle,
+            GuiSize? minScale = null,
+            float? layerDepth = null
+        )
+        {
+            // Get dimensions
+            var cellWidth = Math.DivRem(sourceRectangle.Width, 3, out var widthRem);
+            if (widthRem != 0)
+            {
+                throw new ArgumentException("The source rectangle's dimensions must be multiples of 3.", nameof(sourceRectangle));
+            }
+            var cellHeight = Math.DivRem(sourceRectangle.Height, 3, out var heightRem);
+            if (heightRem != 0)
+            {
+                throw new ArgumentException("The source rectangle's dimensions must be multiples of 3.", nameof(sourceRectangle));
+            }
+
+            var x = sourceRectangle.X;
+            var y = sourceRectangle.Y;
+            return GuiComponent.TextureBox(
+                texture,
+                new(x, y, cellWidth, cellHeight),
+                new(x + cellWidth, y, cellWidth, cellHeight),
+                new(x + 2 * cellWidth, y, cellWidth, cellHeight),
+                new(x, y + cellHeight, cellWidth, cellHeight),
+                new(x + cellWidth, y + cellHeight, cellWidth, cellHeight),
+                new(x + 2 * cellWidth, y + cellHeight, cellWidth, cellHeight),
+                new(x, y + 2 * cellHeight, cellWidth, cellHeight),
+                new(x + cellWidth, y + 2 * cellHeight, cellWidth, cellHeight),
+                new(x + 2 * cellWidth, y + 2 * cellHeight, cellWidth, cellHeight),
+                minScale,
+                layerDepth
+            );
+        }
+
+        /// <summary>
+        /// Fills a space with a texture created from a 3x3 grid, where the sides and center can be
+        /// stretched.
+        /// </summary>
+        /// <param name="texture">The source texture.</param>
         /// <param name="topLeft">The source rectangle of the top left corner, if any.</param>
         /// <param name="topCenter">The source rectangle of the top center edge, if any.</param>
         /// <param name="topRight">The source rectangle of the top right corner, if any.</param>
@@ -431,7 +481,7 @@ namespace TehPers.Core.Api.Gui
         /// <param name="minScale">The minimum scale of the individual texture parts.</param>
         /// <param name="layerDepth">The layer depth to draw it at.</param>
         /// <returns>The grid texture component.</returns>
-        public static IGuiComponent GridTexture(
+        public static IGuiComponent TextureBox(
             Texture2D texture,
             Rectangle? topLeft,
             Rectangle? topCenter,
@@ -446,7 +496,7 @@ namespace TehPers.Core.Api.Gui
             float? layerDepth = null
         )
         {
-            return new GridTexture(
+            return new TextureBox(
                 texture,
                 topLeft,
                 topCenter,
@@ -469,7 +519,7 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The menu background component.</returns>
         public static IGuiComponent MenuBackground(float? layerDepth = null)
         {
-            return GuiComponent.GridTexture(
+            return GuiComponent.TextureBox(
                 Game1.menuTexture,
                 new(0, 0, 64, 64),
                 new(128, 0, 64, 64),
@@ -532,7 +582,7 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The horizontal layout.</returns>
         public static IGuiComponent Horizontal(Action<ILayoutBuilder> addComponents)
         {
-            return HorizontalLayoutComponent.Build(addComponents);
+            return HorizontalLayout.Build(addComponents);
         }
 
         /// <summary>
@@ -547,7 +597,7 @@ namespace TehPers.Core.Api.Gui
             Action<ILayoutBuilder> addComponents
         )
         {
-            return HorizontalLayoutComponent.BuildAligned(addComponents, defaultAlignment);
+            return HorizontalLayout.BuildAligned(addComponents, defaultAlignment);
         }
 
         /// <summary>
@@ -557,7 +607,7 @@ namespace TehPers.Core.Api.Gui
         /// <returns>The vertical layout.</returns>
         public static IGuiComponent Vertical(Action<ILayoutBuilder> addComponents)
         {
-            return VerticalLayoutComponent.Build(addComponents);
+            return VerticalLayout.Build(addComponents);
         }
 
         /// <summary>
@@ -572,7 +622,7 @@ namespace TehPers.Core.Api.Gui
             Action<ILayoutBuilder> addComponents
         )
         {
-            return VerticalLayoutComponent.BuildAligned(addComponents, defaultAlignment);
+            return VerticalLayout.BuildAligned(addComponents, defaultAlignment);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

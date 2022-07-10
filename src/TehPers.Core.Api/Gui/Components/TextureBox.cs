@@ -1,115 +1,91 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
+using TehPers.Core.Api.Gui.Layouts;
 
 namespace TehPers.Core.Api.Gui.Components
 {
-    /// <summary>
-    /// Stretches a texture to fill a space.
-    /// </summary>
-    /// <param name="Texture">The texture to draw.</param>
-    internal record TextureBox(Texture2D Texture) : IGuiComponent
+    internal record TextureBox(
+        Texture2D Texture,
+        Rectangle? TopLeft,
+        Rectangle? TopCenter,
+        Rectangle? TopRight,
+        Rectangle? CenterLeft,
+        Rectangle? Center,
+        Rectangle? CenterRight,
+        Rectangle? BottomLeft,
+        Rectangle? BottomCenter,
+        Rectangle? BottomRight
+    ) : ComponentWrapper
     {
-        /// <summary>
-        /// The source rectangle on the texture.
-        /// </summary>
-        public Rectangle? SourceRectangle { get; init; } = null;
+        public override IGuiComponent Inner => this.CreateInner();
 
-        /// <summary>
-        /// The color to tint the texture.
-        /// </summary>
-        public Color Color { get; init; } = Color.White;
-
-        /// <summary>
-        /// The sprite effects to apply to the texture.
-        /// </summary>
-        public SpriteEffects Effects { get; init; } = SpriteEffects.None;
-
-        /// <summary>
-        /// The layer depth to draw the background on.
-        /// </summary>
-        public float LayerDepth { get; init; } = 0;
-
-        /// <summary>
-        /// The minimum scaled size of this texture. A min scaled width of 2 means that this
-        /// texture must be stretched by at least double its original width, for example.
-        /// </summary>
         public GuiSize MinScale { get; init; } = GuiSize.One;
 
         /// <summary>
-        /// The maximum scaled size of this texture. A max scaled width of 2 means that this
-        /// texture can only be stretched up to double its original width, for example.
+        /// The layer depth to draw the component on.
         /// </summary>
-        public PartialGuiSize MaxScale { get; init; } = PartialGuiSize.One;
+        public float? LayerDepth { get; init; }
 
-        /// <inheritdoc />
-        public GuiConstraints GetConstraints()
+        private void MaybeAddCell(ILayoutBuilder builder, Rectangle? sourceRectangle, PartialGuiSize maxScale, bool orEmpty)
         {
-            var sourceWidth = this.SourceRectangle?.Width ?? this.Texture.Width;
-            var sourceHeight = this.SourceRectangle?.Height ?? this.Texture.Height;
-            return new()
+            if (sourceRectangle is { } rect)
             {
-                MinSize = new(
-                    sourceWidth * this.MinScale.Width,
-                    sourceHeight * this.MinScale.Height
-                ),
-                MaxSize = new(
-                    this.MaxScale.Width switch
-                    {
-                        null => null,
-                        { } scale => sourceWidth * scale
-                    },
-                    this.MaxScale.Height switch
-                    {
-                        null => null,
-                        { } scale => sourceHeight * scale
-                    }
-                )
-            };
+                GuiComponent.Texture(
+                    this.Texture,
+                    sourceRectangle: rect,
+                    minScale: this.MinScale,
+                    maxScale: maxScale,
+                    layerDepth: this.LayerDepth
+                ).AddTo(builder);
+            }
+            else if (orEmpty)
+            {
+                GuiComponent.Empty().AddTo(builder);
+            }
         }
 
-        /// <inheritdoc />
-        public void Handle(GuiEvent e, Rectangle bounds)
+        private IGuiComponent CreateInner()
         {
-            e.Draw(
-                batch =>
-                {
-                    // Don't draw if total area is 0
-                    if (bounds.Width <= 0 || bounds.Height <= 0)
+            return VerticalLayout.Build(
+                    builder =>
                     {
-                        return;
+                        // Top row
+                        builder.Add(
+                            HorizontalLayout.Build(
+                                builder =>
+                                {
+                                    this.MaybeAddCell(builder, this.TopLeft, new(this.MinScale.Width, this.MinScale.Height), false);
+                                    this.MaybeAddCell(builder, this.TopCenter, new(null, this.MinScale.Height), true);
+                                    this.MaybeAddCell(builder, this.TopRight, new(this.MinScale.Width, this.MinScale.Height), false);
+                                }
+                            )
+                        );
+
+                        // Middle row
+                        builder.Add(
+                            HorizontalLayout.Build(
+                                builder =>
+                                {
+                                    this.MaybeAddCell(builder, this.CenterLeft, new(this.MinScale.Width, null), false);
+                                    this.MaybeAddCell(builder, this.Center, PartialGuiSize.Empty, true);
+                                    this.MaybeAddCell(builder, this.CenterRight, new(this.MinScale.Width, null), false);
+                                }
+                            )
+                        );
+
+                        // Bottom row
+                        builder.Add(
+                            HorizontalLayout.Build(
+                                builder =>
+                                {
+                                    this.MaybeAddCell(builder, this.BottomLeft, new(this.MinScale.Width, this.MinScale.Height), false);
+                                    this.MaybeAddCell(builder, this.BottomCenter, new(null, this.MinScale.Height), true);
+                                    this.MaybeAddCell(builder, this.BottomRight, new(this.MinScale.Width, this.MinScale.Height), false);
+                                }
+                            )
+                        );
                     }
-
-                    var width = this.MaxScale.Width switch
-                    {
-                        null => bounds.Width,
-                        { } maxScale => Math.Min(
-                            bounds.Width,
-                            (int)Math.Ceiling(this.Texture.Width * maxScale)
-                        ),
-                    };
-                    var height = this.MaxScale.Height switch
-                    {
-                        null => bounds.Height,
-                        { } maxScale => Math.Min(
-                            bounds.Height,
-                            (int)Math.Ceiling(this.Texture.Height * maxScale)
-                        ),
-                    };
-
-                    // Draw the stretched sprite
-                    batch.Draw(
-                        this.Texture,
-                        new(bounds.X, bounds.Y, width, height),
-                        this.SourceRectangle,
-                        this.Color,
-                        0,
-                        Vector2.Zero,
-                        this.Effects,
-                        this.LayerDepth
-                    );
-                }
-            );
+                );
         }
     }
 }

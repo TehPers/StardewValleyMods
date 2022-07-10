@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using TehPers.Core.Api.Gui.Components;
 
 namespace TehPers.Core.Api.Gui
 {
@@ -9,7 +8,7 @@ namespace TehPers.Core.Api.Gui
     /// A text label in a GUI.
     /// </summary>
     /// <param name="Text">The text on this label.</param>
-    internal record LabelComponent(string Text) : IGuiComponent
+    internal record Label(string Text) : IGuiComponent
     {
         /// <summary>
         /// The font to draw this label with.

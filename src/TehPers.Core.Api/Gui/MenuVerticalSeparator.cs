@@ -37,41 +37,38 @@ namespace TehPers.Core.Api.Gui
 
         private IGuiComponent CreateInner()
         {
-            return VerticalLayoutComponent.BuildAligned(
+            return GuiComponent.Vertical(
                 builder =>
                 {
                     // Top connector
                     switch (this.TopConnector)
                     {
                         case MenuSeparatorConnector.PinMenuBorder:
-                            builder.Add(
-                                new TextureBox(Game1.menuTexture)
-                                {
-                                    MinScale = GuiSize.One,
-                                    MaxScale = PartialGuiSize.One,
-                                    SourceRectangle = new(64, 0, 64, 64),
-                                }
-                            );
+                            GuiComponent.Texture(
+                                    Game1.menuTexture,
+                                    sourceRectangle: new(64, 0, 64, 64),
+                                    minScale: GuiSize.One,
+                                    maxScale: PartialGuiSize.One
+                                )
+                                .AddTo(builder);
                             break;
                         case MenuSeparatorConnector.MenuBorder:
-                            builder.Add(
-                                new TextureBox(Game1.menuTexture)
-                                {
-                                    MinScale = GuiSize.One,
-                                    MaxScale = PartialGuiSize.One,
-                                    SourceRectangle = new(0, 704, 64, 64),
-                                }
-                            );
+                            GuiComponent.Texture(
+                                    Game1.menuTexture,
+                                    sourceRectangle: new(0, 704, 64, 64),
+                                    minScale: GuiSize.One,
+                                    maxScale: PartialGuiSize.One
+                                )
+                                .AddTo(builder);
                             break;
                         case MenuSeparatorConnector.Separator:
-                            builder.Add(
-                                new TextureBox(Game1.menuTexture)
-                                {
-                                    MinScale = GuiSize.One,
-                                    MaxScale = PartialGuiSize.One,
-                                    SourceRectangle = new(192, 896, 64, 64),
-                                }
-                            );
+                            GuiComponent.Texture(
+                                    Game1.menuTexture,
+                                    sourceRectangle: new(192, 896, 64, 64),
+                                    minScale: GuiSize.One,
+                                    maxScale: PartialGuiSize.One
+                                )
+                                .AddTo(builder);
                             break;
                         case MenuSeparatorConnector.None:
                             break;
@@ -84,47 +81,43 @@ namespace TehPers.Core.Api.Gui
                     }
 
                     // Body
-                    builder.Add(
-                        new TextureBox(Game1.menuTexture)
-                        {
-                            MinScale = GuiSize.One,
-                            MaxScale = new(1, null),
-                            SourceRectangle = new(64, 64, 64, 64),
-                        }
-                    );
+                    GuiComponent.Texture(
+                            Game1.menuTexture,
+                            sourceRectangle: new(64, 64, 64, 64),
+                            minScale: GuiSize.One,
+                            maxScale: new(1, null)
+                        )
+                        .AddTo(builder);
 
                     // Bottom connector
                     switch (this.BottomConnector)
                     {
                         case MenuSeparatorConnector.PinMenuBorder:
-                            builder.Add(
-                                new TextureBox(Game1.menuTexture)
-                                {
-                                    MinScale = GuiSize.One,
-                                    MaxScale = PartialGuiSize.One,
-                                    SourceRectangle = new(64, 192, 64, 64),
-                                }
-                            );
+                            GuiComponent.Texture(
+                                    Game1.menuTexture,
+                                    sourceRectangle: new(64, 192, 64, 64),
+                                    minScale: GuiSize.One,
+                                    maxScale: PartialGuiSize.One
+                                )
+                                .AddTo(builder);
                             break;
                         case MenuSeparatorConnector.MenuBorder:
-                            builder.Add(
-                                new TextureBox(Game1.menuTexture)
-                                {
-                                    MinScale = GuiSize.One,
-                                    MaxScale = PartialGuiSize.One,
-                                    SourceRectangle = new(128, 960, 64, 64),
-                                }
-                            );
+                            GuiComponent.Texture(
+                                    Game1.menuTexture,
+                                    sourceRectangle: new(128, 960, 64, 64),
+                                    minScale: GuiSize.One,
+                                    maxScale: PartialGuiSize.One
+                                )
+                                .AddTo(builder);
                             break;
                         case MenuSeparatorConnector.Separator:
-                            builder.Add(
-                                new TextureBox(Game1.menuTexture)
-                                {
-                                    MinScale = GuiSize.One,
-                                    MaxScale = PartialGuiSize.One,
-                                    SourceRectangle = new(192, 576, 64, 64),
-                                }
-                            );
+                            GuiComponent.Texture(
+                                    Game1.menuTexture,
+                                    sourceRectangle: new(192, 576, 64, 64),
+                                    minScale: GuiSize.One,
+                                    maxScale: PartialGuiSize.One
+                                )
+                                .AddTo(builder);
                             break;
                         case MenuSeparatorConnector.None:
                             break;

@@ -1,6 +1,4 @@
-﻿using TehPers.Core.Api.Gui.Components;
-
-namespace TehPers.Core.Api.Gui.Layouts
+﻿namespace TehPers.Core.Api.Gui.Layouts
 {
     /// <summary>
     /// A builder for a GUI layout.
