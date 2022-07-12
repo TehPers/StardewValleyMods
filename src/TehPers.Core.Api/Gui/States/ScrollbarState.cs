@@ -10,22 +10,28 @@ namespace TehPers.Core.Api.Gui.States
         private int value;
 
         /// <summary>
-        /// The inclusive minimum value of this scrollbar.
+        /// Gets or sets the inclusive minimum value of this scrollbar.
         /// </summary>
-        public int MinimumValue { get; set; }
+        public int MinValue { get; set; }
 
         /// <summary>
-        /// The inclusive maximum value of this scrollbar.
+        /// Gets or sets the inclusive maximum value of this scrollbar.
         /// </summary>
-        public int MaximumValue { get; set; }
+        public int MaxValue { get; set; }
 
         /// <summary>
-        /// The current value this scrollbar holds.
+        /// Gets or sets the current value this scrollbar holds.
         /// </summary>
         public int Value
         {
-            get => Math.Clamp(this.value, this.MinimumValue, this.MaximumValue);
+            get => Math.Clamp(this.value, this.MinValue, this.MaxValue);
             set => this.value = value;
         }
+
+        /// <summary>
+        /// Gets the percentage the current value is between the minimum and maximum value.
+        /// </summary>
+        public float Percentage =>
+            (float)(this.value - this.MinValue) / (this.MaxValue - this.MinValue);
     }
 }

@@ -40,9 +40,14 @@ namespace TehPers.Core.Api.Gui.Components
 
             public void Handle(GuiEvent e, Rectangle bounds)
             {
-                var range = this.State.MaximumValue - this.State.MinimumValue + 1;
+                if (e is GuiEvent.Scroll(var direction))
+                {
+                    this.State.Value -= direction / 120;
+                }
+
+                var range = this.State.MaxValue - this.State.MinValue + 1;
                 var barHeight = bounds.Height / (float)range;
-                var valueFromMin = this.State.Value - this.State.MinimumValue;
+                var valueFromMin = this.State.Value - this.State.MinValue;
 
                 GuiComponent.Vertical(
                         builder =>
