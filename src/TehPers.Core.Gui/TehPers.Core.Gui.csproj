@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <LangVersion>10</LangVersion>
+        <BundleExtraAssemblies>ThirdParty</BundleExtraAssemblies>
+        <Nullable>Enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\TehPers.Core.Gui.Api\TehPers.Core.Gui.Api.csproj" />
+    </ItemGroup>
+
+</Project>

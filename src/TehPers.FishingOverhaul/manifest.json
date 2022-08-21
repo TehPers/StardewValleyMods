@@ -14,6 +14,10 @@
       "MinimumVersion": "1.1.0"
     },
     {
+      "UniqueID": "TehPers.Core.Gui",
+      "MinimumVersion": "0.1.0"
+    },
+    {
       "UniqueID": "Pathoschild.ContentPatcher",
       "MinimumVersion": "1.24.0"
     },

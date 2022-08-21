@@ -2,9 +2,10 @@
 using StardewModdingAPI;
 using StardewValley;
 using System.Linq;
-using TehPers.Core.Api.Gui;
-using TehPers.Core.Api.Gui.Layouts;
 using TehPers.Core.Api.Items;
+using TehPers.Core.Gui.Api;
+using TehPers.Core.Gui.Api.Components;
+using TehPers.Core.Gui.Api.Extensions;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Extensions;
 using TehPers.FishingOverhaul.Config;
@@ -15,15 +16,19 @@ namespace TehPers.FishingOverhaul.Services.Setup
     {
         private readonly IGuiComponent inner;
 
+        public IGuiBuilder GuiBuilder { get; }
+
         public FishingHud(
             IFishingApi fishingApi,
             IModHelper helper,
             HudConfig hudConfig,
             INamespaceRegistry namespaceRegistry,
+            IGuiBuilder guiBuilder,
             Farmer farmer
         )
         {
-            this.inner = FishingHud.CreateComponent(
+            this.GuiBuilder = guiBuilder;
+            this.inner = this.CreateComponent(
                 fishingApi,
                 helper,
                 hudConfig,
@@ -32,7 +37,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             );
         }
 
-        private static IGuiComponent CreateComponent(
+        private IGuiComponent CreateComponent(
             IFishingApi fishingApi,
             IModHelper helper,
             HudConfig hudConfig,
@@ -84,21 +89,25 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 .ToList();
 
             // Setup the sprite batch
-            var component = GuiComponent.Vertical(
-                HorizontalAlignment.Left,
+            var component = this.GuiBuilder.VerticalLayout(
                 builder =>
                 {
+                    builder = builder.Aligned(horizontal: HorizontalAlignment.Left);
+
                     // Build header
-                    GuiComponent.Vertical(
-                            HorizontalAlignment.Left,
+                    this.GuiBuilder.VerticalLayout(
                             header =>
                             {
+                                header = header.Aligned(horizontal: HorizontalAlignment.Left);
+
                                 // Draw streak chances
                                 var streakText = helper.Translation.Get(
                                     "text.streak",
                                     new {streak = fishingApi.GetStreak(farmer)}
                                 );
-                                GuiComponent.Label(streakText, font: font, color: normalTextColor)
+                                this.GuiBuilder.Label(streakText)
+                                    .WithFont(font)
+                                    .WithColor(normalTextColor)
                                     .Aligned(HorizontalAlignment.Left)
                                     .AddTo(header);
 
@@ -108,7 +117,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                     new {chance = $"{treasureChance:P2}"}
                                 );
 
-                                GuiComponent.Label(treasureText, font: font, color: normalTextColor)
+                                this.GuiBuilder.Label(treasureText)
+                                    .WithFont(font)
+                                    .WithColor(normalTextColor)
                                     .Aligned(HorizontalAlignment.Left)
                                     .AddTo(header);
 
@@ -117,7 +128,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                     "text.trash",
                                     new {chance = $"{trashChance:P2}"}
                                 );
-                                GuiComponent.Label(trashText, font: font, color: normalTextColor)
+                                this.GuiBuilder.Label(trashText)
+                                    .WithFont(font)
+                                    .WithColor(normalTextColor)
                                     .Aligned(HorizontalAlignment.Left)
                                     .AddTo(header);
                             }
@@ -128,13 +141,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     if (displayedEntries.Any())
                     {
                         // Separator
-                        GuiComponent.MenuHorizontalSeparator().AddTo(builder);
+                        this.GuiBuilder.MenuHorizontalSeparator().AddTo(builder);
 
                         // Entries
-                        GuiComponent.Vertical(
-                                HorizontalAlignment.Left,
+                        this.GuiBuilder.VerticalLayout(
                                 content =>
                                 {
+                                    content = content.Aligned(horizontal: HorizontalAlignment.Left);
+
                                     // Draw entries
                                     foreach (var displayedEntry in displayedEntries)
                                     {
@@ -142,44 +156,47 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                         var chance = displayedEntry.Weight;
 
                                         // Draw fish icon
-                                        GuiComponent.Horizontal(
-                                            itemRow =>
-                                            {
-                                                var fishName = helper.Translation.Get(
-                                                        "text.fish.unknownName",
-                                                        new {key = entryKey.ToString()}
-                                                    )
-                                                    .ToString();
-                                                if (namespaceRegistry.TryGetItemFactory(
-                                                        entryKey,
-                                                        out var factory
-                                                    ))
+                                        this.GuiBuilder.HorizontalLayout(
+                                                itemRow =>
                                                 {
-                                                    var fishItem = factory.Create();
-                                                    fishName = fishItem.DisplayName;
+                                                    var fishName = helper.Translation.Get(
+                                                            "text.fish.unknownName",
+                                                            new {key = entryKey.ToString()}
+                                                        )
+                                                        .ToString();
+                                                    if (namespaceRegistry.TryGetItemFactory(
+                                                            entryKey,
+                                                            out var factory
+                                                        ))
+                                                    {
+                                                        var fishItem = factory.Create();
+                                                        fishName = fishItem.DisplayName;
 
-                                                    GuiComponent.ItemView(fishItem, sideLength: 32f)
+                                                        this.GuiBuilder.ItemView(fishItem)
+                                                            .WithSideLength(32f)
+                                                            .AddTo(itemRow);
+                                                    }
+
+                                                    // Draw chance
+                                                    var fishText = helper.Translation.Get(
+                                                        "text.fish",
+                                                        new
+                                                        {
+                                                            name = fishName,
+                                                            chance = $"{chance * 100.0:F2}"
+                                                        }
+                                                    );
+                                                    this.GuiBuilder.Label(fishText)
+                                                        .WithFont(font)
+                                                        .WithColor(textColor)
+                                                        .Aligned(
+                                                            HorizontalAlignment.Left,
+                                                            VerticalAlignment.Center
+                                                        )
                                                         .AddTo(itemRow);
                                                 }
-
-                                                // Draw chance
-                                                var fishText = helper.Translation.Get(
-                                                    "text.fish",
-                                                    new
-                                                    {
-                                                        name = fishName,
-                                                        chance = $"{chance * 100.0:F2}"
-                                                    }
-                                                );
-                                                GuiComponent
-                                                    .Label(fishText, font: font, color: textColor)
-                                                    .Aligned(
-                                                        HorizontalAlignment.Left,
-                                                        VerticalAlignment.Center
-                                                    )
-                                                    .AddTo(itemRow);
-                                            }
-                                        ).AddTo(content);
+                                            )
+                                            .AddTo(content);
                                     }
 
                                     // Draw 'more fish' text
@@ -194,11 +211,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                                     }
                                             )
                                             .ToString();
-                                        GuiComponent.Label(
-                                                moreFishText,
-                                                font: font,
-                                                normalTextColor
-                                            )
+                                        this.GuiBuilder.Label(moreFishText)
+                                            .WithFont(font)
+                                            .WithColor(normalTextColor)
                                             .Aligned(HorizontalAlignment.Left)
                                             .AddTo(content);
                                     }
@@ -210,15 +225,17 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 }
             );
 
-            return component.WithBackground(GuiComponent.MenuBackground());
+            return component.WithBackground(this.GuiBuilder.MenuBackground());
         }
 
-        public GuiConstraints GetConstraints()
+        /// <inheritdoc />
+        public IGuiConstraints GetConstraints()
         {
             return this.inner.GetConstraints();
         }
 
-        public void Handle(GuiEvent e, Rectangle bounds)
+        /// <inheritdoc />
+        public void Handle(IGuiEvent e, Rectangle bounds)
         {
             this.inner.Handle(e, bounds);
         }

@@ -8,6 +8,8 @@ using StardewModdingAPI;
 using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Setup;
+using TehPers.Core.Gui.Api;
+using TehPers.Core.Gui.Api.Extensions;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Api.Effects;
@@ -103,6 +105,15 @@ namespace TehPers.FishingOverhaul
             this.BindForeignModApi<IContentPatcherAPI>("Pathoschild.ContentPatcher")
                 .InSingletonScope();
             this.BindForeignModApi<IEmpApi>("Esca.EMP").InSingletonScope();
+            this.Bind<ICoreGuiApi>()
+                .ToMethod(
+                    context =>
+                    {
+                        var helper = context.Kernel.Get<IModHelper>();
+                        return helper.ModRegistry.GetGuiApi();
+                    }
+                )
+                .InSingletonScope();
         }
 
         private void BindConfiguration<T>(string path)

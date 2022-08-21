@@ -1,0 +1,17 @@
+﻿{
+  "$schema": "https://smapi.io/schemas/manifest.json",
+  "Name": "TehCore - GUI",
+  "Author": "TehPers",
+  "Version": "0.1.0",
+  "Description": "A simple, responsive GUI framework",
+  "UniqueID": "TehPers.Core.Gui",
+  "EntryDll": "TehPers.Core.Gui.dll",
+  "MinimumApiVersion": "3.14.0",
+  "UpdateKeys": ["Nexus:3256@Gui", "ModDrop:1071149@Gui"],
+  "Dependencies": [
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": false
+    }
+  ]
+}

@@ -24,6 +24,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TehPers.Core.Gui", "TehPers.Core.Gui\TehPers.Core.Gui.csproj", "{462E76DA-6359-45CE-B17D-4260898AA602}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TehPers.Core.Gui.Api", "TehPers.Core.Gui.Api\TehPers.Core.Gui.Api.csproj", "{AA46BDA8-16FC-46DD-8A84-4FF366FD31D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +62,14 @@ Global
 		{1BFC399C-5326-4964-B906-0F05B4CDAFE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BFC399C-5326-4964-B906-0F05B4CDAFE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BFC399C-5326-4964-B906-0F05B4CDAFE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{462E76DA-6359-45CE-B17D-4260898AA602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{462E76DA-6359-45CE-B17D-4260898AA602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{462E76DA-6359-45CE-B17D-4260898AA602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{462E76DA-6359-45CE-B17D-4260898AA602}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA46BDA8-16FC-46DD-8A84-4FF366FD31D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA46BDA8-16FC-46DD-8A84-4FF366FD31D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA46BDA8-16FC-46DD-8A84-4FF366FD31D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA46BDA8-16FC-46DD-8A84-4FF366FD31D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

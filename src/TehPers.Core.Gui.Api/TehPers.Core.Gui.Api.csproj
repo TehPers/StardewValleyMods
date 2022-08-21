@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <Nullable>Enable</Nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <EnableModDeploy>False</EnableModDeploy>
+        <EnableModZip>False</EnableModZip>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+    </ItemGroup>
+
+</Project>

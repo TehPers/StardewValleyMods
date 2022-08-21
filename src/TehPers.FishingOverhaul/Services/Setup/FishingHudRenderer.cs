@@ -1,11 +1,16 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
 using StardewValley.Tools;
+using System.Linq;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
 using TehPers.Core.Gui.Api;
+using TehPers.Core.Gui.Api.Components;
+using TehPers.Core.Gui.Api.Extensions;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Config;
 
@@ -17,18 +22,22 @@ namespace TehPers.FishingOverhaul.Services.Setup
         private readonly IFishingApi fishingApi;
         private readonly HudConfig hudConfig;
         private readonly INamespaceRegistry namespaceRegistry;
+        private readonly ICoreGuiApi coreGuiApi;
 
         public FishingHudRenderer(
             IModHelper helper,
             IFishingApi fishingApi,
             HudConfig hudConfig,
-            INamespaceRegistry namespaceRegistry
+            INamespaceRegistry namespaceRegistry,
+            ICoreGuiApi coreGuiApi
         )
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.fishingApi = fishingApi ?? throw new ArgumentNullException(nameof(fishingApi));
             this.hudConfig = hudConfig ?? throw new ArgumentNullException(nameof(hudConfig));
-            this.namespaceRegistry = namespaceRegistry ?? throw new ArgumentNullException(nameof(namespaceRegistry));
+            this.namespaceRegistry = namespaceRegistry
+                ?? throw new ArgumentNullException(nameof(namespaceRegistry));
+            this.coreGuiApi = coreGuiApi ?? throw new ArgumentNullException(nameof(coreGuiApi));
         }
 
         public void Setup()
@@ -43,8 +52,54 @@ namespace TehPers.FishingOverhaul.Services.Setup
                     return;
                 }
 
-                Game1.InUIMode(() => Game1.activeClickableMenu = new TestMenu(this.helper));
+                Game1.InUIMode(
+                    () => Game1.activeClickableMenu =
+                        this.CreateTestMenu(this.coreGuiApi.GuiBuilder)
+                );
             };
+        }
+
+        private IClickableMenu CreateTestMenu(IGuiBuilder ui)
+        {
+            var text = "Click me!";
+            var count = 0;
+            var textState = new ITextInput.State();
+            var scrollState = new IVerticalScrollbar.State();
+            var dropdownState = new IDropdown<int>.State(
+                Enumerable.Range(1, 10).Select(n => (n, $"Item{n}")).ToList()
+            );
+
+            return ui.VerticalLayout(
+                    layout =>
+                    {
+                        layout = layout.Aligned(horizontal: HorizontalAlignment.Center);
+                        ui.Label(text)
+                            .Aligned(HorizontalAlignment.Center)
+                            .OnClick(
+                                clickType =>
+                                {
+                                    text += $" <{clickType}>";
+                                    count += 1;
+                                }
+                            )
+                            .AddTo(layout);
+                        ui.HorizontalLayout(
+                                ui.Label("You have clicked "),
+                                ui.Label(count.ToString("G")).WithColor(Color.DarkGreen),
+                                ui.Label(" times!")
+                            )
+                            .AddTo(layout);
+                        ui.TextBox(textState, this.helper.Input).AddTo(layout);
+                        ui.Dropdown(dropdownState).AddTo(layout);
+                    }
+                )
+                .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
+                .VerticallyScrollable(scrollState)
+                .Constrained()
+                .WithMinSize(new PartialGuiSize(null, 100f))
+                .WithPadding(64)
+                .WithBackground(ui.MenuBackground())
+                .ToMenu(this.helper);
         }
 
         public void Dispose()
@@ -69,6 +124,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 this.helper,
                 this.hudConfig,
                 this.namespaceRegistry,
+                this.coreGuiApi.GuiBuilder,
                 farmer
             );
             var constraints = component.GetConstraints();
