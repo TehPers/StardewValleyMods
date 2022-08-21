@@ -5,7 +5,7 @@ using TehPers.Core.Api.Gui.States;
 
 namespace TehPers.Core.Api.Gui.Components
 {
-    internal record VerticalScrollArea(IGuiComponent Inner, ScrollbarState State) : IGuiComponent
+    internal record VerticalScrollArea(IGuiComponent Inner, ScrollState State) : IGuiComponent
     {
         public GuiConstraints GetConstraints()
         {
@@ -45,19 +45,19 @@ namespace TehPers.Core.Api.Gui.Components
                 case GuiEvent.Hover(var position):
                     if (bounds.Contains(position))
                     {
-                        this.Inner.Handle(e, bounds);
+                        this.Inner.Handle(e, innerBounds);
                     }
 
                     break;
                 case GuiEvent.ReceiveClick(var position, _):
                     if (bounds.Contains(position))
                     {
-                        this.Inner.Handle(e, bounds);
+                        this.Inner.Handle(e, innerBounds);
                     }
 
                     break;
                 case GuiEvent.Scroll(var direction):
-                    this.State.Value -= direction / 120;
+                    this.State.Value -= 5 * direction / 120;
                     this.Inner.Handle(e, innerBounds);
                     break;
                 default:

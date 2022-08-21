@@ -163,15 +163,21 @@ namespace TehPers.Core.Api.Gui
         /// <param name="clickType">The type of click to detect.</param>
         /// <param name="onClick">The action to perform.</param>
         /// <returns>The component, wrapped by a click detector.</returns>
-        public static IGuiComponent OnClick(this IGuiComponent component, ClickType clickType, Action onClick)
+        public static IGuiComponent OnClick(
+            this IGuiComponent component,
+            ClickType clickType,
+            Action onClick
+        )
         {
-            return component.OnClick(ct =>
-            {
-                if (clickType == ct)
+            return component.OnClick(
+                ct =>
                 {
-                    onClick();
+                    if (clickType == ct)
+                    {
+                        onClick();
+                    }
                 }
-            });
+            );
         }
 
         /// <summary>
@@ -217,6 +223,22 @@ namespace TehPers.Core.Api.Gui
         }
 
         /// <summary>
+        /// Allows this component to be scrolled vertically. This allows the component to be
+        /// rendered at any height and allows the user to use the scroll wheel to scroll up and
+        /// down the component within the view. This does not add a scrollbar.
+        /// </summary>
+        /// <param name="component">The inner component.</param>
+        /// <param name="scrollState">The scrolling state.</param>
+        /// <returns>The vertically scrollable component.</returns>
+        public static IGuiComponent VerticallyScrollable(
+            this IGuiComponent component,
+            ScrollState scrollState
+        )
+        {
+            return new VerticalScrollArea(component, scrollState);
+        }
+
+        /// <summary>
         /// Creates a new text label.
         /// 
         /// </summary>
@@ -236,11 +258,11 @@ namespace TehPers.Core.Api.Gui
             float? layerDepth = null
         )
         {
-            return new Label(text).MaybeInitRef(font, (l, f) => l with { Font = f })
-                .MaybeInitVal(color, (l, c) => l with { Color = c })
-                .MaybeInitVal(scale, (l, s) => l with { Scale = s })
-                .MaybeInitVal(spriteEffects, (l, s) => l with { SpriteEffects = s })
-                .MaybeInitVal(layerDepth, (l, d) => l with { LayerDepth = d });
+            return new Label(text).MaybeInitRef(font, (l, f) => l with {Font = f})
+                .MaybeInitVal(color, (l, c) => l with {Color = c})
+                .MaybeInitVal(scale, (l, s) => l with {Scale = s})
+                .MaybeInitVal(spriteEffects, (l, s) => l with {SpriteEffects = s})
+                .MaybeInitVal(layerDepth, (l, d) => l with {LayerDepth = d});
         }
 
         /// <summary>
@@ -274,24 +296,24 @@ namespace TehPers.Core.Api.Gui
         )
         {
             return new TextInput(state, inputHelper)
-                .MaybeInitRef(font, (input, f) => input with { Font = f })
-                .MaybeInitVal(textColor, (input, c) => input with { TextColor = c })
-                .MaybeInitVal(cursorColor, (input, c) => input with { CursorColor = c })
+                .MaybeInitRef(font, (input, f) => input with {Font = f})
+                .MaybeInitVal(textColor, (input, c) => input with {TextColor = c})
+                .MaybeInitVal(cursorColor, (input, c) => input with {CursorColor = c})
                 .MaybeInitVal(
                     highlightedTextColor,
-                    (input, c) => input with { HighlightedTextColor = c }
+                    (input, c) => input with {HighlightedTextColor = c}
                 )
                 .MaybeInitVal(
                     highlightedTextBackgroundColor,
-                    (input, c) => input with { HighlightedTextBackgroundColor = c }
+                    (input, c) => input with {HighlightedTextBackgroundColor = c}
                 )
-                .MaybeInitVal(unfocusOnEsc, (input, b) => input with { UnfocusOnEsc = b })
-                .MaybeInitRef(insertionCue, (input, s) => input with { InsertionCue = s })
+                .MaybeInitVal(unfocusOnEsc, (input, b) => input with {UnfocusOnEsc = b})
+                .MaybeInitRef(insertionCue, (input, s) => input with {InsertionCue = s})
                 .MaybeInitRef(
                     overrideInsertionCues,
-                    (input, d) => input with { OverrideInsertionCues = d }
+                    (input, d) => input with {OverrideInsertionCues = d}
                 )
-                .MaybeInitRef(deletionCue, (input, s) => input with { DeletionCue = s });
+                .MaybeInitRef(deletionCue, (input, s) => input with {DeletionCue = s});
         }
 
         /// <summary>
@@ -339,12 +361,12 @@ namespace TehPers.Core.Api.Gui
         )
         {
             return new StretchedTexture(texture)
-                .MaybeInitVal(sourceRectangle, (t, s) => t with { SourceRectangle = s })
-                .MaybeInitVal(color, (t, c) => t with { Color = c })
-                .MaybeInitVal(effects, (t, e) => t with { Effects = e })
-                .MaybeInitVal(layerDepth, (t, d) => t with { LayerDepth = d })
-                .MaybeInitRef(minScale, (t, s) => t with { MinScale = s })
-                .MaybeInitRef(maxScale, (t, s) => t with { MaxScale = s });
+                .MaybeInitVal(sourceRectangle, (t, s) => t with {SourceRectangle = s})
+                .MaybeInitVal(color, (t, c) => t with {Color = c})
+                .MaybeInitVal(effects, (t, e) => t with {Effects = e})
+                .MaybeInitVal(layerDepth, (t, d) => t with {LayerDepth = d})
+                .MaybeInitRef(minScale, (t, s) => t with {MinScale = s})
+                .MaybeInitRef(maxScale, (t, s) => t with {MaxScale = s});
         }
 
         /// <summary>
@@ -369,12 +391,12 @@ namespace TehPers.Core.Api.Gui
         )
         {
             return new ItemView(item)
-                .MaybeInitVal(transparency, (i, t) => i with { Transparency = t })
-                .MaybeInitVal(layerDepth, (i, d) => i with { LayerDepth = d })
-                .MaybeInitVal(sideLength, (i, s) => i with { SideLength = s })
-                .MaybeInitVal(drawStackNumber, (i, d) => i with { DrawStackNumber = d })
-                .MaybeInitVal(color, (i, c) => i with { Color = c })
-                .MaybeInitVal(drawShadow, (i, d) => i with { DrawShadow = d });
+                .MaybeInitVal(transparency, (i, t) => i with {Transparency = t})
+                .MaybeInitVal(layerDepth, (i, d) => i with {LayerDepth = d})
+                .MaybeInitVal(sideLength, (i, s) => i with {SideLength = s})
+                .MaybeInitVal(drawStackNumber, (i, d) => i with {DrawStackNumber = d})
+                .MaybeInitVal(color, (i, c) => i with {Color = c})
+                .MaybeInitVal(drawShadow, (i, d) => i with {DrawShadow = d});
         }
 
         /// <summary>
@@ -396,8 +418,10 @@ namespace TehPers.Core.Api.Gui
         public static IGuiComponent Dropdown<T>(DropdownState<T> state, float? layerDepth = null)
         {
             // TODO
-            return new Dropdown<T>(state)
-                .MaybeInitVal(layerDepth, (d, l) => d with { LayerDepth = l });
+            return new Dropdown<T>(state).MaybeInitVal(
+                layerDepth,
+                (d, l) => d with {LayerDepth = l}
+            );
         }
 
         /// <summary>
@@ -438,12 +462,19 @@ namespace TehPers.Core.Api.Gui
             var cellWidth = Math.DivRem(sourceRectangle.Width, 3, out var widthRem);
             if (widthRem != 0)
             {
-                throw new ArgumentException("The source rectangle's dimensions must be multiples of 3.", nameof(sourceRectangle));
+                throw new ArgumentException(
+                    "The source rectangle's dimensions must be multiples of 3.",
+                    nameof(sourceRectangle)
+                );
             }
+
             var cellHeight = Math.DivRem(sourceRectangle.Height, 3, out var heightRem);
             if (heightRem != 0)
             {
-                throw new ArgumentException("The source rectangle's dimensions must be multiples of 3.", nameof(sourceRectangle));
+                throw new ArgumentException(
+                    "The source rectangle's dimensions must be multiples of 3.",
+                    nameof(sourceRectangle)
+                );
             }
 
             var x = sourceRectangle.X;
@@ -497,19 +528,18 @@ namespace TehPers.Core.Api.Gui
         )
         {
             return new TextureBox(
-                texture,
-                topLeft,
-                topCenter,
-                topRight,
-                centerLeft,
-                center,
-                centerRight,
-                bottomLeft,
-                bottomCenter,
-                bottomRight
-            )
-            .MaybeInitRef(minScale, (t, s) => t with { MinScale = s })
-            .MaybeInitVal(layerDepth, (t, d) => t with { LayerDepth = d });
+                    texture,
+                    topLeft,
+                    topCenter,
+                    topRight,
+                    centerLeft,
+                    center,
+                    centerRight,
+                    bottomLeft,
+                    bottomCenter,
+                    bottomRight
+                ).MaybeInitRef(minScale, (t, s) => t with {MinScale = s})
+                .MaybeInitVal(layerDepth, (t, d) => t with {LayerDepth = d});
         }
 
         /// <summary>
@@ -520,28 +550,28 @@ namespace TehPers.Core.Api.Gui
         public static IGuiComponent MenuBackground(float? layerDepth = null)
         {
             return GuiComponent.TextureBox(
-                Game1.menuTexture,
-                new(0, 0, 64, 64),
-                new(128, 0, 64, 64),
-                new(192, 0, 64, 64),
-                new(0, 128, 64, 64),
-                null,
-                new(192, 128, 64, 64),
-                new(0, 192, 64, 64),
-                new(128, 192, 64, 64),
-                new(192, 192, 64, 64),
-                layerDepth: layerDepth
-            )
-            .WithBackground(
-                GuiComponent.Texture(
                     Game1.menuTexture,
-                    sourceRectangle: new(64, 128, 64, 64),
-                    minScale: GuiSize.Zero,
-                    maxScale: PartialGuiSize.Empty,
+                    new(0, 0, 64, 64),
+                    new(128, 0, 64, 64),
+                    new(192, 0, 64, 64),
+                    new(0, 128, 64, 64),
+                    null,
+                    new(192, 128, 64, 64),
+                    new(0, 192, 64, 64),
+                    new(128, 192, 64, 64),
+                    new(192, 192, 64, 64),
                     layerDepth: layerDepth
                 )
-                .WithPadding(32)
-            );
+                .WithBackground(
+                    GuiComponent.Texture(
+                            Game1.menuTexture,
+                            sourceRectangle: new(64, 128, 64, 64),
+                            minScale: GuiSize.Zero,
+                            maxScale: PartialGuiSize.Empty,
+                            layerDepth: layerDepth
+                        )
+                        .WithPadding(32)
+                );
         }
 
         /// <summary>
@@ -553,7 +583,7 @@ namespace TehPers.Core.Api.Gui
         {
             return new HorizontalSeparator().MaybeInitVal(
                 layerDepth,
-                (m, d) => m with { LayerDepth = d }
+                (m, d) => m with {LayerDepth = d}
             );
         }
 
@@ -570,9 +600,9 @@ namespace TehPers.Core.Api.Gui
             string? message = null
         )
         {
-            return new DialogueBox().MaybeInitVal(speaker, (d, s) => d with { Speaker = s })
-                .MaybeInitVal(drawOnlyBox, (d, b) => d with { DrawOnlyBox = b })
-                .MaybeInitRef(message, (d, m) => d with { Message = m });
+            return new DialogueBox().MaybeInitVal(speaker, (d, s) => d with {Speaker = s})
+                .MaybeInitVal(drawOnlyBox, (d, b) => d with {DrawOnlyBox = b})
+                .MaybeInitRef(message, (d, m) => d with {Message = m});
         }
 
         /// <summary>

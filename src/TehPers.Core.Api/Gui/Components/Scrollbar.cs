@@ -5,7 +5,7 @@ using TehPers.Core.Api.Gui.States;
 
 namespace TehPers.Core.Api.Gui.Components
 {
-    internal record Scrollbar(ScrollbarState State) : ComponentWrapper
+    internal record Scrollbar(ScrollState State) : ComponentWrapper
     {
         /// <summary>
         /// The layer depth to draw this component at.
@@ -27,7 +27,7 @@ namespace TehPers.Core.Api.Gui.Components
             return bar.WithBackground(track);
         }
 
-        private record Bar(ScrollbarState State, float LayerDepth) : IGuiComponent
+        private record Bar(ScrollState State, float LayerDepth) : IGuiComponent
         {
             public GuiConstraints GetConstraints()
             {

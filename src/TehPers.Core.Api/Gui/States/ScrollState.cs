@@ -5,7 +5,7 @@ namespace TehPers.Core.Api.Gui.States
     /// <summary>
     /// The state of a scrollbar.
     /// </summary>
-    public class ScrollbarState
+    public class ScrollState
     {
         private int value;
 

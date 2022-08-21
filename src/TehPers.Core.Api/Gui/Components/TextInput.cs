@@ -121,6 +121,10 @@ namespace TehPers.Core.Api.Gui.Components
             {
                 this.state.Focused = true;
             }
+            else if (e is GuiEvent.ReceiveClick)
+            {
+                this.state.Focused = false;
+            }
 
             // Input handling
             if (this.state.Focused)
