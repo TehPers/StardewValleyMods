@@ -9,7 +9,7 @@ namespace TehPers.Core.Gui.Components;
 /// <inheritdoc cref="IDialogueBox"/>
 internal record DialogueBox(IGuiBuilder Builder) : BaseGuiComponent(Builder), IDialogueBox
 {
-    public IDialogueBox.Portrait Speaker { get; init; }
+    public IDialogueBox.Portrait? Speaker { get; init; }
     public bool DrawOnlyBox { get; init; } = true;
     public string? Message { get; init; }
 
@@ -32,7 +32,7 @@ internal record DialogueBox(IGuiBuilder Builder) : BaseGuiComponent(Builder), ID
                     bounds.Y,
                     bounds.Width,
                     bounds.Height,
-                    this.Speaker is not IDialogueBox.Portrait.None,
+                    this.Speaker is not null,
                     this.DrawOnlyBox,
                     this.Message,
                     this.Speaker is IDialogueBox.Portrait.ObjectPortrait
@@ -43,7 +43,7 @@ internal record DialogueBox(IGuiBuilder Builder) : BaseGuiComponent(Builder), ID
     }
 
     /// <inheritdoc />
-    public IDialogueBox WithSpeakerPortrait(IDialogueBox.Portrait portrait)
+    public IDialogueBox WithSpeakerPortrait(IDialogueBox.Portrait? portrait)
     {
         return this with {Speaker = portrait};
     }

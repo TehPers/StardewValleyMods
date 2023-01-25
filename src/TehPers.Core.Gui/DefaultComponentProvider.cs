@@ -30,8 +30,8 @@ internal class DefaultComponentProvider : IDefaultComponentProvider
     /// <inheritdoc />
     public IAligner Aligner(
         IGuiComponent inner,
-        HorizontalAlignment horizontal,
-        VerticalAlignment vertical
+        HorizontalAlignment? horizontal,
+        VerticalAlignment? vertical
     )
     {
         return new Aligner(this.builder, inner, horizontal, vertical);

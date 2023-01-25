@@ -9,8 +9,8 @@ namespace TehPers.Core.Gui.Components;
 internal record Aligner(
     IGuiBuilder Builder,
     IGuiComponent Inner,
-    HorizontalAlignment Horizontal,
-    VerticalAlignment Vertical
+    HorizontalAlignment? Horizontal,
+    VerticalAlignment? Vertical
 ) : ComponentWrapper(Builder, Inner), IAligner
 {
     /// <inheritdoc />
@@ -18,8 +18,8 @@ internal record Aligner(
     {
         var innerConstraints = base.GetConstraints();
         var maxSize = new PartialGuiSize(
-            this.Horizontal is HorizontalAlignment.None ? innerConstraints.MaxSize.Width : null,
-            this.Vertical is VerticalAlignment.None ? innerConstraints.MaxSize.Height : null
+            this.Horizontal is null ? innerConstraints.MaxSize.Width : null,
+            this.Vertical is null ? innerConstraints.MaxSize.Height : null
         );
         return new GuiConstraints(innerConstraints.MinSize, maxSize);
     }
@@ -38,7 +38,7 @@ internal record Aligner(
         var innerWidth = innerConstraints.MaxSize.Width switch
         {
             null => bounds.Width,
-            _ when this.Horizontal is HorizontalAlignment.None => bounds.Width,
+            _ when this.Horizontal is null => bounds.Width,
             { } maxWidth => (int)Math.Ceiling(Math.Min(maxWidth, bounds.Width)),
         };
 
@@ -46,14 +46,14 @@ internal record Aligner(
         var innerHeight = innerConstraints.MaxSize.Height switch
         {
             null => bounds.Height,
-            _ when this.Vertical is VerticalAlignment.None => bounds.Height,
+            _ when this.Vertical is null => bounds.Height,
             { } maxHeight => (int)Math.Ceiling(Math.Min(maxHeight, bounds.Height)),
         };
 
         // Calculate x position
         var innerX = this.Horizontal switch
         {
-            HorizontalAlignment.None or HorizontalAlignment.Left => bounds.Left,
+            null or HorizontalAlignment.Left => bounds.Left,
             HorizontalAlignment.Center => bounds.Left + (bounds.Width - innerWidth) / 2,
             HorizontalAlignment.Right => bounds.Right - innerWidth,
             _ => throw new InvalidOperationException(
@@ -65,7 +65,7 @@ internal record Aligner(
         // Calculate y position
         var innerY = this.Vertical switch
         {
-            VerticalAlignment.None or VerticalAlignment.Top => bounds.Top,
+            null or VerticalAlignment.Top => bounds.Top,
             VerticalAlignment.Center => bounds.Top + (bounds.Height - innerHeight) / 2,
             VerticalAlignment.Bottom => bounds.Bottom - innerHeight,
             _ => throw new InvalidOperationException(
