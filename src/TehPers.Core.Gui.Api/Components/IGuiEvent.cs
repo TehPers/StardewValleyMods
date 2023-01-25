@@ -6,6 +6,19 @@ using System.Diagnostics.CodeAnalysis;
 namespace TehPers.Core.Gui.Api.Components;
 
 /// <summary>
+/// The global state for the entire GUI. This is shared by all components.
+/// </summary>
+public interface IGuiContext
+{
+    /// <summary>
+    /// Checks whether the given component is focused.
+    /// </summary>
+    /// <param name="component">The component to check focus for.</param>
+    /// <returns>Whether the component is focused.</returns>
+    bool IsFocused(IGuiComponent component);
+}
+
+/// <summary>
 /// An event that can update the state of the GUI.
 /// </summary>
 public interface IGuiEvent
@@ -93,9 +106,20 @@ public interface IGuiEvent
     }
 
     /// <summary>
+    /// Checks whether this was caused by the focus of this component being changed.
+    /// </summary>
+    /// <param name="focused">Whether this component is now focused.</param>
+    /// <returns>Whether this event was caused by the focus being changed.</returns>
+    bool IsFocusChanged(out bool focused)
+    {
+
+    }
+
+    /// <summary>
     /// Checks whether this was caused by a custom event.
     /// </summary>
     /// <param name="data">The event data.</param>
+    /// <returns>Whether this event was caused by a custom event.</returns>
     bool IsOther([MaybeNullWhen(false)] out object data)
     {
         data = default;

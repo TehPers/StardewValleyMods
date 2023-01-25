@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using TehPers.Core.Gui.Api.Components;
 
 namespace TehPers.Core.Gui.Api.Extensions;
@@ -46,5 +47,23 @@ public static class GuiEvents
         return e.IsReceiveClick(out var position, out var type) && bounds.Contains(position)
             ? type
             : null;
+    }
+
+    /// <summary>
+    /// Checks whether this was caused by a custom event of a specific type.
+    /// </summary>
+    /// <param name="e">The GUI event.</param>
+    /// <param name="data">The event data.</param>
+    /// <returns>Whether this event was caused by a custom event of the given type.</returns>
+    public static bool IsOther<T>(this IGuiEvent e, [MaybeNullWhen(false)] out T data)
+    {
+        if (e.IsOther(out var rawData) && rawData is T convertedData)
+        {
+            data = convertedData;
+            return true;
+        }
+
+        data = default;
+        return false;
     }
 }
