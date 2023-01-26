@@ -6,13 +6,13 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Tools;
+using TehPers.Core.Api.Extensions;
+using TehPers.Core.Api.Extensions.Drawing;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Extensions;
 using TehPers.FishingOverhaul.Config;
-using TehPers.FishingOverhaul.Extensions;
-using TehPers.FishingOverhaul.Extensions.Drawing;
 
 namespace TehPers.FishingOverhaul.Services.Setup
 {

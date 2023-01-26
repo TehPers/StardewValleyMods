@@ -2,9 +2,14 @@
 using Microsoft.Xna.Framework;
 using StardewValley.Tools;
 
-namespace TehPers.FishingOverhaul.Extensions.Drawing
+namespace TehPers.Core.Api.Extensions.Drawing
 {
-    internal record MeleeWeaponDrawingProperties(int Type, bool IsScythe) : IDrawingProperties
+    /// <summary>
+    /// Properties about how melee weapons are drawn in menus.
+    /// </summary>
+    /// <param name="Type">The type of melee weapon.</param>
+    /// <param name="IsScythe">Whether the weapon is a scythe.</param>
+    public record MeleeWeaponDrawingProperties(int Type, bool IsScythe) : IDrawingProperties
     {
         private static readonly FieldInfo addedSwordScale =
             typeof(MeleeWeapon).GetField(
@@ -27,8 +32,10 @@ namespace TehPers.FishingOverhaul.Extensions.Drawing
             )
             ?? throw new($"Missing info for {nameof(MeleeWeaponDrawingProperties.addedClubScale)}.");
 
+        /// <inheritdoc/>
         public Vector2 SourceSize => new(16, 16);
 
+        /// <inheritdoc/>
         public Vector2 Offset(float scaleSize)
         {
             return this.Type switch
@@ -38,11 +45,13 @@ namespace TehPers.FishingOverhaul.Extensions.Drawing
             };
         }
 
+        /// <inheritdoc/>
         public Vector2 Origin(float scaleSize)
         {
             return new(8f, 8f);
         }
 
+        /// <inheritdoc/>
         public float RealScale(float scaleSize)
         {
             var addedScale = (this.Type, this.IsScythe) switch
