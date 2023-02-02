@@ -211,7 +211,7 @@ namespace TehPers.Core.Api.Extensions
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>The default drawing properties.</returns>
-        public static IDrawingProperties? GetDefaultDrawingProperties(Item item)
+        public static IDrawingProperties? GetDefaultDrawingProperties(this Item item)
         {
             return item switch
             {
