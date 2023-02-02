@@ -4,7 +4,7 @@
   "Changes": [
     {
       "Action": "EditData",
-      "Target": " Data/mail",
+      "Target": "Data/mail",
       "Entries": {
         "TehPers.FishSword.CP/goldenShellCaught": "{{i18n: goldenShellCaught}}"
       }
