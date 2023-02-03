@@ -36,7 +36,7 @@ public static class LayoutBuilder
     }
 
     /// <summary>
-    /// Creates a new layout builder which applies a function to each component added to it.
+    /// Creates a new layout builder which applies a transformation to each component added to it.
     /// </summary>
     /// <param name="builder">The layout builder.</param>
     /// <param name="mapComponent">A function which maps each component to a new component.</param>
