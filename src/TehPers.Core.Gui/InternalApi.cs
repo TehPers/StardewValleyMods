@@ -1,5 +1,5 @@
-﻿using TehPers.Core.Gui.Api;
-using TehPers.Core.Gui.Api.Components;
+﻿using TehPers.Core.Gui.Api.Components;
+using TehPers.Core.Gui.Api.Guis;
 using TehPers.Core.Gui.Api.Internal;
 
 namespace TehPers.Core.Gui;

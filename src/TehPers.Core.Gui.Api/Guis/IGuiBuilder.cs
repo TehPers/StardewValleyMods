@@ -1,4 +1,4 @@
-﻿namespace TehPers.Core.Gui.Api;
+﻿namespace TehPers.Core.Gui.Api.Guis;
 
 /// <summary>
 /// A builder for creating GUI components.

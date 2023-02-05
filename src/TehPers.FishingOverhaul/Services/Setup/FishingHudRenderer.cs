@@ -1,16 +1,15 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Tools;
-using System.Linq;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Api.Setup;
 using TehPers.Core.Gui.Api;
 using TehPers.Core.Gui.Api.Components;
 using TehPers.Core.Gui.Api.Extensions;
+using TehPers.Core.Gui.Api.Guis;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Config;
 
@@ -61,45 +60,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
         private IClickableMenu CreateTestMenu(IGuiBuilder ui)
         {
-            var text = "Click me!";
-            var count = 0;
-            var textState = new ITextInput.State();
-            var scrollState = new IVerticalScrollbar.State();
-            var dropdownState = new IDropdown<int>.State(
-                Enumerable.Range(1, 10).Select(n => (n, $"Item{n}")).ToList()
-            );
-
-            return ui.VerticalLayout(
-                    layout =>
-                    {
-                        layout = layout.Aligned(horizontal: HorizontalAlignment.Center);
-                        ui.Label(text)
-                            .Aligned(HorizontalAlignment.Center)
-                            .OnClick(
-                                clickType =>
-                                {
-                                    text += $" <{clickType}>";
-                                    count += 1;
-                                }
-                            )
-                            .AddTo(layout);
-                        ui.HorizontalLayout(
-                                ui.Label("You have clicked "),
-                                ui.Label(count.ToString("G")).WithColor(Color.DarkGreen),
-                                ui.Label(" times!")
-                            )
-                            .AddTo(layout);
-                        ui.TextBox(textState, this.helper.Input).AddTo(layout);
-                        ui.Dropdown(dropdownState).AddTo(layout);
-                    }
-                )
-                .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
-                .VerticallyScrollable(scrollState)
-                .Constrained()
-                .WithMinSize(new PartialGuiSize(null, 100f))
-                .WithPadding(64)
-                .WithBackground(ui.MenuBackground())
-                .ToMenu(this.helper);
+            return new TestMenu(this.helper).ToMenu(ui, this.helper);
         }
 
         public void Dispose()

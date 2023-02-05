@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using TehPers.Core.Gui.Api.Components;
 using TehPers.Core.Gui.Api.Components.Layouts;
+using TehPers.Core.Gui.Api.Guis;
 
 namespace TehPers.Core.Gui.Api.Extensions;
 

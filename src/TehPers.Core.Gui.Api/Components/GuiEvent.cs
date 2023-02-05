@@ -1,13 +1,33 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace TehPers.Core.Gui.Api.Components;
 
 /// <inheritdoc />
 public abstract record GuiEvent : IGuiEvent
 {
+    /// <inheritdoc />
+    public bool IsHandled => this.GetIsHandled?.Invoke() ?? false;
+
+    /// <summary>
+    /// A callback to mark this event as handled.
+    /// </summary>
+    internal Action? SetHandled { get; init; }
+
+    /// <summary>
+    /// A callback to check whether this event has been handled.
+    /// </summary>
+    internal Func<bool>? GetIsHandled { get; init; }
+
     private GuiEvent() { }
+
+    /// <inheritdoc />
+    public void Handle()
+    {
+        this.SetHandled?.Invoke();
+    }
 
     /// <summary>
     /// A regular update tick.

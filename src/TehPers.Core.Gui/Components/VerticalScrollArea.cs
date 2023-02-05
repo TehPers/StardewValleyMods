@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using TehPers.Core.Gui.Api;
 using TehPers.Core.Gui.Api.Components;
+using TehPers.Core.Gui.Api.Guis;
 using TehPers.Core.Gui.Extensions;
 
 namespace TehPers.Core.Gui.Components;
@@ -29,13 +29,13 @@ internal record VerticalScrollArea(
 
         // Update scrollbar state
         this.State.MinValue = 0;
-        this.State.MaxValue = innerHeight - bounds.Height;
+        this.State.MaxValue = Math.Max(0, innerHeight - bounds.Height);
 
         // Render inner component
         var offsetY = this.State.Value;
         var innerBounds = new Rectangle(bounds.X, bounds.Y - offsetY, bounds.Width, innerHeight);
 
-        if (e .IsDraw(out var batch))
+        if (e.IsDraw(out var batch))
         {
             batch.WithScissorRect(
                 bounds,

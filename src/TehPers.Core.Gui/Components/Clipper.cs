@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using TehPers.Core.Gui.Api;
 using TehPers.Core.Gui.Api.Components;
+using TehPers.Core.Gui.Api.Guis;
 using TehPers.Core.Gui.Extensions;
 
 namespace TehPers.Core.Gui.Components;

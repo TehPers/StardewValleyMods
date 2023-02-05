@@ -6,23 +6,20 @@ using System.Diagnostics.CodeAnalysis;
 namespace TehPers.Core.Gui.Api.Components;
 
 /// <summary>
-/// The global state for the entire GUI. This is shared by all components.
-/// </summary>
-public interface IGuiContext
-{
-    /// <summary>
-    /// Checks whether the given component is focused.
-    /// </summary>
-    /// <param name="component">The component to check focus for.</param>
-    /// <returns>Whether the component is focused.</returns>
-    bool IsFocused(IGuiComponent component);
-}
-
-/// <summary>
 /// An event that can update the state of the GUI.
 /// </summary>
 public interface IGuiEvent
 {
+    /// <summary>
+    /// Whether this event has already been handled.
+    /// </summary>
+    bool IsHandled { get; }
+
+    /// <summary>
+    /// Marks this event as handled.
+    /// </summary>
+    void Handle();
+
     /// <summary>
     /// Checks whether this was caused by a regular update tick.
     /// </summary>

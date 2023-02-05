@@ -4,9 +4,9 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Linq;
-using TehPers.Core.Gui.Api;
 using TehPers.Core.Gui.Api.Components;
 using TehPers.Core.Gui.Api.Extensions;
+using TehPers.Core.Gui.Api.Guis;
 
 namespace TehPers.Core.Gui.Components;
 

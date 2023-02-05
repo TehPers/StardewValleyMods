@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using TehPers.Core.Gui.Api;
+using TehPers.Core.Gui.Api.Guis;
 
 namespace TehPers.Core.Gui;
 

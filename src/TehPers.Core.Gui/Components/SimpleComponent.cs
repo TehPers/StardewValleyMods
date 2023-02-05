@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using TehPers.Core.Gui.Api;
 using TehPers.Core.Gui.Api.Components;
 using TehPers.Core.Gui.Api.Extensions;
+using TehPers.Core.Gui.Api.Guis;
 
 namespace TehPers.Core.Gui.Components;
 

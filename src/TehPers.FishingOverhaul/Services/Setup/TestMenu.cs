@@ -1,70 +1,93 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using System;
 using System.Linq;
-using TehPers.Core.Api.Gui;
-using TehPers.Core.Api.Gui.Layouts;
-using TehPers.Core.Api.Gui.States;
+using TehPers.Core.Gui.Api.Components;
+using TehPers.Core.Gui.Api.Extensions;
+using TehPers.Core.Gui.Api.Guis;
 
 namespace TehPers.FishingOverhaul.Services.Setup
 {
-    // TODO: remove this
-    internal class TestMenu : ManagedMenu
+    public class TestMenu : IGui<TestMenu.Message>
     {
         private readonly IModHelper helper;
-        private string text = "Click me!";
-        private int count = 0;
-        private readonly TextInputState textState = new();
-        private readonly ScrollState scrollState = new();
+        private readonly ITextInput.IState textState;
+        private readonly IDropdown<int>.IState dropdownState;
+        private ClickType? lastClick;
+        private int clicks;
 
-        private readonly DropdownState<int> dropdownState = new(
-            Enumerable.Range(1, 10).Select(n => (n, $"Item{n}")).ToList()
-        );
+        /// <inheritdoc />
+        public bool CaptureInput => true;
 
         public TestMenu(IModHelper helper)
-            : base(helper, true)
         {
             this.helper = helper;
+            this.textState = new ITextInput.State();
+            this.dropdownState = new IDropdown<int>.State(
+                Enumerable.Range(0, 10).Select(n => (n, $"Item{n}")).ToList()
+            );
         }
 
-        protected override IGuiComponent CreateRoot()
+        /// <inheritdoc />
+        public void Update(Message message)
         {
-            this.KeyboardSubscriber!.Selected = this.textState.Focused;
-            return GuiComponent.Vertical(
-                    HorizontalAlignment.Center,
-                    builder =>
+            switch (message)
+            {
+                case Message.Clicked(var clickType):
+                    this.lastClick = clickType;
+                    this.clicks += 1;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(message), message, null);
+            }
+        }
+
+        /// <inheritdoc />
+        public IGuiComponent View(IGuiContext<Message> ctx)
+        {
+            return ctx.VerticalLayout(
+                    layout =>
                     {
-                        GuiComponent.Label(this.text)
+                        // Center layout
+                        layout = layout.Aligned(horizontal: HorizontalAlignment.Center);
+
+                        // Show last click
+                        ctx.Label(
+                                this.lastClick is { } lastClick
+                                    ? $"Last click type: {lastClick}"
+                                    : "Click me!"
+                            )
                             .Aligned(HorizontalAlignment.Center)
-                            .OnClick(
-                                clickType =>
-                                {
-                                    this.text += $" <{clickType}>";
-                                    this.count += 1;
-                                }
-                            )
-                            .AddTo(builder);
-                        GuiComponent.Horizontal(
-                                row =>
-                                {
-                                    GuiComponent.Label("You have clicked ").AddTo(row);
-                                    GuiComponent.Label(
-                                            this.count.ToString("G"),
-                                            color: Color.DarkGreen
-                                        )
-                                        .AddTo(row);
-                                    GuiComponent.Label(" times!").AddTo(row);
-                                }
-                            )
-                            .AddTo(builder);
-                        GuiComponent.TextBox(this.textState, this.helper.Input).AddTo(builder);
-                        GuiComponent.Dropdown(this.dropdownState).AddTo(builder);
+                            .OnClick(clickType => ctx.Update(new Message.Clicked(clickType)))
+                            .AddTo(layout);
+
+                        // Show counter
+                        if (this.clicks > 0)
+                        {
+                            ctx.HorizontalLayout(
+                                    ctx.Label("You have clicked "),
+                                    ctx.Label(this.clicks.ToString("G")).WithColor(Color.DarkGreen),
+                                    this.clicks > 1 ? ctx.Label(" times!") : ctx.Label(" time!")
+                                )
+                                .AddTo(layout);
+                        }
+
+                        ctx.TextBox(this.textState, this.helper.Input).AddTo(layout);
+                        ctx.Dropdown(this.dropdownState).AddTo(layout);
                     }
                 )
                 .Aligned(HorizontalAlignment.Center, VerticalAlignment.Center)
-                .VerticallyScrollable(this.scrollState)
-                .Constrained(minSize: new(null, 100f))
+                .Constrained()
+                .WithMinSize(new PartialGuiSize(null, 100f))
                 .WithPadding(64)
-                .WithBackground(GuiComponent.MenuBackground());
+                .WithBackground(ctx.MenuBackground());
+        }
+
+        public abstract record Message
+        {
+            private Message() { }
+
+            public sealed record Clicked(ClickType ClickType) : Message;
         }
     }
 }

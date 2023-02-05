@@ -2,9 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using TehPers.Core.Gui.Api;
+using System;
 using TehPers.Core.Gui.Api.Components;
 using TehPers.Core.Gui.Api.Extensions;
+using TehPers.Core.Gui.Api.Guis;
 
 namespace TehPers.Core.Gui.Components;
 
