@@ -2,7 +2,10 @@
 
 ## Unreleased
 
+# Fixed
+
 - Fix two relics being obtainable before they should be.
+- Fix relics not being caught right away.
 
 ## 1.1.0 - 2022-05-20
 
