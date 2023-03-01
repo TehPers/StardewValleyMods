@@ -19,6 +19,7 @@
           }
         },
         "When": {
+          "HasSeenEvent |contains=75160259": "true",
           "HasFlag |contains=RSV.HeroStatue": "false"
         }
       },
@@ -44,6 +45,7 @@
           }
         },
         "When": {
+          "HasSeenEvent |contains=75160259": "true",
           "HasFlag |contains=RSV.Sapphire": "false"
         }
       },

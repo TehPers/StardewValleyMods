@@ -1,5 +1,9 @@
 # Changelog - Recatchable Legendaries
 
+## Unreleased
+
+- Fix two relics being obtainable before they should be.
+
 ## 1.1.0 - 2022-05-20
 
 ### Added
