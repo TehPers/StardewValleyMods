@@ -38,7 +38,7 @@ namespace TehPers.FishingOverhaul.Services
             DefaultFishingSource.crimsonfishKey,
             new(0.02)
             {
-                DepthMultiplier = 0.02 / 4,
+                DepthMultiplier = 0.005,
                 IncludeLocations = ImmutableArray.Create("Beach", "BeachNightMarket"),
                 Seasons = Seasons.Summer,
                 MinFishingLevel = 5,
