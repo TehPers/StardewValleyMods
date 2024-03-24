@@ -101,6 +101,13 @@ namespace TehPers.FishingOverhaul.Api.Content
         [JsonIgnore]
         public WaterTypes WaterTypes { get; init; } = WaterTypes.All;
 
+
+        /// <summary>
+        /// (Optional) Flag to set when fish is caught
+        /// </summary>
+        [JsonIgnore]
+        public string? SetFlagOnCatch { get; init; } = null;
+
         /// <summary>
         /// Required fishing level to catch this.
         /// </summary>

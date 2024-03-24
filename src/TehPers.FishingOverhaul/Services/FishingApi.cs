@@ -126,7 +126,7 @@ namespace TehPers.FishingOverhaul.Services
                 {
                     // Read from the map properties
                     var mapProperty = farm.getMapProperty("FarmFishLocationOverride");
-                    if (mapProperty == string.Empty)
+                    if (mapProperty == string.Empty || mapProperty == null)
                     {
                         overrideLocation = string.Empty;
                         overrideChance = 0.0f;

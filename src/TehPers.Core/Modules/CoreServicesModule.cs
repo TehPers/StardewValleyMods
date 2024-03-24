@@ -46,7 +46,8 @@ namespace TehPers.Core.Modules
             // Mod APIs
             this.BindForeignModApi<IDynamicGameAssetsApi>("spacechase0.DynamicGameAssets")
                 .InSingletonScope();
-            this.BindForeignModApi<IJsonAssetsApi>("spacechase0.JsonAssets").InSingletonScope();
+            this.BindForeignModApi<IJsonAssetsApi>("spacechase0.JsonAssets")
+                .InSingletonScope();
         }
     }
 }

@@ -62,17 +62,19 @@ namespace TehPers.Core.Items
             }
         }
 
-        private static IEnumerable<(string key, IItemFactory itemFactory)> GetItemFactories(
-            IJsonAssetsApi jaApi
-        )
+        private static IEnumerable<(string key, IItemFactory itemFactory)> GetItemFactories(IJsonAssetsApi jaApi)
         {
+            // TODO: Find another way to implement this
+            yield break;
+
             // Big craftables
-            foreach (var (jaKey, id) in jaApi.GetAllBigCraftableIds())
+            /*
+            foreach (var (jaKey, id) in jaApi.GetAllBigCraftable())
             {
                 var key = $"{ItemTypes.BigCraftable}/{jaKey}";
                 var itemFactory = new SimpleItemFactory(
                     ItemTypes.BigCraftable,
-                    () => new SObject(Vector2.Zero, id)
+                    () => new SObject(Vector2.Zero, id.ToString())
                 );
                 yield return (key, itemFactory);
             }
@@ -81,7 +83,7 @@ namespace TehPers.Core.Items
             foreach (var (jaKey, id) in jaApi.GetAllClothingIds())
             {
                 var key = $"{ItemTypes.Clothing}/{jaKey}";
-                var itemFactory = new SimpleItemFactory(ItemTypes.Clothing, () => new Clothing(id));
+                var itemFactory = new SimpleItemFactory(ItemTypes.Clothing, () => new Clothing(id.ToString()));
                 yield return (key, itemFactory);
             }
 
@@ -89,7 +91,7 @@ namespace TehPers.Core.Items
             foreach (var (jaKey, id) in jaApi.GetAllHatIds())
             {
                 var key = $"{ItemTypes.Hat}/{jaKey}";
-                var itemFactory = new SimpleItemFactory(ItemTypes.Hat, () => new Hat(id));
+                var itemFactory = new SimpleItemFactory(ItemTypes.Hat, () => new Hat(id.ToString()));
                 yield return (key, itemFactory);
             }
 
@@ -99,7 +101,7 @@ namespace TehPers.Core.Items
                 var key = $"{ItemTypes.Weapon}/{jaKey}";
                 var itemFactory = new SimpleItemFactory(
                     ItemTypes.Weapon,
-                    () => new MeleeWeapon(id)
+                    () => new MeleeWeapon(id.ToString())
                 );
                 yield return (key, itemFactory);
             }
@@ -108,9 +110,10 @@ namespace TehPers.Core.Items
             foreach (var (jaKey, id) in jaApi.GetAllObjectIds())
             {
                 var key = $"{ItemTypes.Object}/{jaKey}";
-                var itemFactory = new SimpleItemFactory(ItemTypes.Object, () => new SObject(id, 1));
+                var itemFactory = new SimpleItemFactory(ItemTypes.Object, () => new SObject(id.ToString(), 1));
                 yield return (key, itemFactory);
             }
+            */
         }
     }
 }

@@ -15,7 +15,7 @@ namespace TehPers.FishingOverhaul.Integrations.Emp
         /// <param name="location">The in-game location to check.</param>
         /// <param name="tile">The tile to check, e.g. the position of a fishing bobber or a player.</param>
         /// <param name="useLocationName">The name of the location to use instead of the provided location (e.g. the key to use in the Data/Locations asset). Null if the original location should be used.</param>
-        /// <param name="useZone">The fishing zone to use. Null if the original zone should be used. "Zone" refers to the result of <see cref="GameLocation.getFishingLocation(Vector2)"/>.</param>
+        /// <param name="useZone">The fishing zone to use. Null if the original zone should be used. "Zone" refers to the result of <see cref="GameLocation.GetFishFromLocationData(string, Vector2, int, Farmer, bool, bool, GameLocation)"/>.</param>
         /// <param name="useOceanCrabPots">True if this tile should use ocean results for crab pots; false if it should use freshwater results. Null if the original results should be used.</param>
         void GetFishLocationsData(
             GameLocation location,

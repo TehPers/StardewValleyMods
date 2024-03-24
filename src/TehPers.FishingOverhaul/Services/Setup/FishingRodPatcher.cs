@@ -189,7 +189,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 fishItem,
                 fishSizePercent,
                 treasure,
-                rod.attachments[1]?.ParentSheetIndex ?? -1,
+                rod.GetTackle().Select(tackle => tackle.ItemId).ToList(),
                 fromFishPond
             );
             if (customBobber is null)
@@ -334,28 +334,23 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
             // Custom handling for fish catches
             if (info is CatchInfo.FishCatch (_, _, _, var fishSize, var isLegendary, var fishQuality
-                , var fishDifficulty, var (isPerfect, treasureState), _, var caughtDouble))
+                , var fishDifficulty, var (isPerfect, treasureState), _, var numberOfFishCaught))
             {
                 // Update caught item
                 if (item is SObject obj)
                 {
                     obj.Quality = fishQuality;
-                    if (caughtDouble)
-                    {
-                        obj.Stack = 2;
-                    }
+                    obj.Stack = numberOfFishCaught;
                 }
 
                 // Update fishing rod
                 var wasTreasureCaught = treasureState is TreasureState.Caught;
                 rod.treasureCaught = wasTreasureCaught;
-                this.helper.Reflection.GetField<int>(rod, "fishSize").SetValue(fishSize);
-                this.helper.Reflection.GetField<int>(rod, "fishQuality")
-                    .SetValue(Math.Max(fishQuality, 0));
-                this.helper.Reflection.GetField<int>(rod, "whichFish").SetValue(0);
+                rod.fishSize = fishSize;
+                rod.fishQuality = Math.Max(fishQuality, 0);
+                rod.whichFish = ItemRegistry.ResolveMetadata("0");
                 rod.fromFishPond = fromFishPond;
-                rod.caughtDoubleFish = caughtDouble;
-                this.helper.Reflection.GetField<string>(rod, "itemCategory").SetValue("Object");
+                rod.numberOfFishCaught = numberOfFishCaught;
 
                 // Give the user experience
                 if (!Game1.isFestival() && fishingInfo.User.IsLocalPlayer && !fromFishPond)
@@ -372,12 +367,11 @@ namespace TehPers.FishingOverhaul.Services.Setup
             {
                 // Update fishing rod
                 rod.treasureCaught = false;
-                this.helper.Reflection.GetField<int>(rod, "fishSize").SetValue(-1);
-                this.helper.Reflection.GetField<int>(rod, "fishQuality").SetValue(-1);
-                this.helper.Reflection.GetField<int>(rod, "whichFish").SetValue(0);
+                rod.fishSize = -1;
+                rod.fishQuality = -1;
+                rod.whichFish = ItemRegistry.ResolveMetadata("0");
                 rod.fromFishPond = fromFishPond;
-                rod.caughtDoubleFish = false;
-                this.helper.Reflection.GetField<string>(rod, "itemCategory").SetValue("Object");
+                rod.numberOfFishCaught = 1;
             }
 
             // Send event
@@ -407,7 +401,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             float animationInterval;
             if (fishingInfo.User.FacingDirection is 1 or 3)
             {
-                var distToBobber = Vector2.Distance(rod.bobber, fishingInfo.User.Position);
+                var distToBobber = Vector2.Distance(rod.bobber.Value, fishingInfo.User.Position);
                 const float y1 = 1f / 1000f;
                 var num6 = 128.0f - (fishingInfo.User.Position.Y - rod.bobber.Y + 10.0f);
                 const double a1 = 4.0 * Math.PI / 11.0;
@@ -429,7 +423,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         animationInterval,
                         1,
                         0,
-                        rod.bobber,
+                        rod.bobber.Value,
                         false,
                         false,
                         rod.bobber.Y / 10000f,
@@ -449,7 +443,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         endSound = "tinyWhip"
                     }
                 );
-                if (info is CatchInfo.FishCatch {CaughtDouble: true})
+                if (info is CatchInfo.FishCatch fishCatch && fishCatch.NumberOfFishCaught > 1)
                 {
                     var y2 = 0.0008f;
                     var f2 = (float)(distToBobber
@@ -470,7 +464,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             animationInterval,
                             1,
                             0,
-                            rod.bobber,
+                            rod.bobber.Value,
                             false,
                             false,
                             rod.bobber.Y / 10000f,
@@ -496,7 +490,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
             else
             {
-                var num11 = rod.bobber.Y - (fishingInfo.User.getStandingY() - 64);
+                var num11 = rod.bobber.Y - (fishingInfo.User.StandingPixel.Y - 64);
                 var num12 = Math.Abs((float)(num11 + 256.0 + 32.0));
                 if (fishingInfo.User.FacingDirection == 0)
                 {
@@ -539,9 +533,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         endSound = "tinyWhip"
                     }
                 );
-                if (info is CatchInfo.FishCatch {CaughtDouble: true})
+                if (info is CatchInfo.FishCatch fishCatch && fishCatch.NumberOfFishCaught > 1)
                 {
-                    var num14 = rod.bobber.Y - (fishingInfo.User.getStandingY() - 64);
+                    var num14 = rod.bobber.Y - (fishingInfo.User.StandingPixel.Y - 64);
                     var num15 = Math.Abs((float)(num14 + 256.0 + 32.0));
                     if (fishingInfo.User.FacingDirection == 0)
                     {
@@ -644,35 +638,29 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 return;
             }
 
-            (int parentSheetIndex, int fishSize, bool fromFishPond, int stack)? caughtParts =
+            (string itemId, int fishSize, bool fromFishPond, int stack)? caughtParts =
                 info switch
                 {
                     CatchInfo.FishCatch
                     {
-                        Item: SObject
-                        {
-                            ParentSheetIndex: var parentSheetIndex, Stack: var stack
-                        },
+                        Item: SObject  { itemId: var itemId, Stack: var stack },
                         FishSize: var fishSize,
                         FromFishPond: var fromFishPond
-                    } => (parentSheetIndex, fishSize, fromFishPond, stack),
+                    } => (itemId.Value, fishSize, fromFishPond, stack),
                     CatchInfo.TrashCatch
                     {
-                        Item: SObject
-                        {
-                            ParentSheetIndex: var parentSheetIndex, Stack: var stack
-                        },
+                        Item: SObject { itemId: var itemId, Stack: var stack },
                         FromFishPond: var fromFishPond,
-                    } => (parentSheetIndex, 0, fromFishPond, stack),
+                    } => (itemId.Value, 0, fromFishPond, stack),
                     _ => null,
                 };
 
             if (!Game1.isFestival())
             {
-                if (caughtParts is var (parentSheetIndex, fishSize, fromFishPond, stack))
+                if (caughtParts is var (itemId, fishSize, fromFishPond, stack))
                 {
                     rod.recordSize = user.caughtFish(
-                        parentSheetIndex,
+                        itemId,
                         fishSize,
                         fromFishPond,
                         stack
@@ -683,9 +671,9 @@ namespace TehPers.FishingOverhaul.Services.Setup
             }
             else if (user.currentLocation.currentEvent is { } currentEvent)
             {
-                if (caughtParts is var (parentSheetIndex, fishSize, _, _))
+                if (caughtParts is var (itemId, fishSize, _, _))
                 {
-                    currentEvent.caughtFish(parentSheetIndex, fishSize, user);
+                    currentEvent.caughtFish(itemId, fishSize, user);
                 }
 
                 rod.fishCaught = false;
@@ -912,7 +900,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                                 0,
                                                 Game1.GlobalToLocal(
                                                     Game1.viewport,
-                                                    __instance.bobber + new Vector2(-140f, -160f)
+                                                    __instance.bobber.Value + new Vector2(-140f, -160f)
                                                 ),
                                                 false,
                                                 false,
@@ -935,7 +923,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                                     fishEntry,
                                                     fromFishPond
                                                 ),
-                                                id = 9.876543E+08f
+                                                id = (int)9.876543E+08f
                                             }
                                         );
                                         location.localSound("FishHit");
@@ -973,7 +961,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                                 new CatchInfo.TrashCatch(
                                                     fishingInfo,
                                                     trashEntry,
-                                                    new SObject(0, 1),
+                                                    new SObject("0", 1),
                                                     fromFishPond
                                                 )
                                             );
@@ -1112,14 +1100,14 @@ namespace TehPers.FishingOverhaul.Services.Setup
                         if (item is SObject caughtObj)
                         {
                             // Quest items
-                            switch (item.ParentSheetIndex)
+                            switch (item.ItemId)
                             {
-                                case var index when index == GameLocation.CAROLINES_NECKLACE_ITEM:
+                                case var itemId when itemId == GameLocation.CAROLINES_NECKLACE_ITEM_QID:
                                     {
                                         caughtObj.questItem.Value = true;
                                         break;
                                     }
-                                case 79 or 842:
+                                case "((O)79" or "79" or "((O)842" or "842":
                                     {
                                         item = user.currentLocation.tryToCreateUnseenSecretNote(
                                             user
@@ -1208,7 +1196,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                     user.Position + new Vector2(-32f, -160f),
                                     false,
                                     false,
-                                    user.getStandingY() / 10000.0f + 1.0f / 1000.0f,
+                                    user.StandingPixel.Y / 10000.0f + 1.0f / 1000.0f,
                                     0.0f,
                                     Color.White,
                                     4f,
@@ -1233,7 +1221,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                                 user.Position + new Vector2(-32f, -228f),
                                                 false,
                                                 false,
-                                                user.getStandingY() / 10000.0f + 1.0f / 1000.0f,
+                                                user.StandingPixel.Y / 10000.0f + 1.0f / 1000.0f,
                                                 0.0f,
                                                 Color.White,
                                                 4f,
@@ -1323,7 +1311,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             ));
 
                         // Draw bubble
-                        var layerDepth = user.getStandingY() / 10000.0f + 0.06f;
+                        var layerDepth = user.StandingPixel.Y / 10000.0f + 0.06f;
                         b.Draw(
                             Game1.mouseCursors,
                             Game1.GlobalToLocal(
@@ -1373,7 +1361,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 ),
                                 3f / 4f,
                                 1f,
-                                user.getStandingY() / 10000.0f + 1.0f / 500.0f + 0.06f,
+                                user.StandingPixel.Y / 10000.0f + 1.0f / 500.0f + 0.06f,
                                 StackDrawType.Hide,
                                 Color.White,
                                 false,
@@ -1401,7 +1389,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                             Vector2.Zero,
                             1f,
                             SpriteEffects.None,
-                            user.getStandingY() / 10000.0f + 1.0f / 500.0f + 0.06f
+                            user.StandingPixel.Y / 10000.0f + 1.0f / 500.0f + 0.06f
                         );
 
                         // Draw fish specific labels
@@ -1422,7 +1410,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 Vector2.Zero,
                                 1f,
                                 SpriteEffects.None,
-                                user.getStandingY() / 10000.0f + 1.0f / 500.0f + 0.06f
+                                user.StandingPixel.Y / 10000.0f + 1.0f / 500.0f + 0.06f
                             );
 
                             // Draw fish length
@@ -1461,7 +1449,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 Vector2.Zero,
                                 1f,
                                 SpriteEffects.None,
-                                user.getStandingY() / 10000.0f + 1.0f / 500.0f + 0.06f
+                                user.StandingPixel.Y / 10000.0f + 1.0f / 500.0f + 0.06f
                             );
                         }
 

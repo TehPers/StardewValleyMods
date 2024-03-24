@@ -157,11 +157,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
 
                 // Draw fish icon
                 var lineWidth = 0f;
-                var fishName = this.helper.Translation.Get(
-                        "text.fish.unknownName",
-                        new {key = entryKey.ToString()}
-                    )
-                    .ToString();
+                var fishName = this.helper.Translation.Get("text.fish.unknownName", new { key = entryKey.ToString() }).ToString();
                 if (this.namespaceRegistry.TryGetItemFactory(entryKey, out var factory))
                 {
                     var fishItem = factory.Create();

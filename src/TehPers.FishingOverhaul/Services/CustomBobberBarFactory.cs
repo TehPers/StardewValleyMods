@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using StardewModdingAPI;
 using StardewValley;
 using TehPers.FishingOverhaul.Api;
@@ -38,8 +39,9 @@ namespace TehPers.FishingOverhaul.Services
             Item fishItem,
             float fishSizePercent,
             bool treasure,
-            int bobber,
-            bool fromFishPond
+            List<string> bobbers,
+            bool fromFishPond,
+            bool isBossFish = false
         )
         {
             // Try to get the fish traits
@@ -60,8 +62,9 @@ namespace TehPers.FishingOverhaul.Services
                 fishItem,
                 fishSizePercent,
                 treasure,
-                bobber,
-                fromFishPond
+                bobbers,
+                fromFishPond,
+                isBossFish
             );
         }
     }

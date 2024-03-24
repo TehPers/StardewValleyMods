@@ -24,7 +24,7 @@ namespace TehPers.FishingOverhaul.Services
                 jsonProvider ?? throw new ArgumentNullException(nameof(jsonProvider));
         }
 
-        public IEnumerable<FishingContent> Reload()
+        public IEnumerable<FishingContent> Reload(IMonitor monitor)
         {
             // Load content packs
             foreach (var pack in this.helper.ContentPacks.GetOwned())

@@ -26,9 +26,9 @@ namespace TehPers.FishingOverhaul.Content
             var chosenNote = notesInfo.Keys.Where(id => id < GameLocation.JOURNAL_INDEX)
                 .Except(fishingInfo.User.secretNotesSeen)
                 .Where(
-                    id => !fishingInfo.User.hasItemInInventoryNamed(
+                    id => !fishingInfo.User.Items.Any(item => item.Name.Equals(
                             $"Secret Note #{id - GameLocation.JOURNAL_INDEX}"
-                        )
+                        ))
                         && (id != 10 || fishingInfo.User.mailReceived.Contains("QiChallengeComplete"))
                 )
                 .ToWeighted(_ => 1)
@@ -42,7 +42,7 @@ namespace TehPers.FishingOverhaul.Content
             }
 
             // Create the note
-            var note = new SObject(79, 1);
+            var note = new SObject("79", 1);
             note.name = $"{note.name} #{chosenNoteId}";
 
             item = new(note);

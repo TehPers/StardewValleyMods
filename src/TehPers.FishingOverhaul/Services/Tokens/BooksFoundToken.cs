@@ -33,10 +33,9 @@ namespace TehPers.FishingOverhaul.Services.Tokens
             return Game1.player is not null;
         }
 
-        public IEnumerable<string> GetValues(string? input)
+        public IEnumerable<string> GetValues(string? id)
         {
-            // Get archaeology ID
-            if (!int.TryParse(input, out var id))
+            if (id == null )
             {
                 return Enumerable.Empty<string>();
             }

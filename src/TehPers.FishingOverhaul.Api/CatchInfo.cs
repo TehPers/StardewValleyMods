@@ -54,7 +54,7 @@ namespace TehPers.FishingOverhaul.Api
         /// <param name="FishDifficulty">The difficulty of the fish.</param>
         /// <param name="State">The state of the minigame when the fish was caught.</param>
         /// <param name="FromFishPond">Whether this was caught from a fish pond.</param>
-        /// <param name="CaughtDouble">Whether two fish were caught instead of just one.</param>
+        /// <param name="NumberOfFishCaught">The number of fish caught.</param>
         public sealed record FishCatch(
             FishingInfo FishingInfo,
             FishEntry FishEntry,
@@ -65,7 +65,7 @@ namespace TehPers.FishingOverhaul.Api
             int FishDifficulty,
             MinigameState State,
             bool FromFishPond,
-            bool CaughtDouble = false
+            int NumberOfFishCaught = 1
         ) : CatchInfo(FishingInfo, FishItem, FromFishPond);
 
         /// <summary>

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Buildings;
-using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -77,7 +76,7 @@ namespace TehPers.FishingOverhaul.Api
         {
             return this
                 .GetFishChances(this.CreateDefaultFishingInfo(farmer) with {BobberDepth = depth})
-                .Select(weightedValue => weightedValue.Value.FishKey.ToString());
+                .Select(weightedValue => weightedValue.Value.FishKey.Key);
         }
 
         /// <inheritdoc />
@@ -87,14 +86,8 @@ namespace TehPers.FishingOverhaul.Api
             bool takeFish = false
         )
         {
-            // Fish ponds are buildings
-            if (farmer.currentLocation is not BuildableGameLocation buildableLocation)
-            {
-                return null;
-            }
-
             // Get the fish in that fish pond, if any
-            return buildableLocation.buildings.OfType<FishPond>()
+            return farmer.currentLocation.buildings.OfType<FishPond>()
                 .Where(pond => pond.isTileFishable(bobberTile))
                 .Select(
                     pond =>
@@ -102,7 +95,7 @@ namespace TehPers.FishingOverhaul.Api
                         int? parentSheetIndex = takeFish switch
                         {
                             true when pond.CatchFish() is {ParentSheetIndex: var id} => id,
-                            false when pond.currentOccupants.Value > 0 => pond.fishType.Value,
+                            false when pond.currentOccupants.Value > 0 => pond.GetFishObject().ParentSheetIndex,
                             _ => null,
                         };
                         return parentSheetIndex.Select(NamespacedKey.SdvObject);
@@ -120,7 +113,7 @@ namespace TehPers.FishingOverhaul.Api
         public IEnumerable<string> GetCatchableTrash(Farmer farmer)
         {
             return this.GetTrashChances(this.CreateDefaultFishingInfo(farmer))
-                .Select(weightedValue => weightedValue.Value.ItemKey.ToString());
+                .Select(weightedValue => weightedValue.Value.ItemKey.Key);
         }
 
         /// <inheritdoc/>
@@ -133,7 +126,7 @@ namespace TehPers.FishingOverhaul.Api
         {
             return this.GetTreasureChances(this.CreateDefaultFishingInfo(farmer))
                 .SelectMany(weightedValue => weightedValue.Value.ItemKeys)
-                .Select(key => key.ToString())
+                .Select(key => key.Key)
                 .Distinct();
         }
 
@@ -204,12 +197,12 @@ namespace TehPers.FishingOverhaul.Api
                 case PossibleCatch.Fish(var entry):
                     {
                         isFish = true;
-                        return entry.FishKey.ToString();
+                        return entry.FishKey.Key;
                     }
                 case PossibleCatch.Trash(var entry):
                     {
                         isFish = false;
-                        return entry.ItemKey.ToString();
+                        return entry.ItemKey.Key;
                     }
                 default:
                     {
@@ -231,7 +224,7 @@ namespace TehPers.FishingOverhaul.Api
             var catchInfo = new CatchInfo.FishCatch(
                 fishingInfo,
                 new(NamespacedKey.SdvObject(0), new(0.0)),
-                new StardewValley.Object(0, 1),
+                new StardewValley.Object("0", 1),
                 0,
                 false,
                 0,
@@ -249,7 +242,7 @@ namespace TehPers.FishingOverhaul.Api
             var catchInfo = new CatchInfo.FishCatch(
                 fishingInfo,
                 new(NamespacedKey.SdvObject(0), new(0.0)),
-                new StardewValley.Object(0, 1),
+                new StardewValley.Object("0", 1),
                 0,
                 false,
                 0,
@@ -259,7 +252,7 @@ namespace TehPers.FishingOverhaul.Api
             );
             return this.GetPossibleTreasure(catchInfo)
                 .SelectMany(entry => entry.ItemKeys)
-                .Select(key => key.ToString());
+                .Select(key => key.Key);
         }
 
         /// <inheritdoc/>

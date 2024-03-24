@@ -14,8 +14,7 @@ namespace TehPers.Core.Content
             this.contentHelper = helper.GameContent;
         }
 
-        public T Load<T>(string path)
-            where T : notnull
+        public T Load<T>(string path) where T : notnull
         {
             return this.contentHelper.Load<T>(path);
         }

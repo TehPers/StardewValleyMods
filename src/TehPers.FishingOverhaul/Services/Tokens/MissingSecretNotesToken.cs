@@ -27,8 +27,8 @@ namespace TehPers.FishingOverhaul.Services.Tokens
             return this.SecretNotes.Keys.Where(id => id < GameLocation.JOURNAL_INDEX)
                 .Except(secretNotesSeen)
                 .Where(
-                    id => !player.hasItemInInventoryNamed($"Secret Note #{id}")
-                        && (id != 10 || player.mailReceived.Contains("QiChallengeComplete"))
+                    id => !player.Items.Any(item => item != null && item.Name.Equals($"Secret Note #{id}"))
+                        && (id != 10 || player.hasOrWillReceiveMail("QiChallengeComplete"))
                 )
                 .Select(id => id.ToString("G"));
         }

@@ -24,9 +24,9 @@ namespace TehPers.FishingOverhaul.Content
             var chosenNote = notesInfo.Keys.Where(id => id >= GameLocation.JOURNAL_INDEX)
                 .Except(fishingInfo.User.secretNotesSeen)
                 .Where(
-                    id => !fishingInfo.User.hasItemInInventoryNamed(
+                    id => !fishingInfo.User.Items.Any(item => item.Name.Equals(
                         $"Journal Scrap #{id - GameLocation.JOURNAL_INDEX}"
-                    )
+                    ))
                 )
                 .OrderBy(id => id)
                 .Select(id => (int?)id)
@@ -40,7 +40,7 @@ namespace TehPers.FishingOverhaul.Content
             }
 
             // Create the note
-            var note = new Object(842, 1);
+            var note = new Object("842", 1);
             note.name = $"{note.name} #{chosenNoteId}";
 
             item = new(note);

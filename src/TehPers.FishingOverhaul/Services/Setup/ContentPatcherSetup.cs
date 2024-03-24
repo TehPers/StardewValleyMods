@@ -5,9 +5,12 @@ using ContentPatcher;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Tools;
-using TehPers.Core.Api.Items;
+using StardewValley.SpecialOrders;
 using TehPers.Core.Api.Setup;
 using TehPers.FishingOverhaul.Services.Tokens;
+using System.Reflection;
+using TehPers.Core.Api.Items;
+using StardewValley.Monsters;
 
 namespace TehPers.FishingOverhaul.Services.Setup
 {
@@ -86,7 +89,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 return null;
             }
 
-            if (player is not { team: { specialOrders: { } specialOrders } })
+            if (player is not { team.specialOrders: { } specialOrders })
             {
                 return Enumerable.Empty<string>();
             }
@@ -94,7 +97,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
             return specialOrders.SelectMany(
                     specialOrder =>
                     {
-                        if (specialOrder.questState.Value is not SpecialOrder.QuestState.InProgress)
+                        if (specialOrder.questState.Value is not SpecialOrderStatus.InProgress)
                         {
                             return Enumerable.Empty<string>();
                         }
@@ -142,7 +145,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 return Enumerable.Empty<string>();
             }
 
-            return team.collectedNutTracker.TryGetValue("StardropPool", out var gotNut) && gotNut
+            return team.collectedNutTracker.Contains("StardropPool")
                 ? new[] {"true"}
                 : new[] {"false"};
         }
@@ -154,13 +157,13 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 return null;
             }
 
-            var index = rod.getBaitAttachmentIndex();
-            if (index < 0)
+            var bait = rod.GetBait();
+            if (bait is null)
             {
                 return Enumerable.Empty<string>();
             }
 
-            return new[] {NamespacedKey.SdvObject(index).ToString()};
+            return new[] { NamespacedKey.SdvObject(bait.ItemId).ToString() };
         }
 
         private static IEnumerable<string>? GetActiveTackle()
@@ -170,13 +173,10 @@ namespace TehPers.FishingOverhaul.Services.Setup
                 return null;
             }
 
-            var index = rod.getBobberAttachmentIndex();
-            if (index < 0)
-            {
-                return Enumerable.Empty<string>();
-            }
-
-            return new[] {NamespacedKey.SdvObject(index).ToString()};
+            var tackleList = rod.GetTackle();
+            return tackleList == null
+            ? Enumerable.Empty<string>()
+                : tackleList.Select(tackle => NamespacedKey.SdvObject(tackle.ItemId).ToString());
         }
     }
 }
