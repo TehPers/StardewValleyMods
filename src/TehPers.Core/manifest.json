@@ -2,12 +2,11 @@
   "$schema": "https://smapi.io/schemas/manifest.json",
   "Name": "TehCore",
   "Author": "TehPers",
-  "Version": "1.1.0",
+  "Version": "1.1.1-unofficial.2-JoXW",
   "Description": "Utility mod for creating highly compatible mods",
   "UniqueID": "TehPers.Core",
   "EntryDll": "TehPers.Core.dll",
-  "MinimumApiVersion": "3.14.0",
-  "UpdateKeys": ["Nexus:3256", "ModDrop:1071149"],
+  "MinimumApiVersion": "4.0.0",
   "Dependencies": [
     {
       "UniqueID": "Pathoschild.ContentPatcher",

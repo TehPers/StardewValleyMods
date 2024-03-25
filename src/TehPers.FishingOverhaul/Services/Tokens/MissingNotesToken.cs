@@ -46,8 +46,7 @@ namespace TehPers.FishingOverhaul.Services.Tokens
             }
 
             this.updated = true;
-            this.SecretNotes =
-                this.gameAssets.Load<Dictionary<int, string>>(MissingNotesToken.secretNotesAsset);
+            this.SecretNotes = this.gameAssets.Load<Dictionary<int, string>>(MissingNotesToken.secretNotesAsset);
         }
 
         public virtual bool IsReady()

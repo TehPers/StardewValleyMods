@@ -50,10 +50,7 @@ namespace TehPers.FishingOverhaul.Services.Tokens
             }
 
             // Get item ID
-            if (!int.TryParse(args[0], out var index))
-            {
-                return Enumerable.Empty<string>();
-            }
+            var itemId = args[0];
 
             // Get quantity
             if (!int.TryParse(args[1], out var quantity))
@@ -67,7 +64,7 @@ namespace TehPers.FishingOverhaul.Services.Tokens
                 return Enumerable.Empty<string>();
             }
 
-            return new[] { player.hasItemInInventory(index, quantity) ? "true" : "false" };
+            return new[] { player.Items.ContainsId(itemId, quantity) ? "true" : "false" };
         }
     }
 }

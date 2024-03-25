@@ -162,7 +162,7 @@ namespace TehPers.FishingOverhaul.Config.ContentPacks
                         $"Failed to load included content file for '{content.ModManifest.UniqueID}': '{path}'",
                         LogLevel.Error
                     );
-                    monitor.Log(ex.ToString(), LogLevel.Error);
+                    monitor.Log(ex.Message, LogLevel.Error);
                     continue;
                 }
 

@@ -157,6 +157,16 @@ namespace TehPers.Core.Api.Items
         }
 
         /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for a clothing item in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The id of the clothing item.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvClothing(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.Clothing, id);
+        }
+
+        /// <summary>
         /// Creates a <see cref="NamespacedKey"/> for a wallpaper item in the SDV namespace.
         /// </summary>
         /// <param name="parentSheetIndex">The index of the wallpaper item.</param>
@@ -164,6 +174,16 @@ namespace TehPers.Core.Api.Items
         public static NamespacedKey SdvWallpaper(int parentSheetIndex)
         {
             return NamespacedKey.SdvCustom(ItemTypes.Wallpaper, parentSheetIndex.ToString());
+        }
+
+        /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for a wallpaper item in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The id of the wallpaper item.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvWallpaper(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.Wallpaper, id);
         }
 
         /// <summary>
@@ -177,6 +197,16 @@ namespace TehPers.Core.Api.Items
         }
 
         /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for a flooring item in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The id of the flooring item.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvFlooring(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.Flooring, id);
+        }
+
+        /// <summary>
         /// Creates a <see cref="NamespacedKey"/> for boots in the SDV namespace.
         /// </summary>
         /// <param name="parentSheetIndex">The index of the boots.</param>
@@ -184,6 +214,16 @@ namespace TehPers.Core.Api.Items
         public static NamespacedKey SdvBoots(int parentSheetIndex)
         {
             return NamespacedKey.SdvCustom(ItemTypes.Boots, parentSheetIndex.ToString());
+        }
+
+        /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for boots in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The id of the boots.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvBoots(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.Boots, id);
         }
 
         /// <summary>
@@ -197,6 +237,16 @@ namespace TehPers.Core.Api.Items
         }
 
         /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for a hat in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The index of the hat.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvHat(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.Hat, id);
+        }
+
+        /// <summary>
         /// Creates a <see cref="NamespacedKey"/> for a weapon in the SDV namespace.
         /// </summary>
         /// <param name="parentSheetIndex">The index of the weapon.</param>
@@ -207,6 +257,16 @@ namespace TehPers.Core.Api.Items
         }
 
         /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for a weapon in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The id of the weapon.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvWeapon(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.Weapon, id);
+        }
+
+        /// <summary>
         /// Creates a <see cref="NamespacedKey"/> for a furniture item in the SDV namespace.
         /// </summary>
         /// <param name="parentSheetIndex">The index of the furniture item.</param>
@@ -214,6 +274,17 @@ namespace TehPers.Core.Api.Items
         public static NamespacedKey SdvFurniture(int parentSheetIndex)
         {
             return NamespacedKey.SdvCustom(ItemTypes.Furniture, parentSheetIndex.ToString());
+        }
+
+
+        /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for a furniture item in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The id of the furniture item.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvFurniture(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.Furniture, id);
         }
 
         /// <summary>
@@ -227,6 +298,16 @@ namespace TehPers.Core.Api.Items
         }
 
         /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for a craftable item in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The id of the craftable item.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvBigCraftable(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.BigCraftable, id);
+        }
+
+        /// <summary>
         /// Creates a <see cref="NamespacedKey"/> for a ring in the SDV namespace.
         /// </summary>
         /// <param name="parentSheetIndex">The index of the ring.</param>
@@ -237,6 +318,16 @@ namespace TehPers.Core.Api.Items
         }
 
         /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for a ring in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The id of the ring.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvRing(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.Ring, id);
+        }
+
+        /// <summary>
         /// Creates a <see cref="NamespacedKey"/> for an object in the SDV namespace.
         /// </summary>
         /// <param name="parentSheetIndex">The index of the object.</param>
@@ -244,6 +335,16 @@ namespace TehPers.Core.Api.Items
         public static NamespacedKey SdvObject(int parentSheetIndex)
         {
             return NamespacedKey.SdvCustom(ItemTypes.Object, parentSheetIndex.ToString());
+        }
+
+        /// <summary>
+        /// Creates a <see cref="NamespacedKey"/> for an object in the SDV namespace.
+        /// </summary>
+        /// <param name="id">The id of the object.</param>
+        /// <returns>The resulting <see cref="NamespacedKey"/>.</returns>
+        public static NamespacedKey SdvObject(string id)
+        {
+            return NamespacedKey.SdvCustom(ItemTypes.Object, id);
         }
 
         /// <summary>
@@ -259,14 +360,14 @@ namespace TehPers.Core.Api.Items
 
         internal class TypeConverter : System.ComponentModel.TypeConverter
         {
-            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
             {
                 return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
             }
 
             public override object ConvertFrom(
-                ITypeDescriptorContext context,
-                CultureInfo culture,
+                ITypeDescriptorContext? context,
+                CultureInfo? culture,
                 object value
             )
             {
@@ -278,22 +379,22 @@ namespace TehPers.Core.Api.Items
                 return base.ConvertFrom(context, culture, value)!;
             }
 
-            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+            public override bool CanConvertTo(ITypeDescriptorContext? context, Type destinationType)
             {
                 return destinationType == typeof(string)
                     || base.CanConvertTo(context, destinationType);
             }
 
             public override object ConvertTo(
-                ITypeDescriptorContext context,
-                CultureInfo culture,
-                object value,
+                ITypeDescriptorContext? context,
+                CultureInfo? culture,
+                object? value,
                 Type destinationType
             )
             {
                 if (value is NamespacedKey key && destinationType == typeof(string))
                 {
-                    return key.ToString();
+                    return key;
                 }
 
                 return base.ConvertTo(context, culture, value, destinationType)!;

@@ -5,6 +5,9 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.GameData.BigCraftables;
+using StardewValley.GameData.Objects;
+using StardewValley.GameData.Weapons;
 using StardewValley.Objects;
 using StardewValley.Tools;
 using TehPers.Core.Api.Content;
@@ -22,10 +25,7 @@ namespace TehPers.Core.Items
 
         public string Name => NamespacedKey.StardewValleyNamespace;
 
-        public StardewValleyNamespace(
-            IMonitor monitor,
-            [ContentSource(ContentSource.GameContent)] IAssetProvider gameAssets
-        )
+        public StardewValleyNamespace(IMonitor monitor, [ContentSource(ContentSource.GameContent)] IAssetProvider gameAssets)
         {
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
             this.gameAssets = gameAssets ?? throw new ArgumentNullException(nameof(gameAssets));
@@ -70,7 +70,7 @@ namespace TehPers.Core.Items
                 var axeKey = NamespacedKey.SdvTool(ToolTypes.Axe, quality).Key;
                 var axeFactory = new SimpleItemFactory(
                     ItemTypes.Tool,
-                    () => ToolFactory.getToolFromDescription(ToolFactory.axe, quality)
+                    () => new Axe() { UpgradeLevel = quality }
                 );
                 yield return (axeKey, axeFactory);
 
@@ -78,7 +78,7 @@ namespace TehPers.Core.Items
                 var hoeKey = NamespacedKey.SdvTool(ToolTypes.Hoe, quality).Key;
                 var hoeFactory = new SimpleItemFactory(
                     ItemTypes.Tool,
-                    () => ToolFactory.getToolFromDescription(ToolFactory.hoe, quality)
+                    () => new Hoe() { UpgradeLevel = quality }
                 );
                 yield return (hoeKey, hoeFactory);
 
@@ -86,7 +86,7 @@ namespace TehPers.Core.Items
                 var pickKey = NamespacedKey.SdvTool(ToolTypes.Pickaxe, quality).Key;
                 var pickFactory = new SimpleItemFactory(
                     ItemTypes.Tool,
-                    () => ToolFactory.getToolFromDescription(ToolFactory.pickAxe, quality)
+                    () => new Pickaxe() { UpgradeLevel = quality }
                 );
                 yield return (pickKey, pickFactory);
 
@@ -94,7 +94,7 @@ namespace TehPers.Core.Items
                 var canKey = NamespacedKey.SdvTool(ToolTypes.WateringCan, quality).Key;
                 var canFactory = new SimpleItemFactory(
                     ItemTypes.Tool,
-                    () => ToolFactory.getToolFromDescription(ToolFactory.wateringCan, quality)
+                    () => new WateringCan() { UpgradeLevel = quality }
                 );
                 yield return (canKey, canFactory);
 
@@ -104,7 +104,7 @@ namespace TehPers.Core.Items
                     var rodKey = NamespacedKey.SdvTool(ToolTypes.FishingRod, quality).Key;
                     var rodFactory = new SimpleItemFactory(
                         ItemTypes.Tool,
-                        () => ToolFactory.getToolFromDescription(ToolFactory.fishingRod, quality)
+                        () => new FishingRod() { UpgradeLevel = quality }
                     );
                     yield return (rodKey, rodFactory);
                 }
@@ -119,22 +119,10 @@ namespace TehPers.Core.Items
             yield return (NamespacedKey.SdvTool(ToolTypes.Wand).Key,
                 new SimpleItemFactory(ItemTypes.Tool, () => new Wand()));
 
-            // Clothing
-            // TODO: dynamic clothing?
-            var clothingInformation =
-                assetProvider.Load<Dictionary<int, string>>(@"Data\ClothingInformation");
-            var clothingIds = clothingInformation.Keys.ToHashSet();
-            foreach (var id in clothingIds)
-            {
-                var key = NamespacedKey.SdvClothing(id).Key;
-                var itemFactory = new SimpleItemFactory(ItemTypes.Clothing, () => new Clothing(id));
-                yield return (key, itemFactory);
-            }
-
             // Wallpapers
             foreach (var id in Enumerable.Range(0, 112))
             {
-                var key = NamespacedKey.SdvWallpaper(id).Key;
+                var key = NamespacedKey.SdvWallpaper(id.ToString()).Key;
                 var itemFactory = new SimpleItemFactory(
                     ItemTypes.Wallpaper,
                     () => new Wallpaper(id)
@@ -145,7 +133,7 @@ namespace TehPers.Core.Items
             // Flooring
             foreach (var id in Enumerable.Range(0, 56))
             {
-                var key = NamespacedKey.SdvFlooring(id).Key;
+                var key = NamespacedKey.SdvFlooring(id.ToString()).Key;
                 var itemFactory = new SimpleItemFactory(
                     ItemTypes.Flooring,
                     () => new Wallpaper(id, true)
@@ -154,7 +142,7 @@ namespace TehPers.Core.Items
             }
 
             // Boots
-            var boots = assetProvider.Load<Dictionary<int, string>>(@"Data\Boots");
+            var boots = assetProvider.Load<Dictionary<string, string>>(@"Data\Boots");
             foreach (var id in boots.Keys)
             {
                 var key = NamespacedKey.SdvBoots(id).Key;
@@ -163,7 +151,7 @@ namespace TehPers.Core.Items
             }
 
             // Hats
-            var hats = assetProvider.Load<Dictionary<int, string>>(@"Data\hats");
+            var hats = assetProvider.Load<Dictionary<string, string>>(@"Data\hats");
             foreach (var id in hats.Keys)
             {
                 var key = NamespacedKey.SdvHat(id).Key;
@@ -172,23 +160,29 @@ namespace TehPers.Core.Items
             }
 
             // Weapons
-            var weapons = assetProvider.Load<Dictionary<int, string>>(@"Data\weapons");
+            var weapons = assetProvider.Load<Dictionary<string, WeaponData>>(@"Data\weapons");
             foreach (var id in weapons.Keys)
             {
                 var key = NamespacedKey.SdvWeapon(id).Key;
-                var itemFactory = id switch
+                switch (id)
                 {
-                    >= 32 and <= 34 => new SimpleItemFactory(
-                        ItemTypes.Weapon,
-                        () => new Slingshot(id)
-                    ),
-                    _ => new SimpleItemFactory(ItemTypes.Weapon, () => new MeleeWeapon(id)),
-                };
-                yield return (key, itemFactory);
+                    case "32":
+                    case "33":
+                    case "34":
+                    case "(O)32":
+                    case "(O)33":
+                    case "(O)34":
+                        yield return (key, new SimpleItemFactory(ItemTypes.Weapon, () => new Slingshot(id)));
+                        break;
+                    default:
+                        yield return (key, new SimpleItemFactory(ItemTypes.Weapon, () => new MeleeWeapon(id)));
+                        break;
+
+                }
             }
 
             // Furniture
-            var furniture = assetProvider.Load<Dictionary<int, string>>(@"Data\Furniture");
+            var furniture = assetProvider.Load<Dictionary<string, string>>(@"Data\Furniture");
             foreach (var id in furniture.Keys)
             {
                 var key = NamespacedKey.SdvFurniture(id).Key;
@@ -201,7 +195,7 @@ namespace TehPers.Core.Items
 
             // Big Craftables
             var bigCraftablesInformation =
-                assetProvider.Load<Dictionary<int, string>>(@"Data\BigCraftablesInformation");
+                assetProvider.Load<Dictionary<string, BigCraftableData>>(@"Data\BigCraftables");
             foreach (var id in bigCraftablesInformation.Keys)
             {
                 var key = NamespacedKey.SdvBigCraftable(id).Key;
@@ -213,16 +207,15 @@ namespace TehPers.Core.Items
             }
 
             // Objects
-            var objectInformation =
-                assetProvider.Load<Dictionary<int, string>>(@"Data\ObjectInformation");
+            var objects = assetProvider.Load<Dictionary<string, ObjectData>>(@"Data\Objects");
             var secretNotes = assetProvider.Load<Dictionary<int, string>>(@"Data\SecretNotes");
-            foreach (var (id, rawData) in objectInformation)
+            foreach (var (id, data) in objects)
             {
-                var data = rawData.Split('/');
                 switch (id)
                 {
                     // Secret notes
-                    case 79:
+                    case "79":
+                    case "(O)79":
                         {
                             foreach (var secretNoteId in secretNotes.Keys.Where(
                                          key => key < GameLocation.JOURNAL_INDEX
@@ -249,7 +242,8 @@ namespace TehPers.Core.Items
                         }
 
                     // Journal scraps
-                    case 842:
+                    case "842":
+                    case "(O)842":
                         {
                             foreach (var journalId in secretNotes.Keys.Where(
                                          key => key >= GameLocation.JOURNAL_INDEX
@@ -276,7 +270,7 @@ namespace TehPers.Core.Items
                         }
 
                     // Rings
-                    case not 801 when data.Length >= 4 && data[3] == "Ring":
+                    case not "801" when data.Type == "Ring":
                         {
                             var key = NamespacedKey.SdvRing(id).Key;
                             var itemFactory = new SimpleItemFactory(
@@ -288,7 +282,8 @@ namespace TehPers.Core.Items
                         }
 
                     // Roe
-                    case 812:
+                    case "812":
+                    case "(O)812":
                         {
                             // TODO: Variants?
                             var key = NamespacedKey.SdvObject(id).Key;
@@ -301,12 +296,13 @@ namespace TehPers.Core.Items
                         }
 
                     // Caroline's necklace
-                    case 191:
+                    case "191":
+                    case "(O)191":
                         {
                             var key = NamespacedKey.SdvObject(id).Key;
                             var itemFactory = new SimpleItemFactory(
                                 ItemTypes.Object,
-                                () => new SObject(GameLocation.CAROLINES_NECKLACE_ITEM, 1)
+                                () => new SObject(id, 1)
                                 {
                                     questItem = {Value = true}
                                 }

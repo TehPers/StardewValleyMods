@@ -73,9 +73,7 @@ namespace TehPers.FishingOverhaul
             this.Bind(typeof(EntryManagerFactory<,>)).ToSelf().InSingletonScope();
             this.Bind<FishingEffectManagerFactory>().ToSelf().InSingletonScope();
             this.GlobalProxyRoot.Bind<FishingEffectRegistration>()
-                .ToConstant(
-                    FishingEffectRegistration.Of<ModifyChanceEffectEntry>("ModifyFishChance")
-                )
+                .ToConstant(FishingEffectRegistration.Of<ModifyChanceEffectEntry>("ModifyFishChance"))
                 .InSingletonScope();
             this.GlobalProxyRoot.Bind<ModifyChanceEffectManager>().ToSelf().InSingletonScope();
 
@@ -105,8 +103,7 @@ namespace TehPers.FishingOverhaul
             this.BindForeignModApi<IEmpApi>("Esca.EMP").InSingletonScope();
         }
 
-        private void BindConfiguration<T>(string path)
-            where T : class, IModConfig, new()
+        private void BindConfiguration<T>(string path) where T : class, IModConfig, new()
         {
             this.Bind<ConfigManager<T>>()
                 .ToSelf()

@@ -1,8 +1,12 @@
-﻿using System;
+﻿using StardewModdingAPI;
+using StardewValley;
+using StardewValley.GameData.Locations;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using TehPers.Core.Api.Extensions;
 using TehPers.Core.Api.Gameplay;
 using TehPers.Core.Api.Items;
 using TehPers.FishingOverhaul.Api;
@@ -305,16 +309,16 @@ namespace TehPers.FishingOverhaul.Services
             DefaultFishingSource.glacierfishJrKey,
         };
 
-        private FishingContent GetDefaultFishData()
+        private FishingContent GetDefaultFishData(IMonitor monitor)
         {
             var fishEntries = new List<FishEntry>();
             var fishTraits = new Dictionary<NamespacedKey, FishTraits>();
             var trashEntries = new List<TrashEntry>();
 
             // Parse the fish traits
-            var fish = this.assetProvider.Load<Dictionary<int, string>>(@"Data\Fish");
-            var fishAvailabilities = new Dictionary<int, List<FishAvailabilityInfo>>(fish.Count);
-            var trashAvailabilities = new Dictionary<int, List<AvailabilityInfo>>();
+            var fish = this.assetProvider.Load<Dictionary<string, string>>(@"Data\Fish");
+            var fishAvailabilities = new Dictionary<string, List<FishAvailabilityInfo>>(fish.Count);
+            var trashAvailabilities = new Dictionary<string, List<AvailabilityInfo>>();
             foreach (var (fishId, rawFishInfo) in fish)
             {
                 var fishInfo = rawFishInfo.Split('/');
@@ -363,60 +367,47 @@ namespace TehPers.FishingOverhaul.Services
             }
 
             // Parse the location data
-            var locations = this.assetProvider.Load<Dictionary<string, string>>(@"Data\Locations");
-            foreach (var (locationName, rawLocationData) in locations)
+            var locations = this.assetProvider.Load<Dictionary<string, LocationData>>(@"Data\Locations");
+            foreach (var (locationName, locationData) in locations)
             {
-                var locationData = rawLocationData.Split('/');
-                const int offset = 4;
-
-                // Parse each season's data
-                var seasons = Seasons.None;
-                foreach (var seasonData in locationData.Skip(offset)
-                             .Take(4)
-                             .Select(data => data.Split(' ')))
+                if (locationData == null)
                 {
-                    // Cycle season
-                    seasons = seasons switch
+                    continue;
+                }
+
+                foreach (var fishData in locationData.Fish)
+                {
+                    var seasons = fishData.Season switch
                     {
-                        Seasons.None => Seasons.Spring,
-                        Seasons.Spring => Seasons.Summer,
-                        Seasons.Summer => Seasons.Fall,
-                        Seasons.Fall => Seasons.Winter,
-                        _ => Seasons.None
+                        Season.Spring => Seasons.Spring,
+                        Season.Summer => Seasons.Summer,
+                        Season.Fall => Seasons.Fall,
+                        Season.Winter => Seasons.Winter,
+                        _ => Seasons.All
                     };
 
-                    // Check if too many iterations
-                    if (seasons == Seasons.None)
+                    var waterTypes = fishData.FishAreaId switch
                     {
-                        break;
-                    }
+                        "0" => WaterTypes.River,
+                        "1" => WaterTypes.PondOrOcean,
+                        "2" => WaterTypes.Freshwater,
+                        _ => WaterTypes.All
+                    };
 
-                    // Parse each fish's data
-                    for (var i = 0; i < seasonData.Length - 1; i += 2)
+                    void addAvailabilities(string? itemId)
                     {
-                        // Fish ID
-                        if (!int.TryParse(seasonData[i], out var fishId))
+                        if (itemId == null)
                         {
-                            continue;
+                            return;
                         }
 
-                        // Water type
-                        if (!int.TryParse(seasonData[i + 1], out var waterTypeId))
+                        if (ItemRegistry.IsQualifiedItemId(itemId))
                         {
-                            continue;
+                            // Remove type definition part of id '(...)' to get non qualified id
+                            itemId = itemId[(itemId.IndexOf(')') + 1)..];
                         }
 
-                        var waterTypes = waterTypeId switch
-                        {
-                            -1 => WaterTypes.All,
-                            0 => WaterTypes.River,
-                            1 => WaterTypes.PondOrOcean,
-                            2 => WaterTypes.Freshwater,
-                            _ => WaterTypes.All,
-                        };
-
-                        // Add availabilities
-                        if (fishAvailabilities.TryGetValue(fishId, out var f))
+                        if (fishAvailabilities.TryGetValue(itemId, out var f))
                         {
                             // Fish availabilities
                             DefaultFishingSource.AddEntries(
@@ -425,10 +416,11 @@ namespace TehPers.FishingOverhaul.Services
                                 seasons,
                                 waterTypes,
                                 locationName,
-                                availability => new(NamespacedKey.SdvObject(fishId), availability)
+                                fishData.SetFlagOnCatch,
+                                availability => new(NamespacedKey.SdvObject(itemId), availability)
                             );
                         }
-                        else if (trashAvailabilities.TryGetValue(fishId, out var t))
+                        else if (trashAvailabilities.TryGetValue(itemId, out var t))
                         {
                             // Trash availabilities
                             DefaultFishingSource.AddEntries(
@@ -437,9 +429,22 @@ namespace TehPers.FishingOverhaul.Services
                                 seasons,
                                 waterTypes,
                                 locationName,
-                                availability => new(NamespacedKey.SdvObject(fishId), availability)
+                                fishData.SetFlagOnCatch,
+                                availability => new(NamespacedKey.SdvObject(itemId), availability)
                             );
                         }
+                    }
+
+                    if ((fishData.RandomItemId?.Count ?? 0) > 1)
+                    {
+                        foreach (var id in fishData.RandomItemId!)
+                        {
+                            addAvailabilities(id);
+                        }
+                    }
+                    else
+                    {
+                        addAvailabilities(fishData.ItemId);
                     }
                 }
             }
@@ -577,6 +582,7 @@ namespace TehPers.FishingOverhaul.Services
             Seasons seasons,
             WaterTypes waterTypes,
             string locationName,
+            string? setFlagOnCatch,
             Func<TAvailability, TEntry> toEntry
         )
             where TAvailability : AvailabilityInfo
@@ -588,6 +594,7 @@ namespace TehPers.FishingOverhaul.Services
                         {
                             Seasons = seasons,
                             WaterTypes = waterTypes,
+                            SetFlagOnCatch = setFlagOnCatch,
                             IncludeLocations = locationName switch
                             {
                                 // Include both beach locations and beach farm

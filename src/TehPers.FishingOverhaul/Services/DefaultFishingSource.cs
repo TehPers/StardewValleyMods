@@ -30,11 +30,11 @@ namespace TehPers.FishingOverhaul.Services
                 assetProvider ?? throw new ArgumentNullException(nameof(assetProvider));
         }
 
-        public IEnumerable<FishingContent> Reload()
+        public IEnumerable<FishingContent> Reload(IMonitor monitor)
         {
             // Reload default content
             this.defaultContent.Clear();
-            this.defaultContent.Add(this.GetDefaultFishData());
+            this.defaultContent.Add(this.GetDefaultFishData(monitor));
             this.defaultContent.Add(this.GetDefaultTrashData());
             this.defaultContent.Add(this.GetDefaultTreasureData());
             this.defaultContent.Add(this.GetDefaultEffectData());

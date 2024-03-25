@@ -153,9 +153,7 @@ namespace TehPers.FishingOverhaul.Services.Setup
                                 ),
                                 new Cell(availabilityInfo.SeasonsSplit.Select(s => s.ToString())),
                                 new Cell(availabilityInfo.WeathersSplit.Select(w => w.ToString())),
-                                new Cell(
-                                    availabilityInfo.WaterTypesSplit.Select(w => w.ToString())
-                                ),
+                                new Cell(availabilityInfo.WaterTypesSplit.Select(w => w.ToString())),
                                 new Cell(
                                     availabilityInfo.IncludeLocations.Select(loc => $"+{loc}")
                                         .Concat(

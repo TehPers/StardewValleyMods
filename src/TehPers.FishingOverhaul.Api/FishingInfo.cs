@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.Xna.Framework;
 using StardewValley;
@@ -39,12 +40,12 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// The seasons being fished in.
         /// </summary>
-        public Seasons Seasons { get; init; } = User.currentLocation.GetSeasonForLocation() switch
+        public Seasons Seasons { get; init; } = User.currentLocation.GetSeason() switch
         {
-            "spring" => Seasons.Spring,
-            "summer" => Seasons.Summer,
-            "fall" => Seasons.Fall,
-            "winter" => Seasons.Winter,
+            Season.Spring => Seasons.Spring,
+            Season.Summer => Seasons.Summer,
+            Season.Fall => Seasons.Fall,
+            Season.Winter => Seasons.Winter,
             _ => Seasons.All,
         };
 
@@ -60,14 +61,13 @@ namespace TehPers.FishingOverhaul.Api
         /// <summary>
         /// The water types being fished in.
         /// </summary>
-        public WaterTypes WaterTypes { get; init; } =
-            User.currentLocation.getFishingLocation(User.getTileLocation()) switch
-            {
-                0 => WaterTypes.River,
-                1 => WaterTypes.PondOrOcean,
-                2 => WaterTypes.Freshwater,
-                _ => WaterTypes.All,
-            };
+        public WaterTypes WaterTypes { get; init; } = GetWaterType(User);
+
+
+        /// <summary>
+        /// (Optional) Flag to set when fish is caught
+        /// </summary>
+        public string? SetFlagOnCatch { get; init; } = null;
 
         /// <summary>
         /// The fishing level of the <see cref="Farmer"/> that is fishing.
@@ -101,15 +101,30 @@ namespace TehPers.FishingOverhaul.Api
         /// The bait used for fishing.
         /// </summary>
         public NamespacedKey? Bait { get; } = User.CurrentTool is FishingRod rod
-            ? FishingInfo.ConvertAttachmentIndex(rod.getBaitAttachmentIndex())
+            ? FishingInfo.ConvertAttachmentIndex(rod.attachments.IndexOf(rod.GetBait()))
             : null;
 
         /// <summary>
         /// The bobber/tackle used for fishing.
         /// </summary>
         public NamespacedKey? Bobber { get; } = User.CurrentTool is FishingRod rod
-            ? FishingInfo.ConvertAttachmentIndex(rod.getBobberAttachmentIndex())
+            ? FishingInfo.ConvertAttachmentIndex(rod.attachments.IndexOf(rod.GetTackle().FirstOrDefault()))
             : null;
+
+        private static WaterTypes GetWaterType(Farmer farmer)
+        {
+            if (farmer.currentLocation.TryGetFishAreaForTile(farmer.Tile, out var id, out _))
+            {
+                return id switch
+                {
+                    "0" => WaterTypes.River,
+                    "1" => WaterTypes.PondOrOcean,
+                    "2" => WaterTypes.Freshwater,
+                    _ => WaterTypes.All,
+                };
+            }
+            return WaterTypes.All;
+        }
 
         private static NamespacedKey? ConvertAttachmentIndex(int index)
         {
@@ -161,6 +176,7 @@ namespace TehPers.FishingOverhaul.Api
                     4 => new[] { name, $"{name}/Wilderness" },
                     5 => new[] { name, $"{name}/FourCorners" },
                     6 => new[] { name, $"{name}/Beach" },
+                    7 => new[] { name, $"{name}/Meadows" },
                     _ => new[] { name },
                 },
                 IslandLocation { Name: { } name } => new[] { name, "Island" },

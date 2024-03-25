@@ -47,7 +47,7 @@ namespace TehPers.FishingOverhaul.Services
             // Reload fishing data topologically
             var contentSources = this.contentSourcesFactory();
             var remainingContent =
-                new Queue<FishingContent>(contentSources.SelectMany(source => source.Reload()));
+                new Queue<FishingContent>(contentSources.SelectMany(source => source.Reload(this.monitor)));
             var unloadedByModId = remainingContent.GroupBy(content => content.ModManifest.UniqueID)
                 .ToDictionary(group => group.Key, group => group.Count());
             while (remainingContent.TryDequeue(out var content))

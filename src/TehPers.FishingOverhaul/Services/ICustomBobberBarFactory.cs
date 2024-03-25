@@ -1,4 +1,5 @@
 ﻿using StardewValley;
+using System.Collections.Generic;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Gui;
@@ -13,8 +14,9 @@ namespace TehPers.FishingOverhaul.Services
             Item fishItem,
             float fishSizePercent,
             bool treasure,
-            int bobber,
-            bool fromFishPond
+            List<string> bobbers,
+            bool fromFishPond,
+            bool isBossFish = false
         );
     }
 }

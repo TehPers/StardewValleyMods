@@ -199,7 +199,7 @@ namespace TehPers.FishingOverhaul.Services
                 );
                 // Caroline's necklace
                 yield return new(
-                    NamespacedKey.SdvObject(GameLocation.CAROLINES_NECKLACE_ITEM),
+                    NamespacedKey.SdvObject(GameLocation.CAROLINES_NECKLACE_ITEM_QID), // GameLocation.CAROLINES_NECKLACE_ITEM / GameLocation.CAROLINES_NECKLACE_ITEM_QID
                     new(1)
                     {
                         IncludeLocations = ImmutableArray.Create("Railroad"),
@@ -216,7 +216,7 @@ namespace TehPers.FishingOverhaul.Services
                 {
                     OnCatch = new()
                     {
-                        StartQuests = ImmutableArray.Create(128, 129),
+                        StartQuests = ImmutableArray.Create("128", "129"),
                         AddMail = ImmutableArray.Create(
                             $"{GameLocation.CAROLINES_NECKLACE_MAIL}%&NL&%"
                         ),

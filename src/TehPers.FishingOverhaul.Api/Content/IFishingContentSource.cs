@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using StardewModdingAPI;
+using System.Collections.Generic;
 
 namespace TehPers.FishingOverhaul.Api.Content
 {
@@ -12,6 +13,6 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// Reloads the fishing data.
         /// </summary>
         /// <returns>The reloaded fishing data.</returns>
-        IEnumerable<FishingContent> Reload();
+        IEnumerable<FishingContent> Reload(IMonitor monitor);
     }
 }

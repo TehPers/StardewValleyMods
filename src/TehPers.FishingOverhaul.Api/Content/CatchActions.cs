@@ -24,7 +24,7 @@ namespace TehPers.FishingOverhaul.Api.Content
         /// <summary>
         /// Sets one or more quests as active.
         /// </summary>
-        public ImmutableArray<int> StartQuests { get; init; } = ImmutableArray<int>.Empty;
+        public ImmutableArray<string> StartQuests { get; init; } = ImmutableArray<string>.Empty;
 
         /// <summary>
         /// Adds mail entries to the player's mail tomorrow.

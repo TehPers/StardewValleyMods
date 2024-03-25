@@ -5,49 +5,19 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using System;
-using System.Linq;
 using StardewValley.Tools;
 using TehPers.FishingOverhaul.Api;
 using TehPers.FishingOverhaul.Api.Content;
 using TehPers.FishingOverhaul.Config;
 using TehPers.FishingOverhaul.Extensions;
 using TehPers.FishingOverhaul.Extensions.Drawing;
+using System.Collections.Generic;
 
 namespace TehPers.FishingOverhaul.Gui
 {
     internal sealed class CustomBobberBar : BobberBar
     {
-        private readonly IReflectedField<bool> treasureField;
-        private readonly IReflectedField<bool> treasureCaughtField;
-        private readonly IReflectedField<float> treasurePositionField;
-        private readonly IReflectedField<float> treasureAppearTimerField;
-        private readonly IReflectedField<float> treasureScaleField;
-
-        private readonly IReflectedField<float> distanceFromCatchingField;
-        private readonly IReflectedField<float> treasureCatchLevelField;
-
-        private readonly IReflectedField<float> bobberBarPosField;
-        private readonly IReflectedField<bool> bobberInBarField;
-        private readonly IReflectedField<float> difficultyField;
-        private readonly IReflectedField<int> fishQualityField;
         private readonly IReflectedField<bool> perfectField;
-        private readonly IReflectedField<float> scaleField;
-        private readonly IReflectedField<bool> flipBubbleField;
-        private readonly IReflectedField<int> bobberBarHeightField;
-        private readonly IReflectedField<float> reelRotationField;
-        private readonly IReflectedField<float> bobberPositionField;
-        private readonly IReflectedField<bool> bossFishField;
-        private readonly IReflectedField<int> motionTypeField;
-        private readonly IReflectedField<int> fishSizeField;
-        private readonly IReflectedField<int> minFishSizeField;
-        private readonly IReflectedField<int> maxFishSizeField;
-        private readonly IReflectedField<bool> fromFishPondField;
-
-        private readonly IReflectedField<Vector2> barShakeField;
-        private readonly IReflectedField<Vector2> fishShakeField;
-        private readonly IReflectedField<Vector2> treasureShakeField;
-        private readonly IReflectedField<Vector2> everythingShakeField;
-        private readonly IReflectedField<bool> fadeOutField;
 
         private readonly IReflectedField<SparklingText?> sparkleTextField;
 
@@ -88,10 +58,11 @@ namespace TehPers.FishingOverhaul.Gui
             Item fishItem,
             float fishSizePercent,
             bool treasure,
-            int bobber,
-            bool fromFishPond
+            List<string> bobbers,
+            bool fromFishPond,
+            bool isBossFish = false
         )
-            : base(0, fishSizePercent, treasure, bobber)
+            : base("0", fishSizePercent, treasure, bobbers, fishingInfo.SetFlagOnCatch, isBossFish)
         {
             _ = helper ?? throw new ArgumentNullException(nameof(helper));
             this.fishConfig = fishConfig ?? throw new ArgumentNullException(nameof(fishConfig));
@@ -102,43 +73,7 @@ namespace TehPers.FishingOverhaul.Gui
             this.fishTraits = fishTraits ?? throw new ArgumentNullException(nameof(fishTraits));
             this.fishItem = fishItem ?? throw new ArgumentNullException(nameof(fishItem));
 
-            this.treasureField = helper.Reflection.GetField<bool>(this, "treasure");
-            this.treasureCaughtField = helper.Reflection.GetField<bool>(this, "treasureCaught");
-            this.treasurePositionField =
-                helper.Reflection.GetField<float>(this, "treasurePosition");
-            this.treasureAppearTimerField =
-                helper.Reflection.GetField<float>(this, "treasureAppearTimer");
-            this.treasureScaleField = helper.Reflection.GetField<float>(this, "treasureScale");
-
-            this.distanceFromCatchingField =
-                helper.Reflection.GetField<float>(this, "distanceFromCatching");
-            this.treasureCatchLevelField =
-                helper.Reflection.GetField<float>(this, "treasureCatchLevel");
-
-            this.bobberBarPosField = helper.Reflection.GetField<float>(this, "bobberBarPos");
-            this.bobberInBarField = helper.Reflection.GetField<bool>(this, "bobberInBar");
-            this.difficultyField = helper.Reflection.GetField<float>(this, "difficulty");
-            this.fishQualityField = helper.Reflection.GetField<int>(this, "fishQuality");
             this.perfectField = helper.Reflection.GetField<bool>(this, "perfect");
-            this.scaleField = helper.Reflection.GetField<float>(this, "scale");
-            this.flipBubbleField = helper.Reflection.GetField<bool>(this, "flipBubble");
-            this.bobberBarHeightField = helper.Reflection.GetField<int>(this, "bobberBarHeight");
-            this.reelRotationField = helper.Reflection.GetField<float>(this, "reelRotation");
-            this.bobberPositionField = helper.Reflection.GetField<float>(this, "bobberPosition");
-            this.bossFishField = helper.Reflection.GetField<bool>(this, "bossFish");
-            this.motionTypeField = helper.Reflection.GetField<int>(this, "motionType");
-            this.fishSizeField = helper.Reflection.GetField<int>(this, "fishSize");
-            this.minFishSizeField = helper.Reflection.GetField<int>(this, "minFishSize");
-            this.maxFishSizeField = helper.Reflection.GetField<int>(this, "maxFishSize");
-            this.fromFishPondField = helper.Reflection.GetField<bool>(this, "fromFishPond");
-
-            this.barShakeField = helper.Reflection.GetField<Vector2>(this, "barShake");
-            this.fishShakeField = helper.Reflection.GetField<Vector2>(this, "fishShake");
-            this.treasureShakeField = helper.Reflection.GetField<Vector2>(this, "treasureShake");
-            this.everythingShakeField =
-                helper.Reflection.GetField<Vector2>(this, "everythingShake");
-            this.fadeOutField = helper.Reflection.GetField<bool>(this, "fadeOut");
-
             this.sparkleTextField = helper.Reflection.GetField<SparklingText?>(this, "sparkleText");
 
             // Track state
@@ -148,24 +83,21 @@ namespace TehPers.FishingOverhaul.Gui
 
             // Track player streak
             this.perfectField.SetValue(true);
-            var fishSizeReductionTimerField =
-                helper.Reflection.GetField<int>(this, "fishSizeReductionTimer");
-            fishSizeReductionTimerField.SetValue(800);
+            this.fishSizeReductionTimer = 800;
 
             // Fish size
             var minFishSize = fishTraits.MinSize;
             var maxFishSize = fishTraits.MaxSize;
             var fishSize = (int)(minFishSize + (maxFishSize - minFishSize) * fishSizePercent) + 1;
-            this.minFishSizeField.SetValue(minFishSize);
-            this.maxFishSizeField.SetValue(maxFishSize);
-            this.fishSizeField.SetValue(fishSize);
+            this.minFishSize = minFishSize;
+            this.fishSize = fishSize;
 
             // Track other information (not all tracked by vanilla)
-            this.fromFishPondField.SetValue(fromFishPond);
-            this.bossFishField.SetValue(fishTraits.IsLegendary);
+            this.fromFishPond = fromFishPond;
+            this.bossFish = fishTraits.IsLegendary;
 
             // Adjust quality to be increased by streak
-            var fishQuality = fishSizePercent switch
+            this.fishQuality = fishSizePercent switch
             {
                 < 0.33f => 0,
                 < 0.66f => 1,
@@ -173,78 +105,67 @@ namespace TehPers.FishingOverhaul.Gui
             };
 
             // Quality bobber
-            if (bobber is 877)
+            if (bobbers.Contains("877"))
             {
-                fishQuality += 1;
-                if (fishQuality > 2)
+                this.fishQuality += 1;
+                if (this.fishQuality > 2)
                 {
-                    fishQuality += 1;
+                    this.fishQuality += 1;
                 }
             }
 
             // Beginner rod
             if (fishingInfo.User.CurrentTool is FishingRod { UpgradeLevel: 1 })
             {
-                fishQuality = 0;
+                this.fishQuality = 0;
             }
 
-            // Don't bump quality from 3 -> 4 here, that will be done later
-            this.fishQualityField.SetValue(fishQuality);
-
             // Adjust fish difficulty
-            this.difficultyField.SetValue(fishTraits.DartFrequency);
-            this.motionTypeField.SetValue(
-                fishTraits.DartBehavior switch
-                {
-                    DartBehavior.Mixed => BobberBar.mixed,
-                    DartBehavior.Dart => BobberBar.dart,
-                    DartBehavior.Smooth => BobberBar.smooth,
-                    DartBehavior.Sink => BobberBar.sink,
-                    DartBehavior.Floater => BobberBar.floater,
-                    _ => throw new ArgumentOutOfRangeException(
-                        nameof(fishTraits),
-                        "Invalid dart behavior."
-                    )
-                }
-            );
+            this.difficulty = fishTraits.DartFrequency;
+            this.motionType = fishTraits.DartBehavior switch
+            {
+                DartBehavior.Mixed => BobberBar.mixed,
+                DartBehavior.Dart => BobberBar.dart,
+                DartBehavior.Smooth => BobberBar.smooth,
+                DartBehavior.Sink => BobberBar.sink,
+                DartBehavior.Floater => BobberBar.floater,
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(fishTraits),
+                    "Invalid dart behavior."
+                )
+            };
         }
 
         public override void update(GameTime time)
         {
             // Speed warp on catching fish
-            var distanceFromCatching = this.distanceFromCatchingField.GetValue();
-            var delta = distanceFromCatching - this.lastDistanceFromCatching;
+            var delta = this.distanceFromCatching - this.lastDistanceFromCatching;
             var mult = delta switch
             {
                 > 0f => this.fishConfig.CatchSpeed,
                 < 0f => this.fishConfig.DrainSpeed,
                 _ => 0f,
             };
-            distanceFromCatching = this.lastDistanceFromCatching + delta * mult;
-            this.lastDistanceFromCatching = distanceFromCatching;
-            this.distanceFromCatchingField.SetValue(distanceFromCatching);
+            this.distanceFromCatching = this.lastDistanceFromCatching + delta * mult;
+            this.lastDistanceFromCatching = this.distanceFromCatching;
 
             // Speed warp on catching treasure
-            var treasureCatchLevel = this.treasureCatchLevelField.GetValue();
-            delta = treasureCatchLevel - this.lastTreasureCatchLevel;
+            delta = this.treasureCatchLevel - this.lastTreasureCatchLevel;
             mult = delta switch
             {
                 > 0f => this.treasureConfig.CatchSpeed,
                 < 0f => this.treasureConfig.DrainSpeed,
                 _ => 0f,
             };
-            treasureCatchLevel = this.lastTreasureCatchLevel + delta * mult;
-            this.lastTreasureCatchLevel = treasureCatchLevel;
-            this.treasureCatchLevelField.SetValue(treasureCatchLevel);
+            this.treasureCatchLevel = this.lastTreasureCatchLevel + delta * mult;
+            this.lastTreasureCatchLevel = this.treasureCatchLevel;
 
             var perfect = this.perfectField.GetValue();
-            var treasure = this.treasureField.GetValue();
-            var treasureCaught = this.treasureCaughtField.GetValue();
 
             // Update state
             var newState = new MinigameState(
                 perfect,
-                (treasure, treasureCaught) switch
+                (this.treasure, this.treasureCaught) switch
                 {
                     (false, _) => TreasureState.None,
                     (_, false) => TreasureState.NotCaught,
@@ -258,30 +179,29 @@ namespace TehPers.FishingOverhaul.Gui
             }
 
             // Override post-catch logic
-            if (this.fadeOutField.GetValue())
+            if (this.fadeOut)
             {
-                var scale = this.scaleField.GetValue();
-                if (scale <= 0.05f)
+                if (this.scale <= 0.05f)
                 {
                     // Check for wild bait
-                    var caughtDouble = !this.bossFishField.GetValue()
+                    var caughtDouble = !this.bossFish
                         && Game1.player.CurrentTool is FishingRod { attachments: { } attachments }
                         && attachments[0]?.ParentSheetIndex is 774
                         && Game1.random.NextDouble() < 0.25 + Game1.player.DailyLuck / 2.0;
-                    if (distanceFromCatching > 0.9 && Game1.player.CurrentTool is FishingRod)
+                    if (this.distanceFromCatching > 0.9 && Game1.player.CurrentTool is FishingRod)
                     {
                         // Notify that a fish was caught
                         var catchInfo = new CatchInfo.FishCatch(
                             this.fishingInfo,
                             this.fishEntry,
                             this.fishItem,
-                            this.fishSizeField.GetValue(),
+                            this.fishSize,
                             this.fishTraits.IsLegendary,
-                            this.fishQualityField.GetValue(),
-                            (int)this.difficultyField.GetValue(),
+                            this.fishQuality,
+                            (int)this.difficulty,
                             this.state,
-                            this.fromFishPondField.GetValue(),
-                            caughtDouble
+                            this.fromFishPond,
+                            caughtDouble ? Math.Max(this.challengeBaitFishes, 2) : 1
                         );
                         this.OnCaughtFish(catchInfo);
                     }
@@ -308,7 +228,7 @@ namespace TehPers.FishingOverhaul.Gui
 
         public override void emergencyShutDown()
         {
-            if (this.distanceFromCatchingField.GetValue() <= 0.9)
+            if (this.distanceFromCatching <= 0.9)
             {
                 // Failed to catch fish
                 this.OnLostFish();
@@ -321,46 +241,37 @@ namespace TehPers.FishingOverhaul.Gui
         {
             Game1.StartWorldDrawInUI(b);
 
-            var everythingShake = this.everythingShakeField.GetValue();
-            var flipBubble = this.flipBubbleField.GetValue();
-            var scale = this.scaleField.GetValue();
             b.Draw(
                 Game1.mouseCursors,
                 new Vector2(
-                    this.xPositionOnScreen - (flipBubble ? 44 : 20) + 104,
+                    this.xPositionOnScreen - (this.flipBubble ? 44 : 20) + 104,
                     this.yPositionOnScreen - 16 + 314
                 )
-                + everythingShake,
+                + this.everythingShake,
                 new Rectangle(652, 1685, 52, 157),
-                Color.White * 0.6f * scale,
+                Color.White * 0.6f * this.scale,
                 0.0f,
-                new Vector2(26f, 78.5f) * scale,
-                4f * scale,
-                flipBubble ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                new Vector2(26f, 78.5f) * this.scale,
+                4f * this.scale,
+                this.flipBubble ? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                 1f / 1000f
             );
             b.Draw(
                 Game1.mouseCursors,
                 new Vector2(this.xPositionOnScreen + 70, this.yPositionOnScreen + 296)
-                + everythingShake,
+                + this.everythingShake,
                 new Rectangle(644, 1999, 37, 150),
-                Color.White * scale,
+                Color.White * this.scale,
                 0.0f,
-                new Vector2(18.5f, 74f) * scale,
-                4f * scale,
+                new Vector2(18.5f, 74f) * this.scale,
+                4f * this.scale,
                 SpriteEffects.None,
                 0.01f
             );
 
-            if (Math.Abs(scale - 1.0) < 0.001)
+            if (Math.Abs(this.scale - 1.0) < 0.001)
             {
-                var bobberBarPos = this.bobberBarPosField.GetValue();
-                var barShake = this.barShakeField.GetValue();
-                var bobberInBar = this.bobberInBarField.GetValue();
-                var bobberBarHeight = this.bobberBarHeightField.GetValue();
-                var distanceFromCatching = this.distanceFromCatchingField.GetValue();
-                var reelRotation = this.reelRotationField.GetValue();
-                var color = bobberInBar
+                var color = this.bobberInBar
                     ? Color.White
                     : Color.White
                     * 0.25f
@@ -375,10 +286,10 @@ namespace TehPers.FishingOverhaul.Gui
                     Game1.mouseCursors,
                     new Vector2(
                         this.xPositionOnScreen + 64,
-                        this.yPositionOnScreen + 12 + (int)bobberBarPos
+                        this.yPositionOnScreen + 12 + (int)this.bobberBarPos
                     )
-                    + barShake
-                    + everythingShake,
+                    + this.barShake
+                    + this.everythingShake,
                     new Rectangle(682, 2078, 9, 2),
                     color,
                     0.0f,
@@ -391,15 +302,15 @@ namespace TehPers.FishingOverhaul.Gui
                     Game1.mouseCursors,
                     new Vector2(
                         this.xPositionOnScreen + 64,
-                        this.yPositionOnScreen + 12 + (int)bobberBarPos + 8
+                        this.yPositionOnScreen + 12 + (int)this.bobberBarPos + 8
                     )
-                    + barShake
-                    + everythingShake,
+                    + this.barShake
+                    + this.everythingShake,
                     new Rectangle(682, 2081, 9, 1),
                     color,
                     0.0f,
                     Vector2.Zero,
-                    new Vector2(4f, bobberBarHeight - 16),
+                    new Vector2(4f, this.bobberBarHeight - 16),
                     SpriteEffects.None,
                     0.89f
                 );
@@ -407,10 +318,10 @@ namespace TehPers.FishingOverhaul.Gui
                     Game1.mouseCursors,
                     new Vector2(
                         this.xPositionOnScreen + 64,
-                        this.yPositionOnScreen + 12 + (int)bobberBarPos + bobberBarHeight - 8
+                        this.yPositionOnScreen + 12 + (int)this.bobberBarPos + this.bobberBarHeight - 8
                     )
-                    + barShake
-                    + everythingShake,
+                    + this.barShake
+                    + this.everythingShake,
                     new Rectangle(682, 2085, 9, 2),
                     color,
                     0.0f,
@@ -423,19 +334,19 @@ namespace TehPers.FishingOverhaul.Gui
                     Game1.staminaRect,
                     new Rectangle(
                         this.xPositionOnScreen + 124,
-                        this.yPositionOnScreen + 4 + (int)(580.0 * (1.0 - distanceFromCatching)),
+                        this.yPositionOnScreen + 4 + (int)(580.0 * (1.0 - this.distanceFromCatching)),
                         16,
-                        (int)(580.0 * distanceFromCatching)
+                        (int)(580.0 * this.distanceFromCatching)
                     ),
-                    Utility.getRedToGreenLerpColor(distanceFromCatching)
+                    Utility.getRedToGreenLerpColor(this.distanceFromCatching)
                 );
                 b.Draw(
                     Game1.mouseCursors,
                     new Vector2(this.xPositionOnScreen + 18, this.yPositionOnScreen + 514)
-                    + everythingShake,
+                    + this.everythingShake,
                     new Rectangle(257, 1990, 5, 10),
                     Color.White,
-                    reelRotation,
+                    this.reelRotation,
                     new(2f, 10f),
                     4f,
                     SpriteEffects.None,
@@ -443,34 +354,29 @@ namespace TehPers.FishingOverhaul.Gui
                 );
 
                 // Draw treasure
-                var treasurePosition = this.treasurePositionField.GetValue();
-                var treasureShake = this.treasureShakeField.GetValue();
-                var treasureScale = this.treasureScaleField.GetValue();
                 b.Draw(
                     Game1.mouseCursors,
                     new Vector2(
                         this.xPositionOnScreen + 64 + 18,
-                        this.yPositionOnScreen + 12 + 24 + treasurePosition
+                        this.yPositionOnScreen + 12 + 24 + this.treasurePosition
                     )
-                    + treasureShake
-                    + everythingShake,
+                    + this.treasureShake
+                    + this.everythingShake,
                     new Rectangle(638, 1865, 20, 24),
                     Color.White,
                     0.0f,
                     new(10f, 10f),
-                    2f * treasureScale,
+                    2f * this.treasureScale,
                     SpriteEffects.None,
                     0.85f
                 );
-                var treasureCatchLevel = this.treasureCatchLevelField.GetValue();
-                var treasureCaught = this.treasureCaughtField.GetValue();
-                if (treasureCatchLevel > 0.0 && !treasureCaught)
+                if (this.treasureCatchLevel > 0.0 && !this.treasureCaught)
                 {
                     b.Draw(
                         Game1.staminaRect,
                         new Rectangle(
                             this.xPositionOnScreen + 64,
-                            this.yPositionOnScreen + 12 + (int)treasurePosition,
+                            this.yPositionOnScreen + 12 + (int)this.treasurePosition,
                             40,
                             8
                         ),
@@ -480,8 +386,8 @@ namespace TehPers.FishingOverhaul.Gui
                         Game1.staminaRect,
                         new Rectangle(
                             this.xPositionOnScreen + 64,
-                            this.yPositionOnScreen + 12 + (int)treasurePosition,
-                            (int)(treasureCatchLevel * 40.0),
+                            this.yPositionOnScreen + 12 + (int)this.treasurePosition,
+                            (int)(this.treasureCatchLevel * 40.0),
                             8
                         ),
                         Color.Orange
@@ -489,17 +395,15 @@ namespace TehPers.FishingOverhaul.Gui
                 }
 
                 // Draw fish
-                var bobberPosition = this.bobberPositionField.GetValue();
-                var fishShake = this.fishShakeField.GetValue();
                 var position = new Vector2(
                     this.xPositionOnScreen + 64 + 18,
-                    this.yPositionOnScreen + bobberPosition + 12 + 24
+                    this.yPositionOnScreen + this.bobberPosition + 12 + 24
                 );
                 if (this.fishConfig.ShowFishInMinigame)
                 {
                     this.fishItem.DrawInMenuCorrected(
                         b,
-                        position + fishShake + everythingShake,
+                        position + this.fishShake + this.everythingShake,
                         0.5f,
                         1f,
                         0.88f,
@@ -513,7 +417,7 @@ namespace TehPers.FishingOverhaul.Gui
                 {
                     b.Draw(
                         Game1.mouseCursors,
-                        position + fishShake + everythingShake,
+                        position + this.fishShake + this.everythingShake,
                         new Rectangle(614 + (this.fishTraits.IsLegendary ? 20 : 0), 1840, 20, 20),
                         Color.White,
                         0.0f,
@@ -532,7 +436,7 @@ namespace TehPers.FishingOverhaul.Gui
             if (Game1.player.fishCaught?.Any() == false)
             {
                 var position = new Vector2(
-                    this.xPositionOnScreen + (flipBubble ? this.width + 64 + 8 : -200),
+                    this.xPositionOnScreen + (this.flipBubble ? this.width + 64 + 8 : -200),
                     this.yPositionOnScreen + 192
                 );
                 if (!Game1.options.gamepadControls)
