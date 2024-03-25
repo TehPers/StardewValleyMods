@@ -20,8 +20,7 @@ namespace TehPers.FishingOverhaul.Services
         {
             this.helper = helper ?? throw new ArgumentNullException(nameof(helper));
             this.monitor = monitor ?? throw new ArgumentNullException(nameof(monitor));
-            this.jsonProvider =
-                jsonProvider ?? throw new ArgumentNullException(nameof(jsonProvider));
+            this.jsonProvider = jsonProvider ?? throw new ArgumentNullException(nameof(jsonProvider));
         }
 
         public IEnumerable<FishingContent> Reload(IMonitor monitor)

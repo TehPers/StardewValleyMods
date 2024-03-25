@@ -98,10 +98,62 @@ namespace TehPers.FishingOverhaul.Services
             this.reloadRequested = true;
         }
 
+        private static (string, float)? GetFarmLocationOverride(Farm farm, IModHelper helper)
+        {
+            var overrideLocationField =
+                helper.Reflection.GetField<string?>(farm, "_fishLocationOverride");
+            var overrideChanceField =
+                helper.Reflection.GetField<float>(farm, "_fishChanceOverride");
+
+            // Set override
+            float overrideChance;
+            if (overrideLocationField.GetValue() is not { } overrideLocation)
+            {
+                // Read from the map properties
+                var mapProperty = farm.getMapProperty("FarmFishLocationOverride");
+                if (mapProperty == string.Empty || mapProperty == null)
+                {
+                    overrideLocation = string.Empty;
+                    overrideChance = 0.0f;
+                }
+                else
+                {
+                    var splitProperty = mapProperty.Split(' ');
+                    if (splitProperty.Length >= 2
+                        && float.TryParse(splitProperty[1], out overrideChance))
+                    {
+                        overrideLocation = splitProperty[0];
+                    }
+                    else
+                    {
+                        overrideLocation = string.Empty;
+                        overrideChance = 0.0f;
+                    }
+                }
+
+                // Set the fields
+                overrideLocationField.SetValue(overrideLocation);
+                overrideChanceField.SetValue(overrideChance);
+            }
+            else
+            {
+                overrideChance = overrideChanceField.GetValue();
+            }
+
+            if (overrideChance > 0.0)
+            {
+                // Overridden
+                return (overrideLocation, overrideChance);
+            }
+
+            // No override
+            return null;
+        }
+
         private void ApplyMapOverrides(object? sender, CreatedDefaultFishingInfoEventArgs e)
         {
             if (e.FishingInfo.User.currentLocation is Farm farm
-                && GetFarmLocationOverride(farm) is var (overrideLocation, overrideChance)
+                && GetFarmLocationOverride(farm, this.helper) is var (overrideLocation, overrideChance)
                 && Game1.random.NextDouble() < overrideChance)
             {
                 e.FishingInfo = e.FishingInfo with
@@ -113,57 +165,7 @@ namespace TehPers.FishingOverhaul.Services
                 };
             }
 
-            (string, float)? GetFarmLocationOverride(Farm farm)
-            {
-                var overrideLocationField =
-                    this.helper.Reflection.GetField<string?>(farm, "_fishLocationOverride");
-                var overrideChanceField =
-                    this.helper.Reflection.GetField<float>(farm, "_fishChanceOverride");
-
-                // Set override
-                float overrideChance;
-                if (overrideLocationField.GetValue() is not { } overrideLocation)
-                {
-                    // Read from the map properties
-                    var mapProperty = farm.getMapProperty("FarmFishLocationOverride");
-                    if (mapProperty == string.Empty || mapProperty == null)
-                    {
-                        overrideLocation = string.Empty;
-                        overrideChance = 0.0f;
-                    }
-                    else
-                    {
-                        var splitProperty = mapProperty.Split(' ');
-                        if (splitProperty.Length >= 2
-                            && float.TryParse(splitProperty[1], out overrideChance))
-                        {
-                            overrideLocation = splitProperty[0];
-                        }
-                        else
-                        {
-                            overrideLocation = string.Empty;
-                            overrideChance = 0.0f;
-                        }
-                    }
-
-                    // Set the fields
-                    overrideLocationField.SetValue(overrideLocation);
-                    overrideChanceField.SetValue(overrideChance);
-                }
-                else
-                {
-                    overrideChance = overrideChanceField.GetValue();
-                }
-
-                if (overrideChance > 0.0)
-                {
-                    // Overridden
-                    return (overrideLocation, overrideChance);
-                }
-
-                // No override
-                return null;
-            }
+            
         }
 
         private void ApplyEmpOverrides(object? sender, CreatedDefaultFishingInfoEventArgs e)

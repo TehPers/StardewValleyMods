@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
-using StardewValley.Objects;
-using StardewValley.Tools;
 using TehPers.Core.Api.DI;
 using TehPers.Core.Api.Items;
 using TehPers.Core.Integrations.JsonAssets;
-using SObject = StardewValley.Object;
 
 namespace TehPers.Core.Items
 {

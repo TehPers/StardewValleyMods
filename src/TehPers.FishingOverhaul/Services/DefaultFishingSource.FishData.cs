@@ -377,13 +377,6 @@ namespace TehPers.FishingOverhaul.Services
 
                 foreach (var fishData in locationData.Fish)
                 {
-                    FishAreaData? area = null;
-                    if (fishData.FishAreaId != null && !locationData.FishAreas.TryGetValue(fishData.FishAreaId, out area))
-                    {
-                        monitor.Log($"Failed to get area: {fishData.FishAreaId}", LogLevel.Warn);
-                        continue;
-                    }
-
                     var seasons = fishData.Season switch
                     {
                         Season.Spring => Seasons.Spring,
@@ -393,8 +386,11 @@ namespace TehPers.FishingOverhaul.Services
                         _ => Seasons.All
                     };
 
-                    var waterTypes = area switch
+                    var waterTypes = fishData.FishAreaId switch
                     {
+                        "0" => WaterTypes.River,
+                        "1" => WaterTypes.PondOrOcean,
+                        "2" => WaterTypes.Freshwater,
                         _ => WaterTypes.All
                     };
 
@@ -408,7 +404,7 @@ namespace TehPers.FishingOverhaul.Services
                         if (ItemRegistry.IsQualifiedItemId(itemId))
                         {
                             // Remove type definition part of id '(...)' to get non qualified id
-                            itemId = itemId[itemId.IndexOf(')')..];
+                            itemId = itemId[(itemId.IndexOf(')') + 1)..];
                         }
 
                         if (fishAvailabilities.TryGetValue(itemId, out var f))
