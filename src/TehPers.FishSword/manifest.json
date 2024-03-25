@@ -2,7 +2,7 @@
   "$schema": "https://smapi.io/schemas/manifest.json",
   "Name": "Fish sword",
   "Author": "TehPers",
-  "Version": "1.0.1-unofficial.1",
+  "Version": "1.0.1-unofficial.1-JoXW",
   "Description": "Adds a catchable fish sword.",
   "UniqueID": "TehPers.FishSword",
   "EntryDll": "TehPers.FishSword.dll",
@@ -11,7 +11,7 @@
   "Dependencies": [
     {
       "UniqueID": "TehPers.FishingOverhaul",
-      "MinimumVersion": "3.3.3-unofficial.1"
+      "MinimumVersion": "3.3.3-unofficial.2"
     },
     {
       "UniqueID": "spacechase0.DynamicGameAssets",
